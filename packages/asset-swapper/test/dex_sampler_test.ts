@@ -13,7 +13,7 @@ import { BigNumber, hexUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { DexOrderSampler, getSampleAmounts } from '../src/utils/market_operation_utils/sampler';
-import { ERC20BridgeSource } from '../src/utils/market_operation_utils/types';
+import { ERC20BridgeSource, FillData } from '../src/utils/market_operation_utils/types';
 
 import { MockSamplerContract } from './utils/mock_sampler_contract';
 
@@ -164,6 +164,7 @@ describe('DexSampler tests', () => {
                     expectedTakerToken,
                     [toBaseUnitAmount(1000)],
                     wethAddress,
+                    dexOrderSampler.balancerPoolsCache,
                     registry,
                 ),
             );
@@ -173,6 +174,7 @@ describe('DexSampler tests', () => {
                         source: 'LiquidityProvider',
                         output: toBaseUnitAmount(1001),
                         input: toBaseUnitAmount(1000),
+                        fillData: undefined,
                     },
                 ],
             ]);
@@ -198,6 +200,7 @@ describe('DexSampler tests', () => {
                     expectedTakerToken,
                     [toBaseUnitAmount(1000)],
                     wethAddress,
+                    dexOrderSampler.balancerPoolsCache,
                     registry,
                 ),
             );
@@ -207,6 +210,7 @@ describe('DexSampler tests', () => {
                         source: 'LiquidityProvider',
                         output: toBaseUnitAmount(999),
                         input: toBaseUnitAmount(1000),
+                        fillData: undefined,
                     },
                 ],
             ]);
@@ -239,6 +243,7 @@ describe('DexSampler tests', () => {
                     expectedTakerToken,
                     [toBaseUnitAmount(1000)],
                     randomAddress(),
+                    dexOrderSampler.balancerPoolsCache,
                     randomAddress(),
                     multiBridge,
                 ),
@@ -249,6 +254,7 @@ describe('DexSampler tests', () => {
                         source: 'MultiBridge',
                         output: toBaseUnitAmount(1001),
                         input: toBaseUnitAmount(1000),
+                        fillData: undefined,
                     },
                 ],
             ]);
@@ -412,7 +418,13 @@ describe('DexSampler tests', () => {
                     return fillAmounts.map(a => a.times(ratesBySource[ERC20BridgeSource.Eth2Dai]).integerValue());
                 },
                 sampleSellsFromUniswapV2: (path, fillAmounts) => {
-                    expect(path).to.deep.eq([expectedTakerToken, expectedMakerToken]);
+                    if (path.length === 2) {
+                        expect(path).to.deep.eq([expectedTakerToken, expectedMakerToken]);
+                    } else if (path.length === 3) {
+                        expect(path).to.deep.eq([expectedTakerToken, wethAddress, expectedMakerToken]);
+                    } else {
+                        expect(path).to.have.lengthOf.within(2, 3);
+                    }
                     expect(fillAmounts).to.deep.eq(expectedTakerFillAmounts);
                     return fillAmounts.map(a => a.times(ratesBySource[ERC20BridgeSource.UniswapV2]).integerValue());
                 },
@@ -425,59 +437,34 @@ describe('DexSampler tests', () => {
                     expectedTakerToken,
                     expectedTakerFillAmounts,
                     wethAddress,
+                    dexOrderSampler.balancerPoolsCache,
                 ),
             );
-            expect(quotes).to.be.length(sources.length);
             const expectedQuotes = sources.map(s =>
                 expectedTakerFillAmounts.map(a => ({
                     source: s,
                     input: a,
                     output: a.times(ratesBySource[s]).integerValue(),
+                    fillData: s === ERC20BridgeSource.UniswapV2 ? { tokenAddressPath: [ expectedTakerToken, expectedMakerToken ]} : undefined as any as FillData,
                 })),
             );
-            expect(quotes).to.deep.eq(expectedQuotes);
+            const uniswapV2ETHQuotes = [expectedTakerFillAmounts.map(a => ({
+                source: ERC20BridgeSource.UniswapV2,
+                input: a,
+                output: a.times(ratesBySource[ERC20BridgeSource.UniswapV2]).integerValue(),
+                fillData: {
+                    tokenAddressPath: [expectedTakerToken, wethAddress, expectedMakerToken],
+                },
+            }))];
+            //  extra quote for Uniswap V2, which provides a direct quote (tokenA -> tokenB) AND an ETH quote (tokenA -> ETH -> tokenB)
+            expect(quotes).to.have.lengthOf(sources.length + 1);
+            expect(quotes).to.deep.eq(expectedQuotes.concat(uniswapV2ETHQuotes));
         });
-
-        // it('getSellQuotes() includes ETH for Uniswap_V2_ETH', async () => {
-        //     const expectedTakerToken = randomAddress();
-        //     const expectedMakerToken = randomAddress();
-        //     const sources = [ERC20BridgeSource.UniswapV2Eth];
-        //     const ratesBySource: RatesBySource = {
-        //         [ERC20BridgeSource.UniswapV2Eth]: getRandomFloat(0, 100),
-        //     };
-        //     const expectedTakerFillAmounts = getSampleAmounts(new BigNumber(100e18), 3);
-        //     const sampler = new MockSamplerContract({
-        //         sampleSellsFromUniswapV2: (path, fillAmounts) => {
-        //             expect(path).to.deep.eq([expectedTakerToken, wethAddress, expectedMakerToken]);
-        //             expect(fillAmounts).to.deep.eq(expectedTakerFillAmounts);
-        //             return fillAmounts.map(a => a.times(ratesBySource[ERC20BridgeSource.UniswapV2Eth]).integerValue());
-        //         },
-        //     });
-        //     const dexOrderSampler = new DexOrderSampler(sampler);
-        //     const [quotes] = await dexOrderSampler.executeAsync(
-        //         DexOrderSampler.ops.getSellQuotes(
-        //             sources,
-        //             expectedMakerToken,
-        //             expectedTakerToken,
-        //             expectedTakerFillAmounts,
-        //             wethAddress,
-        //         ),
-        //     );
-        //     expect(quotes).to.be.length(sources.length);
-        //     const expectedQuotes = sources.map(s =>
-        //         expectedTakerFillAmounts.map(a => ({
-        //             source: s,
-        //             input: a,
-        //             output: a.times(ratesBySource[s]).integerValue(),
-        //         })),
-        //     );
-        //     expect(quotes).to.deep.eq(expectedQuotes);
-        // });
 
         it('getBuyQuotes()', async () => {
             const expectedTakerToken = randomAddress();
             const expectedMakerToken = randomAddress();
-            const sources = [ERC20BridgeSource.Eth2Dai, ERC20BridgeSource.Uniswap];
+            const sources = [ERC20BridgeSource.Eth2Dai, ERC20BridgeSource.Uniswap, ERC20BridgeSource.UniswapV2];
             const ratesBySource: RatesBySource = {
                 [ERC20BridgeSource.Eth2Dai]: getRandomFloat(0, 100),
                 [ERC20BridgeSource.Uniswap]: getRandomFloat(0, 100),
@@ -498,7 +485,13 @@ describe('DexSampler tests', () => {
                     return fillAmounts.map(a => a.times(ratesBySource[ERC20BridgeSource.Eth2Dai]).integerValue());
                 },
                 sampleBuysFromUniswapV2: (path, fillAmounts) => {
-                    expect(path).to.deep.eq([expectedTakerToken, expectedMakerToken]);
+                    if (path.length === 2) {
+                        expect(path).to.deep.eq([expectedTakerToken, expectedMakerToken]);
+                    } else if (path.length === 3) {
+                        expect(path).to.deep.eq([expectedTakerToken, wethAddress, expectedMakerToken]);
+                    } else {
+                        expect(path).to.have.lengthOf.within(2, 3);
+                    }
                     expect(fillAmounts).to.deep.eq(expectedMakerFillAmounts);
                     return fillAmounts.map(a => a.times(ratesBySource[ERC20BridgeSource.UniswapV2]).integerValue());
                 },
@@ -511,67 +504,29 @@ describe('DexSampler tests', () => {
                     expectedTakerToken,
                     expectedMakerFillAmounts,
                     wethAddress,
+                    dexOrderSampler.balancerPoolsCache,
                 ),
             );
-            expect(quotes).to.be.length(sources.length);
             const expectedQuotes = sources.map(s =>
                 expectedMakerFillAmounts.map(a => ({
                     source: s,
                     input: a,
                     output: a.times(ratesBySource[s]).integerValue(),
+                    fillData: s === ERC20BridgeSource.UniswapV2 ? { tokenAddressPath: [ expectedTakerToken, expectedMakerToken ]} : undefined as any as FillData,
                 })),
             );
-            expect(quotes).to.deep.eq(expectedQuotes);
+            const uniswapV2ETHQuotes = [expectedMakerFillAmounts.map(a => ({
+                source: ERC20BridgeSource.UniswapV2,
+                input: a,
+                output: a.times(ratesBySource[ERC20BridgeSource.UniswapV2]).integerValue(),
+                fillData: {
+                    tokenAddressPath: [expectedTakerToken, wethAddress, expectedMakerToken],
+                },
+            }))];
+            //  extra quote for Uniswap V2, which provides a direct quote (tokenA -> tokenB) AND an ETH quote (tokenA -> ETH -> tokenB)
+            expect(quotes).to.have.lengthOf(sources.length + 1);
+            expect(quotes).to.deep.eq(expectedQuotes.concat(uniswapV2ETHQuotes));
         });
-        // it('getBuyQuotes() includes ETH for Uniswap_V2_ETH', async () => {
-        //     const expectedTakerToken = randomAddress();
-        //     const expectedMakerToken = randomAddress();
-        //     const sources = [ERC20BridgeSource.Eth2Dai, ERC20BridgeSource.Uniswap, ERC20BridgeSource.UniswapV2Eth];
-        //     const ratesBySource: RatesBySource = {
-        //         [ERC20BridgeSource.Eth2Dai]: getRandomFloat(0, 100),
-        //         [ERC20BridgeSource.Uniswap]: getRandomFloat(0, 100),
-        //         [ERC20BridgeSource.UniswapV2Eth]: getRandomFloat(0, 100),
-        //     };
-        //     const expectedMakerFillAmounts = getSampleAmounts(new BigNumber(100e18), 3);
-        //     const sampler = new MockSamplerContract({
-        //         sampleBuysFromUniswap: (takerToken, makerToken, fillAmounts) => {
-        //             expect(takerToken).to.eq(expectedTakerToken);
-        //             expect(makerToken).to.eq(expectedMakerToken);
-        //             expect(fillAmounts).to.deep.eq(expectedMakerFillAmounts);
-        //             return fillAmounts.map(a => a.times(ratesBySource[ERC20BridgeSource.Uniswap]).integerValue());
-        //         },
-        //         sampleBuysFromEth2Dai: (takerToken, makerToken, fillAmounts) => {
-        //             expect(takerToken).to.eq(expectedTakerToken);
-        //             expect(makerToken).to.eq(expectedMakerToken);
-        //             expect(fillAmounts).to.deep.eq(expectedMakerFillAmounts);
-        //             return fillAmounts.map(a => a.times(ratesBySource[ERC20BridgeSource.Eth2Dai]).integerValue());
-        //         },
-        //         sampleBuysFromUniswapV2: (path, fillAmounts) => {
-        //             expect(path).to.deep.eq([expectedTakerToken, wethAddress, expectedMakerToken]);
-        //             expect(fillAmounts).to.deep.eq(expectedMakerFillAmounts);
-        //             return fillAmounts.map(a => a.times(ratesBySource[ERC20BridgeSource.UniswapV2Eth]).integerValue());
-        //         },
-        //     });
-        //     const dexOrderSampler = new DexOrderSampler(sampler);
-        //     const [quotes] = await dexOrderSampler.executeAsync(
-        //         DexOrderSampler.ops.getBuyQuotes(
-        //             sources,
-        //             expectedMakerToken,
-        //             expectedTakerToken,
-        //             expectedMakerFillAmounts,
-        //             wethAddress,
-        //         ),
-        //     );
-        //     expect(quotes).to.be.length(sources.length);
-        //     const expectedQuotes = sources.map(s =>
-        //         expectedMakerFillAmounts.map(a => ({
-        //             source: s,
-        //             input: a,
-        //             output: a.times(ratesBySource[s]).integerValue(),
-        //         })),
-        //     );
-        //     expect(quotes).to.deep.eq(expectedQuotes);
-        // });
     });
 
     describe('batched operations', () => {

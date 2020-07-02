@@ -1,6 +1,7 @@
 import { IERC20BridgeSamplerContract } from '@0x/contract-wrappers';
 import { BigNumber } from '@0x/utils';
 
+import { BalancerPoolsCache } from './balancer_utils';
 import { samplerOperations } from './sampler_operations';
 import { BatchedOperation } from './types';
 
@@ -29,11 +30,8 @@ export class DexOrderSampler {
      * for use with `DexOrderSampler.executeAsync()`.
      */
     public static ops = samplerOperations;
-    private readonly _samplerContract: IERC20BridgeSamplerContract;
 
-    constructor(samplerContract: IERC20BridgeSamplerContract) {
-        this._samplerContract = samplerContract;
-    }
+    constructor(private readonly _samplerContract: IERC20BridgeSamplerContract, public balancerPoolsCache: BalancerPoolsCache = new BalancerPoolsCache())  { }
 
     /* Type overloads for `executeAsync()`. Could skip this if we would upgrade TS. */
 
