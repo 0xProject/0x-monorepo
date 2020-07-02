@@ -19,12 +19,15 @@ interface CacheValue {
 }
 const THIRTY_MINUTES_MS = 30 * 60 * 1000; // tslint:disable-line:custom-no-magic-numbers
 export class BalancerPoolsCache {
-    constructor(private readonly _cache: {[key: string]: CacheValue} = {}, public cacheExpiryMs: number = THIRTY_MINUTES_MS) {}
+    constructor(
+        private readonly _cache: { [key: string]: CacheValue } = {},
+        public cacheExpiryMs: number = THIRTY_MINUTES_MS,
+    ) {}
     public async getPoolsForPairAsync(takerToken: string, makerToken: string): Promise<BalancerPool[]> {
         const key = JSON.stringify([takerToken, makerToken].sort());
         const value = this._cache[key];
         const minTimestamp = new Date().getTime() - this.cacheExpiryMs;
-        if (value.timestamp < minTimestamp ) {
+        if (value.timestamp < minTimestamp) {
             const pools = await this._fetchPoolsForPairAsync(takerToken, makerToken);
             const timestamp = new Date().getTime();
             this._cache[key] = {
@@ -45,6 +48,7 @@ export class BalancerPoolsCache {
     }
 }
 
+// tslint:disable completed-docs
 export function computeBalancerSellQuote(pool: BalancerPool, takerFillAmount: BigNumber): BigNumber {
     return bmath.calcOutGivenIn(
         pool.balanceIn,

@@ -445,17 +445,22 @@ describe('DexSampler tests', () => {
                     source: s,
                     input: a,
                     output: a.times(ratesBySource[s]).integerValue(),
-                    fillData: s === ERC20BridgeSource.UniswapV2 ? { tokenAddressPath: [ expectedTakerToken, expectedMakerToken ]} : undefined as any as FillData,
+                    fillData:
+                        s === ERC20BridgeSource.UniswapV2
+                            ? { tokenAddressPath: [expectedTakerToken, expectedMakerToken] }
+                            : ((undefined as any) as FillData),
                 })),
             );
-            const uniswapV2ETHQuotes = [expectedTakerFillAmounts.map(a => ({
-                source: ERC20BridgeSource.UniswapV2,
-                input: a,
-                output: a.times(ratesBySource[ERC20BridgeSource.UniswapV2]).integerValue(),
-                fillData: {
-                    tokenAddressPath: [expectedTakerToken, wethAddress, expectedMakerToken],
-                },
-            }))];
+            const uniswapV2ETHQuotes = [
+                expectedTakerFillAmounts.map(a => ({
+                    source: ERC20BridgeSource.UniswapV2,
+                    input: a,
+                    output: a.times(ratesBySource[ERC20BridgeSource.UniswapV2]).integerValue(),
+                    fillData: {
+                        tokenAddressPath: [expectedTakerToken, wethAddress, expectedMakerToken],
+                    },
+                })),
+            ];
             //  extra quote for Uniswap V2, which provides a direct quote (tokenA -> tokenB) AND an ETH quote (tokenA -> ETH -> tokenB)
             expect(quotes).to.have.lengthOf(sources.length + 1);
             expect(quotes).to.deep.eq(expectedQuotes.concat(uniswapV2ETHQuotes));
@@ -512,17 +517,22 @@ describe('DexSampler tests', () => {
                     source: s,
                     input: a,
                     output: a.times(ratesBySource[s]).integerValue(),
-                    fillData: s === ERC20BridgeSource.UniswapV2 ? { tokenAddressPath: [ expectedTakerToken, expectedMakerToken ]} : undefined as any as FillData,
+                    fillData:
+                        s === ERC20BridgeSource.UniswapV2
+                            ? { tokenAddressPath: [expectedTakerToken, expectedMakerToken] }
+                            : ((undefined as any) as FillData),
                 })),
             );
-            const uniswapV2ETHQuotes = [expectedMakerFillAmounts.map(a => ({
-                source: ERC20BridgeSource.UniswapV2,
-                input: a,
-                output: a.times(ratesBySource[ERC20BridgeSource.UniswapV2]).integerValue(),
-                fillData: {
-                    tokenAddressPath: [expectedTakerToken, wethAddress, expectedMakerToken],
-                },
-            }))];
+            const uniswapV2ETHQuotes = [
+                expectedMakerFillAmounts.map(a => ({
+                    source: ERC20BridgeSource.UniswapV2,
+                    input: a,
+                    output: a.times(ratesBySource[ERC20BridgeSource.UniswapV2]).integerValue(),
+                    fillData: {
+                        tokenAddressPath: [expectedTakerToken, wethAddress, expectedMakerToken],
+                    },
+                })),
+            ];
             //  extra quote for Uniswap V2, which provides a direct quote (tokenA -> tokenB) AND an ETH quote (tokenA -> ETH -> tokenB)
             expect(quotes).to.have.lengthOf(sources.length + 1);
             expect(quotes).to.deep.eq(expectedQuotes.concat(uniswapV2ETHQuotes));

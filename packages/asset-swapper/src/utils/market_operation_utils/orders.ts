@@ -214,7 +214,7 @@ function createBridgeOrder(fill: CollapsedFill, opts: CreateOrderFromPathOpts): 
     let makerAssetData;
     switch (fill.source) {
         case ERC20BridgeSource.Curve:
-            const curveFillData = (fill as CollapsedFill<CurveFillData>).fillData!;
+            const curveFillData = (fill as CollapsedFill<CurveFillData>).fillData!; // tslint:disable-line:no-non-null-assertion
             makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
                 makerToken,
                 bridgeAddress,
@@ -227,7 +227,7 @@ function createBridgeOrder(fill: CollapsedFill, opts: CreateOrderFromPathOpts): 
             );
             break;
         case ERC20BridgeSource.Balancer:
-            const balancerFillData = (fill as CollapsedFill<BalancerFillData>).fillData!;
+            const balancerFillData = (fill as CollapsedFill<BalancerFillData>).fillData!; // tslint:disable-line:no-non-null-assertion
             makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
                 makerToken,
                 bridgeAddress,
@@ -235,7 +235,7 @@ function createBridgeOrder(fill: CollapsedFill, opts: CreateOrderFromPathOpts): 
             );
             break;
         case ERC20BridgeSource.UniswapV2:
-            const uniswapV2FillData = (fill as CollapsedFill<UniswapV2FillData>).fillData!;
+            const uniswapV2FillData = (fill as CollapsedFill<UniswapV2FillData>).fillData!; // tslint:disable-line:no-non-null-assertion
             makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
                 makerToken,
                 bridgeAddress,
@@ -408,7 +408,7 @@ function createCommonBridgeOrderFields(opts: CreateOrderFromPathOpts): CommonBri
 function createNativeOrder(fill: NativeCollapsedFill): OptimizedMarketOrder {
     return {
         fills: [fill],
-        ...fill.fillData!.order,
+        ...fill.fillData!.order, // tslint:disable-line:no-non-null-assertion
     };
 }
 
