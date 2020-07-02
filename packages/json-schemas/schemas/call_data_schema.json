@@ -27,13 +27,13 @@
                 "properties": {
                     "code": {
                         "type": "string",
-                        "pattern": "^0x[0-9a-f]*$"
+                        "pattern": "^0x[0-9a-fA-F]*$"
                     },
                     "nonce": {
-                        "oneOf": [{ "$ref": "/numberSchema" }, { "$ref": "/jsNumberSchema" }]
+                        "oneOf": [{ "$ref": "/wholeNumberSchema" }]
                     },
-                    "value": {
-                        "oneOf": [{ "$ref": "/numberSchema" }, { "$ref": "/jsNumberSchema" }]
+                    "balance": {
+                        "oneOf": [{ "$ref": "/wholeNumberSchema" }]
                     }
                 }
             }

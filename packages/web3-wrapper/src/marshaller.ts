@@ -180,8 +180,9 @@ export const marshaller = {
         for (const address in overrides) {
             if (address) {
                 const override = overrides[address];
+                const marshalledAddress = marshaller.marshalAddress(address);
                 const marshalledOverride: GethCallOverridesRPC[keyof GethCallOverridesRPC] = (marshalled[
-                    marshaller.marshalAddress(address)
+                    marshalledAddress
                 ] = {});
                 if (override.code !== undefined) {
                     marshalledOverride.code = override.code;
@@ -191,6 +192,9 @@ export const marshaller = {
                 }
                 if (override.balance !== undefined) {
                     marshalledOverride.balance = utils.encodeAmountAsHexString(override.balance);
+                }
+                if (Object.keys(marshalledOverride).length === 0) {
+                    delete marshalled[marshalledAddress];
                 }
             }
         }
