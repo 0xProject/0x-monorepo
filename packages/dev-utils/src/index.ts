@@ -12,6 +12,7 @@ export { AbiDecoder, DecodedCalldata } from '@0x/utils';
 export {
     SupportedProvider,
     CallData,
+    GethCallOverrides,
     TransactionReceiptWithDecodedLogs,
     BlockParam,
     TxData,

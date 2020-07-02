@@ -1,5 +1,14 @@
 [
     {
+        "version": "3.3.0",
+        "changes": [
+            {
+                "note": "Export `GethCallOverrides` type",
+                "pr": 2620
+            }
+        ]
+    },
+    {
         "timestamp": 1592969527,
         "version": "3.2.2",
         "changes": [
