@@ -125,6 +125,7 @@ export class MarketOperationUtils {
 
         if (_opts.quoteReporter) {
             _opts.quoteReporter.trackDexSamples(_.flatten(dexQuotes));
+            _opts.quoteReporter.trackFillableAmounts(orderFillableAmounts, nativeOrders);
         }
 
         return this._generateOptimizedOrders({
@@ -216,6 +217,7 @@ export class MarketOperationUtils {
 
         if (_opts.quoteReporter) {
             _opts.quoteReporter.trackDexSamples(_.flatten(dexQuotes));
+            _opts.quoteReporter.trackFillableAmounts(orderFillableAmounts, nativeOrders);
         }
 
         return this._generateOptimizedOrders({
@@ -387,8 +389,8 @@ export class MarketOperationUtils {
                 const [last, penultimateIfExists] = optimalPath.slice().reverse();
                 const lastNativeFillIfExists =
                     last.source === ERC20BridgeSource.Native &&
-                    penultimateIfExists &&
-                    penultimateIfExists.source !== ERC20BridgeSource.Native
+                        penultimateIfExists &&
+                        penultimateIfExists.source !== ERC20BridgeSource.Native
                         ? last
                         : undefined;
                 // By prepending native paths to the front they cannot split on-chain sources and incur

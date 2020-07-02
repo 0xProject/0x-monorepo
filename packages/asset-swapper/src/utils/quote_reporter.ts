@@ -1,4 +1,5 @@
-import { BigNumber } from '@0x/utils';
+import { orderHashUtils } from '@0x/order-utils';
+import { BigNumber, NULL_ADDRESS } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { ERC20BridgeSource, SignedOrder } from '..';
@@ -28,6 +29,7 @@ interface NativeLiquiditySource {
     makerAmount: BigNumber;
     takerAmount: BigNumber;
     nativeOrder: SignedOrder;
+    fillableTakerAmount?: BigNumber;
 }
 
 export interface OrderbookReportSource extends NativeLiquiditySource {
@@ -101,34 +103,59 @@ export class QuoteReporter {
         this._rfqtReportSources = this._rfqtReportSources.concat(rfqtReportSource);
     }
 
+    /**
+     * Annotates native order sources with fillableAmounts
+     */
+    public trackFillableAmounts(fillableAmounts: BigNumber[], orders: SignedOrder[]): void {
+        if (fillableAmounts.length !== orders.length) {
+            // length mismatch, don't do anything
+            return;
+        }
+
+        // Create mapping of orderHash -> fillableAMount
+        const orderHashesToFillableAmounts: { [orderHash: string]: BigNumber } = {};
+        orders.forEach((order, idx) => {
+            orderHashesToFillableAmounts[orderHashUtils.getOrderHash(order)] = fillableAmounts[idx];
+        });
+
+        // Annotate RFQT & OO orders with fillable amounts
+        this._rfqtReportSources = this._rfqtReportSources.map(ros => {
+            const orderHash = orderHashUtils.getOrderHash(ros.nativeOrder);
+            return { ...ros, fillableAmount: orderHashesToFillableAmounts[orderHash] };
+        });
+        this._orderbookReportSources = this._orderbookReportSources.map(ors => {
+            const orderHash = orderHashUtils.getOrderHash(ors.nativeOrder);
+            return { ...ors, fillableAmount: orderHashesToFillableAmounts[orderHash] };
+        });
+    }
+
     public trackPaths(paths: CollapsedFill[]): void {
-        this._sourcesDelivered = paths.map(p => {
+        const sourcesDelivered = paths.map(p => {
             if ((p as NativeCollapsedFill).nativeOrder) {
                 const nativeFill: NativeCollapsedFill = p as NativeCollapsedFill;
                 const nativeOrder = nativeFill.nativeOrder;
 
                 // if it's an rfqt order, try to associate it & find it
-                if (nativeOrder.takerAddress !== undefined) {
-                    const foundRfqtSource = this._rfqtReportSources.find(
-                        ro => ro.nativeOrder.signature === nativeOrder.signature,
+                if (
+                    nativeOrder.takerAddress !== undefined &&
+                    nativeOrder.takerAddress.toLowerCase() !== NULL_ADDRESS.toLowerCase()
+                ) {
+                    const foundRfqtOrder = this._rfqtReportSources.find(
+                        ro => orderHashUtils.getOrderHash(ro.nativeOrder) === orderHashUtils.getOrderHash(nativeOrder),
                     );
-                    if (foundRfqtSource) {
-                        return foundRfqtSource;
-                    }
+                    return foundRfqtOrder;
                 }
-                // otherwise, assume its an orderbook order
-                const orderbookOrder: OrderbookReportSource = {
-                    makerAmount: nativeOrder.makerAssetAmount,
-                    takerAmount: nativeOrder.takerAssetAmount,
-                    liquiditySource: ERC20BridgeSource.Native,
-                    nativeOrderOrigin: NativeOrderOrigin.OrderbookOrigin,
-                    nativeOrder,
-                };
-                return orderbookOrder;
+                // else, find & associate the orderbook source
+                const foundOrderbookOrder = this._orderbookReportSources.find(
+                    os => orderHashUtils.getOrderHash(os.nativeOrder) === orderHashUtils.getOrderHash(nativeOrder),
+                );
+                return foundOrderbookOrder;
             } else {
                 return this._dexSampleToBridgeReportSource(p);
             }
         });
+
+        this._sourcesDelivered = _.compact(sourcesDelivered);
     }
 
     public getReport(): QuoteReport {
