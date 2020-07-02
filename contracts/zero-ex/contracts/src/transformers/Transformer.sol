@@ -31,15 +31,15 @@ abstract contract Transformer is
     using LibRichErrorsV06 for bytes;
 
     /// @dev The address of the deployer.
-    address public immutable deployer;
+    address public constant deployer = 0x0000000000000000000000000000000000000000;
     /// @dev The original address of this contract.
-    address internal immutable _implementation;
+    address internal constant _implementation = 0x9b81A08Ef144E7aA4925F7Fd77da1E1B3990e59A;
 
     /// @dev Create this contract.
-    constructor() public {
-        deployer = msg.sender;
-        _implementation = address(this);
-    }
+    //constructor() public {
+    //    deployer = msg.sender;
+    //    _implementation = address(this);
+    //}
 
     /// @dev Destruct this contract. Only callable by the deployer and will not
     ///      succeed in the context of a delegatecall (from another contract).
