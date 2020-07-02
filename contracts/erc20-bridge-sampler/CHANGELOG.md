@@ -5,6 +5,15 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.6.0 - _June 24, 2020_
+
+    * Pass in `DevUtils` address as a constructor parameter (#2531)
+    * Sample `Curve` for buy amounts (#2551)
+    * Added `sampleBuysFromKyberNetwork` (#2551)
+    * Use `searchBestRate` in Kyber samples. Return 0 when Uniswap/Eth2Dai reserve (#2575)
+    * Add UniswapV2 (#2595)
+    * Sample from MultiBridge (#2593)
+
 ## v1.5.1 - _March 3, 2020_
 
     * Dependencies updated

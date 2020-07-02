@@ -1,5 +1,14 @@
 [
     {
+        "version": "6.4.0",
+        "changes": [
+            {
+                "note": "Add Exchange Proxy migration.",
+                "pr": 2612
+            }
+        ]
+    },
+    {
         "version": "6.3.0",
         "changes": [
             {
@@ -18,7 +27,8 @@
                 "note": "Return empty Exchange Proxy addresses",
                 "pr": 2591
             }
-        ]
+        ],
+        "timestamp": 1592969527
     },
     {
         "timestamp": 1583220306,

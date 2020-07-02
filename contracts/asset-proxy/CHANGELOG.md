@@ -5,6 +5,16 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.3.0 - _June 24, 2020_
+
+    * Use `LibERC20Token.approveIfBelow()` in DEX bridges for for approvals. (#2512)
+    * Emit `ERC20BridgeTransfer` events in bridges. (#2512)
+    * Change names of `ERC20BridgeTransfer` args to be less ambiguous. (#2524)
+    * Added `MixinGasToken` allowing Gas Tokens to be freed (#2523)
+    * Add `DexForwaderBridge` bridge contract. (#2525)
+    * Add `UniswapV2Bridge` bridge contract. (#2590)
+    * Add Gas Token freeing to `DexForwarderBridge` contract. (#2536)
+
 ## v3.2.5 - _March 3, 2020_
 
     * Dependencies updated
@@ -32,7 +42,7 @@ CHANGELOG
     * Fix broken tests. (#2462)
     * Remove dependency on `@0x/contracts-dev-utils` (#2462)
     * Add asset data decoding functions (#2462)
-    * Add `setOperators()` to `IDydx` (#TODO)
+    * Add `setOperators()` to `IDydx` (#2462)
 
 ## v3.1.3 - _February 6, 2020_
 

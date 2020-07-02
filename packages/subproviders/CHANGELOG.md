@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v6.1.0 - _June 24, 2020_
+
+    * Update ganache-core (#2545)
+
 ## v6.0.8 - _February 25, 2020_
 
     * Dependencies updated

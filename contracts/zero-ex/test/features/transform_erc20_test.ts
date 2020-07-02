@@ -11,6 +11,7 @@ import {
 import { ETH_TOKEN_ADDRESS } from '@0x/order-utils';
 import { AbiEncoder, hexUtils, OwnableRevertErrors, ZeroExRevertErrors } from '@0x/utils';
 
+import { TransformERC20Contract, ZeroExContract } from '../../src/wrappers';
 import { artifacts } from '../artifacts';
 import { abis } from '../utils/abis';
 import { fullMigrateAsync } from '../utils/migration';
@@ -20,9 +21,7 @@ import {
     TestMintableERC20TokenContract,
     TestMintTokenERC20TransformerContract,
     TestMintTokenERC20TransformerEvents,
-    TransformERC20Contract,
     TransformERC20Events,
-    ZeroExContract,
 } from '../wrappers';
 
 blockchainTests.resets('TransformERC20 feature', env => {

@@ -5,9 +5,14 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.1.1 - _June 24, 2020_
+
+    * Dependencies updated
+
 ## v3.1.0 - _February 8, 2020_
 
     * Add `linkReferences` to `EvmBytecodeOutput` and `EvmBytecodeOutputLinkReferences` type (#2462)
+    * Update `MethodAbi` definition for solidity 0.6 (#2540)
 
 ## v3.0.0 - _December 2, 2019_
 

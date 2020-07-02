@@ -1,10 +1,19 @@
 [
     {
-        "version": "4.0.9",
+        "version": "4.1.0",
         "changes": [
             {
                 "note": "Make sol-profiler (mostly) work again",
                 "pr": 2607
+            }
+        ]
+    },
+    {
+        "timestamp": 1592969527,
+        "version": "4.0.9",
+        "changes": [
+            {
+                "note": "Dependencies updated"
             }
         ]
     },

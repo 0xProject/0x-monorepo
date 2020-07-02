@@ -5,6 +5,32 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.5.0 - _June 24, 2020_
+
+    * Add support for private liquidity providers (#2505)
+    * Big refactor of market operation utils (#2513)
+    * Remove `dustFractionThreshold`, `noConflicts` options. (#2513)
+    * Revamp fill optimization algorithm (#2513)
+    * Add fallback orders to quotes via `allowFallback` option. (#2513)
+    * Add `maxFallbackSlippage` option. (#2513)
+    * Fix fee schedule not being scaled by gas price. (#2522)
+    * Fix quote optimizer bug not properly accounting for fees. (#2526)
+    * Fix `getBatchMarketBuyOrdersAsync` throwing NO_OPTIMAL_PATH (#2533)
+    * Add DFB support + refactor swap quote calculator utils (#2536)
+    * Add support for RFQ-T, querying maker-hosted endpoints for quotes to be submitted by the taker (#2541)
+    * Add support for indicative (non-committal) quotes via RFQ-T (#2555)
+    * Collapse `LiquidityProvider` into `DexForwarderBridge` (#2560)
+    * Added Curve `sUSD` (#2563)
+    * Fix sporadically failing quote simulation tests (#2564)
+    * Apply Native order penalty inline with the target amount (#2565)
+    * Remove Kyber exclusion when Uniswap/Eth2Dai is present (#2575)
+    * Expose fills object in asset-swapper quote orders (#2583)
+    * Increase timeout for tests (#2587)
+    * Add support for Uniswap V2 (#2599)
+    * Add support for MultiBridge (#2593)
+    * Fix Uniswap V2 path ordering (#2601)
+    * Add exchange proxy support (#2591)
+
 ## v4.4.0 - _March 3, 2020_
 
     * Add support for ERC721 assets (#2491)

@@ -30,7 +30,8 @@
                 "note": "Update `ZeroExRevertErrors`",
                 "pr": 2597
             }
-        ]
+        ],
+        "timestamp": 1592969527
     },
     {
         "version": "5.4.1",

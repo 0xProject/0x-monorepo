@@ -5,6 +5,17 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.7.0 - _June 24, 2020_
+
+    * Added `MaximumGasPrice` artifact (#2511)
+    * Added `Forwarder.marketSellAmountWithEth` (#2521)
+    * Added `ERC20BridgeSampler.sampleBuysFromCurve` (#2551)
+    * Added `ERC20BridgeSampler.sampleBuysFromKyberNetwork` (#2551)
+    * Added `ERC20BridgeSampler.sampleBuysFromUniswapV2 (#2595)
+    * Added `ERC20BridgeSampler.sampleSellsFromUniswapV2 (#2595)
+    * Added `ERC20BridgeSampler.sampleSellsFromMultiBridge (#2593)
+    * Added `ITransformERC20` (#2591)
+
 ## v3.6.1 - _February 25, 2020_
 
     * Dependencies updated

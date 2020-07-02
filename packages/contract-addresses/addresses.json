@@ -209,14 +209,14 @@
         "maximumGasPrice": "0x0000000000000000000000000000000000000000",
         "dexForwarderBridge": "0x0000000000000000000000000000000000000000",
         "multiBridge": "0x0000000000000000000000000000000000000000",
-        "exchangeProxyGovernor": "0x618f9c67ce7bf1a50afa1e7e0238422601b0ff6e",
-        "exchangeProxy": "0xdef1c0ded9bec7f1a1670819833240f027b25eff",
-        "exchangeProxyAllowanceTarget": "0xf740b67da229f2f10bcbd38a7979992fcc71b8eb",
-        "exchangeProxyTransformerDeployer": "0x80a36559ab9a497fb658325ed771a584eb0f13da",
+        "exchangeProxyGovernor": "0x0000000000000000000000000000000000000000",
+        "exchangeProxy": "0x4b8ce0fa221284de4aaa09be3e7bf6193444b786",
+        "exchangeProxyAllowanceTarget": "0xd6724bf180441a89d08ea3aeded2c995180b9a04",
+        "exchangeProxyTransformerDeployer": "0x5409ed021d9299bf6814279a6a1411a7e866a631",
         "transformers": {
-            "wethTransformer": "0x7bab5f7299e1ca123bb44eb71e6c89be7e558cc8",
-            "payTakerTransformer": "0xe8c07a119452b55eee2f999478aab97f3656d841",
-            "fillQuoteTransformer": "0x9b81a08ef144e7aa4925f7fd77da1e1b3990e59a"
+            "wethTransformer": "0xb125995f5a4766c451cd8c34c4f5cac89b724571",
+            "payTakerTransformer": "0x10a736a7b223f1fe1050264249d1abb975741e75",
+            "fillQuoteTransformer": "0x33def1aa867be09809f3a01ce41d5ec1888846c9"
         }
     }
 }

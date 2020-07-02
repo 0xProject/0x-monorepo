@@ -5,6 +5,12 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.1.0 - _June 24, 2020_
+
+    * Refactor + add solidity 0.6 support (#2532)
+    * Filter `receive` functions from 0.6 ABIs (#2540)
+    * Fix `CompilerOptions` schema (#2591)
+
 ## v4.0.8 - _February 25, 2020_
 
     * Dependencies updated

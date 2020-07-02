@@ -5,6 +5,15 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.5.0 - _June 24, 2020_
+
+    * Added `GST_ADDRESS` and `GST_COLLECTOR_ADDRESS` (#2523)
+    * Set GST Collector address in `DeploymentConstants` (#2530)
+    * Add solidity 0.6 contracts (#2540)
+    * Add more solidity 0.6 contracts (#2545)
+    * Add UniswapV2 addresses to `DeploymentConstants` (#2595)
+    * Update V06 contracts to get around 0.6.9 docstring errors (#2597)
+
 ## v4.4.3 - _March 3, 2020_
 
     * Dependencies updated

@@ -26,7 +26,8 @@
                 "note": "Update V06 contracts to get around 0.6.9 docstring errors",
                 "pr": 2597
             }
-        ]
+        ],
+        "timestamp": 1592969527
     },
     {
         "timestamp": 1583220306,

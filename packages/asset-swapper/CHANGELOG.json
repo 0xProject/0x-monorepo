@@ -1,10 +1,39 @@
 [
     {
+        "version": "4.7.0",
+        "changes": [
+            {
+                "note": "Introduce QuoteReport response from SwapQuoter",
+                "pr": 2606
+            }
+        ]
+    },
+    {
         "version": "4.6.0",
         "changes": [
             {
-                "note": "Add quoteReport response for SwapQuotes",
-                "pr": 2506
+                "note": "Use internal Eth Gas Station proxy",
+                "pr": 2614
+            },
+            {
+                "note": "Renamed RFQT request parameters",
+                "pr": 2582
+            },
+            {
+                "note": "Fix worst case asset amount calculations.",
+                "pr": 2615
+            },
+            {
+                "note": "Specify EthGasStation url as an optional parameter",
+                "pr": 2617
+            },
+            {
+                "note": "Singleton Gas Price Oracle",
+                "pr": 2619
+            },
+            {
+                "note": "\"Fix\" forwarder buys of low decimal tokens.",
+                "pr": 2618
             }
         ]
     },
@@ -103,7 +132,8 @@
                 "note": "Add exchange proxy support",
                 "pr": 2591
             }
-        ]
+        ],
+        "timestamp": 1592969527
     },
     {
         "version": "4.4.0",
