@@ -87,3 +87,5 @@ export {
 } from './utils/quote_reporter';
 export type RfqtOrigin = NativeOrderOrigin.RfqtOrigin;
 export type OrderbookOrigin = NativeOrderOrigin.OrderbookOrigin;
+import { ERC20BridgeSource } from './utils/market_operation_utils/types';
+export type Native = ERC20BridgeSource.Native;
