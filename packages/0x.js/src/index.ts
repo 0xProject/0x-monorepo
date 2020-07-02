@@ -115,6 +115,7 @@ export {
     TxData,
     ContractArtifact,
     CallData,
+    GethCallOverrides,
     BlockParam,
     CompilerOpts,
     StandardContractOutput,
