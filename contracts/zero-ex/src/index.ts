@@ -1,5 +1,6 @@
 export { artifacts } from './artifacts';
 export {
+    AffiliateFeeTransformerContract,
     FillQuoteTransformerContract,
     IOwnableContract,
     IOwnableEvents,
