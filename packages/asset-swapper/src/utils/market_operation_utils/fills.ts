@@ -234,7 +234,7 @@ export function clipPathToInput(path: Fill[], targetInput: BigNumber = POSITIVE_
 }
 
 export function collapsePath(path: Fill[]): CollapsedFill[] {
-    const collapsed: Array<CollapsedFill> = [];
+    const collapsed: CollapsedFill[] = [];
     for (const fill of path) {
         const source = fill.source;
         if (collapsed.length !== 0 && source !== ERC20BridgeSource.Native) {

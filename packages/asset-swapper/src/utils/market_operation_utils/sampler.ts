@@ -31,7 +31,10 @@ export class DexOrderSampler {
      */
     public static ops = samplerOperations;
 
-    constructor(private readonly _samplerContract: IERC20BridgeSamplerContract, public balancerPoolsCache: BalancerPoolsCache = new BalancerPoolsCache())  { }
+    constructor(
+        private readonly _samplerContract: IERC20BridgeSamplerContract,
+        public balancerPoolsCache: BalancerPoolsCache = new BalancerPoolsCache(),
+    ) {}
 
     /* Type overloads for `executeAsync()`. Could skip this if we would upgrade TS. */
 

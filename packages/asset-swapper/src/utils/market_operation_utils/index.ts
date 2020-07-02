@@ -256,7 +256,7 @@ export class MarketOperationUtils {
         const ops = [
             ...batchNativeOrders.map(orders => DexOrderSampler.ops.getOrderFillableMakerAmounts(orders)),
             ...(await Promise.all(
-                batchNativeOrders.map(orders =>
+                batchNativeOrders.map(async orders =>
                     DexOrderSampler.ops.getMedianSellRateAsync(
                         difference(FEE_QUOTE_SOURCES, _opts.excludedSources),
                         getNativeOrderTokens(orders[0])[1],
@@ -268,7 +268,7 @@ export class MarketOperationUtils {
                 ),
             )),
             ...(await Promise.all(
-                batchNativeOrders.map((orders, i) =>
+                batchNativeOrders.map(async (orders, i) =>
                     DexOrderSampler.ops.getBuyQuotesAsync(
                         sources,
                         getNativeOrderTokens(orders[0])[0],

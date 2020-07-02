@@ -2,12 +2,7 @@ import * as _ from 'lodash';
 
 import { BigNumber, ERC20BridgeSource, SignedOrder } from '../..';
 
-import {
-    BalancerPool,
-    BalancerPoolsCache,
-    computeBalancerBuyQuote,
-    computeBalancerSellQuote,
-} from './balancer_utils';
+import { BalancerPool, BalancerPoolsCache, computeBalancerBuyQuote, computeBalancerSellQuote } from './balancer_utils';
 import { DEFAULT_FAKE_BUY_OPTS, MAINNET_CURVE_CONTRACTS } from './constants';
 import { getCurveAddressesForPair } from './curve_utils';
 import { getMultiBridgeIntermediateToken } from './multibridge_utils';
