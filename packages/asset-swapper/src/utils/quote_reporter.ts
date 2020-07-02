@@ -196,7 +196,6 @@ export class QuoteReporter {
             if (foundRfqtSource) {
                 return foundRfqtSource;
             }
-
         }
         // If we can't find an rfqt source for this order, assume it's an orderbook order
         const foundOrderbookOrder = this._orderbookReportSources.find(

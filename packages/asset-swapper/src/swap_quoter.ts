@@ -552,11 +552,13 @@ export class SwapQuoter {
         orderFetchPromises.push(orderbookPromise);
 
         // If applicable, fetch firm quotes from RFQT
-        if (opts.rfqt &&
+        if (
+            opts.rfqt &&
             opts.rfqt.intentOnFilling &&
             opts.rfqt.apiKey &&
             this._rfqtTakerApiKeyWhitelist.includes(opts.rfqt.apiKey) &&
-            !(marketOperation === MarketOperation.Buy && this._rfqtSkipBuyRequests)) {
+            !(marketOperation === MarketOperation.Buy && this._rfqtSkipBuyRequests)
+        ) {
             if (!opts.rfqt.takerAddress || opts.rfqt.takerAddress === constants.NULL_ADDRESS) {
                 throw new Error('RFQ-T requests must specify a taker address');
             }
@@ -581,8 +583,9 @@ export class SwapQuoter {
 
         // report orderbook orders
         if (quoteReporter) {
-            const orderboookOrders = orders.filter(o => o.takerAddress === undefined || o.takerAddress.toLowerCase() === NULL_ADDRESS.toLowerCase());
-            console.log('** oo', orderboookOrders.length);
+            const orderboookOrders = orders.filter(
+                o => o.takerAddress === undefined || o.takerAddress.toLowerCase() === NULL_ADDRESS.toLowerCase(),
+            );
             quoteReporter.trackOrderbookOrders(orderboookOrders);
         }
 
