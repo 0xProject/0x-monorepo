@@ -5,6 +5,10 @@
             {
                 "note": "Add Exchange Proxy migration.",
                 "pr": 2612
+            },
+            {
+                "note": "Add affiliate fee transformer migration and flash wallet address",
+                "pr": 2622
             }
         ]
     },

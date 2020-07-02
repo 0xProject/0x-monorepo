@@ -30,10 +30,12 @@ import {
     ZrxVaultContract,
 } from '@0x/contracts-staking';
 import {
+    AffiliateFeeTransformerContract,
     artifacts as exchangeProxyArtifacts,
     FillQuoteTransformerContract,
     fullMigrateAsync as fullMigrateExchangeProxyAsync,
     ITokenSpenderContract,
+    ITransformERC20Contract,
     PayTakerTransformerContract,
     WethTransformerContract,
 } from '@0x/contracts-zero-ex';
@@ -304,8 +306,15 @@ export async function runMigrationsAsync(
     // Exchange Proxy //////////////////////////////////////////////////////////
 
     const exchangeProxy = await fullMigrateExchangeProxyAsync(txDefaults.from, provider, txDefaults);
-    const allowanceTargetAddress = await new ITokenSpenderContract(exchangeProxy.address, provider, txDefaults)
+    const exchangeProxyAllowanceTargetAddress = await new ITokenSpenderContract(
+        exchangeProxy.address,
+        provider,
+        txDefaults,
+    )
         .getAllowanceTarget()
+        .callAsync();
+    const exchangeProxyFlashWalletAddress = await new ITransformERC20Contract(exchangeProxy.address, provider)
+        .getTransformWallet()
         .callAsync();
 
     // Deploy transformers.
@@ -328,6 +337,12 @@ export async function runMigrationsAsync(
         txDefaults,
         allArtifacts,
         etherToken.address,
+    );
+    const affiliateFeeTransformer = await AffiliateFeeTransformerContract.deployFrom0xArtifactAsync(
+        exchangeProxyArtifacts.AffiliateFeeTransformer,
+        provider,
+        txDefaults,
+        allArtifacts,
     );
 
     const contractAddresses = {
@@ -366,12 +381,14 @@ export async function runMigrationsAsync(
         multiBridge: NULL_ADDRESS,
         exchangeProxyGovernor: NULL_ADDRESS,
         exchangeProxy: exchangeProxy.address,
-        exchangeProxyAllowanceTarget: allowanceTargetAddress,
+        exchangeProxyAllowanceTarget: exchangeProxyAllowanceTargetAddress,
         exchangeProxyTransformerDeployer: txDefaults.from,
+        exchangeProxyFlashWallet: exchangeProxyFlashWalletAddress,
         transformers: {
             wethTransformer: wethTransformer.address,
             payTakerTransformer: payTakerTransformer.address,
             fillQuoteTransformer: fillQuoteTransformer.address,
+            affiliateFeeTransformer: affiliateFeeTransformer.address,
         },
     };
     return contractAddresses;
