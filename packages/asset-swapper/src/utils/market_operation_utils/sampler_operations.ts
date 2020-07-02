@@ -301,14 +301,14 @@ export const samplerOperations = {
         return {
             source: ERC20BridgeSource.Balancer,
             fillData: { poolAddress: pool.id },
-            ...samplerOperations.constant(takerFillAmounts.map(_.curry(computeBalancerSellQuote)(pool))),
+            ...samplerOperations.constant(takerFillAmounts.map(amount => computeBalancerSellQuote(pool, amount))),
         };
     },
     getBalancerBuyQuotes(pool: BalancerPool, makerFillAmounts: BigNumber[]): SourceQuoteOperation<BalancerFillData> {
         return {
             source: ERC20BridgeSource.Balancer,
             fillData: { poolAddress: pool.id },
-            ...samplerOperations.constant(makerFillAmounts.map(_.curry(computeBalancerBuyQuote)(pool))),
+            ...samplerOperations.constant(makerFillAmounts.map(amount => computeBalancerBuyQuote(pool, amount))),
         };
     },
     getMedianSellRateAsync: async (
@@ -551,7 +551,7 @@ export const samplerOperations = {
                                     samplerOperations.getBalancerBuyQuotes(pool, makerFillAmounts),
                                 );
                             default:
-                                throw new Error(`Unsupported sell sample source: ${source}`);
+                                throw new Error(`Unsupported buy sample source: ${source}`);
                         }
                     },
                 ),

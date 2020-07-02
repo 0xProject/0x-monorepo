@@ -14,11 +14,15 @@ export interface BalancerPool {
     limitAmount?: BigNumber;
 }
 
-export const getBalancerPoolsForPairAsync = async (takerToken: string, makerToken: string): Promise<BalancerPool[]> => {
-    return parsePoolData(await getPoolsWithTokens(takerToken, makerToken), takerToken, makerToken);
-};
+export async function getBalancerPoolsForPairAsync(takerToken: string, makerToken: string): Promise<BalancerPool[]> {
+    try {
+        return parsePoolData(await getPoolsWithTokens(takerToken, makerToken), takerToken, makerToken);
+    } catch (err) {
+        return [];
+    }
+}
 
-export const computeBalancerSellQuote = (pool: BalancerPool, takerFillAmount: BigNumber): BigNumber => {
+export function computeBalancerSellQuote(pool: BalancerPool, takerFillAmount: BigNumber): BigNumber {
     return bmath.calcOutGivenIn(
         pool.balanceIn,
         pool.weightIn,
@@ -27,9 +31,9 @@ export const computeBalancerSellQuote = (pool: BalancerPool, takerFillAmount: Bi
         takerFillAmount,
         pool.swapFee,
     );
-};
+}
 
-export const computeBalancerBuyQuote = (pool: BalancerPool, makerFillAmount: BigNumber): BigNumber => {
+export function computeBalancerBuyQuote(pool: BalancerPool, makerFillAmount: BigNumber): BigNumber {
     return bmath.calcInGivenOut(
         pool.balanceIn,
         pool.weightIn,
@@ -38,4 +42,4 @@ export const computeBalancerBuyQuote = (pool: BalancerPool, makerFillAmount: Big
         makerFillAmount,
         pool.swapFee,
     );
-};
+}

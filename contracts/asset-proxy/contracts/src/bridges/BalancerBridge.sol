@@ -26,14 +26,12 @@ import "@0x/contracts-exchange-libs/contracts/src/IWallet.sol";
 import "@0x/contracts-utils/contracts/src/DeploymentConstants.sol";
 import "../interfaces/IERC20Bridge.sol";
 import "../interfaces/IBalancerPool.sol";
-import "./MixinGasToken.sol";
 
 
 contract BalancerBridge is
     IERC20Bridge,
     IWallet,
-    DeploymentConstants,
-    MixinGasToken
+    DeploymentConstants
 {
     /// @dev Callback for `IERC20Bridge`. Tries to buy `amount` of
     ///      `toTokenAddress` tokens by selling the entirety of the `fromTokenAddress`
@@ -53,7 +51,6 @@ contract BalancerBridge is
         bytes calldata bridgeData
     )
         external
-        freesGasTokensFromCollector
         returns (bytes4 success)
     {
         // Decode the bridge data.
