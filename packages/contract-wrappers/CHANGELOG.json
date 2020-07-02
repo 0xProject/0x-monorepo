@@ -1,5 +1,14 @@
 [
     {
+        "version": "13.8.0",
+        "changes": [
+            {
+                "note": "Export `GethCallOverrides`",
+                "pr": 2620
+            }
+        ]
+    },
+    {
         "version": "13.7.0",
         "changes": [
             {

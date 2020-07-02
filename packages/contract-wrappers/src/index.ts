@@ -98,6 +98,7 @@ export {
     ContractArtifact,
     DataItem,
     CallData,
+    GethCallOverrides,
     BlockParam,
     ContractEventArg,
     DecodedLogArgs,
