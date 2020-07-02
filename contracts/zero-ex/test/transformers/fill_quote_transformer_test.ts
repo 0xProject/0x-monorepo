@@ -997,29 +997,5 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                 protocolFeeBalance: singleProtocolFee,
             });
         });
-
-        it('reverts when the bridge transfers less than expected', async () => {
-            const orders = _.times(1, () => createBridgeOrder({}, encodeBridgeBehavior(0.99)));
-            const signatures = orders.map(() => NULL_BYTES);
-            const qfr = getExpectedSellQuoteFillResults(orders);
-            const tx = host
-                .executeTransform(
-                    transformer.address,
-                    takerToken.address,
-                    qfr.takerAssetSpent,
-                    encodeTransformData({
-                        orders,
-                        signatures,
-                    }),
-                )
-                .awaitTransactionSuccessAsync({ value: ZERO_AMOUNT });
-            return expect(tx).to.revertWith(
-                new ZeroExRevertErrors.TransformERC20.IncompleteFillSellQuoteError(
-                    takerToken.address,
-                    ZERO_AMOUNT,
-                    qfr.takerAssetSpent,
-                ),
-            );
-        });
     });
 });

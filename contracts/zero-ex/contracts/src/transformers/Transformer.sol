@@ -33,7 +33,7 @@ abstract contract Transformer is
     /// @dev The address of the deployer.
     address public immutable deployer;
     /// @dev The original address of this contract.
-    address private immutable _implementation;
+    address internal immutable _implementation;
 
     /// @dev Create this contract.
     constructor() public {
