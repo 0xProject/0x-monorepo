@@ -2,13 +2,13 @@ import * as _ from 'lodash';
 
 import { BigNumber, ERC20BridgeSource, SignedOrder } from '../..';
 
-import { DEFAULT_FAKE_BUY_OPTS, MAINNET_CURVE_CONTRACTS } from './constants';
 import {
     BalancerPool,
+    BalancerPoolsCache,
     computeBalancerBuyQuote,
     computeBalancerSellQuote,
-    getBalancerPoolsForPairAsync,
 } from './balancer_utils';
+import { DEFAULT_FAKE_BUY_OPTS, MAINNET_CURVE_CONTRACTS } from './constants';
 import { getCurveAddressesForPair } from './curve_utils';
 import { getMultiBridgeIntermediateToken } from './multibridge_utils';
 import {
@@ -317,6 +317,7 @@ export const samplerOperations = {
         takerToken: string,
         takerFillAmount: BigNumber,
         wethAddress: string,
+        balancerPoolsCache?: BalancerPoolsCache,
         liquidityProviderRegistryAddress?: string,
         multiBridgeAddress?: string,
     ): Promise<BatchedOperation<BigNumber>> => {
@@ -329,6 +330,7 @@ export const samplerOperations = {
             takerToken,
             [takerFillAmount],
             wethAddress,
+            balancerPoolsCache,
             liquidityProviderRegistryAddress,
             multiBridgeAddress,
         );
@@ -387,6 +389,7 @@ export const samplerOperations = {
         takerToken: string,
         takerFillAmounts: BigNumber[],
         wethAddress: string,
+        balancerPoolsCache?: BalancerPoolsCache,
         liquidityProviderRegistryAddress?: string,
         multiBridgeAddress?: string,
     ): Promise<BatchedOperation<DexSample[][]>> => {
@@ -452,8 +455,14 @@ export const samplerOperations = {
                                     takerToken,
                                     takerFillAmounts,
                                 );
+                            // todo: refactor sampler ops to share state with DexOrderSampler so this doesn't have to be passed as a param
                             case ERC20BridgeSource.Balancer:
-                                const pools = await getBalancerPoolsForPairAsync(takerToken, makerToken);
+                                if (balancerPoolsCache === undefined) {
+                                    throw new Error(
+                                        'Cannot sample liquidity from Balancer if a cache is not provided.',
+                                    );
+                                }
+                                const pools = await balancerPoolsCache.getPoolsForPairAsync(takerToken, makerToken);
                                 return pools.map(pool =>
                                     samplerOperations.getBalancerSellQuotes(pool, takerFillAmounts),
                                 );
@@ -491,6 +500,7 @@ export const samplerOperations = {
         takerToken: string,
         makerFillAmounts: BigNumber[],
         wethAddress: string,
+        balancerPoolsCache?: BalancerPoolsCache,
         liquidityProviderRegistryAddress?: string,
         fakeBuyOpts: FakeBuyOpts = DEFAULT_FAKE_BUY_OPTS,
     ): Promise<BatchedOperation<DexSample[][]>> => {
@@ -546,7 +556,12 @@ export const samplerOperations = {
                                     fakeBuyOpts,
                                 );
                             case ERC20BridgeSource.Balancer:
-                                const pools = await getBalancerPoolsForPairAsync(takerToken, makerToken);
+                                if (balancerPoolsCache === undefined) {
+                                    throw new Error(
+                                        'Cannot sample liquidity from Balancer if a cache is not provided.',
+                                    );
+                                }
+                                const pools = await balancerPoolsCache.getPoolsForPairAsync(takerToken, makerToken);
                                 return pools.map(pool =>
                                     samplerOperations.getBalancerBuyQuotes(pool, makerFillAmounts),
                                 );
