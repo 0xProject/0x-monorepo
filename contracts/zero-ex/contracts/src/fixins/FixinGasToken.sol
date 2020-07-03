@@ -35,11 +35,12 @@ contract FixinGasToken
         // (gasUsed + FREE_BASE) / (2 * REIMBURSE - FREE_TOKEN)
         //            14154             24000        6870
         uint256 value = (gasBefore - gasleft() + 14154) / 41130;
-        try
-            IGasToken(GST_ADDRESS).freeFromUpTo(GST_COLLECTOR_ADDRESS, value)
-        {
-        } catch (bytes memory) {
-            // Swallow failures
-        }
+        GST_ADDRESS.call(
+            abi.encodeWithSelector(
+                IGasToken(address(0)).freeFromUpTo.selector,
+                GST_COLLECTOR_ADDRESS,
+                value
+            )
+        );
     }
 }
