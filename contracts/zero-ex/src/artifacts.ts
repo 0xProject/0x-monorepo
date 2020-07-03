@@ -5,6 +5,7 @@
  */
 import { ContractArtifact } from 'ethereum-types';
 
+import * as AffiliateFeeTransformer from '../generated-artifacts/AffiliateFeeTransformer.json';
 import * as FillQuoteTransformer from '../generated-artifacts/FillQuoteTransformer.json';
 import * as FullMigration from '../generated-artifacts/FullMigration.json';
 import * as IAllowanceTarget from '../generated-artifacts/IAllowanceTarget.json';
@@ -40,4 +41,5 @@ export const artifacts = {
     SimpleFunctionRegistry: SimpleFunctionRegistry as ContractArtifact,
     TransformERC20: TransformERC20 as ContractArtifact,
     TokenSpender: TokenSpender as ContractArtifact,
+    AffiliateFeeTransformer: AffiliateFeeTransformer as ContractArtifact,
 };

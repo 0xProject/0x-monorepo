@@ -46,6 +46,7 @@ describe('ExchangeProxySwapQuoteConsumer', () => {
             wethTransformer: getTransformerAddress(TRANSFORMER_DEPLOYER, 1),
             payTakerTransformer: getTransformerAddress(TRANSFORMER_DEPLOYER, 2),
             fillQuoteTransformer: getTransformerAddress(TRANSFORMER_DEPLOYER, 3),
+            affiliateFeeTransformer: getTransformerAddress(TRANSFORMER_DEPLOYER, 4),
         },
     };
     let consumer: ExchangeProxySwapQuoteConsumer;

@@ -5,6 +5,10 @@
             {
                 "note": "Export migration tools",
                 "pr": 2612
+            },
+            {
+                "note": "Export `AffiliateFeeTransformerContract`",
+                "pr": 2622
             }
         ]
     },

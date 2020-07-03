@@ -38,10 +38,12 @@ export interface ContractAddresses {
     exchangeProxy: string;
     exchangeProxyAllowanceTarget: string;
     exchangeProxyTransformerDeployer: string;
+    exchangeProxyFlashWallet: string;
     transformers: {
         wethTransformer: string;
         payTakerTransformer: string;
         fillQuoteTransformer: string;
+        affiliateFeeTransformer: string;
     };
 }
 

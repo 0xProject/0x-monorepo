@@ -5,6 +5,10 @@
             {
                 "note": "Update ganache snapshot Exchange Proxy addresses",
                 "pr": 2612
+            },
+            {
+                "note": "Add EP flash wallet and affiliate fee transformer",
+                "pr": 2622
             }
         ]
     },
