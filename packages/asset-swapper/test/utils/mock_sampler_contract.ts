@@ -226,6 +226,9 @@ export class MockSamplerContract extends IERC20BridgeSamplerContract {
     }
 
     private _callEncodedFunction(callData: string): string {
+        if (callData === '0x') {
+            return callData;
+        }
         // tslint:disable-next-line: custom-no-magic-numbers
         const selector = hexUtils.slice(callData, 0, 4);
         for (const [name, handler] of Object.entries(this._handlers)) {

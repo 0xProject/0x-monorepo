@@ -39,7 +39,7 @@ export class BalancerPoolsCache {
     }
 
     // tslint:disable-next-line:prefer-function-over-method
-    private async _fetchPoolsForPairAsync(takerToken: string, makerToken: string): Promise<BalancerPool[]> {
+    protected async _fetchPoolsForPairAsync(takerToken: string, makerToken: string): Promise<BalancerPool[]> {
         try {
             return parsePoolData(await getPoolsWithTokens(takerToken, makerToken), takerToken, makerToken);
         } catch (err) {

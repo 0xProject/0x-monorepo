@@ -12,9 +12,11 @@ import { SignedOrder } from '@0x/types';
 import { BigNumber, hexUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
+import { BalancerPool } from '../src/utils/market_operation_utils/balancer_utils';
 import { DexOrderSampler, getSampleAmounts } from '../src/utils/market_operation_utils/sampler';
 import { ERC20BridgeSource, FillData } from '../src/utils/market_operation_utils/types';
 
+import { MockBalancerPoolsCache } from './utils/mock_balancer_pools_cache';
 import { MockSamplerContract } from './utils/mock_sampler_contract';
 
 const CHAIN_ID = 1;
@@ -465,6 +467,51 @@ describe('DexSampler tests', () => {
             expect(quotes).to.have.lengthOf(sources.length + 1);
             expect(quotes).to.deep.eq(expectedQuotes.concat(uniswapV2ETHQuotes));
         });
+        it.only('getSellQuotes() uses samples from Balancer', async () => {
+            const expectedTakerToken = randomAddress();
+            const expectedMakerToken = randomAddress();
+            const expectedTakerFillAmounts = getSampleAmounts(new BigNumber(100e18), 3);
+            const balancerPoolsCache = new MockBalancerPoolsCache({
+                getPoolsForPairAsync: (takerToken: string, makerToken: string) => {
+                    expect(takerToken).equal(expectedTakerToken);
+                    expect(makerToken).equal(expectedMakerToken);
+                    // todo
+                    const pools: BalancerPool[] = [
+                        {
+                            id: '123',
+                            balanceIn: new BigNumber(100),
+                            balanceOut: new BigNumber(200),
+                            weightIn: new BigNumber(300),
+                            weightOut: new BigNumber(400),
+                            swapFee: new BigNumber(50),
+                        },
+                    ];
+                    return Promise.resolve(pools);
+                },
+            });
+            const dexOrderSampler = new DexOrderSampler(new MockSamplerContract({}), balancerPoolsCache);
+            const [quotes] = await dexOrderSampler.executeAsync(
+                await DexOrderSampler.ops.getSellQuotesAsync(
+                    [ERC20BridgeSource.Balancer],
+                    expectedMakerToken,
+                    expectedTakerToken,
+                    expectedTakerFillAmounts,
+                    wethAddress,
+                    dexOrderSampler.balancerPoolsCache,
+                ),
+            );
+            console.log(JSON.stringify(quotes));
+            const expectedQuotes = [
+                expectedTakerFillAmounts.map(a => ({
+                    source: ERC20BridgeSource.Balancer,
+                    input: a,
+                    output: a.times(100).integerValue(), // todo
+                    fillData: { poolAddress: '123' },
+                })),
+            ];
+            expect(quotes).to.have.lengthOf(1);
+            expect(quotes).to.deep.eq(expectedQuotes);
+        });
 
         it('getBuyQuotes()', async () => {
             const expectedTakerToken = randomAddress();
@@ -536,6 +583,51 @@ describe('DexSampler tests', () => {
             //  extra quote for Uniswap V2, which provides a direct quote (tokenA -> tokenB) AND an ETH quote (tokenA -> ETH -> tokenB)
             expect(quotes).to.have.lengthOf(sources.length + 1);
             expect(quotes).to.deep.eq(expectedQuotes.concat(uniswapV2ETHQuotes));
+        });
+        it.only('getBuyQuotes() uses samples from Balancer', async () => {
+            const expectedTakerToken = randomAddress();
+            const expectedMakerToken = randomAddress();
+            const expectedMakerFillAmounts = getSampleAmounts(new BigNumber(100e18), 3);
+            const balancerPoolsCache = new MockBalancerPoolsCache({
+                getPoolsForPairAsync: (takerToken: string, makerToken: string) => {
+                    expect(takerToken).equal(expectedTakerToken);
+                    expect(makerToken).equal(expectedMakerToken);
+                    // todo
+                    const pools: BalancerPool[] = [
+                        {
+                            id: '123',
+                            balanceIn: new BigNumber(100),
+                            balanceOut: new BigNumber(200),
+                            weightIn: new BigNumber(300),
+                            weightOut: new BigNumber(400),
+                            swapFee: new BigNumber(50),
+                        },
+                    ];
+                    return Promise.resolve(pools);
+                },
+            });
+            const dexOrderSampler = new DexOrderSampler(new MockSamplerContract({}), balancerPoolsCache);
+            const [quotes] = await dexOrderSampler.executeAsync(
+                await DexOrderSampler.ops.getBuyQuotesAsync(
+                    [ERC20BridgeSource.Balancer],
+                    expectedMakerToken,
+                    expectedTakerToken,
+                    expectedMakerFillAmounts,
+                    wethAddress,
+                    dexOrderSampler.balancerPoolsCache,
+                ),
+            );
+            console.log(JSON.stringify(quotes));
+            const expectedQuotes = [
+                expectedMakerFillAmounts.map(a => ({
+                    source: ERC20BridgeSource.Balancer,
+                    input: a,
+                    output: a.times(100).integerValue(), // todo
+                    fillData: { poolAddress: '123' },
+                })),
+            ];
+            expect(quotes).to.have.lengthOf(1);
+            expect(quotes).to.deep.eq(expectedQuotes);
         });
     });
 
