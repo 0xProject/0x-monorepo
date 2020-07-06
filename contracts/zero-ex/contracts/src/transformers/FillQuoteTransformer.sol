@@ -475,7 +475,6 @@ contract FillQuoteTransformer is
         uint256 outputTokenAmount
     )
         external
-        returns (FillOrderResults memory results)
     {
         // Track changes in the maker token balance.
         (
