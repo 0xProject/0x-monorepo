@@ -450,7 +450,7 @@ export const samplerOperations = {
                                     takerToken,
                                     takerFillAmounts,
                                 );
-                            // todo: refactor sampler ops to share state with DexOrderSampler so this doesn't have to be passed as a param
+                            // todo: refactor sampler ops to share state with DexOrderSampler so cache doesn't have to be passed as a param
                             case ERC20BridgeSource.Balancer:
                                 if (balancerPoolsCache === undefined) {
                                     throw new Error(
