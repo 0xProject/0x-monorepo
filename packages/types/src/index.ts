@@ -62,7 +62,7 @@ export interface ExchangeProxyMetaTransaction {
     sender: string;
     minGasPrice: BigNumber;
     maxGasPrice: BigNumber;
-    expirationTime: BigNumber;
+    expirationTimeSeconds: BigNumber;
     salt: BigNumber;
     callData: string;
     value: BigNumber;
