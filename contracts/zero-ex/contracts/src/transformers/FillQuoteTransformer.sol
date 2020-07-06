@@ -27,18 +27,23 @@ import "@0x/contracts-utils/contracts/src/v06/LibSafeMathV06.sol";
 import "@0x/contracts-utils/contracts/src/v06/LibMathV06.sol";
 import "../errors/LibTransformERC20RichErrors.sol";
 import "../vendor/v3/IExchange.sol";
+import "../vendor/v3/IERC20Bridge.sol";
 import "./Transformer.sol";
 import "./LibERC20Transformer.sol";
+import "../fixins/FixinGasToken.sol";
 
 
 /// @dev A transformer that fills an ERC20 market sell/buy quote.
+///      This transformer shortcuts bridge orders and fills them directly
 contract FillQuoteTransformer is
-    Transformer
+    Transformer,
+    FixinGasToken
 {
     using LibERC20TokenV06 for IERC20TokenV06;
     using LibERC20Transformer for IERC20TokenV06;
     using LibSafeMathV06 for uint256;
     using LibRichErrorsV06 for bytes;
+    using LibBytesV06 for bytes;
 
     /// @dev Whether we are performing a market sell or buy.
     enum Side {
@@ -81,8 +86,29 @@ contract FillQuoteTransformer is
         uint256 protocolFeePaid;
     }
 
+    /// @dev Intermediate state variables to get around stack limits.
+    struct FillState {
+        uint256 ethRemaining;
+        uint256 boughtAmount;
+        uint256 soldAmount;
+        uint256 protocolFee;
+        uint256 takerTokenBalanceRemaining;
+    }
+
+    /// @dev Emitted when a trade is skipped due to a lack of funds
+    ///      to pay the 0x Protocol fee.
+    /// @param ethBalance The current eth balance.
+    /// @param ethNeeded The current eth balance required to pay
+    ///        the protocol fee.
+    event ProtocolFeeUnfunded(
+        uint256 ethBalance,
+        uint256 ethNeeded
+    );
+
     /// @dev The Exchange ERC20Proxy ID.
     bytes4 private constant ERC20_ASSET_PROXY_ID = 0xf47261b0;
+    /// @dev The Exchange ERC20BridgeProxy ID.
+    bytes4 private constant ERC20_BRIDGE_PROXY_ID = 0xdc1600f3;
     /// @dev Maximum uint256 value.
     uint256 private constant MAX_UINT256 = uint256(-1);
 
@@ -113,9 +139,11 @@ contract FillQuoteTransformer is
     )
         external
         override
+        freesGasTokensFromCollector
         returns (bytes4 success)
     {
         TransformData memory data = abi.decode(data_, (TransformData));
+        FillState memory state;
 
         // Validate data fields.
         if (data.sellToken.isTokenETH() || data.buyToken.isTokenETH()) {
@@ -131,41 +159,33 @@ contract FillQuoteTransformer is
             ).rrevert();
         }
 
+        state.takerTokenBalanceRemaining = data.sellToken.getTokenBalanceOf(address(this));
         if (data.side == Side.Sell && data.fillAmount == MAX_UINT256) {
             // If `sellAmount == -1 then we are selling
             // the entire balance of `sellToken`. This is useful in cases where
             // the exact sell amount is not exactly known in advance, like when
             // unwrapping Chai/cUSDC/cDAI.
-            data.fillAmount = data.sellToken.getTokenBalanceOf(address(this));
+            data.fillAmount = state.takerTokenBalanceRemaining;
         }
 
         // Approve the ERC20 proxy to spend `sellToken`.
         data.sellToken.approveIfBelow(erc20Proxy, data.fillAmount);
 
         // Fill the orders.
-        uint256 singleProtocolFee = exchange.protocolFeeMultiplier().safeMul(tx.gasprice);
-        uint256 ethRemaining = address(this).balance;
-        uint256 boughtAmount = 0;
-        uint256 soldAmount = 0;
+        state.protocolFee = exchange.protocolFeeMultiplier().safeMul(tx.gasprice);
+        state.ethRemaining = address(this).balance;
         for (uint256 i = 0; i < data.orders.length; ++i) {
             // Check if we've hit our targets.
             if (data.side == Side.Sell) {
                 // Market sell check.
-                if (soldAmount >= data.fillAmount) {
+                if (state.soldAmount >= data.fillAmount) {
                     break;
                 }
             } else {
                 // Market buy check.
-                if (boughtAmount >= data.fillAmount) {
+                if (state.boughtAmount >= data.fillAmount) {
                     break;
                 }
-            }
-
-            // Ensure we have enough ETH to cover the protocol fee.
-            if (ethRemaining < singleProtocolFee) {
-                LibTransformERC20RichErrors
-                    .InsufficientProtocolFeeError(ethRemaining, singleProtocolFee)
-                    .rrevert();
             }
 
             // Fill the order.
@@ -177,12 +197,12 @@ contract FillQuoteTransformer is
                     data.sellToken,
                     data.orders[i],
                     data.signatures[i],
-                    data.fillAmount.safeSub(soldAmount).min256(
+                    data.fillAmount.safeSub(state.soldAmount).min256(
                         data.maxOrderFillAmounts.length > i
                         ? data.maxOrderFillAmounts[i]
                         : MAX_UINT256
                     ),
-                    singleProtocolFee
+                    state
                 );
             } else {
                 // Market buy.
@@ -191,39 +211,40 @@ contract FillQuoteTransformer is
                     data.sellToken,
                     data.orders[i],
                     data.signatures[i],
-                    data.fillAmount.safeSub(boughtAmount).min256(
+                    data.fillAmount.safeSub(state.boughtAmount).min256(
                         data.maxOrderFillAmounts.length > i
                         ? data.maxOrderFillAmounts[i]
                         : MAX_UINT256
                     ),
-                    singleProtocolFee
+                    state
                 );
             }
 
             // Accumulate totals.
-            soldAmount = soldAmount.safeAdd(results.takerTokenSoldAmount);
-            boughtAmount = boughtAmount.safeAdd(results.makerTokenBoughtAmount);
-            ethRemaining = ethRemaining.safeSub(results.protocolFeePaid);
+            state.soldAmount = state.soldAmount.safeAdd(results.takerTokenSoldAmount);
+            state.boughtAmount = state.boughtAmount.safeAdd(results.makerTokenBoughtAmount);
+            state.ethRemaining = state.ethRemaining.safeSub(results.protocolFeePaid);
+            state.takerTokenBalanceRemaining = state.takerTokenBalanceRemaining.safeSub(results.takerTokenSoldAmount);
         }
 
         // Ensure we hit our targets.
         if (data.side == Side.Sell) {
             // Market sell check.
-            if (soldAmount < data.fillAmount) {
+            if (state.soldAmount < data.fillAmount) {
                 LibTransformERC20RichErrors
                     .IncompleteFillSellQuoteError(
                         address(data.sellToken),
-                        soldAmount,
+                        state.soldAmount,
                         data.fillAmount
                     ).rrevert();
             }
         } else {
             // Market buy check.
-            if (boughtAmount < data.fillAmount) {
+            if (state.boughtAmount < data.fillAmount) {
                 LibTransformERC20RichErrors
                     .IncompleteFillBuyQuoteError(
                         address(data.buyToken),
-                        boughtAmount,
+                        state.boughtAmount,
                         data.fillAmount
                     ).rrevert();
             }
@@ -237,14 +258,14 @@ contract FillQuoteTransformer is
     /// @param order The order to fill.
     /// @param signature The signature for `order`.
     /// @param sellAmount Amount of taker token to sell.
-    /// @param protocolFee The protocol fee needed to fill `order`.
+    /// @param state Intermediate state variables to get around stack limits.
     function _sellToOrder(
         IERC20TokenV06 makerToken,
         IERC20TokenV06 takerToken,
         IExchange.Order memory order,
         bytes memory signature,
         uint256 sellAmount,
-        uint256 protocolFee
+        FillState memory state
     )
         private
         returns (FillOrderResults memory results)
@@ -281,18 +302,12 @@ contract FillQuoteTransformer is
             }
         }
 
-        // Clamp fill amount to order size.
-        takerTokenFillAmount = LibSafeMathV06.min256(
-            takerTokenFillAmount,
-            order.takerAssetAmount
-        );
-
         // Perform the fill.
         return _fillOrder(
             order,
             signature,
             takerTokenFillAmount,
-            protocolFee,
+            state,
             makerToken,
             takerFeeToken == takerToken
         );
@@ -304,14 +319,14 @@ contract FillQuoteTransformer is
     /// @param order The order to fill.
     /// @param signature The signature for `order`.
     /// @param buyAmount Amount of maker token to buy.
-    /// @param protocolFee The protocol fee needed to fill `order`.
+    /// @param state Intermediate state variables to get around stack limits.
     function _buyFromOrder(
         IERC20TokenV06 makerToken,
         IERC20TokenV06 takerToken,
         IExchange.Order memory order,
         bytes memory signature,
         uint256 buyAmount,
-        uint256 protocolFee
+        FillState memory state
     )
         private
         returns (FillOrderResults memory results)
@@ -351,18 +366,12 @@ contract FillQuoteTransformer is
             }
         }
 
-        // Clamp to order size.
-        takerTokenFillAmount = LibSafeMathV06.min256(
-            order.takerAssetAmount,
-            takerTokenFillAmount
-        );
-
         // Perform the fill.
         return _fillOrder(
             order,
             signature,
             takerTokenFillAmount,
-            protocolFee,
+            state,
             makerToken,
             takerFeeToken == takerToken
         );
@@ -373,7 +382,7 @@ contract FillQuoteTransformer is
     /// @param order The order to fill.
     /// @param signature The order signature.
     /// @param takerAssetFillAmount How much taker asset to fill.
-    /// @param protocolFee The protocol fee needed to fill this order.
+    /// @param state Intermediate state variables to get around stack limits.
     /// @param makerToken The maker token.
     /// @param isTakerFeeInTakerToken Whether the taker fee token is the same as the
     ///        taker token.
@@ -381,36 +390,114 @@ contract FillQuoteTransformer is
         IExchange.Order memory order,
         bytes memory signature,
         uint256 takerAssetFillAmount,
-        uint256 protocolFee,
+        FillState memory state,
         IERC20TokenV06 makerToken,
         bool isTakerFeeInTakerToken
     )
         private
         returns (FillOrderResults memory results)
     {
-        // Track changes in the maker token balance.
-        uint256 initialMakerTokenBalance = makerToken.balanceOf(address(this));
-        try
-            exchange.fillOrder
-                {value: protocolFee}
-                (order, takerAssetFillAmount, signature)
-            returns (IExchange.FillResults memory fillResults)
-        {
-            // Update maker quantity based on changes in token balances.
-            results.makerTokenBoughtAmount = makerToken.balanceOf(address(this))
-                .safeSub(initialMakerTokenBalance);
-            // We can trust the other fill result quantities.
-            results.protocolFeePaid = fillResults.protocolFeePaid;
-            results.takerTokenSoldAmount = fillResults.takerAssetFilledAmount;
-            // If the taker fee is payable in the taker asset, include the
-            // taker fee in the total amount sold.
-            if (isTakerFeeInTakerToken) {
-                results.takerTokenSoldAmount =
-                    results.takerTokenSoldAmount.safeAdd(fillResults.takerFeePaid);
-            }
-        } catch (bytes memory) {
+        // Clamp to remaining taker asset amount or order size.
+        uint256 availableTakerAssetFillAmount =
+            takerAssetFillAmount.min256(order.takerAssetAmount);
+        availableTakerAssetFillAmount =
+            availableTakerAssetFillAmount.min256(state.takerTokenBalanceRemaining);
+        // If it is a Bridge order we fill this directly
+        // rather than filling via 0x Exchange
+        if (order.makerAssetData.readBytes4(0) == ERC20_BRIDGE_PROXY_ID) {
+            // Calculate the amount (in maker token) we expect to receive
+            // from the bridge
+            uint256 outputTokenAmount = LibMathV06.getPartialAmountFloor(
+                availableTakerAssetFillAmount,
+                order.takerAssetAmount,
+                order.makerAssetAmount
+            );
+            (bool success, bytes memory data) = address(_implementation).delegatecall(
+                abi.encodeWithSelector(
+                    this.fillBridgeOrder.selector,
+                    order.makerAddress,
+                    order.makerAssetData,
+                    order.takerAssetData,
+                    availableTakerAssetFillAmount,
+                    outputTokenAmount
+                )
+            );
             // Swallow failures, leaving all results as zero.
+            // TransformERC20 asserts the overall price is as expected. It is possible
+            // a subsequent fill can net out at the expected price so we do not assert
+            // the trade balance
+            if (success) {
+                results.makerTokenBoughtAmount = makerToken
+                    .balanceOf(address(this))
+                    .safeSub(state.boughtAmount);
+                results.takerTokenSoldAmount = availableTakerAssetFillAmount;
+                // protocol fee paid remains 0
+            }
+        } else {
+            // Emit an event if we do not have sufficient ETH to cover the protocol fee.
+            if (state.ethRemaining < state.protocolFee) {
+                emit ProtocolFeeUnfunded(state.ethRemaining, state.protocolFee);
+                return results;
+            }
+            try
+                exchange.fillOrder
+                    {value: state.protocolFee}
+                    (order, availableTakerAssetFillAmount, signature)
+                returns (IExchange.FillResults memory fillResults)
+            {
+                results.makerTokenBoughtAmount = fillResults.makerAssetFilledAmount;
+                results.takerTokenSoldAmount = fillResults.takerAssetFilledAmount;
+                results.protocolFeePaid = fillResults.protocolFeePaid;
+                // If the taker fee is payable in the taker asset, include the
+                // taker fee in the total amount sold.
+                if (isTakerFeeInTakerToken) {
+                    results.takerTokenSoldAmount =
+                        results.takerTokenSoldAmount.safeAdd(fillResults.takerFeePaid);
+                }
+            } catch (bytes memory) {
+                // Swallow failures, leaving all results as zero.
+            }
         }
+    }
+
+    /// @dev Attempt to fill an ERC20 Bridge order. If the fill reverts,
+    ///      or the amount filled was not sufficient this reverts.
+    /// @param makerAddress The address of the maker.
+    /// @param makerAssetData The encoded ERC20BridgeProxy asset data.
+    /// @param takerAssetData The encoded ERC20 asset data.
+    /// @param inputTokenAmount How much taker asset to fill clamped to the available balance.
+    /// @param outputTokenAmount How much maker asset to receive.
+    function fillBridgeOrder(
+        address makerAddress,
+        bytes calldata makerAssetData,
+        bytes calldata takerAssetData,
+        uint256 inputTokenAmount,
+        uint256 outputTokenAmount
+    )
+        external
+    {
+        // Track changes in the maker token balance.
+        (
+            address tokenAddress,
+            address bridgeAddress,
+            bytes memory bridgeData
+        ) = abi.decode(
+            makerAssetData.sliceDestructive(4, makerAssetData.length),
+            (address, address, bytes)
+        );
+        require(bridgeAddress != address(this), "INVALID_BRIDGE_ADDRESS");
+        // Transfer the tokens to the bridge to perform the work
+        _getTokenFromERC20AssetData(takerAssetData).compatTransfer(
+            bridgeAddress,
+            inputTokenAmount
+        );
+        IERC20Bridge(bridgeAddress).bridgeTransferFrom(
+            tokenAddress,
+            makerAddress,
+            address(this),
+            outputTokenAmount, // amount to transfer back from the bridge
+            bridgeData
+        );
     }
 
     /// @dev Extract the token from plain ERC20 asset data.

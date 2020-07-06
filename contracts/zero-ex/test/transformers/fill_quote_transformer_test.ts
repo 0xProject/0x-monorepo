@@ -18,6 +18,7 @@ import { BigNumber, hexUtils, ZeroExRevertErrors } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { artifacts } from '../artifacts';
+import { TestFillQuoteTransformerBridgeContract } from '../generated-wrappers/test_fill_quote_transformer_bridge';
 import {
     FillQuoteTransformerContract,
     TestFillQuoteTransformerExchangeContract,
@@ -31,6 +32,7 @@ blockchainTests.resets('FillQuoteTransformer', env => {
     let maker: string;
     let feeRecipient: string;
     let exchange: TestFillQuoteTransformerExchangeContract;
+    let bridge: TestFillQuoteTransformerBridgeContract;
     let transformer: FillQuoteTransformerContract;
     let host: TestFillQuoteTransformerHostContract;
     let makerToken: TestMintableERC20TokenContract;
@@ -62,6 +64,12 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                 ...env.txDefaults,
                 gasPrice: GAS_PRICE,
             },
+            artifacts,
+        );
+        bridge = await TestFillQuoteTransformerBridgeContract.deployFrom0xArtifactAsync(
+            artifacts.TestFillQuoteTransformerBridge,
+            env.provider,
+            env.txDefaults,
             artifacts,
         );
         [makerToken, takerToken, takerFeeToken] = await Promise.all(
@@ -99,6 +107,19 @@ blockchainTests.resets('FillQuoteTransformer', env => {
             takerFeeAssetData: assetDataUtils.encodeERC20AssetData(takerToken.address),
             filledTakerAssetAmount: ZERO_AMOUNT,
             ...fields,
+        };
+    }
+
+    function createBridgeOrder(fields: Partial<Order> = {}, bridgeData: string = encodeBridgeBehavior()): FilledOrder {
+        const order = createOrder(fields);
+        return {
+            ...order,
+            makerAddress: bridge.address,
+            makerAssetData: assetDataUtils.encodeERC20BridgeAssetData(makerToken.address, bridge.address, bridgeData),
+            makerFeeAssetData: NULL_BYTES,
+            takerFeeAssetData: NULL_BYTES,
+            makerFee: ZERO_AMOUNT,
+            takerFee: ZERO_AMOUNT,
         };
     }
 
@@ -237,6 +258,17 @@ blockchainTests.resets('FillQuoteTransformer', env => {
             exchange
                 .encodeBehaviorData({
                     filledTakerAssetAmount: new BigNumber(filledTakerAssetAmount),
+                    makerAssetMintRatio: new BigNumber(makerAssetMintRatio).times('1e18').integerValue(),
+                })
+                .getABIEncodedTransactionData(),
+            4,
+        );
+    }
+
+    function encodeBridgeBehavior(makerAssetMintRatio: Numberish = 1.0): string {
+        return hexUtils.slice(
+            bridge
+                .encodeBehaviorData({
                     makerAssetMintRatio: new BigNumber(makerAssetMintRatio).times('1e18').integerValue(),
                 })
                 .getABIEncodedTransactionData(),
@@ -436,9 +468,10 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                 )
                 .awaitTransactionSuccessAsync({ value: qfr.protocolFeePaid.minus(1) });
             return expect(tx).to.revertWith(
-                new ZeroExRevertErrors.TransformERC20.InsufficientProtocolFeeError(
-                    singleProtocolFee.minus(1),
-                    singleProtocolFee,
+                new ZeroExRevertErrors.TransformERC20.IncompleteFillSellQuoteError(
+                    takerToken.address,
+                    getExpectedSellQuoteFillResults([...orders.slice(0, 2)]).takerAssetSpent,
+                    qfr.takerAssetSpent,
                 ),
             );
         });
@@ -707,36 +740,6 @@ blockchainTests.resets('FillQuoteTransformer', env => {
             });
         });
 
-        it('succeeds if an order transfers too many maker tokens', async () => {
-            const orders = _.times(2, () => createOrder());
-            // First order will mint its tokens + the maker tokens of the second.
-            const mintScale = orders[1].makerAssetAmount.div(orders[0].makerAssetAmount.minus(1)).plus(1);
-            const signatures = [
-                encodeExchangeBehavior(0, mintScale),
-                ...orders.slice(1).map(() => encodeExchangeBehavior()),
-            ];
-            const qfr = getExpectedBuyQuoteFillResults(orders);
-            await host
-                .executeTransform(
-                    transformer.address,
-                    takerToken.address,
-                    qfr.takerAssetSpent,
-                    encodeTransformData({
-                        orders,
-                        signatures,
-                        side: FillQuoteTransformerSide.Buy,
-                        fillAmount: qfr.makerAssetBought,
-                    }),
-                )
-                .awaitTransactionSuccessAsync({ value: qfr.protocolFeePaid });
-            assertBalances(await getBalancesAsync(host.address), {
-                ...ZERO_BALANCES,
-                makerAssetBalance: orders[0].makerAssetAmount.times(mintScale).integerValue(BigNumber.ROUND_DOWN),
-                takerAssetBalance: orders[1].takerAssetAmount.plus(orders[1].takerFee),
-                protocolFeeBalance: singleProtocolFee,
-            });
-        });
-
         it('fails to buy more than available in orders', async () => {
             const orders = _.times(3, () => createOrder());
             const signatures = orders.map(() => encodeExchangeBehavior());
@@ -858,6 +861,111 @@ blockchainTests.resets('FillQuoteTransformer', env => {
             assertBalances(await getBalancesAsync(host.address), {
                 ...ZERO_BALANCES,
                 makerAssetBalance: qfr.makerAssetBought,
+            });
+        });
+    });
+
+    describe('bridge orders', () => {
+        it('can fully sell to a single bridge order quote', async () => {
+            const orders = _.times(1, () => createBridgeOrder());
+            const signatures = orders.map(() => NULL_BYTES);
+            const qfr = getExpectedSellQuoteFillResults(orders);
+            await host
+                .executeTransform(
+                    transformer.address,
+                    takerToken.address,
+                    qfr.takerAssetSpent,
+                    encodeTransformData({
+                        orders,
+                        signatures,
+                    }),
+                )
+                .awaitTransactionSuccessAsync({ value: ZERO_AMOUNT });
+            assertBalances(await getBalancesAsync(host.address), {
+                ...ZERO_BALANCES,
+                makerAssetBalance: qfr.makerAssetBought,
+            });
+        });
+
+        it('can sell to a mix of order quote', async () => {
+            const nativeOrders = [createOrder()];
+            const bridgeOrders = [createBridgeOrder()];
+            const orders = [...nativeOrders, ...bridgeOrders];
+            const signatures = [
+                ...nativeOrders.map(() => encodeExchangeBehavior()), // Valid Signatures
+                ...bridgeOrders.map(() => NULL_BYTES), // Valid Signatures
+            ];
+            const qfr = getExpectedSellQuoteFillResults(orders);
+            await host
+                .executeTransform(
+                    transformer.address,
+                    takerToken.address,
+                    qfr.takerAssetSpent,
+                    encodeTransformData({
+                        orders,
+                        signatures,
+                    }),
+                )
+                .awaitTransactionSuccessAsync({ value: singleProtocolFee.times(nativeOrders.length) });
+            assertBalances(await getBalancesAsync(host.address), {
+                ...ZERO_BALANCES,
+                makerAssetBalance: qfr.makerAssetBought,
+            });
+        });
+
+        it('can attempt to sell to a mix of order quote handling reverts', async () => {
+            const nativeOrders = _.times(3, () => createOrder());
+            const bridgeOrders = [createBridgeOrder()];
+            const orders = [...nativeOrders, ...bridgeOrders];
+            const signatures = [
+                ...nativeOrders.map(() => NULL_BYTES), // Invalid Signatures
+                ...bridgeOrders.map(() => NULL_BYTES), // Valid Signatures
+            ];
+            const qfr = getExpectedSellQuoteFillResults(bridgeOrders);
+            await host
+                .executeTransform(
+                    transformer.address,
+                    takerToken.address,
+                    qfr.takerAssetSpent,
+                    encodeTransformData({
+                        orders,
+                        signatures,
+                    }),
+                )
+                // Single protocol fee as all Native orders will fail
+                .awaitTransactionSuccessAsync({ value: singleProtocolFee });
+            assertBalances(await getBalancesAsync(host.address), {
+                ...ZERO_BALANCES,
+                makerAssetBalance: qfr.makerAssetBought,
+                protocolFeeBalance: singleProtocolFee,
+            });
+        });
+
+        it('can continue to the bridge order if the native order reverts', async () => {
+            const nativeOrders = [createOrder()];
+            const bridgeOrders = [createBridgeOrder()];
+            const orders = [...nativeOrders, ...bridgeOrders];
+            const signatures = [
+                ...nativeOrders.map(() => encodeExchangeBehavior()), // Valid Signatures
+                ...bridgeOrders.map(() => NULL_BYTES), // Valid Signatures
+            ];
+            const qfr = getExpectedSellQuoteFillResults(bridgeOrders);
+            await host
+                .executeTransform(
+                    transformer.address,
+                    takerToken.address,
+                    qfr.takerAssetSpent,
+                    encodeTransformData({
+                        orders,
+                        signatures,
+                    }),
+                )
+                // Insufficient single protocol fee
+                .awaitTransactionSuccessAsync({ value: singleProtocolFee.minus(1) });
+            assertBalances(await getBalancesAsync(host.address), {
+                ...ZERO_BALANCES,
+                makerAssetBalance: qfr.makerAssetBought,
+                protocolFeeBalance: singleProtocolFee,
             });
         });
     });

@@ -10,14 +10,17 @@ import * as AllowanceTarget from '../test/generated-artifacts/AllowanceTarget.js
 import * as Bootstrap from '../test/generated-artifacts/Bootstrap.json';
 import * as FillQuoteTransformer from '../test/generated-artifacts/FillQuoteTransformer.json';
 import * as FixinCommon from '../test/generated-artifacts/FixinCommon.json';
+import * as FixinGasToken from '../test/generated-artifacts/FixinGasToken.json';
 import * as FlashWallet from '../test/generated-artifacts/FlashWallet.json';
 import * as FullMigration from '../test/generated-artifacts/FullMigration.json';
 import * as IAllowanceTarget from '../test/generated-artifacts/IAllowanceTarget.json';
 import * as IBootstrap from '../test/generated-artifacts/IBootstrap.json';
+import * as IERC20Bridge from '../test/generated-artifacts/IERC20Bridge.json';
 import * as IERC20Transformer from '../test/generated-artifacts/IERC20Transformer.json';
 import * as IExchange from '../test/generated-artifacts/IExchange.json';
 import * as IFeature from '../test/generated-artifacts/IFeature.json';
 import * as IFlashWallet from '../test/generated-artifacts/IFlashWallet.json';
+import * as IGasToken from '../test/generated-artifacts/IGasToken.json';
 import * as InitialMigration from '../test/generated-artifacts/InitialMigration.json';
 import * as IOwnable from '../test/generated-artifacts/IOwnable.json';
 import * as ISimpleFunctionRegistry from '../test/generated-artifacts/ISimpleFunctionRegistry.json';
@@ -45,6 +48,7 @@ import * as PayTakerTransformer from '../test/generated-artifacts/PayTakerTransf
 import * as SimpleFunctionRegistry from '../test/generated-artifacts/SimpleFunctionRegistry.json';
 import * as TestCallTarget from '../test/generated-artifacts/TestCallTarget.json';
 import * as TestDelegateCaller from '../test/generated-artifacts/TestDelegateCaller.json';
+import * as TestFillQuoteTransformerBridge from '../test/generated-artifacts/TestFillQuoteTransformerBridge.json';
 import * as TestFillQuoteTransformerExchange from '../test/generated-artifacts/TestFillQuoteTransformerExchange.json';
 import * as TestFillQuoteTransformerHost from '../test/generated-artifacts/TestFillQuoteTransformerHost.json';
 import * as TestFullMigration from '../test/generated-artifacts/TestFullMigration.json';
@@ -95,6 +99,7 @@ export const artifacts = {
     TokenSpender: TokenSpender as ContractArtifact,
     TransformERC20: TransformERC20 as ContractArtifact,
     FixinCommon: FixinCommon as ContractArtifact,
+    FixinGasToken: FixinGasToken as ContractArtifact,
     FullMigration: FullMigration as ContractArtifact,
     InitialMigration: InitialMigration as ContractArtifact,
     LibBootstrap: LibBootstrap as ContractArtifact,
@@ -112,10 +117,13 @@ export const artifacts = {
     PayTakerTransformer: PayTakerTransformer as ContractArtifact,
     Transformer: Transformer as ContractArtifact,
     WethTransformer: WethTransformer as ContractArtifact,
+    IERC20Bridge: IERC20Bridge as ContractArtifact,
     IExchange: IExchange as ContractArtifact,
+    IGasToken: IGasToken as ContractArtifact,
     ITestSimpleFunctionRegistryFeature: ITestSimpleFunctionRegistryFeature as ContractArtifact,
     TestCallTarget: TestCallTarget as ContractArtifact,
     TestDelegateCaller: TestDelegateCaller as ContractArtifact,
+    TestFillQuoteTransformerBridge: TestFillQuoteTransformerBridge as ContractArtifact,
     TestFillQuoteTransformerExchange: TestFillQuoteTransformerExchange as ContractArtifact,
     TestFillQuoteTransformerHost: TestFillQuoteTransformerHost as ContractArtifact,
     TestFullMigration: TestFullMigration as ContractArtifact,
