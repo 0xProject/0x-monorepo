@@ -164,7 +164,7 @@ export const constants = {
             { name: 'sender', type: 'address' },
             { name: 'minGasPrice', type: 'uint256' },
             { name: 'maxGasPrice', type: 'uint256' },
-            { name: 'expirationTime', type: 'uint256' },
+            { name: 'expirationTimeSeconds', type: 'uint256' },
             { name: 'salt', type: 'uint256' },
             { name: 'callData', type: 'bytes' },
             { name: 'value', type: 'uint256' },
