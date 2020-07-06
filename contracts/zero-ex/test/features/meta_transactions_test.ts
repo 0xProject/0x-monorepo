@@ -469,10 +469,10 @@ blockchainTests.resets('MetaTransactions feature', env => {
             })();
             const mtxHash = getExchangeProxyMetaTransactionHash(mtx);
             const mtxs = _.times(2, () => mtx);
-            const signatures = await Promise.all(mtxs.map(async mtx => signMetaTransactionAsync(mtx)));
+            const signatures = await Promise.all(mtxs.map(async m => signMetaTransactionAsync(m)));
             const callOpts = {
-                gasPrice: BigNumber.max(...mtxs.map(mtx => mtx.minGasPrice)),
-                value: BigNumber.sum(...mtxs.map(mtx => mtx.value)),
+                gasPrice: BigNumber.max(...mtxs.map(m => m.minGasPrice)),
+                value: BigNumber.sum(...mtxs.map(m => m.value)),
             };
             const block = await env.web3Wrapper.getBlockNumberAsync();
             const tx = feature.batchExecuteMetaTransactions(mtxs, signatures).callAsync(callOpts);
