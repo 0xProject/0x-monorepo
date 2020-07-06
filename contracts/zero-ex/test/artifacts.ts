@@ -8,7 +8,6 @@ import { ContractArtifact } from 'ethereum-types';
 import * as AffiliateFeeTransformer from '../test/generated-artifacts/AffiliateFeeTransformer.json';
 import * as AllowanceTarget from '../test/generated-artifacts/AllowanceTarget.json';
 import * as Bootstrap from '../test/generated-artifacts/Bootstrap.json';
-import * as FillOrdersTransformer from '../test/generated-artifacts/FillOrdersTransformer.json';
 import * as FillQuoteTransformer from '../test/generated-artifacts/FillQuoteTransformer.json';
 import * as FixinCommon from '../test/generated-artifacts/FixinCommon.json';
 import * as FixinGasToken from '../test/generated-artifacts/FixinGasToken.json';
@@ -112,7 +111,6 @@ export const artifacts = {
     LibTokenSpenderStorage: LibTokenSpenderStorage as ContractArtifact,
     LibTransformERC20Storage: LibTransformERC20Storage as ContractArtifact,
     AffiliateFeeTransformer: AffiliateFeeTransformer as ContractArtifact,
-    FillOrdersTransformer: FillOrdersTransformer as ContractArtifact,
     FillQuoteTransformer: FillQuoteTransformer as ContractArtifact,
     IERC20Transformer: IERC20Transformer as ContractArtifact,
     LibERC20Transformer: LibERC20Transformer as ContractArtifact,

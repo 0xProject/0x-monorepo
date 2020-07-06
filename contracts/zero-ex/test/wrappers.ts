@@ -6,7 +6,6 @@
 export * from '../test/generated-wrappers/affiliate_fee_transformer';
 export * from '../test/generated-wrappers/allowance_target';
 export * from '../test/generated-wrappers/bootstrap';
-export * from '../test/generated-wrappers/fill_orders_transformer';
 export * from '../test/generated-wrappers/fill_quote_transformer';
 export * from '../test/generated-wrappers/fixin_common';
 export * from '../test/generated-wrappers/fixin_gas_token';

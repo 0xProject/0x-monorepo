@@ -452,7 +452,7 @@ blockchainTests.resets('FillQuoteTransformer', env => {
             );
         });
 
-        it.skip('fails if not enough protocol fee provided', async () => {
+        it('fails if not enough protocol fee provided', async () => {
             const orders = _.times(3, () => createOrder());
             const signatures = orders.map(() => encodeExchangeBehavior());
             const qfr = getExpectedSellQuoteFillResults(orders);
@@ -468,9 +468,10 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                 )
                 .awaitTransactionSuccessAsync({ value: qfr.protocolFeePaid.minus(1) });
             return expect(tx).to.revertWith(
-                new ZeroExRevertErrors.TransformERC20.InsufficientProtocolFeeError(
-                    singleProtocolFee.minus(1),
-                    singleProtocolFee,
+                new ZeroExRevertErrors.TransformERC20.IncompleteFillSellQuoteError(
+                    takerToken.address,
+                    getExpectedSellQuoteFillResults([...orders.slice(0, 2)]).takerAssetSpent,
+                    qfr.takerAssetSpent,
                 ),
             );
         });
@@ -736,36 +737,6 @@ blockchainTests.resets('FillQuoteTransformer', env => {
             assertBalances(await getBalancesAsync(host.address), {
                 ...ZERO_BALANCES,
                 makerAssetBalance: qfr.makerAssetBought,
-            });
-        });
-
-        it('succeeds if an order transfers too many maker tokens', async () => {
-            const orders = _.times(2, () => createOrder());
-            // First order will mint its tokens + the maker tokens of the second.
-            const mintScale = orders[1].makerAssetAmount.div(orders[0].makerAssetAmount.minus(1)).plus(1);
-            const signatures = [
-                encodeExchangeBehavior(0, mintScale),
-                ...orders.slice(1).map(() => encodeExchangeBehavior()),
-            ];
-            const qfr = getExpectedBuyQuoteFillResults(orders);
-            await host
-                .executeTransform(
-                    transformer.address,
-                    takerToken.address,
-                    qfr.takerAssetSpent,
-                    encodeTransformData({
-                        orders,
-                        signatures,
-                        side: FillQuoteTransformerSide.Buy,
-                        fillAmount: qfr.makerAssetBought,
-                    }),
-                )
-                .awaitTransactionSuccessAsync({ value: qfr.protocolFeePaid });
-            assertBalances(await getBalancesAsync(host.address), {
-                ...ZERO_BALANCES,
-                makerAssetBalance: orders[0].makerAssetAmount.times(mintScale).integerValue(BigNumber.ROUND_DOWN),
-                takerAssetBalance: orders[1].takerAssetAmount.plus(orders[1].takerFee),
-                protocolFeeBalance: singleProtocolFee,
             });
         });
 
