@@ -66,13 +66,12 @@ blockchainTests.resets('SignatureValidator feature', env => {
             const hash = hexUtils.random();
             const signer = _.sampleSize(signers, 1)[0];
             const signature = hexUtils.slice(await signatureUtils.ecSignHashAsync(env.provider, hash, signer), 1);
-            const notSigner = randomAddress();
-            const tx = feature.validateHashSignature(hash, notSigner, signature).callAsync();
+            const tx = feature.validateHashSignature(hash, signer, signature).callAsync();
             return expect(tx).to.revertWith(
                 new ZeroExRevertErrors.SignatureValidator.SignatureValidationError(
                     ZeroExRevertErrors.SignatureValidator.SignatureValidationErrorCodes.InvalidLength,
                     hash,
-                    notSigner,
+                    signer,
                     signature,
                 ),
             );

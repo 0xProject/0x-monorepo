@@ -35,7 +35,7 @@ contract SimpleFunctionRegistry is
     ISimpleFunctionRegistry,
     FixinCommon
 {
-    // solhint-disable
+    /// @dev Name of this feature.
     string public constant override FEATURE_NAME = "SimpleFunctionRegistry";
     /// @dev Version of this feature.
     uint256 public immutable override FEATURE_VERSION = _encodeVersion(1, 0, 0);

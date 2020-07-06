@@ -73,7 +73,7 @@ export async function initialMigrateAsync(
         migrator.address,
     );
     const _features = await deployBootstrapFeaturesAsync(provider, txDefaults, features);
-    await migrator.deploy(owner, zeroEx.address, _features).awaitTransactionSuccessAsync();
+    await migrator.initializeZeroEx(owner, zeroEx.address, _features).awaitTransactionSuccessAsync();
     return zeroEx;
 }
 
@@ -170,6 +170,6 @@ export async function fullMigrateAsync(
         transformerDeployer: txDefaults.from as string,
         ...opts,
     };
-    await migrator.deploy(owner, zeroEx.address, _features, _opts).awaitTransactionSuccessAsync();
+    await migrator.initializeZeroEx(owner, zeroEx.address, _features, _opts).awaitTransactionSuccessAsync();
     return zeroEx;
 }

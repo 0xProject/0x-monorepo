@@ -36,7 +36,7 @@ interface IMetaTransactions {
         // Maximum gas price.
         uint256 maxGasPrice;
         // MTX is invalid after this time.
-        uint256 expirationTime;
+        uint256 expirationTimeSeconds;
         // Nonce to make this MTX unique.
         uint256 salt;
         // Encoded call data to a function on the exchange proxy.
@@ -65,33 +65,33 @@ interface IMetaTransactions {
     /// @dev Execute a single meta-transaction.
     /// @param mtx The meta-transaction.
     /// @param signature The signature by `mtx.signer`.
-    /// @return returnData The ABI-encoded result of the underlying call.
+    /// @return returnResult The ABI-encoded result of the underlying call.
     function executeMetaTransaction(
         MetaTransactionData calldata mtx,
         bytes calldata signature
     )
         external
         payable
-        returns (bytes memory returnData);
+        returns (bytes memory returnResult);
 
     /// @dev Execute multiple meta-transactions.
     /// @param mtxs The meta-transactions.
     /// @param signatures The signature by each respective `mtx.signer`.
-    /// @return returnDatas The ABI-encoded results of the underlying calls.
-    function executeMetaTransactions(
+    /// @return returnResults The ABI-encoded results of the underlying calls.
+    function batchExecuteMetaTransactions(
         MetaTransactionData[] calldata mtxs,
         bytes[] calldata signatures
     )
         external
         payable
-        returns (bytes[] memory returnDatas);
+        returns (bytes[] memory returnResults);
 
     /// @dev Execute a meta-transaction via `sender`. Privileged variant.
     ///      Only callable from within.
     /// @param sender Who is executing the meta-transaction..
     /// @param mtx The meta-transaction.
     /// @param signature The signature by `mtx.signer`.
-    /// @return returnData The ABI-encoded result of the underlying call.
+    /// @return returnResult The ABI-encoded result of the underlying call.
     function _executeMetaTransaction(
         address sender,
         MetaTransactionData calldata mtx,
@@ -99,7 +99,7 @@ interface IMetaTransactions {
     )
         external
         payable
-        returns (bytes memory returnData);
+        returns (bytes memory returnResult);
 
     /// @dev Get the block at which a meta-transaction has been executed.
     /// @param mtx The meta-transaction.

@@ -73,7 +73,7 @@ contract MetaTransactions is
             "address sender,"
             "uint256 minGasPrice,"
             "uint256 maxGasPrice,"
-            "uint256 expirationTime,"
+            "uint256 expirationTimeSeconds,"
             "uint256 salt,"
             "bytes callData,"
             "uint256 value,"
@@ -98,7 +98,7 @@ contract MetaTransactions is
         returns (bytes4 success)
     {
         _registerFeatureFunction(this.executeMetaTransaction.selector);
-        _registerFeatureFunction(this.executeMetaTransactions.selector);
+        _registerFeatureFunction(this.batchExecuteMetaTransactions.selector);
         _registerFeatureFunction(this._executeMetaTransaction.selector);
         _registerFeatureFunction(this.getMetaTransactionExecutedBlock.selector);
         _registerFeatureFunction(this.getMetaTransactionHashExecutedBlock.selector);
@@ -109,7 +109,7 @@ contract MetaTransactions is
     /// @dev Execute a single meta-transaction.
     /// @param mtx The meta-transaction.
     /// @param signature The signature by `mtx.signer`.
-    /// @return returnData The ABI-encoded result of the underlying call.
+    /// @return returnResult The ABI-encoded result of the underlying call.
     function executeMetaTransaction(
         MetaTransactionData memory mtx,
         bytes memory signature
@@ -117,7 +117,7 @@ contract MetaTransactions is
         public
         payable
         override
-        returns (bytes memory returnData)
+        returns (bytes memory returnResult)
     {
         return _executeMetaTransactionPrivate(
             msg.sender,
@@ -129,15 +129,15 @@ contract MetaTransactions is
     /// @dev Execute multiple meta-transactions.
     /// @param mtxs The meta-transactions.
     /// @param signatures The signature by each respective `mtx.signer`.
-    /// @return returnDatas The ABI-encoded results of the underlying calls.
-    function executeMetaTransactions(
+    /// @return returnResults The ABI-encoded results of the underlying calls.
+    function batchExecuteMetaTransactions(
         MetaTransactionData[] memory mtxs,
         bytes[] memory signatures
     )
         public
         payable
         override
-        returns (bytes[] memory returnDatas)
+        returns (bytes[] memory returnResults)
     {
         if (mtxs.length != signatures.length) {
             LibMetaTransactionsRichErrors.InvalidMetaTransactionsArrayLengthsError(
@@ -145,9 +145,9 @@ contract MetaTransactions is
                 signatures.length
             ).rrevert();
         }
-        returnDatas = new bytes[](mtxs.length);
+        returnResults = new bytes[](mtxs.length);
         for (uint256 i = 0; i < mtxs.length; ++i) {
-            returnDatas[i] = _executeMetaTransactionPrivate(
+            returnResults[i] = _executeMetaTransactionPrivate(
                 msg.sender,
                 mtxs[i],
                 signatures[i]
@@ -160,7 +160,7 @@ contract MetaTransactions is
     /// @param sender Who is executing the meta-transaction..
     /// @param mtx The meta-transaction.
     /// @param signature The signature by `mtx.signer`.
-    /// @return returnData The ABI-encoded result of the underlying call.
+    /// @return returnResult The ABI-encoded result of the underlying call.
     function _executeMetaTransaction(
         address sender,
         MetaTransactionData memory mtx,
@@ -170,7 +170,7 @@ contract MetaTransactions is
         payable
         override
         onlySelf
-        returns (bytes memory returnData)
+        returns (bytes memory returnResult)
     {
         return _executeMetaTransactionPrivate(sender, mtx, signature);
     }
@@ -214,7 +214,7 @@ contract MetaTransactions is
             mtx.sender,
             mtx.minGasPrice,
             mtx.maxGasPrice,
-            mtx.expirationTime,
+            mtx.expirationTimeSeconds,
             mtx.salt,
             keccak256(mtx.callData),
             mtx.value,
@@ -227,14 +227,14 @@ contract MetaTransactions is
     /// @param sender Who is executing the meta-transaction..
     /// @param mtx The meta-transaction.
     /// @param signature The signature by `mtx.signer`.
-    /// @return returnData The ABI-encoded result of the underlying call.
+    /// @return returnResult The ABI-encoded result of the underlying call.
     function _executeMetaTransactionPrivate(
         address sender,
         MetaTransactionData memory mtx,
         bytes memory signature
     )
         private
-        returns (bytes memory returnData)
+        returns (bytes memory returnResult)
     {
         ExecuteState memory state;
         state.sender = sender;
@@ -252,7 +252,7 @@ contract MetaTransactions is
         // Execute the call based on the selector.
         state.selector = mtx.callData.readBytes4(0);
         if (state.selector == ITransformERC20.transformERC20.selector) {
-            returnData = _executeTransformERC20Call(state);
+            returnResult = _executeTransformERC20Call(state);
         } else {
             LibMetaTransactionsRichErrors
                 .MetaTransactionUnsupportedFunctionError(state.hash, state.selector)
@@ -290,12 +290,12 @@ contract MetaTransactions is
                 ).rrevert();
         }
         // Must not be expired.
-        if (state.mtx.expirationTime <= block.timestamp) {
+        if (state.mtx.expirationTimeSeconds <= block.timestamp) {
             LibMetaTransactionsRichErrors
                 .MetaTransactionExpiredError(
                     state.hash,
                     block.timestamp,
-                    state.mtx.expirationTime
+                    state.mtx.expirationTimeSeconds
                 ).rrevert();
         }
         // Must have a valid gas price.
@@ -349,12 +349,36 @@ contract MetaTransactions is
     ///      the taker address.
     function _executeTransformERC20Call(ExecuteState memory state)
         private
-        returns (bytes memory returnData)
+        returns (bytes memory returnResult)
     {
         // HACK(dorothy-zbornak): `abi.decode()` with the individual args
         // will cause a stack overflow. But we can prefix the call data with an
-        // offset to transform it into the encoding for the equivalent single struct arg.
-        // Decoding a single struct consumes far less stack space.
+        // offset to transform it into the encoding for the equivalent single struct arg,
+        // since decoding a single struct arg consumes far less stack space than
+        // decoding multiple struct args.
+
+        // Where the encoding for multiple args (with the seleector ommitted)
+        // would typically look like:
+        // | argument                 |  offset |
+        // |--------------------------|---------|
+        // | inputToken               |       0 |
+        // | outputToken              |      32 |
+        // | inputTokenAmount         |      64 |
+        // | minOutputTokenAmount     |      96 |
+        // | transformations (offset) |     128 | = 32
+        // | transformations (data)   |     160 |
+
+        // We will ABI-decode a single struct arg copy with the layout:
+        // | argument                 |  offset |
+        // |--------------------------|---------|
+        // | (arg 1 offset)           |       0 | = 32
+        // | inputToken               |      32 |
+        // | outputToken              |      64 |
+        // | inputTokenAmount         |      96 |
+        // | minOutputTokenAmount     |     128 |
+        // | transformations (offset) |     160 | = 32
+        // | transformations (data)   |     192 |
+
         TransformERC20Args memory args;
         {
             bytes memory encodedStructArgs = new bytes(state.mtx.callData.length - 4 + 32);
@@ -397,15 +421,15 @@ contract MetaTransactions is
     ///      Warning: Do not let unadulerated `callData` into this function.
     function _callSelf(bytes32 hash, bytes memory callData, uint256 value)
         private
-        returns (bytes memory returnData)
+        returns (bytes memory returnResult)
     {
         bool success;
-        (success, returnData) = address(this).call{value: value}(callData);
+        (success, returnResult) = address(this).call{value: value}(callData);
         if (!success) {
             LibMetaTransactionsRichErrors.MetaTransactionCallFailedError(
                 hash,
                 callData,
-                returnData
+                returnResult
             ).rrevert();
         }
     }

@@ -44,7 +44,9 @@ blockchainTests.resets('Full migration', env => {
             await migrator.getBootstrapper().callAsync(),
         );
         features = await deployFullFeaturesAsync(env.provider, env.txDefaults, zeroEx.address);
-        await migrator.deploy(owner, zeroEx.address, features, { transformerDeployer }).awaitTransactionSuccessAsync();
+        await migrator
+            .initializeZeroEx(owner, zeroEx.address, features, { transformerDeployer })
+            .awaitTransactionSuccessAsync();
     });
 
     it('ZeroEx has the correct owner', async () => {
@@ -58,10 +60,10 @@ blockchainTests.resets('Full migration', env => {
         expect(dieRecipient).to.eq(owner);
     });
 
-    it('Non-deployer cannot call deploy()', async () => {
+    it('Non-deployer cannot call initializeZeroEx()', async () => {
         const notDeployer = randomAddress();
         const tx = migrator
-            .deploy(owner, zeroEx.address, features, { transformerDeployer })
+            .initializeZeroEx(owner, zeroEx.address, features, { transformerDeployer })
             .callAsync({ from: notDeployer });
         return expect(tx).to.revertWith('FullMigration/INVALID_SENDER');
     });
@@ -89,7 +91,7 @@ blockchainTests.resets('Full migration', env => {
             contractType: IMetaTransactionsContract,
             fns: [
                 'executeMetaTransaction',
-                'executeMetaTransactions',
+                'batchExecuteMetaTransactions',
                 '_executeMetaTransaction',
                 'getMetaTransactionExecutedBlock',
                 'getMetaTransactionHashExecutedBlock',

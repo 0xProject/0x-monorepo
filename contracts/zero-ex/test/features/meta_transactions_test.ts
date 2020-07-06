@@ -74,7 +74,7 @@ blockchainTests.resets('MetaTransactions feature', env => {
             sender,
             minGasPrice: getRandomInteger('2', '1e9'),
             maxGasPrice: getRandomInteger('1e9', '100e9'),
-            expirationTime: new BigNumber(Math.floor(_.now() / 1000) + 360),
+            expirationTimeSeconds: new BigNumber(Math.floor(_.now() / 1000) + 360),
             salt: new BigNumber(hexUtils.random()),
             callData: hexUtils.random(4),
             value: getRandomInteger(1, '1e18'),
@@ -362,7 +362,7 @@ blockchainTests.resets('MetaTransactions feature', env => {
 
         it('fails if expired', async () => {
             const mtx = getRandomMetaTransaction({
-                expirationTime: new BigNumber(Math.floor(_.now() / 1000 - 60)),
+                expirationTimeSeconds: new BigNumber(Math.floor(_.now() / 1000 - 60)),
             });
             const mtxHash = getExchangeProxyMetaTransactionHash(mtx);
             const signature = await signMetaTransactionAsync(mtx);
@@ -375,7 +375,7 @@ blockchainTests.resets('MetaTransactions feature', env => {
                 new ZeroExRevertErrors.MetaTransactions.MetaTransactionExpiredError(
                     mtxHash,
                     undefined,
-                    mtx.expirationTime,
+                    mtx.expirationTimeSeconds,
                 ),
             );
         });
@@ -425,7 +425,7 @@ blockchainTests.resets('MetaTransactions feature', env => {
         });
     });
 
-    describe('executeMetaTransactions()', () => {
+    describe('batchExecuteMetaTransactions()', () => {
         it('can execute multiple transactions', async () => {
             const mtxs = _.times(2, i => {
                 const args = getRandomTransformERC20Args();
@@ -447,8 +447,38 @@ blockchainTests.resets('MetaTransactions feature', env => {
                 gasPrice: BigNumber.max(...mtxs.map(mtx => mtx.minGasPrice)),
                 value: BigNumber.sum(...mtxs.map(mtx => mtx.value)),
             };
-            const rawResults = await feature.executeMetaTransactions(mtxs, signatures).callAsync(callOpts);
+            const rawResults = await feature.batchExecuteMetaTransactions(mtxs, signatures).callAsync(callOpts);
             expect(rawResults).to.eql(mtxs.map(() => RAW_SUCCESS_RESULT));
+        });
+
+        it('cannot execute the same transaction twice', async () => {
+            const mtx = (() => {
+                const args = getRandomTransformERC20Args();
+                return getRandomMetaTransaction({
+                    signer: _.sampleSize(signers, 1)[0],
+                    callData: transformERC20Feature
+                        .transformERC20(
+                            args.inputToken,
+                            args.outputToken,
+                            args.inputTokenAmount,
+                            args.minOutputTokenAmount,
+                            args.transformations,
+                        )
+                        .getABIEncodedTransactionData(),
+                });
+            })();
+            const mtxHash = getExchangeProxyMetaTransactionHash(mtx);
+            const mtxs = _.times(2, () => mtx);
+            const signatures = await Promise.all(mtxs.map(async mtx => signMetaTransactionAsync(mtx)));
+            const callOpts = {
+                gasPrice: BigNumber.max(...mtxs.map(mtx => mtx.minGasPrice)),
+                value: BigNumber.sum(...mtxs.map(mtx => mtx.value)),
+            };
+            const block = await env.web3Wrapper.getBlockNumberAsync();
+            const tx = feature.batchExecuteMetaTransactions(mtxs, signatures).callAsync(callOpts);
+            return expect(tx).to.revertWith(
+                new ZeroExRevertErrors.MetaTransactions.MetaTransactionAlreadyExecutedError(mtxHash, block),
+            );
         });
     });
 

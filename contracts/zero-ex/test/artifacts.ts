@@ -10,8 +10,8 @@ import * as AllowanceTarget from '../test/generated-artifacts/AllowanceTarget.js
 import * as Bootstrap from '../test/generated-artifacts/Bootstrap.json';
 import * as FillQuoteTransformer from '../test/generated-artifacts/FillQuoteTransformer.json';
 import * as FixinCommon from '../test/generated-artifacts/FixinCommon.json';
-import * as FixinGasToken from '../test/generated-artifacts/FixinGasToken.json';
 import * as FixinEIP712 from '../test/generated-artifacts/FixinEIP712.json';
+import * as FixinGasToken from '../test/generated-artifacts/FixinGasToken.json';
 import * as FlashWallet from '../test/generated-artifacts/FlashWallet.json';
 import * as FullMigration from '../test/generated-artifacts/FullMigration.json';
 import * as IAllowanceTarget from '../test/generated-artifacts/IAllowanceTarget.json';
@@ -114,8 +114,8 @@ export const artifacts = {
     TokenSpender: TokenSpender as ContractArtifact,
     TransformERC20: TransformERC20 as ContractArtifact,
     FixinCommon: FixinCommon as ContractArtifact,
-    FixinGasToken: FixinGasToken as ContractArtifact,
     FixinEIP712: FixinEIP712 as ContractArtifact,
+    FixinGasToken: FixinGasToken as ContractArtifact,
     FullMigration: FullMigration as ContractArtifact,
     InitialMigration: InitialMigration as ContractArtifact,
     LibBootstrap: LibBootstrap as ContractArtifact,
