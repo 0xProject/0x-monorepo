@@ -519,9 +519,11 @@ describe('MarketOperationUtils tests', () => {
                     [ERC20BridgeSource.Kyber]: [0.1, 0.1, 0.1, 0.1],
                 };
                 const feeSchedule = {
-                    [ERC20BridgeSource.Native]: FILL_AMOUNT.div(4)
-                        .times(nativeFeeRate)
-                        .dividedToIntegerBy(ETH_TO_MAKER_RATE),
+                    [ERC20BridgeSource.Native]: _.constant(
+                        FILL_AMOUNT.div(4)
+                            .times(nativeFeeRate)
+                            .dividedToIntegerBy(ETH_TO_MAKER_RATE),
+                    ),
                 };
                 replaceSamplerOps({
                     getSellQuotesAsync: createGetMultipleSellQuotesOperationFromRates(rates),
@@ -554,9 +556,11 @@ describe('MarketOperationUtils tests', () => {
                     [ERC20BridgeSource.Uniswap]: [1, 0.7, 0.2, 0.2],
                 };
                 const feeSchedule = {
-                    [ERC20BridgeSource.Uniswap]: FILL_AMOUNT.div(4)
-                        .times(uniswapFeeRate)
-                        .dividedToIntegerBy(ETH_TO_MAKER_RATE),
+                    [ERC20BridgeSource.Uniswap]: _.constant(
+                        FILL_AMOUNT.div(4)
+                            .times(uniswapFeeRate)
+                            .dividedToIntegerBy(ETH_TO_MAKER_RATE),
+                    ),
                 };
                 replaceSamplerOps({
                     getSellQuotesAsync: createGetMultipleSellQuotesOperationFromRates(rates),
@@ -920,9 +924,11 @@ describe('MarketOperationUtils tests', () => {
                     [ERC20BridgeSource.Kyber]: [0.1, 0.1, 0.1, 0.1],
                 };
                 const feeSchedule = {
-                    [ERC20BridgeSource.Native]: FILL_AMOUNT.div(4)
-                        .times(nativeFeeRate)
-                        .dividedToIntegerBy(ETH_TO_TAKER_RATE),
+                    [ERC20BridgeSource.Native]: _.constant(
+                        FILL_AMOUNT.div(4)
+                            .times(nativeFeeRate)
+                            .dividedToIntegerBy(ETH_TO_TAKER_RATE),
+                    ),
                 };
                 replaceSamplerOps({
                     getBuyQuotesAsync: createGetMultipleBuyQuotesOperationFromRates(rates),
@@ -954,9 +960,11 @@ describe('MarketOperationUtils tests', () => {
                     [ERC20BridgeSource.Eth2Dai]: [0.92, 0.1, 0.1, 0.1],
                 };
                 const feeSchedule = {
-                    [ERC20BridgeSource.Uniswap]: FILL_AMOUNT.div(4)
-                        .times(uniswapFeeRate)
-                        .dividedToIntegerBy(ETH_TO_TAKER_RATE),
+                    [ERC20BridgeSource.Uniswap]: _.constant(
+                        FILL_AMOUNT.div(4)
+                            .times(uniswapFeeRate)
+                            .dividedToIntegerBy(ETH_TO_TAKER_RATE),
+                    ),
                 };
                 replaceSamplerOps({
                     getBuyQuotesAsync: createGetMultipleBuyQuotesOperationFromRates(rates),
@@ -1078,7 +1086,7 @@ describe('MarketOperationUtils tests', () => {
         };
         const orders = [smallOrder, largeOrder];
         const feeSchedule = {
-            [ERC20BridgeSource.Native]: new BigNumber(2e5),
+            [ERC20BridgeSource.Native]: _.constant(2e5),
         };
 
         it('penalizes native fill based on target amount when target is smaller', () => {
