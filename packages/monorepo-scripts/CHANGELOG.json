@@ -9,6 +9,10 @@
             {
                 "note": "Add `Set` to `EXTERNAL_TYPE_MAP`.",
                 "pr": 2350
+            },
+            {
+                "note": "Add `TFillData` to `EXTERNAL_TYPE_MAP`",
+                "pr": 2613
             }
         ]
     },

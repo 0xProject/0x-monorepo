@@ -17,6 +17,10 @@
             {
                 "note": "Deploy FQT from PR 2608",
                 "pr": 2625
+            },
+            {
+                "note": "Add BalancerBridge addresses",
+                "pr": 2613
             }
         ]
     },
