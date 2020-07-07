@@ -69,6 +69,7 @@ export {
     NativeCollapsedFill,
     OptimizedMarketOrder,
     GetMarketOrdersRfqtOpts,
+    FeeSchedule,
     FillData,
     NativeFillData,
     CurveFillData,

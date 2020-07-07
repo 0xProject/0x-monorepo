@@ -65,7 +65,7 @@
         "no-lodash-isnull": true,
         "no-lodash-isundefined": true,
         "no-misused-new": true,
-        "no-non-null-assertion": true,
+        "no-non-null-assertion": false,
         "no-parameter-reassignment": true,
         "no-redundant-jsdoc": true,
         "no-return-await": true,

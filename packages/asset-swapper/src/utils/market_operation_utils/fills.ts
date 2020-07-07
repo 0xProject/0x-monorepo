@@ -4,7 +4,7 @@ import { MarketOperation, SignedOrderWithFillableAmounts } from '../../types';
 import { fillableAmountsUtils } from '../../utils/fillable_amounts_utils';
 
 import { POSITIVE_INF, ZERO_AMOUNT } from './constants';
-import { CollapsedFill, DexSample, ERC20BridgeSource, Fill, FillFlags } from './types';
+import { CollapsedFill, DexSample, ERC20BridgeSource, FeeSchedule, Fill, FillFlags } from './types';
 
 // tslint:disable: prefer-for-of no-bitwise completed-docs
 
@@ -18,7 +18,7 @@ export function createFillPaths(opts: {
     targetInput?: BigNumber;
     ethToOutputRate?: BigNumber;
     excludedSources?: ERC20BridgeSource[];
-    feeSchedule?: { [source: string]: BigNumber };
+    feeSchedule?: FeeSchedule;
 }): Fill[][] {
     const { side } = opts;
     const excludedSources = opts.excludedSources || [];
@@ -54,7 +54,7 @@ function nativeOrdersToPath(
     orders: SignedOrderWithFillableAmounts[],
     targetInput: BigNumber = POSITIVE_INF,
     ethToOutputRate: BigNumber,
-    fees: { [source: string]: BigNumber },
+    fees: FeeSchedule,
 ): Fill[] {
     // Create a single path from all orders.
     let path: Fill[] = [];
@@ -63,7 +63,9 @@ function nativeOrdersToPath(
         const takerAmount = fillableAmountsUtils.getTakerAssetAmountSwappedAfterOrderFees(order);
         const input = side === MarketOperation.Sell ? takerAmount : makerAmount;
         const output = side === MarketOperation.Sell ? makerAmount : takerAmount;
-        const penalty = ethToOutputRate.times(fees[ERC20BridgeSource.Native] || 0);
+        const penalty = ethToOutputRate.times(
+            fees[ERC20BridgeSource.Native] === undefined ? 0 : fees[ERC20BridgeSource.Native]!(),
+        );
         const rate = makerAmount.div(takerAmount);
         // targetInput can be less than the order size
         // whilst the penalty is constant, it affects the adjusted output
@@ -108,7 +110,7 @@ function dexQuotesToPaths(
     side: MarketOperation,
     dexQuotes: DexSample[][],
     ethToOutputRate: BigNumber,
-    fees: { [source: string]: BigNumber },
+    fees: FeeSchedule,
 ): Fill[][] {
     const paths: Fill[][] = [];
     for (let quote of dexQuotes) {
@@ -124,9 +126,10 @@ function dexQuotesToPaths(
             const { source, fillData } = sample;
             const input = sample.input.minus(prevSample ? prevSample.input : 0);
             const output = sample.output.minus(prevSample ? prevSample.output : 0);
+            const fee = fees[source] === undefined ? 0 : fees[source]!(sample.fillData);
             const penalty =
                 i === 0 // Only the first fill in a DEX path incurs a penalty.
-                    ? ethToOutputRate.times(fees[source] || 0)
+                    ? ethToOutputRate.times(fee)
                     : ZERO_AMOUNT;
             const adjustedOutput = side === MarketOperation.Sell ? output.minus(penalty) : output.plus(penalty);
             const rate = side === MarketOperation.Sell ? output.div(input) : input.div(output);

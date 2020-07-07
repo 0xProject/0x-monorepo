@@ -152,6 +152,9 @@ export interface GetMarketOrdersRfqtOpts extends RfqtRequestOpts {
     quoteRequestor?: QuoteRequestor;
 }
 
+export type FeeEstimate = (fillData?: FillData) => number | BigNumber;
+export type FeeSchedule = Partial<{ [key in ERC20BridgeSource]: FeeEstimate }>;
+
 /**
  * Options for `getMarketSellOrdersAsync()` and `getMarketBuyOrdersAsync()`.
  */
@@ -195,11 +198,11 @@ export interface GetMarketOrdersOpts {
     /**
      * Fees for each liquidity source, expressed in gas.
      */
-    feeSchedule: { [source: string]: BigNumber };
+    feeSchedule: FeeSchedule;
     /**
      * Estimated gas consumed by each liquidity source.
      */
-    gasSchedule: { [source: string]: number };
+    gasSchedule: FeeSchedule;
     /**
      * Whether to pad the quote with a redundant fallback quote using different
      * sources. Defaults to `true`.

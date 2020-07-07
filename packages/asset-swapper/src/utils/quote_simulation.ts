@@ -3,7 +3,7 @@ import { BigNumber } from '@0x/utils';
 import { constants } from '../constants';
 import { MarketOperation } from '../types';
 
-import { CollapsedFill, ERC20BridgeSource, OptimizedMarketOrder } from './market_operation_utils/types';
+import { CollapsedFill, FeeSchedule, OptimizedMarketOrder } from './market_operation_utils/types';
 import { isOrderTakerFeePayableWithMakerAsset, isOrderTakerFeePayableWithTakerAsset } from './utils';
 
 const { PROTOCOL_FEE_MULTIPLIER, ZERO_AMOUNT } = constants;
@@ -71,7 +71,7 @@ export interface QuoteFillInfo {
 }
 
 export interface QuoteFillInfoOpts {
-    gasSchedule: { [soruce: string]: number };
+    gasSchedule: FeeSchedule;
     protocolFeeMultiplier: BigNumber;
 }
 
@@ -124,10 +124,7 @@ export function simulateWorstCaseFill(quoteInfo: QuoteFillInfo): QuoteFillResult
             opts.gasSchedule,
         ),
         // Worst case gas and protocol fee is hitting all orders.
-        gas: getTotalGasUsedBySources(
-            getFlattenedFillsFromOrders(quoteInfo.orders).map(s => s.source),
-            opts.gasSchedule,
-        ),
+        gas: getTotalGasUsedByFills(getFlattenedFillsFromOrders(quoteInfo.orders), opts.gasSchedule),
         protocolFee: protocolFeePerFillOrder.times(quoteInfo.orders.length),
     };
     return fromIntermediateQuoteFillResult(result, quoteInfo);
@@ -137,7 +134,7 @@ export function fillQuoteOrders(
     fillOrders: QuoteFillOrderCall[],
     inputAmount: BigNumber,
     protocolFeePerFillOrder: BigNumber,
-    gasSchedule: { [source: string]: number },
+    gasSchedule: FeeSchedule,
 ): IntermediateQuoteFillResult {
     const result: IntermediateQuoteFillResult = {
         ...EMPTY_QUOTE_INTERMEDIATE_FILL_RESULT,
@@ -148,12 +145,12 @@ export function fillQuoteOrders(
         if (remainingInput.lte(0)) {
             break;
         }
+        result.gas += getTotalGasUsedByFills(fo.order.fills, gasSchedule);
         for (const fill of fo.order.fills) {
             if (remainingInput.lte(0)) {
                 break;
             }
             const { source } = fill;
-            result.gas += gasSchedule[source] || 0;
             result.inputBySource[source] = result.inputBySource[source] || ZERO_AMOUNT;
 
             // Actual rates are rarely linear, so fill subfills individually to
@@ -347,10 +344,11 @@ export function getFlattenedFillsFromOrders(orders: OptimizedMarketOrder[]): Col
     return fills;
 }
 
-function getTotalGasUsedBySources(sources: ERC20BridgeSource[], gasSchedule: { [source: string]: number }): number {
+function getTotalGasUsedByFills(fills: CollapsedFill[], gasSchedule: FeeSchedule): number {
     let gasUsed = 0;
-    for (const s of sources) {
-        gasUsed += gasSchedule[s] || 0;
+    for (const f of fills) {
+        const fee = gasSchedule[f.source] === undefined ? 0 : gasSchedule[f.source]!(f.fillData);
+        gasUsed += new BigNumber(fee).toNumber();
     }
     return gasUsed;
 }

@@ -20,6 +20,7 @@ import {
     AggregationError,
     DexSample,
     ERC20BridgeSource,
+    FeeSchedule,
     GetMarketOrdersOpts,
     OptimizedMarketOrder,
     OrderDomain,
@@ -335,7 +336,7 @@ export class MarketOperationUtils {
         bridgeSlippage?: number;
         maxFallbackSlippage?: number;
         excludedSources?: ERC20BridgeSource[];
-        feeSchedule?: { [source: string]: BigNumber };
+        feeSchedule?: FeeSchedule;
         allowFallback?: boolean;
         shouldBatchBridgeOrders?: boolean;
         liquidityProviderAddress?: string;
