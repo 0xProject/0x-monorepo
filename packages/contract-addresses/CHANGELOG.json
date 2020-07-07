@@ -13,6 +13,10 @@
             {
                 "note": "Update DFB addresses",
                 "pr": 2616
+            },
+            {
+                "note": "Deploy FQT from PR 2608",
+                "pr": 2625
             }
         ]
     },
