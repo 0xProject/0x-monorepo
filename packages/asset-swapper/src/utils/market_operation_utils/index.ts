@@ -22,6 +22,7 @@ import {
     ERC20BridgeSource,
     GetMarketOrdersOpts,
     OptimizedMarketOrder,
+    OptimizedOrdersAndQuoteReport,
     OrderDomain,
 } from './types';
 
@@ -71,7 +72,7 @@ export class MarketOperationUtils {
         nativeOrders: SignedOrder[],
         takerAmount: BigNumber,
         opts?: Partial<GetMarketOrdersOpts>,
-    ): Promise<OptimizedMarketOrder[]> {
+    ): Promise<OptimizedOrdersAndQuoteReport> {
         if (nativeOrders.length === 0) {
             throw new Error(AggregationError.EmptyOrders);
         }
@@ -153,7 +154,7 @@ export class MarketOperationUtils {
         nativeOrders: SignedOrder[],
         makerAmount: BigNumber,
         opts?: Partial<GetMarketOrdersOpts>,
-    ): Promise<OptimizedMarketOrder[]> {
+    ): Promise<OptimizedOrdersAndQuoteReport> {
         if (nativeOrders.length === 0) {
             throw new Error(AggregationError.EmptyOrders);
         }
@@ -238,6 +239,7 @@ export class MarketOperationUtils {
      * @param opts Options object.
      * @return orders.
      */
+    // TODO: can we delete?
     public async getBatchMarketBuyOrdersAsync(
         batchNativeOrders: SignedOrder[][],
         makerAmounts: BigNumber[],
@@ -302,7 +304,7 @@ export class MarketOperationUtils {
                     feeSchedule: _opts.feeSchedule,
                     allowFallback: _opts.allowFallback,
                     shouldBatchBridgeOrders: _opts.shouldBatchBridgeOrders,
-                });
+                }).optimizedOrders;
             } catch (e) {
                 // It's possible for one of the pairs to have no path
                 // rather than throw NO_OPTIMAL_PATH we return undefined
@@ -330,7 +332,7 @@ export class MarketOperationUtils {
         shouldBatchBridgeOrders?: boolean;
         liquidityProviderAddress?: string;
         multiBridgeAddress?: string;
-    }): OptimizedMarketOrder[] {
+    }): OptimizedOrdersAndQuoteReport {
         const { inputToken, outputToken, side, inputAmount } = opts;
         const maxFallbackSlippage = opts.maxFallbackSlippage || 0;
         // Convert native orders and dex quotes into fill paths.
@@ -373,8 +375,8 @@ export class MarketOperationUtils {
                 const [last, penultimateIfExists] = optimalPath.slice().reverse();
                 const lastNativeFillIfExists =
                     last.source === ERC20BridgeSource.Native &&
-                    penultimateIfExists &&
-                    penultimateIfExists.source !== ERC20BridgeSource.Native
+                        penultimateIfExists &&
+                        penultimateIfExists.source !== ERC20BridgeSource.Native
                         ? last
                         : undefined;
                 // By prepending native paths to the front they cannot split on-chain sources and incur
@@ -383,7 +385,7 @@ export class MarketOperationUtils {
                 optimalPath = [...nativeSubPath.filter(f => f !== lastNativeFillIfExists), ...nonNativeOptimalPath];
             }
         }
-        return createOrdersFromPath(optimalPath, {
+        const optimizedOrders = createOrdersFromPath(optimalPath, {
             side,
             inputToken,
             outputToken,
@@ -394,6 +396,7 @@ export class MarketOperationUtils {
             multiBridgeAddress: opts.multiBridgeAddress,
             shouldBatchBridgeOrders: !!opts.shouldBatchBridgeOrders,
         });
+        return { optimizedOrders, quoteReport: 'TODO' };
     }
 
     private _optionalSources(): ERC20BridgeSource[] {

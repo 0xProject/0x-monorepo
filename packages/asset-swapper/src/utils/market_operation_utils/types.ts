@@ -42,7 +42,7 @@ export enum ERC20BridgeSource {
 }
 
 // Internal `fillData` field for `Fill` objects.
-export interface FillData {}
+export interface FillData { }
 
 // `FillData` for native fills.
 export interface NativeFillData extends FillData {
@@ -217,4 +217,9 @@ export interface BatchedOperation<TResult> {
 export interface FakeBuyOpts {
     targetSlippageBps: BigNumber;
     maxIterations: BigNumber;
+}
+
+export interface OptimizedOrdersAndQuoteReport {
+    optimizedOrders: OptimizedMarketOrder[];
+    quoteReport: string;
 }
