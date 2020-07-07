@@ -61,6 +61,9 @@ export function computeBalancerSellQuote(pool: BalancerPool, takerFillAmount: Bi
 }
 
 export function computeBalancerBuyQuote(pool: BalancerPool, makerFillAmount: BigNumber): BigNumber {
+    if (makerFillAmount.isGreaterThanOrEqualTo(pool.balanceOut)) {
+        return new BigNumber(0);
+    }
     return bmath.calcInGivenOut(
         pool.balanceIn,
         pool.weightIn,
