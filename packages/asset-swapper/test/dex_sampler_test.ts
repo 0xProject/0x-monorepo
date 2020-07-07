@@ -477,7 +477,7 @@ describe('DexSampler tests', () => {
             const expectedTakerFillAmounts = getSampleAmounts(new BigNumber(100e18), 3);
             const pools: BalancerPool[] = [generateBalancerPool(), generateBalancerPool()];
             const balancerPoolsCache = new MockBalancerPoolsCache({
-                getPoolsForPairAsync: (takerToken: string, makerToken: string) => {
+                getPoolsForPairAsync: async (takerToken: string, makerToken: string) => {
                     expect(takerToken).equal(expectedTakerToken);
                     expect(makerToken).equal(expectedMakerToken);
                     return Promise.resolve(pools);
@@ -583,7 +583,7 @@ describe('DexSampler tests', () => {
             const expectedMakerFillAmounts = getSampleAmounts(new BigNumber(100e18), 3);
             const pools: BalancerPool[] = [generateBalancerPool(), generateBalancerPool()];
             const balancerPoolsCache = new MockBalancerPoolsCache({
-                getPoolsForPairAsync: (takerToken: string, makerToken: string) => {
+                getPoolsForPairAsync: async (takerToken: string, makerToken: string) => {
                     expect(takerToken).equal(expectedTakerToken);
                     expect(makerToken).equal(expectedMakerToken);
                     return Promise.resolve(pools);
