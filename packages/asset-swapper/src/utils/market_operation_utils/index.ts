@@ -245,7 +245,6 @@ export class MarketOperationUtils {
      * @param opts Options object.
      * @return orders.
      */
-    // TODO: can we delete?
     public async getBatchMarketBuyOrdersAsync(
         batchNativeOrders: SignedOrder[][],
         makerAmounts: BigNumber[],
