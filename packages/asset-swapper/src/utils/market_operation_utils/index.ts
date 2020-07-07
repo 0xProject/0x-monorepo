@@ -153,7 +153,7 @@ export class MarketOperationUtils {
      * @param nativeOrders Native orders.
      * @param makerAmount Amount of maker asset to buy.
      * @param opts Options object.
-     * @return orders.
+     * @return object with optimized orders and a QuoteReport
      */
     public async getMarketBuyOrdersAsync(
         nativeOrders: SignedOrder[],
@@ -402,9 +402,7 @@ export class MarketOperationUtils {
             multiBridgeAddress: opts.multiBridgeAddress,
             shouldBatchBridgeOrders: !!opts.shouldBatchBridgeOrders,
         });
-
-        const collapsedPaths = _.flatten(optimizedOrders.map(o => o.fills));
-        const quoteReport = new QuoteReportGenerator(opts.side, _.flatten(opts.dexQuotes), opts.nativeOrders, opts.orderFillableAmounts, collapsedPaths, opts.quoteRequestor).generateReport();
+        const quoteReport = new QuoteReportGenerator(opts.side, _.flatten(opts.dexQuotes), opts.nativeOrders, opts.orderFillableAmounts, _.flatten(optimizedOrders.map(o => o.fills)), opts.quoteRequestor).generateReport();
         return { optimizedOrders, quoteReport };
     }
 

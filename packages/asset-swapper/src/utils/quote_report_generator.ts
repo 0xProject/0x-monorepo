@@ -140,7 +140,6 @@ export class QuoteReportGenerator {
                 ...nativeOrderBase,
                 isRfqt: false,
             };
-
             return regularNativeOrder;
         }
     }
