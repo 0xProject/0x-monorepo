@@ -105,7 +105,7 @@ export class QuoteRequestor {
         const _opts: RfqtRequestOpts = { ...constants.DEFAULT_RFQT_REQUEST_OPTS, ...options };
         assertTakerAddressOrThrow(_opts.takerAddress);
 
-        const firmQuotes = await this._getQuotesAsync<RFQTFirmQuote>( // not yet BigNumber
+        const firmQuoteResponses = await this._getQuotesAsync<RFQTFirmQuote>( // not yet BigNumber
             makerAssetData,
             takerAssetData,
             assetFillAmount,
@@ -114,41 +114,38 @@ export class QuoteRequestor {
             'firm',
         );
 
-        const ordersWithStringInts = firmQuotes.map(quote => quote.signedOrder);
+        const result: RFQTFirmQuote[] = [];
+        firmQuoteResponses.forEach(firmQuoteResponse => {
+            const orderWithStringInts = firmQuoteResponse.response.signedOrder;
 
-        const validatedOrdersWithStringInts = ordersWithStringInts.filter(order => {
             try {
-                const hasValidSchema = this._schemaValidator.isValid(order, schemas.signedOrderSchema);
+                const hasValidSchema = this._schemaValidator.isValid(orderWithStringInts, schemas.signedOrderSchema);
                 if (!hasValidSchema) {
-                    throw new Error('order not valid');
+                    throw new Error('Order not valid');
                 }
             } catch (err) {
-                this._warningLogger(order, `Invalid RFQ-t order received, filtering out. ${err.message}`);
-                return false;
+                this._warningLogger(orderWithStringInts, `Invalid RFQ-t order received, filtering out. ${err.message}`);
+                return;
             }
 
             if (
                 !hasExpectedAssetData(
                     makerAssetData,
                     takerAssetData,
-                    order.makerAssetData.toLowerCase(),
-                    order.takerAssetData.toLowerCase(),
+                    orderWithStringInts.makerAssetData.toLowerCase(),
+                    orderWithStringInts.takerAssetData.toLowerCase(),
                 )
             ) {
-                this._warningLogger(order, 'Unexpected asset data in RFQ-T order, filtering out');
-                return false;
+                this._warningLogger(orderWithStringInts, 'Unexpected asset data in RFQ-T order, filtering out');
+                return;
             }
 
-            if (order.takerAddress.toLowerCase() !== _opts.takerAddress.toLowerCase()) {
-                this._warningLogger(order, 'Unexpected takerAddress in RFQ-T order, filtering out');
-                return false;
+            if (orderWithStringInts.takerAddress.toLowerCase() !== _opts.takerAddress.toLowerCase()) {
+                this._warningLogger(orderWithStringInts, 'Unexpected takerAddress in RFQ-T order, filtering out');
+                return;
             }
 
-            return true;
-        });
-
-        const validatedOrders: SignedOrder[] = validatedOrdersWithStringInts.map(orderWithStringInts => {
-            return {
+            const orderWithBigNumberInts: SignedOrder = {
                 ...orderWithStringInts,
                 makerAssetAmount: new BigNumber(orderWithStringInts.makerAssetAmount),
                 takerAssetAmount: new BigNumber(orderWithStringInts.takerAssetAmount),
@@ -157,17 +154,17 @@ export class QuoteRequestor {
                 expirationTimeSeconds: new BigNumber(orderWithStringInts.expirationTimeSeconds),
                 salt: new BigNumber(orderWithStringInts.salt),
             };
-        });
 
-        const orders = validatedOrders.filter(order => {
-            if (orderCalculationUtils.willOrderExpire(order, this._expiryBufferMs / constants.ONE_SECOND_MS)) {
-                this._warningLogger(order, 'Expiry too soon in RFQ-T order, filtering out');
-                return false;
+            if (orderCalculationUtils.willOrderExpire(orderWithBigNumberInts, this._expiryBufferMs / constants.ONE_SECOND_MS)) {
+                this._warningLogger(orderWithBigNumberInts, 'Expiry too soon in RFQ-T order, filtering out');
+                return;
             }
-            return true;
-        });
 
-        return orders.map(order => ({ signedOrder: order }));
+            // Passed all validation, add it to result
+            result.push({ signedOrder: orderWithBigNumberInts });
+            return;
+        });
+        return result;
     }
 
     public async requestRfqtIndicativeQuotesAsync(
@@ -189,7 +186,8 @@ export class QuoteRequestor {
             'indicative',
         );
 
-        const validResponsesWithStringInts = responsesWithStringInts.filter(response => {
+        const validResponsesWithStringInts = responsesWithStringInts.filter(result => {
+            const response = result.response;
             if (!this._isValidRfqtIndicativeQuoteResponse(response)) {
                 this._warningLogger(response, 'Invalid RFQ-T indicative quote received, filtering out');
                 return false;
@@ -203,7 +201,8 @@ export class QuoteRequestor {
             return true;
         });
 
-        const validResponses = validResponsesWithStringInts.map(response => {
+        const validResponses = validResponsesWithStringInts.map(result => {
+            const response = result.response;
             return {
                 ...response,
                 makerAssetAmount: new BigNumber(response.makerAssetAmount),
@@ -278,10 +277,9 @@ export class QuoteRequestor {
         marketOperation: MarketOperation,
         options: RfqtRequestOpts,
         quoteType: 'firm' | 'indicative',
-    ): Promise<ResponseT[]> {
-        // create an array of promises for quote responses, using "undefined"
-        // as a placeholder for failed requests.
-        const responsesIfDefined: Array<undefined | AxiosResponse<ResponseT>> = await Promise.all(
+    ): Promise<Array<{ response: ResponseT; makerUri: string }>> {
+        const result: Array<{ response: ResponseT; makerUri: string }> = [];
+        await Promise.all(
             Object.keys(this._rfqtAssetOfferings).map(async url => {
                 if (this._makerSupportsPair(url, makerAssetData, takerAssetData)) {
                     const requestParamsWithBigNumbers = {
@@ -330,7 +328,7 @@ export class QuoteRequestor {
                                 },
                             },
                         });
-                        return response;
+                        result.push({ response: response.data, makerUri: url });
                     } catch (err) {
                         this._infoLogger({
                             rfqtMakerInteraction: {
@@ -347,17 +345,10 @@ export class QuoteRequestor {
                             options.apiKey
                             } for taker address ${options.takerAddress}`,
                         );
-                        return undefined;
                     }
                 }
-                return undefined;
             }),
         );
-
-        const responses = responsesIfDefined.filter(
-            (respIfDefd): respIfDefd is AxiosResponse<ResponseT> => respIfDefd !== undefined,
-        );
-
-        return responses.map(response => response.data);
+        return result;
     }
 }
