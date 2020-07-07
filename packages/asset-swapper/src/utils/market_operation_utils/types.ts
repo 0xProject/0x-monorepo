@@ -3,6 +3,7 @@ import { BigNumber } from '@0x/utils';
 
 import { RfqtRequestOpts, SignedOrderWithFillableAmounts } from '../../types';
 import { QuoteRequestor } from '../../utils/quote_requestor';
+import { QuoteReport } from '../quote_report_generator';
 
 /**
  * Order domain keys: chainId and exchange
@@ -221,5 +222,5 @@ export interface FakeBuyOpts {
 
 export interface OptimizedOrdersAndQuoteReport {
     optimizedOrders: OptimizedMarketOrder[];
-    quoteReport: string;
+    quoteReport: QuoteReport;
 }

@@ -2,10 +2,13 @@ import { ContractAddresses } from '@0x/contract-addresses';
 import { RFQTIndicativeQuote } from '@0x/quote-server';
 import { SignedOrder } from '@0x/types';
 import { BigNumber, NULL_ADDRESS } from '@0x/utils';
+import * as _ from 'lodash';
 
 import { MarketOperation } from '../../types';
+import { QuoteRequestor } from '../quote_requestor';
 import { difference } from '../utils';
 
+import { QuoteReportGenerator } from './../quote_report_generator';
 import { BUY_SOURCES, DEFAULT_GET_MARKET_ORDERS_OPTS, FEE_QUOTE_SOURCES, ONE_ETHER, SELL_SOURCES } from './constants';
 import { createFillPaths, getPathAdjustedRate, getPathAdjustedSlippage } from './fills';
 import {
@@ -121,6 +124,7 @@ export class MarketOperationUtils {
             [orderFillableAmounts, liquidityProviderAddress, ethToMakerAssetRate, dexQuotes],
             rfqtIndicativeQuotes,
         ] = await Promise.all([samplerPromise, rfqtPromise]);
+
         return this._generateOptimizedOrders({
             orderFillableAmounts,
             nativeOrders,
@@ -139,6 +143,7 @@ export class MarketOperationUtils {
             feeSchedule: _opts.feeSchedule,
             allowFallback: _opts.allowFallback,
             shouldBatchBridgeOrders: _opts.shouldBatchBridgeOrders,
+            quoteRequestor: _opts.rfqt ? _opts.rfqt.quoteRequestor : undefined,
         });
     }
 
@@ -225,6 +230,7 @@ export class MarketOperationUtils {
             feeSchedule: _opts.feeSchedule,
             allowFallback: _opts.allowFallback,
             shouldBatchBridgeOrders: _opts.shouldBatchBridgeOrders,
+            quoteRequestor: _opts.rfqt ? _opts.rfqt.quoteRequestor : undefined,
         });
     }
 
@@ -332,6 +338,7 @@ export class MarketOperationUtils {
         shouldBatchBridgeOrders?: boolean;
         liquidityProviderAddress?: string;
         multiBridgeAddress?: string;
+        quoteRequestor?: QuoteRequestor;
     }): OptimizedOrdersAndQuoteReport {
         const { inputToken, outputToken, side, inputAmount } = opts;
         const maxFallbackSlippage = opts.maxFallbackSlippage || 0;
@@ -396,7 +403,10 @@ export class MarketOperationUtils {
             multiBridgeAddress: opts.multiBridgeAddress,
             shouldBatchBridgeOrders: !!opts.shouldBatchBridgeOrders,
         });
-        return { optimizedOrders, quoteReport: 'TODO' };
+
+        const collapsedPaths = _.flatten(optimizedOrders.map(o => o.fills));
+        const quoteReport = new QuoteReportGenerator(opts.side, _.flatten(opts.dexQuotes), opts.nativeOrders, opts.orderFillableAmounts, collapsedPaths, opts.quoteRequestor).generateReport();
+        return { optimizedOrders, quoteReport };
     }
 
     private _optionalSources(): ERC20BridgeSource[] {

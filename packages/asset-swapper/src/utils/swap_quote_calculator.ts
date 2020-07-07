@@ -20,6 +20,7 @@ import { convertNativeOrderToFullyFillableOptimizedOrders } from './market_opera
 import { GetMarketOrdersOpts, OptimizedMarketOrder, OptimizedOrdersAndQuoteReport } from './market_operation_utils/types';
 import { isSupportedAssetDataInOrders } from './utils';
 
+import { QuoteReport } from './quote_report_generator';
 import { QuoteFillResult, simulateBestCaseFill, simulateWorstCaseFill } from './quote_simulation';
 
 // TODO(dave4506) How do we want to reintroduce InsufficientAssetLiquidityError?
@@ -87,6 +88,7 @@ export class SwapQuoteCalculator {
             assetFillAmounts,
             opts,
         );
+        const blankQuoteReport = { sourcesConsidered: [], sourcesDelivered: [] }; // TODO: better solution here
         const batchSwapQuotes = await Promise.all(
             batchSignedOrders.map(async (orders, i) => {
                 if (orders) {
@@ -94,11 +96,12 @@ export class SwapQuoteCalculator {
                     return createSwapQuote(
                         makerAssetData,
                         takerAssetData,
-                        { optimizedOrders: orders, quoteReport: 'TODO' },
+                        { optimizedOrders: orders, quoteReport: blankQuoteReport },
                         operation,
                         assetFillAmounts[i],
                         gasPrice,
                         opts.gasSchedule,
+                        blankQuoteReport,
                     );
                 } else {
                     return undefined;
@@ -134,8 +137,9 @@ export class SwapQuoteCalculator {
                 : { assetProxyId: '' };
 
             if (firstOrderMakerAssetData.assetProxyId === AssetProxyId.ERC721) {
+                const blankQuoteReport = { sourcesConsidered: [], sourcesDelivered: [] }; // TODO: better solution here
                 // HACK: to conform ERC721 orders to the output of market operation utils, assumes complete fillable
-                result = { optimizedOrders: prunedOrders.map(o => convertNativeOrderToFullyFillableOptimizedOrders(o)), quoteReport: 'TODO' };
+                result = { optimizedOrders: prunedOrders.map(o => convertNativeOrderToFullyFillableOptimizedOrders(o)), quoteReport: blankQuoteReport };
             } else {
                 if (operation === MarketOperation.Buy) {
                     result = await this._marketOperationUtils.getMarketBuyOrdersAsync(
@@ -163,6 +167,7 @@ export class SwapQuoteCalculator {
             assetFillAmount,
             gasPrice,
             opts.gasSchedule,
+            result.quoteReport,
         );
     }
 }
@@ -175,6 +180,7 @@ function createSwapQuote(
     assetFillAmount: BigNumber,
     gasPrice: BigNumber,
     gasSchedule: { [source: string]: number },
+    quoteReport: QuoteReport,
 ): SwapQuote {
     const resultOrders = result.optimizedOrders;
 
@@ -202,6 +208,7 @@ function createSwapQuote(
         worstCaseQuoteInfo: fillResultsToQuoteInfo(worstCaseFillResult),
         sourceBreakdown: getSwapQuoteOrdersBreakdown(bestCaseFillResult.fillAmountBySource),
         orders: resultOrders,
+        quoteReport,
     };
 
     if (operation === MarketOperation.Buy) {

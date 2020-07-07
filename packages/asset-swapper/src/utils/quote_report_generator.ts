@@ -44,7 +44,7 @@ export class QuoteReportGenerator {
     private readonly _collapsedFills: CollapsedFill[];
     private readonly _quoteRequestor?: QuoteRequestor;
 
-    constructor(marketOperation: MarketOperation, dexQuotes: DexSample[], nativeOrders: SignedOrder[], orderFillableAmounts: BigNumber[], collapsedFills: CollapsedFill[], quoteRequestor: QuoteRequestor) {
+    constructor(marketOperation: MarketOperation, dexQuotes: DexSample[], nativeOrders: SignedOrder[], orderFillableAmounts: BigNumber[], collapsedFills: CollapsedFill[], quoteRequestor?: QuoteRequestor) {
         this._dexQuotes = dexQuotes;
         this._nativeOrders = nativeOrders;
         this._marketOperation = marketOperation;
