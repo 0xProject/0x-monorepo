@@ -9,6 +9,10 @@
             {
                 "note": "Export `AffiliateFeeTransformerContract`",
                 "pr": 2622
+            },
+            {
+                "note": "Fix `TransformerDeployer.kill()` calling the wrong `die()` interface.",
+                "pr": 2624
             }
         ]
     },
