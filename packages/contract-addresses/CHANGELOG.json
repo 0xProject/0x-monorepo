@@ -25,6 +25,10 @@
             {
                 "note": "Update ganache snapshot Exchange Proxy addresses for MetaTransactions",
                 "pr": 2610
+            },
+            {
+                "note": "Add BalancerBridge addresses",
+                "pr": 2613
             }
         ]
     },
