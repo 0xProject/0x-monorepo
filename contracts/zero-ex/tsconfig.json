@@ -59,6 +59,7 @@
         "test/generated-artifacts/LibProxyRichErrors.json",
         "test/generated-artifacts/LibProxyStorage.json",
         "test/generated-artifacts/LibSignatureRichErrors.json",
+        "test/generated-artifacts/LibSignedCallData.json",
         "test/generated-artifacts/LibSimpleFunctionRegistryRichErrors.json",
         "test/generated-artifacts/LibSimpleFunctionRegistryStorage.json",
         "test/generated-artifacts/LibSpenderRichErrors.json",

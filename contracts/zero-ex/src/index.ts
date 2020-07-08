@@ -45,3 +45,4 @@ export {
 
 export * from './nonce_utils';
 export * from './migration';
+export * from './signed_call_data';

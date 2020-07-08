@@ -31,9 +31,11 @@ import "../external/FlashWallet.sol";
 import "../storage/LibTransformERC20Storage.sol";
 import "../transformers/IERC20Transformer.sol";
 import "../transformers/LibERC20Transformer.sol";
+import "./libs/LibSignedCallData.sol";
 import "./ITransformERC20.sol";
 import "./ITokenSpender.sol";
 import "./IFeature.sol";
+import "./ISignatureValidator.sol";
 import "./ISimpleFunctionRegistry.sol";
 
 
@@ -43,6 +45,8 @@ contract TransformERC20 is
     ITransformERC20,
     FixinCommon
 {
+    using LibSafeMathV06 for uint256;
+    using LibRichErrorsV06 for bytes;
 
     /// @dev Stack vars for `_transformERC20Private()`.
     struct TransformERC20PrivateState {
@@ -55,10 +59,7 @@ contract TransformERC20 is
     /// @dev Name of this feature.
     string public constant override FEATURE_NAME = "TransformERC20";
     /// @dev Version of this feature.
-    uint256 public immutable override FEATURE_VERSION = _encodeVersion(1, 1, 0);
-
-    using LibSafeMathV06 for uint256;
-    using LibRichErrorsV06 for bytes;
+    uint256 public immutable override FEATURE_VERSION = _encodeVersion(1, 2, 0);
 
     constructor() public FixinCommon() {
         // solhint-disable-next-line no-empty-blocks
@@ -76,6 +77,8 @@ contract TransformERC20 is
         _registerFeatureFunction(this.createTransformWallet.selector);
         _registerFeatureFunction(this.getTransformWallet.selector);
         _registerFeatureFunction(this.setTransformerDeployer.selector);
+        _registerFeatureFunction(this.setQuoteSigner.selector);
+        _registerFeatureFunction(this.getQuoteSigner.selector);
         _registerFeatureFunction(this.transformERC20.selector);
         _registerFeatureFunction(this._transformERC20.selector);
         this.createTransformWallet();
@@ -95,6 +98,18 @@ contract TransformERC20 is
         emit TransformerDeployerUpdated(transformerDeployer);
     }
 
+    /// @dev Replace the optional signer for `transformERC20()` calldata.
+    ///      Only callable by the owner.
+    /// @param quoteSigner The address of the new calldata signer.
+    function setQuoteSigner(address quoteSigner)
+        external
+        override
+        onlyOwner
+    {
+        LibTransformERC20Storage.getStorage().quoteSigner = quoteSigner;
+        emit QuoteSignerUpdated(quoteSigner);
+    }
+
     /// @dev Return the allowed deployer for transformers.
     /// @return deployer The transform deployer address.
     function getTransformerDeployer()
@@ -104,6 +119,17 @@ contract TransformERC20 is
         returns (address deployer)
     {
         return LibTransformERC20Storage.getStorage().transformerDeployer;
+    }
+
+    /// @dev Return the optional signer for `transformERC20()` calldata.
+    /// @return signer The signer address.
+    function getQuoteSigner()
+        public
+        override
+        view
+        returns (address signer)
+    {
+        return LibTransformERC20Storage.getStorage().quoteSigner;
     }
 
     /// @dev Deploy a new wallet instance and replace the current one with it.
@@ -147,42 +173,26 @@ contract TransformERC20 is
         payable
         returns (uint256 outputTokenAmount)
     {
+        (bytes32 callDataHash, bytes memory callDataSignature) =
+            LibSignedCallData.parseCallData(msg.data);
         return _transformERC20Private(
-            keccak256(msg.data),
-            msg.sender,
-            inputToken,
-            outputToken,
-            inputTokenAmount,
-            minOutputTokenAmount,
-            transformations
+            TransformERC20Args({
+                taker: msg.sender,
+                inputToken: inputToken,
+                outputToken: outputToken,
+                inputTokenAmount: inputTokenAmount,
+                minOutputTokenAmount: minOutputTokenAmount,
+                transformations: transformations,
+                callDataHash: callDataHash,
+                callDataSignature: callDataSignature
+            })
         );
     }
 
     /// @dev Internal version of `transformERC20()`. Only callable from within.
-    /// @param callDataHash Hash of the ingress calldata.
-    /// @param taker The taker address.
-    /// @param inputToken The token being provided by the taker.
-    ///        If `0xeee...`, ETH is implied and should be provided with the call.`
-    /// @param outputToken The token to be acquired by the taker.
-    ///        `0xeee...` implies ETH.
-    /// @param inputTokenAmount The amount of `inputToken` to take from the taker.
-    ///        If set to `uint256(-1)`, the entire spendable balance of the taker
-    ///        will be solt.
-    /// @param minOutputTokenAmount The minimum amount of `outputToken` the taker
-    ///        must receive for the entire transformation to succeed. If set to zero,
-    ///        the minimum output token transfer will not be asserted.
-    /// @param transformations The transformations to execute on the token balance(s)
-    ///        in sequence.
+    /// @param args A `TransformERC20Args` struct.
     /// @return outputTokenAmount The amount of `outputToken` received by the taker.
-    function _transformERC20(
-        bytes32 callDataHash,
-        address payable taker,
-        IERC20TokenV06 inputToken,
-        IERC20TokenV06 outputToken,
-        uint256 inputTokenAmount,
-        uint256 minOutputTokenAmount,
-        Transformation[] memory transformations
-    )
+    function _transformERC20(TransformERC20Args memory args)
         public
         virtual
         override
@@ -190,50 +200,21 @@ contract TransformERC20 is
         onlySelf
         returns (uint256 outputTokenAmount)
     {
-        return _transformERC20Private(
-            callDataHash,
-            taker,
-            inputToken,
-            outputToken,
-            inputTokenAmount,
-            minOutputTokenAmount,
-            transformations
-        );
+        return _transformERC20Private(args);
     }
 
     /// @dev Private version of `transformERC20()`.
-    /// @param callDataHash Hash of the ingress calldata.
-    /// @param taker The taker address.
-    /// @param inputToken The token being provided by the taker.
-    ///        If `0xeee...`, ETH is implied and should be provided with the call.`
-    /// @param outputToken The token to be acquired by the taker.
-    ///        `0xeee...` implies ETH.
-    /// @param inputTokenAmount The amount of `inputToken` to take from the taker.
-    ///        If set to `uint256(-1)`, the entire spendable balance of the taker
-    ///        will be solt.
-    /// @param minOutputTokenAmount The minimum amount of `outputToken` the taker
-    ///        must receive for the entire transformation to succeed. If set to zero,
-    ///        the minimum output token transfer will not be asserted.
-    /// @param transformations The transformations to execute on the token balance(s)
-    ///        in sequence.
+    /// @param args A `TransformERC20Args` struct.
     /// @return outputTokenAmount The amount of `outputToken` received by the taker.
-    function _transformERC20Private(
-        bytes32 callDataHash,
-        address payable taker,
-        IERC20TokenV06 inputToken,
-        IERC20TokenV06 outputToken,
-        uint256 inputTokenAmount,
-        uint256 minOutputTokenAmount,
-        Transformation[] memory transformations
-    )
+    function _transformERC20Private(TransformERC20Args memory args)
         private
         returns (uint256 outputTokenAmount)
     {
         // If the input token amount is -1, transform the taker's entire
         // spendable balance.
-        if (inputTokenAmount == uint256(-1)) {
-            inputTokenAmount = ITokenSpender(address(this))
-                .getSpendableERC20BalanceOf(inputToken, taker);
+        if (args.inputTokenAmount == uint256(-1)) {
+            args.inputTokenAmount = ITokenSpender(address(this))
+                .getSpendableERC20BalanceOf(args.inputToken, args.taker);
         }
 
         TransformERC20PrivateState memory state;
@@ -242,55 +223,65 @@ contract TransformERC20 is
 
         // Remember the initial output token balance of the taker.
         state.takerOutputTokenBalanceBefore =
-            LibERC20Transformer.getTokenBalanceOf(outputToken, taker);
+            LibERC20Transformer.getTokenBalanceOf(args.outputToken, args.taker);
 
         // Pull input tokens from the taker to the wallet and transfer attached ETH.
         _transferInputTokensAndAttachedEth(
-            inputToken,
-            taker,
+            args.inputToken,
+            args.taker,
             address(state.wallet),
-            inputTokenAmount
+            args.inputTokenAmount
         );
 
-        // Perform transformations.
-        for (uint256 i = 0; i < transformations.length; ++i) {
-            _executeTransformation(
-                state.wallet,
-                transformations[i],
-                state.transformerDeployer,
-                taker,
-                callDataHash
+        {
+            // Validate that the calldata was signed by the quote signer.
+            // `validCallDataHash` will be 0x0 if not.
+            bytes32 validCallDataHash = _getValidCallDataHash(
+                args.callDataHash,
+                args.callDataSignature
             );
+            // Perform transformations.
+            for (uint256 i = 0; i < args.transformations.length; ++i) {
+                _executeTransformation(
+                    state.wallet,
+                    args.transformations[i],
+                    state.transformerDeployer,
+                    args.taker,
+                    // Transformers will receive a null calldata hash if
+                    // the calldata was not properly signed.
+                    validCallDataHash
+                );
+            }
         }
 
         // Compute how much output token has been transferred to the taker.
         state.takerOutputTokenBalanceAfter =
-            LibERC20Transformer.getTokenBalanceOf(outputToken, taker);
+            LibERC20Transformer.getTokenBalanceOf(args.outputToken, args.taker);
         if (state.takerOutputTokenBalanceAfter > state.takerOutputTokenBalanceBefore) {
             outputTokenAmount = state.takerOutputTokenBalanceAfter.safeSub(
                 state.takerOutputTokenBalanceBefore
             );
         } else if (state.takerOutputTokenBalanceAfter < state.takerOutputTokenBalanceBefore) {
             LibTransformERC20RichErrors.NegativeTransformERC20OutputError(
-                address(outputToken),
+                address(args.outputToken),
                 state.takerOutputTokenBalanceBefore - state.takerOutputTokenBalanceAfter
             ).rrevert();
         }
         // Ensure enough output token has been sent to the taker.
-        if (outputTokenAmount < minOutputTokenAmount) {
+        if (outputTokenAmount < args.minOutputTokenAmount) {
             LibTransformERC20RichErrors.IncompleteTransformERC20Error(
-                address(outputToken),
+                address(args.outputToken),
                 outputTokenAmount,
-                minOutputTokenAmount
+                args.minOutputTokenAmount
             ).rrevert();
         }
 
         // Emit an event.
         emit TransformedERC20(
-            taker,
-            address(inputToken),
-            address(outputToken),
-            inputTokenAmount,
+            args.taker,
+            address(args.inputToken),
+            address(args.outputToken),
+            args.inputTokenAmount,
             outputTokenAmount
         );
     }
@@ -383,6 +374,31 @@ contract TransformERC20 is
                 transformation.data,
                 resultData
             ).rrevert();
+        }
+    }
+
+    /// @dev Check if a call data hash is signed by the quote signer.
+    /// @param callDataHash The hash of the callData.
+    /// @param signature The signature provided by `getQuoteSigner()`.
+    /// @return validCallDataHash `callDataHash` if so and `0x0` otherwise.
+    function _getValidCallDataHash(
+        bytes32 callDataHash,
+        bytes memory signature
+    )
+        private
+        view
+        returns (bytes32 validCallDataHash)
+    {
+        if (signature.length == 0) {
+            return bytes32(0);
+        }
+
+        if (ISignatureValidator(address(this)).isValidHashSignature(
+            callDataHash,
+            getQuoteSigner(),
+            signature
+        )) {
+            return callDataHash;
         }
     }
 }

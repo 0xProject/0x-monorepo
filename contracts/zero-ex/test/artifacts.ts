@@ -41,6 +41,7 @@ import * as LibOwnableStorage from '../test/generated-artifacts/LibOwnableStorag
 import * as LibProxyRichErrors from '../test/generated-artifacts/LibProxyRichErrors.json';
 import * as LibProxyStorage from '../test/generated-artifacts/LibProxyStorage.json';
 import * as LibSignatureRichErrors from '../test/generated-artifacts/LibSignatureRichErrors.json';
+import * as LibSignedCallData from '../test/generated-artifacts/LibSignedCallData.json';
 import * as LibSimpleFunctionRegistryRichErrors from '../test/generated-artifacts/LibSimpleFunctionRegistryRichErrors.json';
 import * as LibSimpleFunctionRegistryStorage from '../test/generated-artifacts/LibSimpleFunctionRegistryStorage.json';
 import * as LibSpenderRichErrors from '../test/generated-artifacts/LibSpenderRichErrors.json';
@@ -113,6 +114,7 @@ export const artifacts = {
     SimpleFunctionRegistry: SimpleFunctionRegistry as ContractArtifact,
     TokenSpender: TokenSpender as ContractArtifact,
     TransformERC20: TransformERC20 as ContractArtifact,
+    LibSignedCallData: LibSignedCallData as ContractArtifact,
     FixinCommon: FixinCommon as ContractArtifact,
     FixinEIP712: FixinEIP712 as ContractArtifact,
     FixinGasToken: FixinGasToken as ContractArtifact,
