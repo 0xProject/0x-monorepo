@@ -58,6 +58,7 @@
         "@balancer-labs/sor": "^0.3.0",
         "axios": "^0.19.2",
         "axios-mock-adapter": "^1.18.1",
+        "decimal.js": "^10.2.0",
         "ethereumjs-util": "^5.1.1",
         "heartbeats": "^5.0.1",
         "lodash": "^4.17.11"

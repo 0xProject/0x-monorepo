@@ -481,7 +481,7 @@ export const samplerOperations = {
                     samplerOps.map(async (op, i) => op.handleCallResultsAsync(contract, rawSubCallResults[i])),
                 );
                 samples = samples.concat(
-                    await Promise.all(nonSamplerOps.map(op => op.handleCallResultsAsync(contract, ''))),
+                    await Promise.all(nonSamplerOps.map(async op => op.handleCallResultsAsync(contract, ''))),
                 );
                 return [...samplerOps, ...nonSamplerOps].map((op, i) => {
                     return samples[i].map((output, j) => ({
