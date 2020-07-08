@@ -588,7 +588,7 @@ export class SwapQuoter {
 
         const calcOpts: CalculateSwapQuoteOpts = opts;
 
-        if (calcOpts.rfqt !== undefined && this._shouldEnableIndicativeRfqt(calcOpts.rfqt, marketOperation)) {
+        if (calcOpts.rfqt !== undefined) {
             calcOpts.rfqt.quoteRequestor = quoteRequestor;
         }
 
