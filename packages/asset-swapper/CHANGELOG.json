@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.7.0",
+        "changes": [
+            {
+                "note": "Return quoteReport SwapQuoter functions",
+                "pr": 2627
+            }
+        ]
+    },
+    {
         "version": "4.6.0",
         "changes": [
             {
