@@ -137,7 +137,6 @@ export class SwapQuoteCalculator {
                 : { assetProxyId: '' };
 
             if (firstOrderMakerAssetData.assetProxyId === AssetProxyId.ERC721) {
-                const blankQuoteReport = { sourcesConsidered: [], sourcesDelivered: [] }; // TODO: better solution here
                 // HACK: to conform ERC721 orders to the output of market operation utils, assumes complete fillable
                 optimizedOrders = prunedOrders.map(o => convertNativeOrderToFullyFillableOptimizedOrders(o));
             } else {
