@@ -19,6 +19,7 @@ import {
     SwapQuote,
     SwapQuoteRequestOpts,
     SwapQuoterOpts,
+    SwapQuoterRfqtOpts,
 } from './types';
 import { assert } from './utils/assert';
 import { calculateLiquidity } from './utils/calculate_liquidity';
@@ -44,9 +45,7 @@ export class SwapQuoter {
     private readonly _devUtilsContract: DevUtilsContract;
     private readonly _marketOperationUtils: MarketOperationUtils;
     private readonly _orderStateUtils: OrderStateUtils;
-    private readonly _quoteRequestor: QuoteRequestor;
-    private readonly _rfqtTakerApiKeyWhitelist: string[];
-    private readonly _rfqtSkipBuyRequests: boolean;
+    private readonly _rfqtOptions?: SwapQuoterRfqtOpts;
 
     /**
      * Instantiates a new SwapQuoter instance given existing liquidity in the form of orders and feeOrders.
@@ -167,11 +166,8 @@ export class SwapQuoter {
         this.orderbook = orderbook;
         this.expiryBufferMs = expiryBufferMs;
         this.permittedOrderFeeTypes = permittedOrderFeeTypes;
-        this._rfqtTakerApiKeyWhitelist = rfqt ? rfqt.takerApiKeyWhitelist || [] : [];
-        this._rfqtSkipBuyRequests =
-            rfqt && rfqt.skipBuyRequests !== undefined
-                ? rfqt.skipBuyRequests
-                : (r => r !== undefined && r.skipBuyRequests === true)(constants.DEFAULT_SWAP_QUOTER_OPTS.rfqt);
+
+        this._rfqtOptions = rfqt;
         this._contractAddresses = options.contractAddresses || getContractAddressesForChainOrThrow(chainId);
         this._devUtilsContract = new DevUtilsContract(this._contractAddresses.devUtils, provider);
         this._protocolFeeUtils = ProtocolFeeUtils.getInstance(
@@ -179,12 +175,6 @@ export class SwapQuoter {
             options.ethGasStationUrl,
         );
         this._orderStateUtils = new OrderStateUtils(this._devUtilsContract);
-        this._quoteRequestor = new QuoteRequestor(
-            rfqt ? rfqt.makerAssetOfferings || {} : {},
-            rfqt ? rfqt.warningLogger : undefined,
-            rfqt ? rfqt.infoLogger : undefined,
-            expiryBufferMs,
-        );
         const sampler = new DexOrderSampler(
             new IERC20BridgeSamplerContract(this._contractAddresses.erc20BridgeSampler, this.provider, {
                 gas: samplerGasLimit,
@@ -549,18 +539,27 @@ export class SwapQuoter {
         // get batches of orders from different sources, awaiting sources in parallel
         const orderBatchPromises: Array<Promise<SignedOrder[]>> = [];
         orderBatchPromises.push(this._getSignedOrdersAsync(makerAssetData, takerAssetData)); // order book
+
+        const rfqtOptions = this._rfqtOptions;
+        const quoteRequestor = new QuoteRequestor(
+            rfqtOptions ? rfqtOptions.makerAssetOfferings || {} : {},
+            rfqtOptions ? rfqtOptions.warningLogger : undefined,
+            rfqtOptions ? rfqtOptions.infoLogger : undefined,
+            this.expiryBufferMs,
+        );
+
         if (
             opts.rfqt &&
             opts.rfqt.intentOnFilling &&
             opts.rfqt.apiKey &&
-            this._rfqtTakerApiKeyWhitelist.includes(opts.rfqt.apiKey) &&
-            !(marketOperation === MarketOperation.Buy && this._rfqtSkipBuyRequests)
+            this._rfqtTakerApiKeyWhitelist().includes(opts.rfqt.apiKey) &&
+            !(marketOperation === MarketOperation.Buy && this._shouldSkipRfqtBuyRequests())
         ) {
             if (!opts.rfqt.takerAddress || opts.rfqt.takerAddress === constants.NULL_ADDRESS) {
                 throw new Error('RFQ-T requests must specify a taker address');
             }
             orderBatchPromises.push(
-                this._quoteRequestor
+                quoteRequestor
                     .requestRfqtFirmQuotesAsync(
                         makerAssetData,
                         takerAssetData,
@@ -590,7 +589,7 @@ export class SwapQuoter {
         const calcOpts: CalculateSwapQuoteOpts = opts;
 
         if (calcOpts.rfqt !== undefined && this._shouldEnableIndicativeRfqt(calcOpts.rfqt, marketOperation)) {
-            calcOpts.rfqt.quoteRequestor = this._quoteRequestor;
+            calcOpts.rfqt.quoteRequestor = quoteRequestor;
         }
 
         if (marketOperation === MarketOperation.Buy) {
@@ -616,9 +615,26 @@ export class SwapQuoter {
             opts !== undefined &&
             opts.isIndicative !== undefined &&
             opts.isIndicative &&
-            this._rfqtTakerApiKeyWhitelist.includes(opts.apiKey) &&
-            !(op === MarketOperation.Buy && this._rfqtSkipBuyRequests)
+            this._rfqtTakerApiKeyWhitelist().includes(opts.apiKey) &&
+            !(op === MarketOperation.Buy && this._shouldSkipRfqtBuyRequests())
         );
+    }
+    private _rfqtTakerApiKeyWhitelist(): string[] {
+        return this._rfqtOptions ? this._rfqtOptions.takerApiKeyWhitelist : [];
+    }
+    private _shouldSkipRfqtBuyRequests(): boolean {
+        const rfqtOptions = this._rfqtOptions;
+
+        if (rfqtOptions && rfqtOptions.skipBuyRequests !== undefined) {
+            return rfqtOptions.skipBuyRequests;
+        }
+
+        const defaultRfqtOptions = constants.DEFAULT_SWAP_QUOTER_OPTS.rfqt;
+        if (defaultRfqtOptions && defaultRfqtOptions.skipBuyRequests !== undefined) {
+            return defaultRfqtOptions.skipBuyRequests;
+        }
+
+        return false;
     }
 }
 // tslint:disable-next-line: max-file-line-count
