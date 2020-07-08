@@ -26,10 +26,10 @@ export class BalancerPoolsCache {
     public async getPoolsForPairAsync(takerToken: string, makerToken: string): Promise<BalancerPool[]> {
         const key = JSON.stringify([takerToken, makerToken].sort());
         const value = this._cache[key];
-        const minTimestamp = new Date().getTime() - this.cacheExpiryMs;
-        if (value.timestamp < minTimestamp) {
+        const minTimestamp = Date.now() - this.cacheExpiryMs;
+        if (value === undefined || value.timestamp < minTimestamp) {
             const pools = await this._fetchPoolsForPairAsync(takerToken, makerToken);
-            const timestamp = new Date().getTime();
+            const timestamp = Date.now();
             this._cache[key] = {
                 pools,
                 timestamp,
@@ -41,7 +41,8 @@ export class BalancerPoolsCache {
     // tslint:disable-next-line:prefer-function-over-method
     protected async _fetchPoolsForPairAsync(takerToken: string, makerToken: string): Promise<BalancerPool[]> {
         try {
-            return parsePoolData(await getPoolsWithTokens(takerToken, makerToken), takerToken, makerToken);
+            const poolData = (await getPoolsWithTokens(takerToken, makerToken)).pools;
+            return parsePoolData(poolData, takerToken, makerToken);
         } catch (err) {
             return [];
         }

@@ -145,12 +145,13 @@ export function fillQuoteOrders(
         if (remainingInput.lte(0)) {
             break;
         }
-        result.gas += getTotalGasUsedByFills(fo.order.fills, gasSchedule);
         for (const fill of fo.order.fills) {
             if (remainingInput.lte(0)) {
                 break;
             }
-            const { source } = fill;
+            const { source, fillData } = fill;
+            const fee = gasSchedule[source] === undefined ? 0 : gasSchedule[source]!(fillData);
+            result.gas += new BigNumber(fee).toNumber();
             result.inputBySource[source] = result.inputBySource[source] || ZERO_AMOUNT;
 
             // Actual rates are rarely linear, so fill subfills individually to

@@ -231,7 +231,7 @@ function createBridgeOrder(fill: CollapsedFill, opts: CreateOrderFromPathOpts): 
             makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
                 makerToken,
                 bridgeAddress,
-                createBalancerBridgeData(balancerFillData.poolAddress, takerToken),
+                createBalancerBridgeData(takerToken, balancerFillData.poolAddress),
             );
             break;
         case ERC20BridgeSource.UniswapV2:
@@ -331,12 +331,12 @@ function createMultiBridgeData(takerToken: string, makerToken: string): string {
     return encoder.encode({ takerToken, intermediateToken });
 }
 
-function createBalancerBridgeData(poolAddress: string, takerToken: string): string {
+function createBalancerBridgeData(takerToken: string, poolAddress: string): string {
     const encoder = AbiEncoder.create([
-        { name: 'poolAddress', type: 'address' },
         { name: 'takerToken', type: 'address' },
+        { name: 'poolAddress', type: 'address' },
     ]);
-    return encoder.encode({ poolAddress, takerToken });
+    return encoder.encode({ takerToken, poolAddress });
 }
 
 function createCurveBridgeData(

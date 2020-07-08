@@ -468,17 +468,22 @@ export const samplerOperations = {
                 ),
             ),
         );
+        const samplerOps = subOps.filter(op => op.source !== ERC20BridgeSource.Balancer);
+        const nonSamplerOps = subOps.filter(op => op.source === ERC20BridgeSource.Balancer);
         return {
             encodeCall: contract => {
-                const subCalls = subOps.map(op => op.encodeCall(contract));
+                const subCalls = samplerOps.map(op => op.encodeCall(contract));
                 return contract.batchCall(subCalls).getABIEncodedTransactionData();
             },
             handleCallResultsAsync: async (contract, callResults) => {
                 const rawSubCallResults = contract.getABIDecodedReturnData<string[]>('batchCall', callResults);
-                const samples = await Promise.all(
-                    subOps.map(async (op, i) => op.handleCallResultsAsync(contract, rawSubCallResults[i])),
+                let samples = await Promise.all(
+                    samplerOps.map(async (op, i) => op.handleCallResultsAsync(contract, rawSubCallResults[i])),
                 );
-                return subOps.map((op, i) => {
+                samples = samples.concat(
+                    await Promise.all(nonSamplerOps.map(op => op.handleCallResultsAsync(contract, ''))),
+                );
+                return [...samplerOps, ...nonSamplerOps].map((op, i) => {
                     return samples[i].map((output, j) => ({
                         source: op.source,
                         output,
