@@ -1,5 +1,5 @@
 import { orderHashUtils } from '@0x/order-utils';
-import { BigNumber, NULL_ADDRESS } from '@0x/utils';
+import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { ERC20BridgeSource, SignedOrder } from '..';
@@ -44,7 +44,14 @@ export class QuoteReportGenerator {
     private readonly _collapsedFills: CollapsedFill[];
     private readonly _quoteRequestor?: QuoteRequestor;
 
-    constructor(marketOperation: MarketOperation, dexQuotes: DexSample[], nativeOrders: SignedOrder[], orderFillableAmounts: BigNumber[], collapsedFills: CollapsedFill[], quoteRequestor?: QuoteRequestor) {
+    constructor(
+        marketOperation: MarketOperation,
+        dexQuotes: DexSample[],
+        nativeOrders: SignedOrder[],
+        orderFillableAmounts: BigNumber[],
+        collapsedFills: CollapsedFill[],
+        quoteRequestor?: QuoteRequestor,
+    ) {
         this._dexQuotes = dexQuotes;
         this._nativeOrders = nativeOrders;
         this._marketOperation = marketOperation;
@@ -68,10 +75,7 @@ export class QuoteReportGenerator {
         const dexReportSourcesConsidered = this._dexQuotes.map(ds => this._dexSampleToReportSource(ds));
         const nativeOrderSourcesConsidered = this._nativeOrders.map(no => this._nativeOrderToReportSource(no));
 
-        const sourcesConsidered = [
-            ...dexReportSourcesConsidered,
-            ...nativeOrderSourcesConsidered,
-        ];
+        const sourcesConsidered = [...dexReportSourcesConsidered, ...nativeOrderSourcesConsidered];
         const sourcesDelivered = this._collapsedFills.map(collapsedFill => {
             const foundNativeOrder = (collapsedFill as NativeCollapsedFill).nativeOrder;
             if (foundNativeOrder) {

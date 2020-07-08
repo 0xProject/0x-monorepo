@@ -381,8 +381,8 @@ export class MarketOperationUtils {
                 const [last, penultimateIfExists] = optimalPath.slice().reverse();
                 const lastNativeFillIfExists =
                     last.source === ERC20BridgeSource.Native &&
-                        penultimateIfExists &&
-                        penultimateIfExists.source !== ERC20BridgeSource.Native
+                    penultimateIfExists &&
+                    penultimateIfExists.source !== ERC20BridgeSource.Native
                         ? last
                         : undefined;
                 // By prepending native paths to the front they cannot split on-chain sources and incur
@@ -402,7 +402,14 @@ export class MarketOperationUtils {
             multiBridgeAddress: opts.multiBridgeAddress,
             shouldBatchBridgeOrders: !!opts.shouldBatchBridgeOrders,
         });
-        const quoteReport = new QuoteReportGenerator(opts.side, _.flatten(opts.dexQuotes), opts.nativeOrders, opts.orderFillableAmounts, _.flatten(optimizedOrders.map(o => o.fills)), opts.quoteRequestor).generateReport();
+        const quoteReport = new QuoteReportGenerator(
+            opts.side,
+            _.flatten(opts.dexQuotes),
+            opts.nativeOrders,
+            opts.orderFillableAmounts,
+            _.flatten(optimizedOrders.map(o => o.fills)),
+            opts.quoteRequestor,
+        ).generateReport();
         return { optimizedOrders, quoteReport };
     }
 

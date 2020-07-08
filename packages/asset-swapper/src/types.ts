@@ -220,7 +220,7 @@ export interface SwapQuoteRequestOpts extends CalculateSwapQuoteOpts {
 /**
  * Opts required to generate a SwapQuote with SwapQuoteCalculator
  */
-export interface CalculateSwapQuoteOpts extends GetMarketOrdersOpts { }
+export interface CalculateSwapQuoteOpts extends GetMarketOrdersOpts {}
 
 /**
  * A mapping from RFQ-T quote provider URLs to the trading pairs they support.

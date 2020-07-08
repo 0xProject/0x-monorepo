@@ -610,15 +610,6 @@ export class SwapQuoter {
 
         return swapQuote;
     }
-    private _shouldEnableIndicativeRfqt(opts: CalculateSwapQuoteOpts['rfqt'], op: MarketOperation): boolean {
-        return (
-            opts !== undefined &&
-            opts.isIndicative !== undefined &&
-            opts.isIndicative &&
-            this._rfqtTakerApiKeyWhitelist().includes(opts.apiKey) &&
-            !(op === MarketOperation.Buy && this._shouldSkipRfqtBuyRequests())
-        );
-    }
     private _rfqtTakerApiKeyWhitelist(): string[] {
         return this._rfqtOptions ? this._rfqtOptions.takerApiKeyWhitelist : [];
     }

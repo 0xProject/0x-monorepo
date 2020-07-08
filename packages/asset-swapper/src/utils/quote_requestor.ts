@@ -1,9 +1,9 @@
 import { schemas, SchemaValidator } from '@0x/json-schemas';
-import { assetDataUtils, orderCalculationUtils, SignedOrder, orderHashUtils } from '@0x/order-utils';
+import { assetDataUtils, orderCalculationUtils, orderHashUtils, SignedOrder } from '@0x/order-utils';
 import { RFQTFirmQuote, RFQTIndicativeQuote, TakerRequest } from '@0x/quote-server';
 import { ERC20AssetData } from '@0x/types';
 import { BigNumber, logUtils } from '@0x/utils';
-import Axios, { AxiosResponse } from 'axios';
+import Axios from 'axios';
 
 import { constants } from '../constants';
 import { MarketOperation, RfqtMakerAssetOfferings, RfqtRequestOpts } from '../types';
@@ -94,7 +94,7 @@ export class QuoteRequestor {
         private readonly _infoLogger: LogFunction = (obj, msg) =>
             logUtils.log(`${msg ? `${msg}: ` : ''}${JSON.stringify(obj)}`),
         private readonly _expiryBufferMs: number = constants.DEFAULT_SWAP_QUOTER_OPTS.expiryBufferMs,
-    ) { }
+    ) {}
 
     public async requestRfqtFirmQuotesAsync(
         makerAssetData: string,
@@ -156,7 +156,12 @@ export class QuoteRequestor {
                 salt: new BigNumber(orderWithStringInts.salt),
             };
 
-            if (orderCalculationUtils.willOrderExpire(orderWithBigNumberInts, this._expiryBufferMs / constants.ONE_SECOND_MS)) {
+            if (
+                orderCalculationUtils.willOrderExpire(
+                    orderWithBigNumberInts,
+                    this._expiryBufferMs / constants.ONE_SECOND_MS,
+                )
+            ) {
                 this._warningLogger(orderWithBigNumberInts, 'Expiry too soon in RFQ-T order, filtering out');
                 return;
             }
@@ -353,7 +358,7 @@ export class QuoteRequestor {
                         this._warningLogger(
                             convertIfAxiosError(err),
                             `Failed to get RFQ-T ${quoteType} quote from market maker endpoint ${url} for API key ${
-                            options.apiKey
+                                options.apiKey
                             } for taker address ${options.takerAddress}`,
                         );
                     }

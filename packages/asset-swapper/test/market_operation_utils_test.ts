@@ -248,9 +248,9 @@ describe('MarketOperationUtils tests', () => {
     function getLiquidityProviderFromRegistryAndReturnCallParameters(
         liquidityProviderAddress: string = NULL_ADDRESS,
     ): [
-            { registryAddress?: string; takerToken?: string; makerToken?: string },
-            GetLiquidityProviderFromRegistryOperation
-        ] {
+        { registryAddress?: string; takerToken?: string; makerToken?: string },
+        GetLiquidityProviderFromRegistryOperation
+    ] {
         const callArgs: { registryAddress?: string; takerToken?: string; makerToken?: string } = {
             registryAddress: undefined,
             takerToken: undefined,

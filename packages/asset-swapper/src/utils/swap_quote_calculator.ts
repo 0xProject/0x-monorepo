@@ -9,7 +9,6 @@ import {
     MarketOperation,
     MarketSellSwapQuote,
     SwapQuote,
-    SwapQuoteBase,
     SwapQuoteInfo,
     SwapQuoteOrdersBreakdown,
     SwapQuoterError,
@@ -17,7 +16,11 @@ import {
 
 import { MarketOperationUtils } from './market_operation_utils';
 import { convertNativeOrderToFullyFillableOptimizedOrders } from './market_operation_utils/orders';
-import { GetMarketOrdersOpts, OptimizedMarketOrder, OptimizedOrdersAndQuoteReport } from './market_operation_utils/types';
+import {
+    GetMarketOrdersOpts,
+    OptimizedMarketOrder,
+    OptimizedOrdersAndQuoteReport,
+} from './market_operation_utils/types';
 import { isSupportedAssetDataInOrders } from './utils';
 
 import { QuoteReport } from './quote_report_generator';
