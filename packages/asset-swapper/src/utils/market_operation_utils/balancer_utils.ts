@@ -1,5 +1,6 @@
 import { BigNumber } from '@0x/utils';
 import { bmath, getPoolsWithTokens, parsePoolData } from '@balancer-labs/sor';
+import { Decimal } from 'decimal.js';
 import * as _ from 'lodash';
 
 export interface BalancerPool {
@@ -13,18 +14,21 @@ export interface BalancerPool {
     slippage?: BigNumber;
     limitAmount?: BigNumber;
 }
+
 interface CacheValue {
     timestamp: number;
     pools: BalancerPool[];
 }
-const THIRTY_MINUTES_MS = 30 * 60 * 1000; // tslint:disable-line:custom-no-magic-numbers
+
+const ONE_MINUTE_MS = 60 * 1000; // tslint:disable-line:custom-no-magic-numbers
+
 export class BalancerPoolsCache {
     constructor(
         private readonly _cache: { [key: string]: CacheValue } = {},
-        public cacheExpiryMs: number = THIRTY_MINUTES_MS,
+        public cacheExpiryMs: number = ONE_MINUTE_MS,
     ) {}
     public async getPoolsForPairAsync(takerToken: string, makerToken: string): Promise<BalancerPool[]> {
-        const key = JSON.stringify([takerToken, makerToken].sort());
+        const key = JSON.stringify([takerToken, makerToken]);
         const value = this._cache[key];
         const minTimestamp = Date.now() - this.cacheExpiryMs;
         if (value === undefined || value.timestamp < minTimestamp) {
@@ -42,7 +46,12 @@ export class BalancerPoolsCache {
     protected async _fetchPoolsForPairAsync(takerToken: string, makerToken: string): Promise<BalancerPool[]> {
         try {
             const poolData = (await getPoolsWithTokens(takerToken, makerToken)).pools;
-            return parsePoolData(poolData, takerToken, makerToken);
+            // Sort by maker token balance (descending)
+            const pools = parsePoolData(poolData, takerToken, makerToken).sort((a, b) =>
+                b.balanceOut.minus(a.balanceOut).toNumber(),
+            );
+            // tslint:disable-next-line:custom-no-magic-numbers
+            return pools.length > 10 ? pools.slice(0, 10) : pools;
         } catch (err) {
             return [];
         }
@@ -51,26 +60,27 @@ export class BalancerPoolsCache {
 
 // tslint:disable completed-docs
 export function computeBalancerSellQuote(pool: BalancerPool, takerFillAmount: BigNumber): BigNumber {
-    return bmath.calcOutGivenIn(
-        pool.balanceIn,
-        pool.weightIn,
-        pool.balanceOut,
-        pool.weightOut,
-        takerFillAmount,
-        pool.swapFee,
-    );
+    const weightRatio = pool.weightIn.dividedBy(pool.weightOut);
+    const adjustedIn = bmath.BONE.minus(pool.swapFee)
+        .dividedBy(bmath.BONE)
+        .times(takerFillAmount);
+    const y = pool.balanceIn.dividedBy(pool.balanceIn.plus(adjustedIn));
+    const foo = new Decimal(y.toString()).pow(weightRatio.toString());
+    const bar = new BigNumber(1).minus(foo.toString());
+    const tokenAmountOut = pool.balanceOut.times(bar);
+    return tokenAmountOut.integerValue();
 }
 
 export function computeBalancerBuyQuote(pool: BalancerPool, makerFillAmount: BigNumber): BigNumber {
     if (makerFillAmount.isGreaterThanOrEqualTo(pool.balanceOut)) {
         return new BigNumber(0);
     }
-    return bmath.calcInGivenOut(
-        pool.balanceIn,
-        pool.weightIn,
-        pool.balanceOut,
-        pool.weightOut,
-        makerFillAmount,
-        pool.swapFee,
-    );
+    const weightRatio = pool.weightOut.dividedBy(pool.weightIn);
+    const diff = pool.balanceOut.minus(makerFillAmount);
+    const y = pool.balanceOut.dividedBy(diff);
+    let foo = new Decimal(y.toString()).pow(weightRatio.toString());
+    foo = foo.minus(1);
+    let tokenAmountIn = bmath.BONE.minus(pool.swapFee).dividedBy(bmath.BONE);
+    tokenAmountIn = pool.balanceIn.times(foo.toString()).dividedBy(tokenAmountIn);
+    return tokenAmountIn.integerValue();
 }
