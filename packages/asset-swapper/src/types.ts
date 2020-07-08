@@ -232,6 +232,14 @@ export interface RfqtMakerAssetOfferings {
 
 export { LogFunction } from './utils/quote_requestor';
 
+export interface SwapQuoterRfqtOpts {
+    takerApiKeyWhitelist: string[];
+    makerAssetOfferings: RfqtMakerAssetOfferings;
+    skipBuyRequests?: boolean;
+    warningLogger?: LogFunction;
+    infoLogger?: LogFunction;
+}
+
 /**
  * chainId: The ethereum chain id. Defaults to 1 (mainnet).
  * orderRefreshIntervalMs: The interval in ms that getBuyQuoteAsync should trigger an refresh of orders and order states. Defaults to 10000ms (10s).
@@ -248,13 +256,7 @@ export interface SwapQuoterOpts extends OrderPrunerOpts {
     liquidityProviderRegistryAddress?: string;
     multiBridgeAddress?: string;
     ethGasStationUrl?: string;
-    rfqt?: {
-        takerApiKeyWhitelist: string[];
-        makerAssetOfferings: RfqtMakerAssetOfferings;
-        skipBuyRequests?: boolean;
-        warningLogger?: LogFunction;
-        infoLogger?: LogFunction;
-    };
+    rfqt?: SwapQuoterRfqtOpts;
 }
 
 /**
