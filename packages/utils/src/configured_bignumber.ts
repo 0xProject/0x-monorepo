@@ -34,4 +34,7 @@ if (isNode) {
     };
 }
 
+const orig = BigNumber.config;
+BigNumber.config = (_args?: any) => orig({});
+
 export { BigNumber };
