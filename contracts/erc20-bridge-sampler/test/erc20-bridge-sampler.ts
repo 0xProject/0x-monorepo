@@ -358,7 +358,7 @@ blockchainTests('erc20-bridge-sampler', env => {
             expect(quotes).to.deep.eq([]);
         });
 
-        it('can quote token -> token', async () => {
+        it.only('can quote token -> token', async () => {
             const sampleAmounts = getSampleAmounts(TAKER_TOKEN);
             const [takerToEthQuotes] = getDeterministicSellQuotes(TAKER_TOKEN, WETH_ADDRESS, ['Kyber'], sampleAmounts);
             const [expectedQuotes] = getDeterministicSellQuotes(WETH_ADDRESS, MAKER_TOKEN, ['Kyber'], takerToEthQuotes);
@@ -378,7 +378,7 @@ blockchainTests('erc20-bridge-sampler', env => {
             expect(quotes).to.deep.eq(expectedQuotes);
         });
 
-        it('can quote token -> ETH', async () => {
+        it.only('can quote token -> ETH', async () => {
             const sampleAmounts = getSampleAmounts(TAKER_TOKEN);
             const [expectedQuotes] = getDeterministicSellQuotes(TAKER_TOKEN, WETH_ADDRESS, ['Kyber'], sampleAmounts);
             const quotes = await testContract

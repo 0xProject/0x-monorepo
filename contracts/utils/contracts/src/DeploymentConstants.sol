@@ -27,7 +27,7 @@ contract DeploymentConstants {
     /// @dev Mainnet address of the WETH contract.
     address constant private WETH_ADDRESS = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
     /// @dev Mainnet address of the KyberNetworkProxy contract.
-    address constant private KYBER_NETWORK_PROXY_ADDRESS = 0x818E6FECD516Ecc3849DAf6845e3EC868087B755;
+    address constant private KYBER_NETWORK_PROXY_ADDRESS = 0x9AAb3f75489902f3a48495025729a0AF77d4b11e;
     /// @dev Mainnet address of the `UniswapExchangeFactory` contract.
     address constant private UNISWAP_EXCHANGE_FACTORY_ADDRESS = 0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95;
     /// @dev Mainnet address of the `UniswapV2Router01` contract.

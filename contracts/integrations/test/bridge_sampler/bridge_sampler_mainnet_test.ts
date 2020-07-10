@@ -20,6 +20,22 @@ blockchainTests.fork.resets('Mainnet Sampler Tests', env => {
             constants.NULL_ADDRESS,
         );
     });
+    describe.only('Kyber', () => {
+        describe('sampleSellsFromKyberNetwork()', () => {
+            it('samples sells from Kyber DAI->USDC', async () => {
+                const samples = await testContract
+                    .sampleSellsFromKyberNetwork(
+                        '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+                        '0x6b175474e89094c44da98b954eedeac495271d0f',
+                        [toBaseUnitAmount(1)],
+                    )
+                    .callAsync();
+                console.log(samples);
+                expect(samples.length).to.be.bignumber.greaterThan(0);
+                expect(samples[0]).to.be.bignumber.greaterThan(0);
+            });
+        });
+    });
     describe('Curve', () => {
         const CURVE_ADDRESS = '0xa2b47e3d5c44877cca798226b7b8118f9bfb7a56';
         const DAI_TOKEN_INDEX = new BigNumber(0);

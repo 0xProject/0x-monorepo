@@ -21,13 +21,4 @@ pragma solidity ^0.5.9;
 
 interface IKyberNetwork {
 
-    function searchBestRate(
-        address fromToken,
-        address toToken,
-        uint256 fromAmount,
-        bool usePermissionless
-    )
-        external
-        view
-        returns (address reserve, uint256 expectedRate);
 }

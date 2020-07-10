@@ -275,6 +275,29 @@ contract TestERC20BridgeSamplerKyberNetwork is
         return (address(this), expectedRate);
     }
 
+    // Deterministic `IKyberNetworkProxy.getExpectedRateAfterFee()`.
+    function getExpectedRateAfterFee(
+        address fromToken,
+        address toToken,
+        uint256 srcQty,
+        uint256 ,
+        bytes calldata
+    )
+        external
+        view
+        returns
+        (uint256 expectedRate)
+    {
+        _revertIfShouldFail();
+        fromToken = fromToken == ETH_ADDRESS ? _getWethAddress() : fromToken;
+        toToken = toToken == ETH_ADDRESS ? _getWethAddress() : toToken;
+        expectedRate = LibDeterministicQuotes.getDeterministicRate(
+            SALT,
+            fromToken,
+            toToken
+        );
+    }
+
     // Deterministic `IKyberNetworkProxy.getExpectedRate()`.
     function getExpectedRate(
         address fromToken,

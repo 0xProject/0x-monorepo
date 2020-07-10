@@ -969,31 +969,54 @@ contract ERC20BridgeSampler is
         view
         returns (uint256 makerTokenAmount, address reserve)
     {
+        bytes memory hint;
+        //if (takerToken == _getWethAddress()) {
+        //    // ETH -> X
+        //    hint = IKyberHint(0xa1C0Fa73c39CFBcC11ec9Eb1Afc665aba9996E2C)
+        //        .buildEthToTokenHint(
+        //            makerToken,
+        //            IKyberHintHandler.TradeType.MaskOut,
+        //            new uint256[](0),
+        //            new uint256[](0));
+        //} else if (makerToken == _getWethAddress()) {
+        //    hint = IKyberHint(0xa1C0Fa73c39CFBcC11ec9Eb1Afc665aba9996E2C)
+        //        .buildTokenToEthHint(
+        //            takerToken,
+        //            IKyberHintHandler.TradeType.MaskOut,
+        //            new uint256[](0),
+        //            new uint256[](0));
+        //    // X->ETH
+        //} else {
+        //    // X->ETH->Y
+        //    hint = IKyberHint(0xa1C0Fa73c39CFBcC11ec9Eb1Afc665aba9996E2C)
+        //        .buildTokenToTokenHint(
+        //            takerToken,
+        //            IKyberHintHandler.TradeType.MaskOut,
+        //            new uint256[](0),
+        //            new uint256[](0),
+        //            makerToken,
+        //            IKyberHintHandler.TradeType.MaskOut,
+        //            new uint256[](0),
+        //            new uint256[](0));
+        //}
         address _takerToken = takerToken == _getWethAddress() ? KYBER_ETH_ADDRESS : takerToken;
         address _makerToken = makerToken == _getWethAddress() ? KYBER_ETH_ADDRESS : makerToken;
         uint256 takerTokenDecimals = _getTokenDecimals(takerToken);
         uint256 makerTokenDecimals = _getTokenDecimals(makerToken);
-        (bool didSucceed, bytes memory resultData) = _getKyberNetworkProxyAddress().staticcall.gas(DEFAULT_CALL_GAS)(
-            abi.encodeWithSelector(
-                IKyberNetworkProxy(0).kyberNetworkContract.selector
-            ));
-        if (!didSucceed) {
-            return (0, address(0));
-        }
-        address kyberNetworkContract = abi.decode(resultData, (address));
-        (didSucceed, resultData) =
-            kyberNetworkContract.staticcall.gas(KYBER_CALL_GAS)(
+        (bool didSucceed, bytes memory resultData) =
+            _getKyberNetworkProxyAddress().staticcall.gas(KYBER_CALL_GAS)(
                 abi.encodeWithSelector(
-                    IKyberNetwork(0).searchBestRate.selector,
+                    IKyberNetworkProxy(0).getExpectedRateAfterFee.selector,
                     _takerToken,
                     _makerToken,
                     takerTokenAmount,
-                    false // usePermissionless
+                    0,
+                    hint
                 ));
         uint256 rate = 0;
         address reserve;
         if (didSucceed) {
-            (reserve, rate) = abi.decode(resultData, (address, uint256));
+            (rate) = abi.decode(resultData, (uint256));
         } else {
             return (0, address(0));
         }
@@ -1004,6 +1027,6 @@ contract ERC20BridgeSampler is
             10 ** takerTokenDecimals /
             10 ** 18;
 
-        return (makerTokenAmount, reserve);
+        return (makerTokenAmount, address(0));
     }
 }
