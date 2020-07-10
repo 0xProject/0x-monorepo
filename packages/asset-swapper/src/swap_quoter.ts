@@ -552,7 +552,7 @@ export class SwapQuoter {
             opts.rfqt &&
             opts.rfqt.intentOnFilling &&
             opts.rfqt.apiKey &&
-            this._rfqtTakerApiKeyWhitelist().includes(opts.rfqt.apiKey) &&
+            this._isApiKeyWhitelisted(opts.rfqt.apiKey) &&
             !(marketOperation === MarketOperation.Buy && this._shouldSkipRfqtBuyRequests())
         ) {
             if (!opts.rfqt.takerAddress || opts.rfqt.takerAddress === constants.NULL_ADDRESS) {
@@ -610,8 +610,9 @@ export class SwapQuoter {
 
         return swapQuote;
     }
-    private _rfqtTakerApiKeyWhitelist(): string[] {
-        return this._rfqtOptions ? this._rfqtOptions.takerApiKeyWhitelist : [];
+    private _isApiKeyWhitelisted(apiKey: string): boolean {
+        const whitelistedApiKeys = this._rfqtOptions ? this._rfqtOptions.takerApiKeyWhitelist : [];
+        return whitelistedApiKeys.includes(apiKey);
     }
     private _shouldSkipRfqtBuyRequests(): boolean {
         const rfqtOptions = this._rfqtOptions;
