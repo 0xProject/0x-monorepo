@@ -1,20 +1,28 @@
 // tslint:disable:custom-no-magic-numbers
-import { tokenUtils } from '@0x/dev-utils';
-import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
-import { SignedOrder, StatusCodes } from '@0x/types';
+import { orderHashUtils } from '@0x/order-utils';
+import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 import 'mocha';
 import * as TypeMoq from 'typemoq';
 
-import { constants } from '../src/constants';
-import { MarketOperation, MockedRfqtFirmQuoteResponse, MockedRfqtIndicativeQuoteResponse } from '../src/types';
-import { CollapsedFill, DexSample, ERC20BridgeSource, NativeCollapsedFill } from '../src/utils/market_operation_utils/types';
+import { MarketOperation } from '../src/types';
+import {
+    CollapsedFill,
+    DexSample,
+    ERC20BridgeSource,
+    NativeCollapsedFill,
+} from '../src/utils/market_operation_utils/types';
 import { QuoteRequestor } from '../src/utils/quote_requestor';
-import { rfqtMocker } from '../src/utils/rfqt_mocker';
 
-import { BridgeReportSource, NativeOrderbookReportSource, NativeRFQTReportSource, QuoteReportGenerator, QuoteReportSource } from './../src/utils/quote_report_generator';
+import {
+    BridgeReportSource,
+    NativeOrderbookReportSource,
+    NativeRFQTReportSource,
+    QuoteReportGenerator,
+    QuoteReportSource,
+} from './../src/utils/quote_report_generator';
 import { chaiSetup } from './utils/chai_setup';
 import { testOrderFactory } from './utils/test_order_factory';
 
@@ -84,7 +92,12 @@ describe('QuoteReportGenerator', async () => {
                 takerAssetAmount: rfqtOrder2FillableAmount.plus(100),
             });
             const nativeOrders: SignedOrder[] = [orderbookOrder1, rfqtOrder1, rfqtOrder2, orderbookOrder2];
-            const orderFillableAmounts: BigNumber[] = [orderbookOrder1FillableAmount, rfqtOrder1FillableAmount, rfqtOrder2FillableAmount, orderbookOrder2FillableAmount];
+            const orderFillableAmounts: BigNumber[] = [
+                orderbookOrder1FillableAmount,
+                rfqtOrder1FillableAmount,
+                rfqtOrder2FillableAmount,
+                orderbookOrder2FillableAmount,
+            ];
 
             // generate path
             const uniswap2Fill: CollapsedFill = { ...uniswapSample2, subFills: [] };
@@ -95,17 +108,33 @@ describe('QuoteReportGenerator', async () => {
 
             // quote generator mock
             const quoteRequestor = TypeMoq.Mock.ofType<QuoteRequestor>();
-            quoteRequestor.setup(qr => qr.getMakerUriForOrderHash(orderHashUtils.getOrderHash(orderbookOrder2))).returns(() => {
-                return undefined;
-            }).verifiable(TypeMoq.Times.atLeastOnce());
-            quoteRequestor.setup(qr => qr.getMakerUriForOrderHash(orderHashUtils.getOrderHash(rfqtOrder1))).returns(() => {
-                return 'https://rfqt1.provider.club';
-            }).verifiable(TypeMoq.Times.atLeastOnce());
-            quoteRequestor.setup(qr => qr.getMakerUriForOrderHash(orderHashUtils.getOrderHash(rfqtOrder2))).returns(() => {
-                return 'https://rfqt2.provider.club';
-            }).verifiable(TypeMoq.Times.atLeastOnce());
+            quoteRequestor
+                .setup(qr => qr.getMakerUriForOrderHash(orderHashUtils.getOrderHash(orderbookOrder2)))
+                .returns(() => {
+                    return undefined;
+                })
+                .verifiable(TypeMoq.Times.atLeastOnce());
+            quoteRequestor
+                .setup(qr => qr.getMakerUriForOrderHash(orderHashUtils.getOrderHash(rfqtOrder1)))
+                .returns(() => {
+                    return 'https://rfqt1.provider.club';
+                })
+                .verifiable(TypeMoq.Times.atLeastOnce());
+            quoteRequestor
+                .setup(qr => qr.getMakerUriForOrderHash(orderHashUtils.getOrderHash(rfqtOrder2)))
+                .returns(() => {
+                    return 'https://rfqt2.provider.club';
+                })
+                .verifiable(TypeMoq.Times.atLeastOnce());
 
-            const orderReport = new QuoteReportGenerator(marketOperation, dexQuotes, nativeOrders, orderFillableAmounts, pathGenerated, quoteRequestor.object).generateReport();
+            const orderReport = new QuoteReportGenerator(
+                marketOperation,
+                dexQuotes,
+                nativeOrders,
+                orderFillableAmounts,
+                pathGenerated,
+                quoteRequestor.object,
+            ).generateReport();
 
             const rfqtOrder1Source: NativeRFQTReportSource = {
                 liquiditySource: ERC20BridgeSource.Native,
@@ -167,18 +196,31 @@ describe('QuoteReportGenerator', async () => {
             };
 
             const expectedSourcesConsidered: QuoteReportSource[] = [
-                kyber1Source, kyber2Source, uniswap1Source, uniswap2Source, orderbookOrder1Source, rfqtOrder1Source, rfqtOrder2Source, orderbookOrder2Source,
+                kyber1Source,
+                kyber2Source,
+                uniswap1Source,
+                uniswap2Source,
+                orderbookOrder1Source,
+                rfqtOrder1Source,
+                rfqtOrder2Source,
+                orderbookOrder2Source,
             ];
 
             expect(orderReport.sourcesConsidered.length).to.eql(expectedSourcesConsidered.length);
 
             orderReport.sourcesConsidered.forEach((actualSourcesConsidered, idx) => {
                 const expectedSourceConsidered = expectedSourcesConsidered[idx];
-                expect(actualSourcesConsidered).to.eql(expectedSourceConsidered, `sourceConsidered incorrect at index ${idx}`);
+                expect(actualSourcesConsidered).to.eql(
+                    expectedSourceConsidered,
+                    `sourceConsidered incorrect at index ${idx}`,
+                );
             });
 
             const expectedSourcesDelivered: QuoteReportSource[] = [
-                rfqtOrder2Source, orderbookOrder2Source, uniswap2Source, kyber2Source,
+                rfqtOrder2Source,
+                orderbookOrder2Source,
+                uniswap2Source,
+                kyber2Source,
             ];
             expect(orderReport.sourcesDelivered.length).to.eql(expectedSourcesDelivered.length);
             orderReport.sourcesDelivered.forEach((actualSourceDelivered, idx) => {
@@ -186,10 +228,17 @@ describe('QuoteReportGenerator', async () => {
 
                 // remove fillable values
                 if (actualSourceDelivered.liquiditySource === ERC20BridgeSource.Native) {
-                    actualSourceDelivered.nativeOrder = _.omit(actualSourceDelivered.nativeOrder, ['fillableMakerAssetAmount', 'fillableTakerAssetAmount', 'fillableTakerFeeAmount']) as SignedOrder;
+                    actualSourceDelivered.nativeOrder = _.omit(actualSourceDelivered.nativeOrder, [
+                        'fillableMakerAssetAmount',
+                        'fillableTakerAssetAmount',
+                        'fillableTakerFeeAmount',
+                    ]) as SignedOrder;
                 }
 
-                expect(actualSourceDelivered).to.eql(expectedSourceDelivered, `sourceDelivered incorrect at index ${idx}`);
+                expect(actualSourceDelivered).to.eql(
+                    expectedSourceDelivered,
+                    `sourceDelivered incorrect at index ${idx}`,
+                );
             });
 
             quoteRequestor.verifyAll();
@@ -227,7 +276,13 @@ describe('QuoteReportGenerator', async () => {
             const kyber1Fill: CollapsedFill = { ...kyberSample1, subFills: [] };
             const pathGenerated: CollapsedFill[] = [orderbookOrder1Fill, uniswap1Fill, kyber1Fill];
 
-            const orderReport = new QuoteReportGenerator(marketOperation, dexQuotes, nativeOrders, orderFillableAmounts, pathGenerated).generateReport();
+            const orderReport = new QuoteReportGenerator(
+                marketOperation,
+                dexQuotes,
+                nativeOrders,
+                orderFillableAmounts,
+                pathGenerated,
+            ).generateReport();
 
             const orderbookOrder1Source: NativeOrderbookReportSource = {
                 liquiditySource: ERC20BridgeSource.Native,
@@ -259,29 +314,39 @@ describe('QuoteReportGenerator', async () => {
             };
 
             const expectedSourcesConsidered: QuoteReportSource[] = [
-                kyber1Source, uniswap1Source, orderbookOrder1Source, orderbookOrder2Source,
+                kyber1Source,
+                uniswap1Source,
+                orderbookOrder1Source,
+                orderbookOrder2Source,
             ];
             expect(orderReport.sourcesConsidered.length).to.eql(expectedSourcesConsidered.length);
             orderReport.sourcesConsidered.forEach((actualSourcesConsidered, idx) => {
                 const expectedSourceConsidered = expectedSourcesConsidered[idx];
-                expect(actualSourcesConsidered).to.eql(expectedSourceConsidered, `sourceConsidered incorrect at index ${idx}`);
+                expect(actualSourcesConsidered).to.eql(
+                    expectedSourceConsidered,
+                    `sourceConsidered incorrect at index ${idx}`,
+                );
             });
 
-            const expectedSourcesDelivered: QuoteReportSource[] = [
-                orderbookOrder1Source, uniswap1Source, kyber1Source,
-            ];
+            const expectedSourcesDelivered: QuoteReportSource[] = [orderbookOrder1Source, uniswap1Source, kyber1Source];
             expect(orderReport.sourcesDelivered.length).to.eql(expectedSourcesDelivered.length);
             orderReport.sourcesDelivered.forEach((actualSourceDelivered, idx) => {
                 const expectedSourceDelivered = expectedSourcesDelivered[idx];
 
                 // remove fillable values
                 if (actualSourceDelivered.liquiditySource === ERC20BridgeSource.Native) {
-                    actualSourceDelivered.nativeOrder = _.omit(actualSourceDelivered.nativeOrder, ['fillableMakerAssetAmount', 'fillableTakerAssetAmount', 'fillableTakerFeeAmount']) as SignedOrder;
+                    actualSourceDelivered.nativeOrder = _.omit(actualSourceDelivered.nativeOrder, [
+                        'fillableMakerAssetAmount',
+                        'fillableTakerAssetAmount',
+                        'fillableTakerFeeAmount',
+                    ]) as SignedOrder;
                 }
 
-                expect(actualSourceDelivered).to.eql(expectedSourceDelivered, `sourceDelivered incorrect at index ${idx}`);
+                expect(actualSourceDelivered).to.eql(
+                    expectedSourceDelivered,
+                    `sourceDelivered incorrect at index ${idx}`,
+                );
             });
-
         });
     });
 });
