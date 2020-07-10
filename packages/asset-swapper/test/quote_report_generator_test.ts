@@ -184,7 +184,7 @@ describe('QuoteReportGenerator', async () => {
             orderReport.sourcesDelivered.forEach((actualSourceDelivered, idx) => {
                 const expectedSourceDelivered = expectedSourcesDelivered[idx];
 
-                // append bogus fillable values
+                // remove fillable values
                 if (actualSourceDelivered.liquiditySource === ERC20BridgeSource.Native) {
                     actualSourceDelivered.nativeOrder = _.omit(actualSourceDelivered.nativeOrder, ['fillableMakerAssetAmount', 'fillableTakerAssetAmount', 'fillableTakerFeeAmount']) as SignedOrder;
                 }
@@ -194,6 +194,94 @@ describe('QuoteReportGenerator', async () => {
 
             quoteRequestor.verifyAll();
         });
+        it('should handle properly for buy without quoteRequestor', () => {
+            const marketOperation: MarketOperation = MarketOperation.Buy;
+            const kyberSample1: DexSample = {
+                source: ERC20BridgeSource.Kyber,
+                input: new BigNumber(10000),
+                output: new BigNumber(10001),
+            };
+            const uniswapSample1: DexSample = {
+                source: ERC20BridgeSource.UniswapV2,
+                input: new BigNumber(10003),
+                output: new BigNumber(10004),
+            };
+            const dexQuotes: DexSample[] = [kyberSample1, uniswapSample1];
 
+            const orderbookOrder1FillableAmount = new BigNumber(1000);
+            const orderbookOrder1 = testOrderFactory.generateTestSignedOrder({
+                signature: 'orderbookOrder1',
+                takerAssetAmount: orderbookOrder1FillableAmount.plus(101),
+            });
+            const orderbookOrder2FillableAmount = new BigNumber(5000);
+            const orderbookOrder2 = testOrderFactory.generateTestSignedOrder({
+                signature: 'orderbookOrder2',
+                takerAssetAmount: orderbookOrder2FillableAmount.plus(101),
+            });
+            const nativeOrders: SignedOrder[] = [orderbookOrder1, orderbookOrder2];
+            const orderFillableAmounts: BigNumber[] = [orderbookOrder1FillableAmount, orderbookOrder2FillableAmount];
+
+            // generate path
+            const orderbookOrder1Fill: CollapsedFill = collapsedFillFromNativeOrder(orderbookOrder1);
+            const uniswap1Fill: CollapsedFill = { ...uniswapSample1, subFills: [] };
+            const kyber1Fill: CollapsedFill = { ...kyberSample1, subFills: [] };
+            const pathGenerated: CollapsedFill[] = [orderbookOrder1Fill, uniswap1Fill, kyber1Fill];
+
+            const orderReport = new QuoteReportGenerator(marketOperation, dexQuotes, nativeOrders, orderFillableAmounts, pathGenerated).generateReport();
+
+            const orderbookOrder1Source: NativeOrderbookReportSource = {
+                liquiditySource: ERC20BridgeSource.Native,
+                makerAmount: orderbookOrder1.makerAssetAmount,
+                takerAmount: orderbookOrder1.takerAssetAmount,
+                orderHash: orderHashUtils.getOrderHash(orderbookOrder1),
+                nativeOrder: orderbookOrder1,
+                fillableTakerAmount: orderbookOrder1FillableAmount,
+                isRfqt: false,
+            };
+            const orderbookOrder2Source: NativeOrderbookReportSource = {
+                liquiditySource: ERC20BridgeSource.Native,
+                makerAmount: orderbookOrder2.makerAssetAmount,
+                takerAmount: orderbookOrder2.takerAssetAmount,
+                orderHash: orderHashUtils.getOrderHash(orderbookOrder2),
+                nativeOrder: orderbookOrder2,
+                fillableTakerAmount: orderbookOrder2FillableAmount,
+                isRfqt: false,
+            };
+            const uniswap1Source: BridgeReportSource = {
+                liquiditySource: ERC20BridgeSource.UniswapV2,
+                makerAmount: uniswapSample1.input,
+                takerAmount: uniswapSample1.output,
+            };
+            const kyber1Source: BridgeReportSource = {
+                liquiditySource: ERC20BridgeSource.Kyber,
+                makerAmount: kyberSample1.input,
+                takerAmount: kyberSample1.output,
+            };
+
+            const expectedSourcesConsidered: QuoteReportSource[] = [
+                kyber1Source, uniswap1Source, orderbookOrder1Source, orderbookOrder2Source,
+            ];
+            expect(orderReport.sourcesConsidered.length).to.eql(expectedSourcesConsidered.length);
+            orderReport.sourcesConsidered.forEach((actualSourcesConsidered, idx) => {
+                const expectedSourceConsidered = expectedSourcesConsidered[idx];
+                expect(actualSourcesConsidered).to.eql(expectedSourceConsidered, `sourceConsidered incorrect at index ${idx}`);
+            });
+
+            const expectedSourcesDelivered: QuoteReportSource[] = [
+                orderbookOrder1Source, uniswap1Source, kyber1Source,
+            ];
+            expect(orderReport.sourcesDelivered.length).to.eql(expectedSourcesDelivered.length);
+            orderReport.sourcesDelivered.forEach((actualSourceDelivered, idx) => {
+                const expectedSourceDelivered = expectedSourcesDelivered[idx];
+
+                // remove fillable values
+                if (actualSourceDelivered.liquiditySource === ERC20BridgeSource.Native) {
+                    actualSourceDelivered.nativeOrder = _.omit(actualSourceDelivered.nativeOrder, ['fillableMakerAssetAmount', 'fillableTakerAssetAmount', 'fillableTakerFeeAmount']) as SignedOrder;
+                }
+
+                expect(actualSourceDelivered).to.eql(expectedSourceDelivered, `sourceDelivered incorrect at index ${idx}`);
+            });
+
+        });
     });
 });
