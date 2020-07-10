@@ -20,12 +20,13 @@ interface CacheValue {
     pools: BalancerPool[];
 }
 
-const ONE_MINUTE_MS = 60 * 1000; // tslint:disable-line:custom-no-magic-numbers
+const FIVE_SECONDS_MS = 5 * 1000; // tslint:disable-line:custom-no-magic-numbers
+const MAX_POOLS_FETCHED = 10; // tslint:disable-line:custom-no-magic-numbers
 
 export class BalancerPoolsCache {
     constructor(
         private readonly _cache: { [key: string]: CacheValue } = {},
-        public cacheExpiryMs: number = ONE_MINUTE_MS,
+        public cacheExpiryMs: number = FIVE_SECONDS_MS,
     ) {}
     public async getPoolsForPairAsync(takerToken: string, makerToken: string): Promise<BalancerPool[]> {
         const key = JSON.stringify([takerToken, makerToken]);
@@ -50,8 +51,7 @@ export class BalancerPoolsCache {
             const pools = parsePoolData(poolData, takerToken, makerToken).sort((a, b) =>
                 b.balanceOut.minus(a.balanceOut).toNumber(),
             );
-            // tslint:disable-next-line:custom-no-magic-numbers
-            return pools.length > 10 ? pools.slice(0, 10) : pools;
+            return pools.length > MAX_POOLS_FETCHED ? pools.slice(0, MAX_POOLS_FETCHED) : pools;
         } catch (err) {
             return [];
         }
