@@ -5,6 +5,10 @@
             {
                 "note": "Add geth eth_call types",
                 "pr": 2620
+            },
+            {
+                "note": "Touch this package to fix publish",
+                "pr": 2628
             }
         ]
     },

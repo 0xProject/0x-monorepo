@@ -17,6 +17,10 @@
             {
                 "note": "Deploy FQT from PR 2608",
                 "pr": 2625
+            },
+            {
+                "note": "Redeploy DFB on kovan",
+                "pr": 2628
             }
         ]
     },
