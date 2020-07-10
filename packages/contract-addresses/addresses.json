@@ -169,7 +169,7 @@
         "chainlinkStopLimit": "0x0000000000000000000000000000000000000000",
         "curveBridge": "0x90c62c91a9f655f4f739e6cee85c84f9ccf47323",
         "maximumGasPrice": "0x67a094cf028221ffdd93fc658f963151d05e2a74",
-        "dexForwarderBridge": "0x0ea9f5c5cf7a4e6630cb01c5cca11d289963b188",
+        "dexForwarderBridge": "0xf220eb0b29e18bbc8ebc964e915b7547c7b4de4f",
         "multiBridge": "0x0000000000000000000000000000000000000000",
         "exchangeProxyGovernor": "0x618f9c67ce7bf1a50afa1e7e0238422601b0ff6e",
         "exchangeProxy": "0xdef1c0ded9bec7f1a1670819833240f027b25eff",
