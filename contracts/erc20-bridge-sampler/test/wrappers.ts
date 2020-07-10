@@ -13,6 +13,7 @@ export * from '../test/generated-wrappers/i_eth2_dai';
 export * from '../test/generated-wrappers/i_kyber_hint_handler';
 export * from '../test/generated-wrappers/i_kyber_network';
 export * from '../test/generated-wrappers/i_kyber_network_proxy';
+export * from '../test/generated-wrappers/i_kyber_storage';
 export * from '../test/generated-wrappers/i_liquidity_provider';
 export * from '../test/generated-wrappers/i_liquidity_provider_registry';
 export * from '../test/generated-wrappers/i_multi_bridge';

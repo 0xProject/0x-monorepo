@@ -19,6 +19,7 @@
         "test/generated-artifacts/IKyberHintHandler.json",
         "test/generated-artifacts/IKyberNetwork.json",
         "test/generated-artifacts/IKyberNetworkProxy.json",
+        "test/generated-artifacts/IKyberStorage.json",
         "test/generated-artifacts/ILiquidityProvider.json",
         "test/generated-artifacts/ILiquidityProviderRegistry.json",
         "test/generated-artifacts/IMultiBridge.json",

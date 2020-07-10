@@ -30,6 +30,8 @@ import "./IERC20BridgeSampler.sol";
 import "./IEth2Dai.sol";
 import "./IKyberNetwork.sol";
 import "./IKyberNetworkProxy.sol";
+import "./IKyberStorage.sol";
+import "./IKyberHintHandler.sol";
 import "./IUniswapExchangeQuotes.sol";
 import "./ICurve.sol";
 import "./ILiquidityProvider.sol";
@@ -59,6 +61,8 @@ contract ERC20BridgeSampler is
     uint256 constant internal DEFAULT_CALL_GAS = 400e3; // 400k
     /// @dev The Kyber Uniswap Reserve address
     address constant internal KYBER_UNIWAP_RESERVE = 0x31E085Afd48a1d6e51Cc193153d625e8f0514C7F;
+    /// @dev The Kyber Uniswap V2 Reserve address
+    address constant internal KYBER_UNIWAPV2_RESERVE = 0x10908C875D865C66f271F5d3949848971c9595C9;
     /// @dev The Kyber Eth2Dai Reserve address
     address constant internal KYBER_ETH2DAI_RESERVE = 0x1E158c0e93c30d24e918Ef83d1e0bE23595C3c0f;
 
@@ -200,22 +204,12 @@ contract ERC20BridgeSampler is
         for (uint256 i = 0; i < numSamples; i++) {
             if (takerToken == wethAddress || makerToken == wethAddress) {
                 // Direct ETH based trade
-                (value, reserve) = _sampleSellFromKyberNetwork(takerToken, makerToken, takerTokenAmounts[i]);
-                // If this fills on an on-chain reserve we remove it as that can introduce collisions
-                if (reserve == KYBER_UNIWAP_RESERVE || reserve == KYBER_ETH2DAI_RESERVE) {
-                    value = 0;
-                }
+                value = _sampleSellFromKyberNetwork(takerToken, makerToken, takerTokenAmounts[i]);
             } else {
                 // Hop to ETH
-                (value, reserve) = _sampleSellFromKyberNetwork(takerToken, wethAddress, takerTokenAmounts[i]);
+                value = _sampleSellFromKyberNetwork(takerToken, wethAddress, takerTokenAmounts[i]);
                 if (value != 0) {
-                    address otherReserve;
-                    (value, otherReserve) = _sampleSellFromKyberNetwork(wethAddress, makerToken, value);
-                    // If this fills on Eth2Dai it is ok as we queried a different market
-                    // If this fills on Uniswap on both legs then this is a hard collision
-                    if (reserve == KYBER_UNIWAP_RESERVE && reserve == otherReserve) {
-                        value = 0;
-                    }
+                    value = _sampleSellFromKyberNetwork(wethAddress, makerToken, value);
                 }
             }
             makerTokenAmounts[i] = value;
@@ -967,38 +961,33 @@ contract ERC20BridgeSampler is
     )
         private
         view
-        returns (uint256 makerTokenAmount, address reserve)
+        returns (uint256 makerTokenAmount)
     {
         bytes memory hint;
-        //if (takerToken == _getWethAddress()) {
-        //    // ETH -> X
-        //    hint = IKyberHint(0xa1C0Fa73c39CFBcC11ec9Eb1Afc665aba9996E2C)
-        //        .buildEthToTokenHint(
-        //            makerToken,
-        //            IKyberHintHandler.TradeType.MaskOut,
-        //            new uint256[](0),
-        //            new uint256[](0));
-        //} else if (makerToken == _getWethAddress()) {
-        //    hint = IKyberHint(0xa1C0Fa73c39CFBcC11ec9Eb1Afc665aba9996E2C)
-        //        .buildTokenToEthHint(
-        //            takerToken,
-        //            IKyberHintHandler.TradeType.MaskOut,
-        //            new uint256[](0),
-        //            new uint256[](0));
-        //    // X->ETH
-        //} else {
-        //    // X->ETH->Y
-        //    hint = IKyberHint(0xa1C0Fa73c39CFBcC11ec9Eb1Afc665aba9996E2C)
-        //        .buildTokenToTokenHint(
-        //            takerToken,
-        //            IKyberHintHandler.TradeType.MaskOut,
-        //            new uint256[](0),
-        //            new uint256[](0),
-        //            makerToken,
-        //            IKyberHintHandler.TradeType.MaskOut,
-        //            new uint256[](0),
-        //            new uint256[](0));
-        //}
+        IKyberHintHandler handler = IKyberHintHandler(0xa1C0Fa73c39CFBcC11ec9Eb1Afc665aba9996E2C);
+        // Ban reserves which can clash with our internal aggregation
+        bytes32[] memory reserves = new bytes32[](3);
+        reserves[0] = IKyberStorage(0xC8fb12402cB16970F3C5F4b48Ff68Eb9D1289301).getReserveId(KYBER_UNIWAP_RESERVE);
+        reserves[1] = IKyberStorage(0xC8fb12402cB16970F3C5F4b48Ff68Eb9D1289301).getReserveId(KYBER_UNIWAPV2_RESERVE);
+        reserves[2] = IKyberStorage(0xC8fb12402cB16970F3C5F4b48Ff68Eb9D1289301).getReserveId(KYBER_ETH2DAI_RESERVE);
+
+        // Sampler either detects X->ETH/ETH->X
+        // or subsamples as X->ETH-Y. So token->token here is not possible
+        if (takerToken == _getWethAddress()) {
+            // ETH -> X
+            hint = handler.buildEthToTokenHint(
+                    makerToken,
+                    IKyberHintHandler.TradeType.MaskOut,
+                    reserves,
+                    new uint256[](0));
+        } else {
+            // X->ETH
+            hint = handler.buildTokenToEthHint(
+                    takerToken,
+                    IKyberHintHandler.TradeType.MaskOut,
+                    reserves,
+                    new uint256[](0));
+        }
         address _takerToken = takerToken == _getWethAddress() ? KYBER_ETH_ADDRESS : takerToken;
         address _makerToken = makerToken == _getWethAddress() ? KYBER_ETH_ADDRESS : makerToken;
         uint256 takerTokenDecimals = _getTokenDecimals(takerToken);
@@ -1018,7 +1007,7 @@ contract ERC20BridgeSampler is
         if (didSucceed) {
             (rate) = abi.decode(resultData, (uint256));
         } else {
-            return (0, address(0));
+            return 0;
         }
         makerTokenAmount =
             rate *
@@ -1027,6 +1016,6 @@ contract ERC20BridgeSampler is
             10 ** takerTokenDecimals /
             10 ** 18;
 
-        return (makerTokenAmount, address(0));
+        return makerTokenAmount;
     }
 }

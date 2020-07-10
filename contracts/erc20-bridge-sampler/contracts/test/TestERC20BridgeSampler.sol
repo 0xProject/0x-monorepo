@@ -275,13 +275,14 @@ contract TestERC20BridgeSamplerKyberNetwork is
         return (address(this), expectedRate);
     }
 
+    // solhint-disable space-after-comma
     // Deterministic `IKyberNetworkProxy.getExpectedRateAfterFee()`.
     function getExpectedRateAfterFee(
         address fromToken,
         address toToken,
-        uint256 srcQty,
-        uint256 ,
-        bytes calldata
+        uint256 /* srcQty */,
+        uint256 /* fee */,
+        bytes calldata /* hint */
     )
         external
         view
