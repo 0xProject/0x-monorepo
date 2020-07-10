@@ -59,6 +59,7 @@ export {
     SwapQuoterError,
     SwapQuoterOpts,
     SwapQuoteConsumerError,
+    SwapQuoterRfqtOpts,
     SignedOrderWithFillableAmounts,
     SwapQuoteOrdersBreakdown,
     ExchangeProxyContractOpts,
@@ -74,3 +75,4 @@ export { affiliateFeeUtils } from './utils/affiliate_fee_utils';
 export { ProtocolFeeUtils } from './utils/protocol_fee_utils';
 export { QuoteRequestor } from './utils/quote_requestor';
 export { rfqtMocker } from './utils/rfqt_mocker';
+export { QuoteReport } from './utils/quote_report_generator';
