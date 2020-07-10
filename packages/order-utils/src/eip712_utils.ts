@@ -5,11 +5,12 @@ import {
     EIP712Object,
     EIP712TypedData,
     EIP712Types,
+    ExchangeProxyMetaTransaction,
     Order,
     SignedZeroExTransaction,
     ZeroExTransaction,
 } from '@0x/types';
-import { hexUtils, signTypedDataUtils } from '@0x/utils';
+import { BigNumber, hexUtils, signTypedDataUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { constants } from './constants';
@@ -130,5 +131,22 @@ export const eip712Utils = {
             domain,
         );
         return typedData;
+    },
+    createExchangeProxyMetaTransactionTypedData(mtx: ExchangeProxyMetaTransaction): EIP712TypedData {
+        return eip712Utils.createTypedData(
+            constants.EXCHANGE_PROXY_MTX_SCEHMA.name,
+            {
+                MetaTransactionData: constants.EXCHANGE_PROXY_MTX_SCEHMA.parameters,
+            },
+            _.mapValues(
+                _.omit(mtx, 'domain'),
+                // tslint:disable-next-line: custom-no-magic-numbers
+                v => (BigNumber.isBigNumber(v) ? v.toString(10) : v),
+            ) as EIP712Object,
+            {
+                ...constants.MAINNET_EXCHANGE_PROXY_DOMAIN,
+                ...mtx.domain,
+            },
+        );
     },
 };

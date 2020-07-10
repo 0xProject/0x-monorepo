@@ -20,24 +20,21 @@ pragma solidity ^0.6.5;
 pragma experimental ABIEncoderV2;
 
 import "./LibStorage.sol";
-import "../external/IFlashWallet.sol";
 
 
-/// @dev Storage helpers for the `TransformERC20` feature.
-library LibTransformERC20Storage {
+/// @dev Storage helpers for the `MetaTransactions` feature.
+library LibMetaTransactionsStorage {
 
     /// @dev Storage bucket for this feature.
     struct Storage {
-        // The current wallet instance.
-        IFlashWallet wallet;
-        // The transformer deployer address.
-        address transformerDeployer;
+        // The block number when a hash was executed.
+        mapping (bytes32 => uint256) mtxHashToExecutedBlockNumber;
     }
 
     /// @dev Get the storage bucket for this contract.
     function getStorage() internal pure returns (Storage storage stor) {
         uint256 storageSlot = LibStorage.getStorageSlot(
-            LibStorage.StorageId.TransformERC20
+            LibStorage.StorageId.MetaTransactions
         );
         // Dip into assembly to change the slot pointed to by the local
         // variable `stor`.

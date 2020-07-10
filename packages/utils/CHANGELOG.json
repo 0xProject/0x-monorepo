@@ -29,6 +29,10 @@
             {
                 "note": "Update `ZeroExRevertErrors`",
                 "pr": 2597
+            },
+            {
+                "note": "Add more revert errors to `ZeroExRevertErrors`",
+                "pr": 2610
             }
         ],
         "timestamp": 1592969527

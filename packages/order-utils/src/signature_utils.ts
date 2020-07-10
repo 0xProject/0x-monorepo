@@ -1,14 +1,16 @@
 import { schemas } from '@0x/json-schemas';
 import {
     ECSignature,
+    ExchangeProxyMetaTransaction,
     Order,
     SignatureType,
+    SignedExchangeProxyMetaTransaction,
     SignedOrder,
     SignedZeroExTransaction,
     ValidatorSignature,
     ZeroExTransaction,
 } from '@0x/types';
-import { providerUtils } from '@0x/utils';
+import { hexUtils, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { SupportedProvider } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
@@ -16,6 +18,7 @@ import * as _ from 'lodash';
 
 import { assert } from './assert';
 import { eip712Utils } from './eip712_utils';
+import { getExchangeProxyMetaTransactionHash } from './hash_utils';
 import { orderHashUtils } from './order_hash_utils';
 import { transactionHashUtils } from './transaction_hash_utils';
 import { TypedDataError } from './types';
@@ -188,6 +191,96 @@ export const signatureUtils = {
         }
     },
     /**
+     * Signs an Exchange Proxy meta-transaction and returns a SignedExchangeProxyMetaTransaction.
+     * First `eth_signTypedData` is requested then a fallback to `eth_sign` if not
+     * available on the supplied provider.
+     * @param   supportedProvider  Web3 provider to use for all JSON RPC requests
+     * @param   transaction The ExchangeProxyMetaTransaction to sign.
+     * @param   signerAddress The hex encoded Ethereum address you wish to sign it with. This address
+     *          must be available via the supplied Provider.
+     * @return  A SignedExchangeProxyMetaTransaction containing the order and
+     *          elliptic curve signature with Signature Type.
+     */
+    async ecSignExchangeProxyMetaTransactionAsync(
+        supportedProvider: SupportedProvider,
+        transaction: ExchangeProxyMetaTransaction,
+        signerAddress: string,
+    ): Promise<SignedExchangeProxyMetaTransaction> {
+        assert.doesConformToSchema('transaction', transaction, schemas.zeroExTransactionSchema, [schemas.hexSchema]);
+        try {
+            const signedTransaction = await signatureUtils.ecSignTypedDataExchangeProxyMetaTransactionAsync(
+                supportedProvider,
+                transaction,
+                signerAddress,
+            );
+            return signedTransaction;
+        } catch (err) {
+            // HACK: We are unable to handle specific errors thrown since provider is not an object
+            //       under our control. It could be Metamask Web3, Ethers, or any general RPC provider.
+            //       We check for a user denying the signature request in a way that supports Metamask and
+            //       Coinbase Wallet. Unfortunately for signers with a different error message,
+            //       they will receive two signature requests.
+            if (err.message.includes('User denied message signature')) {
+                throw err;
+            }
+            const transactionHash = getExchangeProxyMetaTransactionHash(transaction);
+            const signatureHex = await signatureUtils.ecSignHashAsync(
+                supportedProvider,
+                transactionHash,
+                signerAddress,
+            );
+            const signedTransaction = {
+                ...transaction,
+                signature: signatureHex,
+            };
+            return signedTransaction;
+        }
+    },
+    /**
+     * Signs an Exchange Proxy meta-transaction using `eth_signTypedData` and
+     * returns a SignedZeroExTransaction.
+     * @param   supportedProvider      Web3 provider to use for all JSON RPC requests
+     * @param   transaction            The Exchange Proxy transaction to sign.
+     * @param   signerAddress          The hex encoded Ethereum address you wish
+     *          to sign it with. This address must be available via the supplied Provider.
+     * @return  A SignedExchangeProxyMetaTransaction containing the
+     *          ExchangeProxyMetaTransaction and elliptic curve signature with Signature Type.
+     */
+    async ecSignTypedDataExchangeProxyMetaTransactionAsync(
+        supportedProvider: SupportedProvider,
+        transaction: ExchangeProxyMetaTransaction,
+        signerAddress: string,
+    ): Promise<SignedExchangeProxyMetaTransaction> {
+        const provider = providerUtils.standardizeOrThrow(supportedProvider);
+        assert.isETHAddressHex('signerAddress', signerAddress);
+        assert.doesConformToSchema('transaction', transaction, schemas.zeroExTransactionSchema, [schemas.hexSchema]);
+        const web3Wrapper = new Web3Wrapper(provider);
+        await assert.isSenderAddressAsync('signerAddress', signerAddress, web3Wrapper);
+        const normalizedSignerAddress = signerAddress.toLowerCase();
+        const typedData = eip712Utils.createExchangeProxyMetaTransactionTypedData(transaction);
+        try {
+            const signature = await web3Wrapper.signTypedDataAsync(normalizedSignerAddress, typedData);
+            const ecSignatureRSV = parseSignatureHexAsRSV(signature);
+            const signatureHex = hexUtils.concat(
+                ecSignatureRSV.v,
+                ecSignatureRSV.r,
+                ecSignatureRSV.s,
+                SignatureType.EIP712,
+            );
+            return {
+                ...transaction,
+                signature: signatureHex,
+            };
+        } catch (err) {
+            // Detect if Metamask to transition users to the MetamaskSubprovider
+            if ((provider as any).isMetaMask) {
+                throw new Error(TypedDataError.InvalidMetamaskSigner);
+            } else {
+                throw err;
+            }
+        }
+    },
+    /**
      * Signs a hash using `eth_sign` and returns its elliptic curve signature and signature type.
      * @param   supportedProvider      Web3 provider to use for all JSON RPC requests
      * @param   msgHash       Hex encoded message to sign.
@@ -245,12 +338,7 @@ export const signatureUtils = {
      * @return Hex encoded string of signature (v,r,s) with Signature Type
      */
     convertECSignatureToSignatureHex(ecSignature: ECSignature): string {
-        const signatureBuffer = Buffer.concat([
-            ethUtil.toBuffer(ecSignature.v),
-            ethUtil.toBuffer(ecSignature.r),
-            ethUtil.toBuffer(ecSignature.s),
-        ]);
-        const signatureHex = `0x${signatureBuffer.toString('hex')}`;
+        const signatureHex = hexUtils.concat(ecSignature.v, ecSignature.r, ecSignature.s);
         const signatureWithType = signatureUtils.convertToSignatureWithType(signatureHex, SignatureType.EthSign);
         return signatureWithType;
     },

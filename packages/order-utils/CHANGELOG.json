@@ -5,6 +5,10 @@
             {
                 "note": "Add ERC20 Transformer utils and export useful constants.",
                 "pr": 2604
+            },
+            {
+                "note": "Add `getOrderHash()`, `getExchangeTransactionHash()`, `getExchangeProxyTransactionHash()`",
+                "pr": 2610
             }
         ]
     },

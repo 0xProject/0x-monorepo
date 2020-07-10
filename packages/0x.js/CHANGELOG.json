@@ -5,6 +5,10 @@
             {
                 "note": "Export `GethCallOverrides` type",
                 "pr": 2620
+            },
+            {
+                "note": "Export `ExchangeProxyMetaTransaction` and `SignedExchangeProxyMetaTransaction`",
+                "pr": 2610
             }
         ]
     },

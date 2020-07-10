@@ -49,6 +49,8 @@ export {
     ZeroExTransaction,
     SignedZeroExTransaction,
     ValidatorSignature,
+    ExchangeProxyMetaTransaction,
+    SignedExchangeProxyMetaTransaction,
 } from '@0x/types';
 
 export {
@@ -76,6 +78,8 @@ export {
     encodeAffiliateFeeTransformerData,
     decodeAffiliateFeeTransformerData,
 } from './transformer_data_encoders';
+
+export { getOrderHash, getExchangeMetaTransactionHash, getExchangeProxyMetaTransactionHash } from './hash_utils';
 
 import { constants } from './constants';
 export const NULL_ADDRESS = constants.NULL_ADDRESS;

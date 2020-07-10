@@ -23,6 +23,8 @@ import "../ZeroEx.sol";
 import "../features/IOwnable.sol";
 import "../features/TokenSpender.sol";
 import "../features/TransformERC20.sol";
+import "../features/SignatureValidator.sol";
+import "../features/MetaTransactions.sol";
 import "../external/AllowanceTarget.sol";
 import "./InitialMigration.sol";
 
@@ -38,6 +40,8 @@ contract FullMigration {
         Ownable ownable;
         TokenSpender tokenSpender;
         TransformERC20 transformERC20;
+        SignatureValidator signatureValidator;
+        MetaTransactions metaTransactions;
     }
 
     /// @dev Parameters needed to initialize features.
@@ -45,42 +49,56 @@ contract FullMigration {
         address transformerDeployer;
     }
 
-    /// @dev The allowed caller of `deploy()`.
-    address public immutable deployer;
+    /// @dev The allowed caller of `initializeZeroEx()`.
+    address public immutable initializeCaller;
     /// @dev The initial migration contract.
     InitialMigration private _initialMigration;
 
-    /// @dev Instantiate this contract and set the allowed caller of `deploy()`
-    ///      to `deployer`.
-    /// @param deployer_ The allowed caller of `deploy()`.
-    constructor(address payable deployer_)
+    /// @dev Instantiate this contract and set the allowed caller of `initializeZeroEx()`
+    ///      to `initializeCaller`.
+    /// @param initializeCaller_ The allowed caller of `initializeZeroEx()`.
+    constructor(address payable initializeCaller_)
         public
     {
-        deployer = deployer_;
+        initializeCaller = initializeCaller_;
         // Create an initial migration contract with this contract set to the
-        // allowed deployer.
+        // allowed `initializeCaller`.
         _initialMigration = new InitialMigration(address(this));
     }
 
-    /// @dev Deploy the `ZeroEx` contract with the full feature set,
+    /// @dev Retrieve the bootstrapper address to use when constructing `ZeroEx`.
+    /// @return bootstrapper The bootstrapper address.
+    function getBootstrapper()
+        external
+        view
+        returns (address bootstrapper)
+    {
+        return address(_initialMigration);
+    }
+
+    /// @dev Initialize the `ZeroEx` contract with the full feature set,
     ///      transfer ownership to `owner`, then self-destruct.
     /// @param owner The owner of the contract.
+    /// @param zeroEx The instance of the ZeroEx contract. ZeroEx should
+    ///        been constructed with this contract as the bootstrapper.
     /// @param features Features to add to the proxy.
-    /// @return zeroEx The deployed and configured `ZeroEx` contract.
+    /// @return _zeroEx The configured ZeroEx contract. Same as the `zeroEx` parameter.
     /// @param migrateOpts Parameters needed to initialize features.
-    function deploy(
+    function initializeZeroEx(
         address payable owner,
+        ZeroEx zeroEx,
         Features memory features,
         MigrateOpts memory migrateOpts
     )
         public
-        returns (ZeroEx zeroEx)
+        returns (ZeroEx _zeroEx)
     {
-        require(msg.sender == deployer, "FullMigration/INVALID_SENDER");
+        require(msg.sender == initializeCaller, "FullMigration/INVALID_SENDER");
 
         // Perform the initial migration with the owner set to this contract.
-        zeroEx = _initialMigration.deploy(
+        _initialMigration.initializeZeroEx(
             address(uint160(address(this))),
+            zeroEx,
             InitialMigration.BootstrapFeatures({
                 registry: features.registry,
                 ownable: features.ownable
@@ -95,9 +113,11 @@ contract FullMigration {
 
         // Self-destruct.
         this.die(owner);
+
+        return zeroEx;
     }
 
-    /// @dev Destroy this contract. Only callable from ourselves (from `deploy()`).
+    /// @dev Destroy this contract. Only callable from ourselves (from `initializeZeroEx()`).
     /// @param ethRecipient Receiver of any ETH in this contract.
     function die(address payable ethRecipient)
         external
@@ -149,6 +169,28 @@ contract FullMigration {
                 abi.encodeWithSelector(
                     TransformERC20.migrate.selector,
                     migrateOpts.transformerDeployer
+                ),
+                address(this)
+            );
+        }
+        // SignatureValidator
+        {
+            // Register the feature.
+            ownable.migrate(
+                address(features.signatureValidator),
+                abi.encodeWithSelector(
+                    SignatureValidator.migrate.selector
+                ),
+                address(this)
+            );
+        }
+        // MetaTransactions
+        {
+            // Register the feature.
+            ownable.migrate(
+                address(features.metaTransactions),
+                abi.encodeWithSelector(
+                    MetaTransactions.migrate.selector
                 ),
                 address(this)
             );
