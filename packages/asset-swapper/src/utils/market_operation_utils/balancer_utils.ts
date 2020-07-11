@@ -21,7 +21,8 @@ interface CacheValue {
 }
 
 const FIVE_SECONDS_MS = 5 * 1000; // tslint:disable-line:custom-no-magic-numbers
-const MAX_POOLS_FETCHED = 10; // tslint:disable-line:custom-no-magic-numbers
+const MAX_POOLS_FETCHED = 5; // tslint:disable-line:custom-no-magic-numbers
+const Decimal20 = Decimal.clone({ precision: 20 });
 
 export class BalancerPoolsCache {
     constructor(
@@ -65,8 +66,8 @@ export function computeBalancerSellQuote(pool: BalancerPool, takerFillAmount: Bi
         .dividedBy(bmath.BONE)
         .times(takerFillAmount);
     const y = pool.balanceIn.dividedBy(pool.balanceIn.plus(adjustedIn));
-    const foo = new Decimal(y.toString()).pow(weightRatio.toString());
-    const bar = new BigNumber(1).minus(foo.toString());
+    const foo = Math.pow(y.toNumber(), weightRatio.toNumber());
+    const bar = new BigNumber(1).minus(foo);
     const tokenAmountOut = pool.balanceOut.times(bar);
     return tokenAmountOut.integerValue();
 }
@@ -78,8 +79,10 @@ export function computeBalancerBuyQuote(pool: BalancerPool, makerFillAmount: Big
     const weightRatio = pool.weightOut.dividedBy(pool.weightIn);
     const diff = pool.balanceOut.minus(makerFillAmount);
     const y = pool.balanceOut.dividedBy(diff);
-    let foo = new Decimal(y.toString()).pow(weightRatio.toString());
-    foo = foo.minus(1);
+    let foo: number | Decimal = Math.pow(y.toNumber(), weightRatio.toNumber()) - 1;
+    if (!Number.isFinite(foo)) {
+        foo = new Decimal20(y.toString()).pow(weightRatio.toString()).minus(1);
+    }
     let tokenAmountIn = bmath.BONE.minus(pool.swapFee).dividedBy(bmath.BONE);
     tokenAmountIn = pool.balanceIn.times(foo.toString()).dividedBy(tokenAmountIn);
     return tokenAmountIn.integerValue();
