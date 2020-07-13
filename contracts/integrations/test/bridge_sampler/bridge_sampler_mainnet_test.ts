@@ -95,7 +95,7 @@ blockchainTests.fork.resets('Mainnet Sampler Tests', env => {
                 expect(samples.length).to.be.bignumber.greaterThan(0);
                 expect(samples[0]).to.be.bignumber.greaterThan(0);
             });
-            it.skip('samples sells from Kyber DAI->USDC', async () => {
+            it('samples sells from Kyber DAI->USDC', async () => {
                 const samples = await testContract
                     .sampleSellsFromKyberNetwork(DAI, USDC, [toBaseUnitAmount(1)])
                     .callAsync({ overrides });
@@ -110,7 +110,7 @@ blockchainTests.fork.resets('Mainnet Sampler Tests', env => {
                 // I want to buy 1 DAI
                 const samples = await testContract
                     .sampleBuysFromKyberNetwork(WETH, DAI, [toBaseUnitAmount(1)], FAKE_BUY_OPTS)
-                    .callAsync();
+                    .callAsync({ overrides });
                 expect(samples.length).to.be.bignumber.greaterThan(0);
                 expect(samples[0]).to.be.bignumber.greaterThan(0);
             });
@@ -120,7 +120,7 @@ blockchainTests.fork.resets('Mainnet Sampler Tests', env => {
                 // I want to buy 1 WETH
                 const samples = await testContract
                     .sampleBuysFromKyberNetwork(DAI, WETH, [toBaseUnitAmount(1)], FAKE_BUY_OPTS)
-                    .callAsync();
+                    .callAsync({ overrides });
                 expect(samples.length).to.be.bignumber.greaterThan(0);
                 expect(samples[0]).to.be.bignumber.greaterThan(0);
             });
