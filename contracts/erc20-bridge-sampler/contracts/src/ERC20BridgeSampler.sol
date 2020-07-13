@@ -60,11 +60,14 @@ contract ERC20BridgeSampler is
     /// @dev Default gas limit for liquidity provider calls.
     uint256 constant internal DEFAULT_CALL_GAS = 400e3; // 400k
     /// @dev The Kyber Uniswap Reserve address
-    address constant internal KYBER_UNIWAP_RESERVE = 0x31E085Afd48a1d6e51Cc193153d625e8f0514C7F;
+    address constant internal KYBER_UNISWAP_RESERVE = 0x31E085Afd48a1d6e51Cc193153d625e8f0514C7F;
     /// @dev The Kyber Uniswap V2 Reserve address
-    address constant internal KYBER_UNIWAPV2_RESERVE = 0x10908C875D865C66f271F5d3949848971c9595C9;
+    address constant internal KYBER_UNISWAPV2_RESERVE = 0x10908C875D865C66f271F5d3949848971c9595C9;
     /// @dev The Kyber Eth2Dai Reserve address
     address constant internal KYBER_ETH2DAI_RESERVE = 0x1E158c0e93c30d24e918Ef83d1e0bE23595C3c0f;
+
+    IKyberHintHandler constant internal KYBER_HINT = IKyberHintHandler(0xa1C0Fa73c39CFBcC11ec9Eb1Afc665aba9996E2C);
+    IKyberStorage constant internal KYBER_STORAGE = IKyberStorage(0xC8fb12402cB16970F3C5F4b48Ff68Eb9D1289301);
 
     address private _devUtilsAddress;
 
@@ -200,7 +203,6 @@ contract ERC20BridgeSampler is
         makerTokenAmounts = new uint256[](numSamples);
         address wethAddress = _getWethAddress();
         uint256 value;
-        address reserve;
         for (uint256 i = 0; i < numSamples; i++) {
             if (takerToken == wethAddress || makerToken == wethAddress) {
                 // Direct ETH based trade
@@ -954,6 +956,15 @@ contract ERC20BridgeSampler is
         }
     }
 
+    function _appendToList(bytes32[] memory list, bytes32 item) private view returns (bytes32[] memory appendedList)
+    {
+        appendedList = new bytes32[](list.length + 1);
+        for (uint256 i = 0; i < list.length; i++) {
+            appendedList[i] = list[i];
+        }
+        appendedList[appendedList.length - 1] = item;
+    }
+
     function _sampleSellFromKyberNetwork(
         address takerToken,
         address makerToken,
@@ -963,59 +974,64 @@ contract ERC20BridgeSampler is
         view
         returns (uint256 makerTokenAmount)
     {
-        bytes memory hint;
-        IKyberHintHandler handler = IKyberHintHandler(0xa1C0Fa73c39CFBcC11ec9Eb1Afc665aba9996E2C);
         // Ban reserves which can clash with our internal aggregation
-        bytes32[] memory reserves = new bytes32[](3);
-        reserves[0] = IKyberStorage(0xC8fb12402cB16970F3C5F4b48Ff68Eb9D1289301).getReserveId(KYBER_UNIWAP_RESERVE);
-        reserves[1] = IKyberStorage(0xC8fb12402cB16970F3C5F4b48Ff68Eb9D1289301).getReserveId(KYBER_UNIWAPV2_RESERVE);
-        reserves[2] = IKyberStorage(0xC8fb12402cB16970F3C5F4b48Ff68Eb9D1289301).getReserveId(KYBER_ETH2DAI_RESERVE);
-
+        bytes32[] memory reserveIds = KYBER_STORAGE.getReserveIdsPerTokenSrc(
+            takerToken == _getWethAddress() ? makerToken : takerToken
+        );
+        bytes32[] memory bannedReserveIds = new bytes32[](0);
+        // Poor mans resize and append
+        for (uint256 i = 0; i < reserveIds.length; i++) {
+            if (
+                reserveIds[i] == KYBER_STORAGE.getReserveId(KYBER_UNISWAP_RESERVE) ||
+                reserveIds[i] == KYBER_STORAGE.getReserveId(KYBER_UNISWAPV2_RESERVE) ||
+                reserveIds[i] == KYBER_STORAGE.getReserveId(KYBER_ETH2DAI_RESERVE)
+            ) {
+                bannedReserveIds = _appendToList(bannedReserveIds, reserveIds[i]);
+            }
+        }
         // Sampler either detects X->ETH/ETH->X
         // or subsamples as X->ETH-Y. So token->token here is not possible
+        bytes memory hint;
         if (takerToken == _getWethAddress()) {
             // ETH -> X
-            hint = handler.buildEthToTokenHint(
+            hint = KYBER_HINT.buildEthToTokenHint(
                     makerToken,
                     IKyberHintHandler.TradeType.MaskOut,
-                    reserves,
+                    bannedReserveIds,
                     new uint256[](0));
         } else {
             // X->ETH
-            hint = handler.buildTokenToEthHint(
+            hint = KYBER_HINT.buildEthToTokenHint(
                     takerToken,
                     IKyberHintHandler.TradeType.MaskOut,
-                    reserves,
+                    bannedReserveIds,
                     new uint256[](0));
         }
-        address _takerToken = takerToken == _getWethAddress() ? KYBER_ETH_ADDRESS : takerToken;
-        address _makerToken = makerToken == _getWethAddress() ? KYBER_ETH_ADDRESS : makerToken;
-        uint256 takerTokenDecimals = _getTokenDecimals(takerToken);
-        uint256 makerTokenDecimals = _getTokenDecimals(makerToken);
         (bool didSucceed, bytes memory resultData) =
             _getKyberNetworkProxyAddress().staticcall.gas(KYBER_CALL_GAS)(
                 abi.encodeWithSelector(
                     IKyberNetworkProxy(0).getExpectedRateAfterFee.selector,
-                    _takerToken,
-                    _makerToken,
+                    takerToken == _getWethAddress() ? KYBER_ETH_ADDRESS : takerToken,
+                    makerToken == _getWethAddress() ? KYBER_ETH_ADDRESS : makerToken,
                     takerTokenAmount,
-                    0,
+                    0, // fee
                     hint
                 ));
         uint256 rate = 0;
-        address reserve;
         if (didSucceed) {
             (rate) = abi.decode(resultData, (uint256));
         } else {
             return 0;
         }
+
+        uint256 makerTokenDecimals = _getTokenDecimals(makerToken);
+        uint256 takerTokenDecimals = _getTokenDecimals(takerToken);
         makerTokenAmount =
             rate *
             takerTokenAmount *
             10 ** makerTokenDecimals /
             10 ** takerTokenDecimals /
             10 ** 18;
-
         return makerTokenAmount;
     }
 }

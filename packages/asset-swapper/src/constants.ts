@@ -49,6 +49,7 @@ const DEFAULT_SWAP_QUOTER_OPTS: SwapQuoterOpts = {
         makerAssetOfferings: {},
         skipBuyRequests: false,
     },
+    samplerCallDataOverrides: {},
 };
 
 const DEFAULT_FORWARDER_EXTENSION_CONTRACT_OPTS: ForwarderExtensionContractOpts = {

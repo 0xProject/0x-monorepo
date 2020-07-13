@@ -1,4 +1,4 @@
-import { ContractAddresses } from '@0x/contract-wrappers';
+import { CallData, ContractAddresses } from '@0x/contract-wrappers';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
@@ -253,6 +253,7 @@ export interface SwapQuoterOpts extends OrderPrunerOpts {
         warningLogger?: LogFunction;
         infoLogger?: LogFunction;
     };
+    samplerCallDataOverrides?: Partial<CallData>;
 }
 
 /**

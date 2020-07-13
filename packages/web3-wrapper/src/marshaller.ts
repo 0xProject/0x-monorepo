@@ -16,8 +16,6 @@ import {
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 
-import { utils } from './utils';
-
 import {
     BlockWithoutTransactionDataRPC,
     BlockWithTransactionDataRPC,
@@ -28,6 +26,7 @@ import {
     TransactionRPC,
     TxDataRPC,
 } from './types';
+import { utils } from './utils';
 
 /**
  * Utils to convert ethereum structures from user-space format to RPC format. (marshall/unmarshall)
@@ -163,6 +162,7 @@ export const marshaller = {
             ...callData,
         };
         delete callTxDataBase.from;
+        delete callTxDataBase.overrides;
         const callTxDataBaseRPC = marshaller._marshalCallTxDataBase(callTxDataBase);
         const callDataRPC = {
             ...callTxDataBaseRPC,

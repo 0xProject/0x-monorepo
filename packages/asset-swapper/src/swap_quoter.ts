@@ -157,6 +157,7 @@ export class SwapQuoter {
             samplerGasLimit,
             liquidityProviderRegistryAddress,
             rfqt,
+            samplerCallDataOverrides,
         } = _.merge({}, constants.DEFAULT_SWAP_QUOTER_OPTS, options);
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         assert.isValidOrderbook('orderbook', orderbook);
@@ -185,13 +186,23 @@ export class SwapQuoter {
             rfqt ? rfqt.infoLogger : undefined,
             expiryBufferMs,
         );
-        const sampler = new DexOrderSampler(
-            new IERC20BridgeSamplerContract(this._contractAddresses.erc20BridgeSampler, this.provider, {
+        const samplerContract = new IERC20BridgeSamplerContract(
+            this._contractAddresses.erc20BridgeSampler,
+            this.provider,
+            {
                 gas: samplerGasLimit,
-            }),
+            },
         );
+        // const samplerBytecode = (bridgeSamplerArtifact as any).compilerOutput.evm.deployedBytecode.object;
+        // const sampler = new DexOrderSampler(samplerContract, {
+        //    overrides: {
+        //        [this._contractAddresses.erc20BridgeSampler]: {
+        //            code: samplerBytecode,
+        //        },
+        //    },
+        // });
         this._marketOperationUtils = new MarketOperationUtils(
-            sampler,
+            new DexOrderSampler(samplerContract, samplerCallDataOverrides),
             this._contractAddresses,
             {
                 chainId,
