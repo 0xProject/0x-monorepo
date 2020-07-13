@@ -1,4 +1,4 @@
-import { BigNumber } from '@0x/utils';
+import { BigNumber, logUtils } from '@0x/utils';
 import { bmath, getPoolsWithTokens, parsePoolData } from '@balancer-labs/sor';
 import { Decimal } from 'decimal.js';
 import * as _ from 'lodash';
@@ -30,6 +30,7 @@ export class BalancerPoolsCache {
         public cacheExpiryMs: number = FIVE_SECONDS_MS,
     ) {}
     public async getPoolsForPairAsync(takerToken: string, makerToken: string): Promise<BalancerPool[]> {
+        const startTime = Date.now();
         const key = JSON.stringify([takerToken, makerToken]);
         const value = this._cache[key];
         const minTimestamp = Date.now() - this.cacheExpiryMs;
@@ -41,6 +42,8 @@ export class BalancerPoolsCache {
                 timestamp,
             };
         }
+        const latency = Date.now() - startTime;
+        logUtils.log(`{ methodName: computeBalancerSellQuote, latency: ${latency} }`);
         return this._cache[key].pools;
     }
 
@@ -61,6 +64,7 @@ export class BalancerPoolsCache {
 
 // tslint:disable completed-docs
 export function computeBalancerSellQuote(pool: BalancerPool, takerFillAmount: BigNumber): BigNumber {
+    const startTime = Date.now();
     const weightRatio = pool.weightIn.dividedBy(pool.weightOut);
     const adjustedIn = bmath.BONE.minus(pool.swapFee)
         .dividedBy(bmath.BONE)
@@ -69,10 +73,13 @@ export function computeBalancerSellQuote(pool: BalancerPool, takerFillAmount: Bi
     const foo = Math.pow(y.toNumber(), weightRatio.toNumber());
     const bar = new BigNumber(1).minus(foo);
     const tokenAmountOut = pool.balanceOut.times(bar);
+    const latency = Date.now() - startTime;
+    logUtils.log(`{ methodName: computeBalancerSellQuote, latency: ${latency} }`);
     return tokenAmountOut.integerValue();
 }
 
 export function computeBalancerBuyQuote(pool: BalancerPool, makerFillAmount: BigNumber): BigNumber {
+    const startTime = Date.now();
     if (makerFillAmount.isGreaterThanOrEqualTo(pool.balanceOut)) {
         return new BigNumber(0);
     }
@@ -85,5 +92,7 @@ export function computeBalancerBuyQuote(pool: BalancerPool, makerFillAmount: Big
     }
     let tokenAmountIn = bmath.BONE.minus(pool.swapFee).dividedBy(bmath.BONE);
     tokenAmountIn = pool.balanceIn.times(foo.toString()).dividedBy(tokenAmountIn);
+    const latency = Date.now() - startTime;
+    logUtils.log(`{ methodName: computeBalancerSellQuote, latency: ${latency} }`);
     return tokenAmountIn.integerValue();
 }
