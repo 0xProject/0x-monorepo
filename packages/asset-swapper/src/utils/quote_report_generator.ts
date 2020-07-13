@@ -72,7 +72,7 @@ export class QuoteReportGenerator {
     }
 
     public generateReport(): QuoteReport {
-        const dexReportSourcesConsidered = this._dexQuotes.map(ds => this._dexSampleToReportSource(ds));
+        const dexReportSourcesConsidered = this._dexQuotes.map(dq => this._dexSampleToReportSource(dq));
         const nativeOrderSourcesConsidered = this._nativeOrders.map(no => this._nativeOrderToReportSource(no));
 
         const sourcesConsidered = [...dexReportSourcesConsidered, ...nativeOrderSourcesConsidered];
