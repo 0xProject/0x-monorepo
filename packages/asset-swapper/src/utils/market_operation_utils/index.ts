@@ -223,7 +223,7 @@ export class MarketOperationUtils {
         );
 
         const balancerPromise = this._sampler.executeAsync(
-            await DexOrderSampler.ops.getSellQuotesAsync(
+            await DexOrderSampler.ops.getBuyQuotesAsync(
                 difference([ERC20BridgeSource.Balancer], _opts.excludedSources),
                 makerToken,
                 takerToken,
@@ -231,7 +231,6 @@ export class MarketOperationUtils {
                 this._wethAddress,
                 this._sampler.balancerPoolsCache,
                 this._liquidityProviderRegistry,
-                this._multiBridge,
             ),
         );
 

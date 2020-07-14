@@ -185,7 +185,7 @@ describe('MarketOperationUtils tests', () => {
             liquidityProviderAddress?: string,
         ) => {
             liquidityPoolParams.liquidityProviderAddress = liquidityProviderAddress;
-            liquidityPoolParams.sources = sources;
+            liquidityPoolParams.sources = liquidityPoolParams.sources.concat(sources);
             return tradeOperation(rates)(
                 sources,
                 makerToken,
@@ -379,7 +379,7 @@ describe('MarketOperationUtils tests', () => {
                 let sourcesPolled: ERC20BridgeSource[] = [];
                 replaceSamplerOps({
                     getSellQuotesAsync: (sources, makerToken, takerToken, amounts, wethAddress) => {
-                        sourcesPolled = sources.slice();
+                        sourcesPolled = sourcesPolled.concat(sources.slice());
                         return DEFAULT_OPS.getSellQuotesAsync(sources, makerToken, takerToken, amounts, wethAddress);
                     },
                 });
@@ -420,7 +420,7 @@ describe('MarketOperationUtils tests', () => {
                 let sourcesPolled: ERC20BridgeSource[] = [];
                 replaceSamplerOps({
                     getSellQuotesAsync: (sources, makerToken, takerToken, amounts, wethAddress) => {
-                        sourcesPolled = sources.slice();
+                        sourcesPolled = sourcesPolled.concat(sources.slice());
                         return DEFAULT_OPS.getSellQuotesAsync(sources, makerToken, takerToken, amounts, wethAddress);
                     },
                 });
@@ -785,7 +785,7 @@ describe('MarketOperationUtils tests', () => {
                 let sourcesPolled: ERC20BridgeSource[] = [];
                 replaceSamplerOps({
                     getBuyQuotesAsync: (sources, makerToken, takerToken, amounts, wethAddress) => {
-                        sourcesPolled = sources.slice();
+                        sourcesPolled = sourcesPolled.concat(sources.slice());
                         return DEFAULT_OPS.getBuyQuotesAsync(sources, makerToken, takerToken, amounts, wethAddress);
                     },
                 });
@@ -826,7 +826,7 @@ describe('MarketOperationUtils tests', () => {
                 let sourcesPolled: ERC20BridgeSource[] = [];
                 replaceSamplerOps({
                     getBuyQuotesAsync: (sources, makerToken, takerToken, amounts, wethAddress) => {
-                        sourcesPolled = sources.slice();
+                        sourcesPolled = sourcesPolled.concat(sources.slice());
                         return DEFAULT_OPS.getBuyQuotesAsync(sources, makerToken, takerToken, amounts, wethAddress);
                     },
                 });
