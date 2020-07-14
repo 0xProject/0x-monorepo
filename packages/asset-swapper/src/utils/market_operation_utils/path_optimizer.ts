@@ -3,7 +3,7 @@ import { BigNumber } from '@0x/utils';
 import { MarketOperation } from '../../types';
 
 import { ZERO_AMOUNT } from './constants';
-import { getPathSize, isValidPath } from './fills';
+import { getPathAdjustedSize, getPathSize, isValidPath } from './fills';
 import { Fill } from './types';
 
 // tslint:disable: prefer-for-of custom-no-magic-numbers completed-docs
@@ -20,9 +20,12 @@ export function findOptimalPath(
     targetInput: BigNumber,
     runLimit: number = 2 ** 15,
 ): Fill[] | undefined {
-    paths.sort((a, b) => b[0].adjustedRate.comparedTo(a[0].adjustedRate));
-    let optimalPath = paths[0] || [];
-    for (const [i, path] of paths.slice(1).entries()) {
+    // Sort paths in descending order by adjusted output amount.
+    const sortedPaths = paths
+        .slice(0)
+        .sort((a, b) => getPathAdjustedSize(b, targetInput)[1].comparedTo(getPathAdjustedSize(a, targetInput)[1]));
+    let optimalPath = sortedPaths[0] || [];
+    for (const [i, path] of sortedPaths.slice(1).entries()) {
         optimalPath = mixPaths(side, optimalPath, path, targetInput, runLimit * RUN_LIMIT_DECAY_FACTOR ** i);
     }
     return isPathComplete(optimalPath, targetInput) ? optimalPath : undefined;
