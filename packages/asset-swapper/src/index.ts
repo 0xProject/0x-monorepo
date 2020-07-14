@@ -72,6 +72,7 @@ export {
     BalancerFillData,
     CollapsedFill,
     CurveFillData,
+    CurveInfo,
     ERC20BridgeSource,
     FeeSchedule,
     FillData,
@@ -80,6 +81,7 @@ export {
     NativeFillData,
     OptimizedMarketOrder,
     UniswapV2FillData,
+    CurveFunctionSelectors,
 } from './utils/market_operation_utils/types';
 export { ProtocolFeeUtils } from './utils/protocol_fee_utils';
 export { QuoteRequestor } from './utils/quote_requestor';
