@@ -21,13 +21,6 @@ pragma solidity ^0.5.9;
 
 interface IKyberStorage {
 
-    function getReserveIdsFromAddresses(
-        address[] calldata reserveAddresses
-    )
-        external
-        view
-        returns (bytes32[] memory reserveIds);
-
     function getReserveId(
         address reserve
     )
@@ -36,7 +29,7 @@ interface IKyberStorage {
         returns (bytes32 reserveId);
 
     function getReserveIdsPerTokenSrc(
-      address token
+        address token
     )
         external
         view

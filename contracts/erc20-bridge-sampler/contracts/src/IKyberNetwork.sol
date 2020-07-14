@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2019 ZeroEx Intl.
+  Copyright 2020 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -18,7 +18,19 @@
 
 pragma solidity ^0.5.9;
 
+import "./IKyberStorage.sol";
+import "./IKyberHintHandler.sol";
 
 interface IKyberNetwork {
 
+    function getContracts()
+        external
+        view
+        returns (
+            address kyberFeeHandlerAddress,
+            address kyberDaoAddress,
+            IKyberHintHandler kyberMatchingEngineAddress,
+            IKyberStorage kyberStorageAddress,
+            address gasHelperAddress,
+            address[] memory kyberProxyAddresses);
 }

@@ -21,7 +21,8 @@ pragma solidity ^0.5.9;
 
 interface IKyberNetworkProxy {
 
-    function kyberNetworkContract() external view returns (address);
+    function kyberNetwork() external view returns (address);
+    function kyberHintHandler() external view returns (address);
 
     function getExpectedRateAfterFee(
         address src,

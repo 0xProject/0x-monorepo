@@ -66,9 +66,6 @@ contract ERC20BridgeSampler is
     /// @dev The Kyber Eth2Dai Reserve address
     address constant internal KYBER_ETH2DAI_RESERVE = 0x1E158c0e93c30d24e918Ef83d1e0bE23595C3c0f;
 
-    IKyberHintHandler constant internal KYBER_HINT = IKyberHintHandler(0xa1C0Fa73c39CFBcC11ec9Eb1Afc665aba9996E2C);
-    IKyberStorage constant internal KYBER_STORAGE = IKyberStorage(0xC8fb12402cB16970F3C5F4b48Ff68Eb9D1289301);
-
     address private _devUtilsAddress;
 
     constructor(address devUtilsAddress) public {
@@ -965,6 +962,16 @@ contract ERC20BridgeSampler is
         appendedList[appendedList.length - 1] = item;
     }
 
+    function _getKyberAddresses()
+        private
+        view
+        returns (IKyberHintHandler kyberHint, IKyberStorage kyberStorage)
+    {
+        (, , kyberHint, kyberStorage, ,) = IKyberNetwork(
+            IKyberNetworkProxy(_getKyberNetworkProxyAddress()).kyberNetwork()).getContracts();
+        return (IKyberHintHandler(kyberHint), IKyberStorage(kyberStorage));
+    }
+
     function _sampleSellFromKyberNetwork(
         address takerToken,
         address makerToken,
@@ -974,17 +981,18 @@ contract ERC20BridgeSampler is
         view
         returns (uint256 makerTokenAmount)
     {
+        (IKyberHintHandler kyberHint, IKyberStorage kyberStorage) = _getKyberAddresses();
         // Ban reserves which can clash with our internal aggregation
-        bytes32[] memory reserveIds = KYBER_STORAGE.getReserveIdsPerTokenSrc(
+        bytes32[] memory reserveIds = kyberStorage.getReserveIdsPerTokenSrc(
             takerToken == _getWethAddress() ? makerToken : takerToken
         );
         bytes32[] memory bannedReserveIds = new bytes32[](0);
         // Poor mans resize and append
         for (uint256 i = 0; i < reserveIds.length; i++) {
             if (
-                reserveIds[i] == KYBER_STORAGE.getReserveId(KYBER_UNISWAP_RESERVE) ||
-                reserveIds[i] == KYBER_STORAGE.getReserveId(KYBER_UNISWAPV2_RESERVE) ||
-                reserveIds[i] == KYBER_STORAGE.getReserveId(KYBER_ETH2DAI_RESERVE)
+                reserveIds[i] == kyberStorage.getReserveId(KYBER_UNISWAP_RESERVE) ||
+                reserveIds[i] == kyberStorage.getReserveId(KYBER_UNISWAPV2_RESERVE) ||
+                reserveIds[i] == kyberStorage.getReserveId(KYBER_ETH2DAI_RESERVE)
             ) {
                 bannedReserveIds = _appendToList(bannedReserveIds, reserveIds[i]);
             }
@@ -994,14 +1002,14 @@ contract ERC20BridgeSampler is
         bytes memory hint;
         if (takerToken == _getWethAddress()) {
             // ETH -> X
-            hint = KYBER_HINT.buildEthToTokenHint(
+            hint = kyberHint.buildEthToTokenHint(
                     makerToken,
                     IKyberHintHandler.TradeType.MaskOut,
                     bannedReserveIds,
                     new uint256[](0));
         } else {
             // X->ETH
-            hint = KYBER_HINT.buildEthToTokenHint(
+            hint = kyberHint.buildEthToTokenHint(
                     takerToken,
                     IKyberHintHandler.TradeType.MaskOut,
                     bannedReserveIds,

@@ -20,6 +20,9 @@ pragma solidity ^0.5.9;
 
 
 interface IKyberHintHandler {
+
+    function kyberStorage() external returns (address);
+
     enum TradeType {BestOfAll, MaskIn, MaskOut, Split}
 
     function buildTokenToEthHint(

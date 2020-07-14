@@ -1,4 +1,5 @@
 export { ContractAddresses } from '@0x/contract-addresses';
+export { CallData } from '@0x/contract-wrappers';
 export { WSOpts } from '@0x/mesh-rpc-client';
 export {
     AcceptedRejectedOrders,
@@ -12,7 +13,7 @@ export {
     SRAPollingOrderProviderOpts,
     SRAWebsocketOrderProviderOpts,
 } from '@0x/orderbook';
-export { RFQTIndicativeQuote, RFQTFirmQuote } from '@0x/quote-server';
+export { RFQTFirmQuote, RFQTIndicativeQuote } from '@0x/quote-server';
 export { APIOrder, Asset, AssetPairsItem, SignedOrder } from '@0x/types';
 export { BigNumber } from '@0x/utils';
 export {
@@ -38,6 +39,7 @@ export { SwapQuoteConsumer } from './quote_consumers/swap_quote_consumer';
 export { SwapQuoter } from './swap_quoter';
 export {
     CalldataInfo,
+    ExchangeProxyContractOpts,
     ExtensionContractType,
     ForwarderExtensionContractOpts,
     GetExtensionContractTypeOpts,
@@ -49,34 +51,33 @@ export {
     MockedRfqtFirmQuoteResponse,
     RfqtMakerAssetOfferings,
     RfqtRequestOpts,
+    SignedOrderWithFillableAmounts,
     SwapQuote,
     SwapQuoteConsumerBase,
+    SwapQuoteConsumerError,
     SwapQuoteConsumerOpts,
     SwapQuoteExecutionOpts,
     SwapQuoteGetOutputOpts,
     SwapQuoteInfo,
+    SwapQuoteOrdersBreakdown,
     SwapQuoteRequestOpts,
     SwapQuoterError,
     SwapQuoterOpts,
-    SwapQuoteConsumerError,
-    SignedOrderWithFillableAmounts,
-    SwapQuoteOrdersBreakdown,
-    ExchangeProxyContractOpts,
 } from './types';
+export { affiliateFeeUtils } from './utils/affiliate_fee_utils';
 export {
-    ERC20BridgeSource,
+    BalancerFillData,
     CollapsedFill,
-    NativeCollapsedFill,
-    OptimizedMarketOrder,
-    GetMarketOrdersRfqtOpts,
+    CurveFillData,
+    ERC20BridgeSource,
     FeeSchedule,
     FillData,
+    GetMarketOrdersRfqtOpts,
+    NativeCollapsedFill,
     NativeFillData,
-    CurveFillData,
-    BalancerFillData,
+    OptimizedMarketOrder,
     UniswapV2FillData,
 } from './utils/market_operation_utils/types';
-export { affiliateFeeUtils } from './utils/affiliate_fee_utils';
 export { ProtocolFeeUtils } from './utils/protocol_fee_utils';
 export { QuoteRequestor } from './utils/quote_requestor';
 export { rfqtMocker } from './utils/rfqt_mocker';
