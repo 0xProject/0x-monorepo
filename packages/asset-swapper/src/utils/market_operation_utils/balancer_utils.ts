@@ -20,16 +20,29 @@ interface CacheValue {
     pools: BalancerPool[];
 }
 
-const FIVE_SECONDS_MS = 5 * 1000; // tslint:disable-line:custom-no-magic-numbers
-const MAX_POOLS_FETCHED = 5; // tslint:disable-line:custom-no-magic-numbers
+// tslint:disable:custom-no-magic-numbers
+const FIVE_SECONDS_MS = 5 * 1000;
+const DEFAULT_TIMEOUT_MS = 1000;
+const MAX_POOLS_FETCHED = 3;
 const Decimal20 = Decimal.clone({ precision: 20 });
+// tslint:enable:custom-no-magic-numbers
 
 export class BalancerPoolsCache {
     constructor(
         private readonly _cache: { [key: string]: CacheValue } = {},
         public cacheExpiryMs: number = FIVE_SECONDS_MS,
     ) {}
-    public async getPoolsForPairAsync(takerToken: string, makerToken: string): Promise<BalancerPool[]> {
+
+    public async getPoolsForPairAsync(
+        takerToken: string,
+        makerToken: string,
+        timeoutMs: number = DEFAULT_TIMEOUT_MS,
+    ): Promise<BalancerPool[]> {
+        const timeout = new Promise<BalancerPool[]>(resolve => setTimeout(resolve, timeoutMs, []));
+        return Promise.race([this._getPoolsForPairAsync(takerToken, makerToken), timeout]);
+    }
+
+    protected async _getPoolsForPairAsync(takerToken: string, makerToken: string): Promise<BalancerPool[]> {
         const key = JSON.stringify([takerToken, makerToken]);
         const value = this._cache[key];
         const minTimestamp = Date.now() - this.cacheExpiryMs;
