@@ -300,7 +300,6 @@ export async function runMigrationsAsync(
         provider,
         txDefaults,
         allArtifacts,
-        devUtils.address,
     );
 
     // Exchange Proxy //////////////////////////////////////////////////////////

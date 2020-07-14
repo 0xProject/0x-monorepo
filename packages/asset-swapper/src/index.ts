@@ -22,6 +22,7 @@ export {
     EIP1193Provider,
     EventParameter,
     GanacheProvider,
+    GethCallOverrides,
     JSONRPCErrorCallback,
     JSONRPCRequestPayload,
     JSONRPCResponseError,

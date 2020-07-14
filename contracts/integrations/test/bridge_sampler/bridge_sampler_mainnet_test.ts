@@ -20,6 +20,7 @@ blockchainTests.fork.resets('Mainnet Sampler Tests', env => {
     };
     before(async () => {
         const provider = new Web3ProviderEngine();
+        // tslint:disable-next-line:no-non-null-assertion
         provider.addProvider(new RPCSubprovider(process.env.FORK_RPC_URL!));
         providerUtils.startProviderEngine(provider);
         testContract = new ERC20BridgeSamplerContract(fakeSamplerAddress, provider, {

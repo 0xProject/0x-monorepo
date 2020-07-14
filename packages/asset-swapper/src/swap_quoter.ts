@@ -1,5 +1,6 @@
 import { ContractAddresses, getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
-import { DevUtilsContract, IERC20BridgeSamplerContract } from '@0x/contract-wrappers';
+import { ERC20BridgeSampler } from '@0x/contract-artifacts';
+import { DevUtilsContract, ERC20BridgeSamplerContract } from '@0x/contract-wrappers';
 import { schemas } from '@0x/json-schemas';
 import { assetDataUtils, SignedOrder } from '@0x/order-utils';
 import { MeshOrderProviderOpts, Orderbook, SRAPollingOrderProviderOpts } from '@0x/orderbook';
@@ -157,7 +158,6 @@ export class SwapQuoter {
             samplerGasLimit,
             liquidityProviderRegistryAddress,
             rfqt,
-            samplerCallDataOverrides,
         } = _.merge({}, constants.DEFAULT_SWAP_QUOTER_OPTS, options);
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         assert.isValidOrderbook('orderbook', orderbook);
@@ -186,21 +186,23 @@ export class SwapQuoter {
             rfqt ? rfqt.infoLogger : undefined,
             expiryBufferMs,
         );
-        const samplerContract = new IERC20BridgeSamplerContract(
+        const samplerContract = new ERC20BridgeSamplerContract(
             this._contractAddresses.erc20BridgeSampler,
             this.provider,
             {
                 gas: samplerGasLimit,
             },
         );
-        // const samplerBytecode = (bridgeSamplerArtifact as any).compilerOutput.evm.deployedBytecode.object;
-        // const sampler = new DexOrderSampler(samplerContract, {
-        //    overrides: {
-        //        [this._contractAddresses.erc20BridgeSampler]: {
-        //            code: samplerBytecode,
-        //        },
-        //    },
-        // });
+        // Allow the sampler bytecode to be overwritten using geths override functionality
+        // If explicility set use the value that is set (including undefined)
+        const samplerBytecode = (ERC20BridgeSampler as any).compilerOutput.evm.deployedBytecode.object;
+        const samplerCallDataOverrides = options.hasOwnProperty('samplerCallDataOverrides')
+            ? options.samplerCallDataOverrides
+            : {
+                  overrides: {
+                      [this._contractAddresses.erc20BridgeSampler]: { code: samplerBytecode },
+                  },
+              };
         this._marketOperationUtils = new MarketOperationUtils(
             new DexOrderSampler(samplerContract, samplerCallDataOverrides),
             this._contractAddresses,
