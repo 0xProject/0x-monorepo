@@ -33,6 +33,7 @@ blockchainTests('erc20-bridge-sampler', env => {
     const INVALID_TOKEN_PAIR_ERROR = 'ERC20BridgeSampler/INVALID_TOKEN_PAIR';
     const MAKER_TOKEN = randomAddress();
     const TAKER_TOKEN = randomAddress();
+    let devUtilsAddress: string;
     const FAKE_BUY_OPTS = {
         targetSlippageBps: new BigNumber(5),
         maxIterations: new BigNumber(5),
@@ -45,6 +46,8 @@ blockchainTests('erc20-bridge-sampler', env => {
             env.txDefaults,
             {},
         );
+        // TestERC20BridgeSampler stubs DevUtils
+        devUtilsAddress = testContract.address;
     });
 
     function getPackedHash(...args: string[]): string {
@@ -272,12 +275,14 @@ blockchainTests('erc20-bridge-sampler', env => {
             const orders = createOrders(MAKER_TOKEN, TAKER_TOKEN);
             const signatures: string[] = _.times(orders.length, i => hexUtils.random());
             const expected = orders.map(getDeterministicFillableTakerAssetAmount);
-            const actual = await testContract.getOrderFillableTakerAssetAmounts(orders, signatures).callAsync();
+            const actual = await testContract
+                .getOrderFillableTakerAssetAmounts(orders, signatures, devUtilsAddress)
+                .callAsync();
             expect(actual).to.deep.eq(expected);
         });
 
         it('returns empty for no orders', async () => {
-            const actual = await testContract.getOrderFillableTakerAssetAmounts([], []).callAsync();
+            const actual = await testContract.getOrderFillableTakerAssetAmounts([], [], devUtilsAddress).callAsync();
             expect(actual).to.deep.eq([]);
         });
 
@@ -285,7 +290,9 @@ blockchainTests('erc20-bridge-sampler', env => {
             const orders = createOrders(MAKER_TOKEN, TAKER_TOKEN, 1);
             orders[0].makerAssetAmount = constants.ZERO_AMOUNT;
             const signatures: string[] = _.times(orders.length, i => hexUtils.random());
-            const actual = await testContract.getOrderFillableTakerAssetAmounts(orders, signatures).callAsync();
+            const actual = await testContract
+                .getOrderFillableTakerAssetAmounts(orders, signatures, devUtilsAddress)
+                .callAsync();
             expect(actual).to.deep.eq([constants.ZERO_AMOUNT]);
         });
 
@@ -293,14 +300,18 @@ blockchainTests('erc20-bridge-sampler', env => {
             const orders = createOrders(MAKER_TOKEN, TAKER_TOKEN, 1);
             orders[0].takerAssetAmount = constants.ZERO_AMOUNT;
             const signatures: string[] = _.times(orders.length, i => hexUtils.random());
-            const actual = await testContract.getOrderFillableTakerAssetAmounts(orders, signatures).callAsync();
+            const actual = await testContract
+                .getOrderFillableTakerAssetAmounts(orders, signatures, devUtilsAddress)
+                .callAsync();
             expect(actual).to.deep.eq([constants.ZERO_AMOUNT]);
         });
 
         it('returns zero for an order with an empty signature', async () => {
             const orders = createOrders(MAKER_TOKEN, TAKER_TOKEN, 1);
             const signatures: string[] = _.times(orders.length, () => constants.NULL_BYTES);
-            const actual = await testContract.getOrderFillableTakerAssetAmounts(orders, signatures).callAsync();
+            const actual = await testContract
+                .getOrderFillableTakerAssetAmounts(orders, signatures, devUtilsAddress)
+                .callAsync();
             expect(actual).to.deep.eq([constants.ZERO_AMOUNT]);
         });
     });
@@ -310,12 +321,14 @@ blockchainTests('erc20-bridge-sampler', env => {
             const orders = createOrders(MAKER_TOKEN, TAKER_TOKEN);
             const signatures: string[] = _.times(orders.length, i => hexUtils.random());
             const expected = orders.map(getDeterministicFillableMakerAssetAmount);
-            const actual = await testContract.getOrderFillableMakerAssetAmounts(orders, signatures).callAsync();
+            const actual = await testContract
+                .getOrderFillableMakerAssetAmounts(orders, signatures, devUtilsAddress)
+                .callAsync();
             expect(actual).to.deep.eq(expected);
         });
 
         it('returns empty for no orders', async () => {
-            const actual = await testContract.getOrderFillableMakerAssetAmounts([], []).callAsync();
+            const actual = await testContract.getOrderFillableMakerAssetAmounts([], [], devUtilsAddress).callAsync();
             expect(actual).to.deep.eq([]);
         });
 
@@ -323,7 +336,9 @@ blockchainTests('erc20-bridge-sampler', env => {
             const orders = createOrders(MAKER_TOKEN, TAKER_TOKEN, 1);
             orders[0].makerAssetAmount = constants.ZERO_AMOUNT;
             const signatures: string[] = _.times(orders.length, i => hexUtils.random());
-            const actual = await testContract.getOrderFillableMakerAssetAmounts(orders, signatures).callAsync();
+            const actual = await testContract
+                .getOrderFillableMakerAssetAmounts(orders, signatures, devUtilsAddress)
+                .callAsync();
             expect(actual).to.deep.eq([constants.ZERO_AMOUNT]);
         });
 
@@ -331,14 +346,18 @@ blockchainTests('erc20-bridge-sampler', env => {
             const orders = createOrders(MAKER_TOKEN, TAKER_TOKEN, 1);
             orders[0].takerAssetAmount = constants.ZERO_AMOUNT;
             const signatures: string[] = _.times(orders.length, i => hexUtils.random());
-            const actual = await testContract.getOrderFillableMakerAssetAmounts(orders, signatures).callAsync();
+            const actual = await testContract
+                .getOrderFillableMakerAssetAmounts(orders, signatures, devUtilsAddress)
+                .callAsync();
             expect(actual).to.deep.eq([constants.ZERO_AMOUNT]);
         });
 
         it('returns zero for an order with an empty signature', async () => {
             const orders = createOrders(MAKER_TOKEN, TAKER_TOKEN, 1);
             const signatures: string[] = _.times(orders.length, () => constants.NULL_BYTES);
-            const actual = await testContract.getOrderFillableMakerAssetAmounts(orders, signatures).callAsync();
+            const actual = await testContract
+                .getOrderFillableMakerAssetAmounts(orders, signatures, devUtilsAddress)
+                .callAsync();
             expect(actual).to.deep.eq([constants.ZERO_AMOUNT]);
         });
     });
@@ -1029,7 +1048,9 @@ blockchainTests('erc20-bridge-sampler', env => {
             const signatures: string[] = _.times(orders.length, i => hexUtils.random());
             const expected = orders.map(getDeterministicFillableTakerAssetAmount);
             const calls = [
-                testContract.getOrderFillableTakerAssetAmounts(orders, signatures).getABIEncodedTransactionData(),
+                testContract
+                    .getOrderFillableTakerAssetAmounts(orders, signatures, devUtilsAddress)
+                    .getABIEncodedTransactionData(),
             ];
             const r = await testContract.batchCall(calls).callAsync();
             expect(r).to.be.length(1);
@@ -1046,8 +1067,12 @@ blockchainTests('erc20-bridge-sampler', env => {
                 orders[1].map(getDeterministicFillableMakerAssetAmount),
             ];
             const calls = [
-                testContract.getOrderFillableTakerAssetAmounts(orders[0], signatures).getABIEncodedTransactionData(),
-                testContract.getOrderFillableMakerAssetAmounts(orders[1], signatures).getABIEncodedTransactionData(),
+                testContract
+                    .getOrderFillableTakerAssetAmounts(orders[0], signatures, devUtilsAddress)
+                    .getABIEncodedTransactionData(),
+                testContract
+                    .getOrderFillableMakerAssetAmounts(orders[1], signatures, devUtilsAddress)
+                    .getABIEncodedTransactionData(),
             ];
             const r = await testContract.batchCall(calls).callAsync();
             expect(r).to.be.length(2);
@@ -1069,7 +1094,7 @@ blockchainTests('erc20-bridge-sampler', env => {
                     testContract
                         .batchCall([
                             testContract
-                                .getOrderFillableTakerAssetAmounts(orders, signatures)
+                                .getOrderFillableTakerAssetAmounts(orders, signatures, devUtilsAddress)
                                 .getABIEncodedTransactionData(),
                         ])
                         .getABIEncodedTransactionData(),

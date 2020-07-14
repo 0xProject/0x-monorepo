@@ -8,6 +8,7 @@ export type GetOrderFillableAssetAmountResult = BigNumber[];
 export type GetOrderFillableAssetAmountHandler = (
     orders: Order[],
     signatures: string[],
+    devUtilsAddress: string,
 ) => GetOrderFillableAssetAmountResult;
 
 export type SampleResults = BigNumber[];
@@ -82,6 +83,7 @@ export class MockSamplerContract extends IERC20BridgeSamplerContract {
             this._handlers.getOrderFillableMakerAssetAmounts,
             orders,
             signatures,
+            constants.NULL_ADDRESS,
         );
     }
 
@@ -94,6 +96,7 @@ export class MockSamplerContract extends IERC20BridgeSamplerContract {
             this._handlers.getOrderFillableTakerAssetAmounts,
             orders,
             signatures,
+            constants.NULL_ADDRESS,
         );
     }
 

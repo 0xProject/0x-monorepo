@@ -2,10 +2,8 @@ import { ContractAddresses } from '@0x/contract-addresses';
 import { RFQTIndicativeQuote } from '@0x/quote-server';
 import { SignedOrder } from '@0x/types';
 import { BigNumber, NULL_ADDRESS } from '@0x/utils';
-
 import { MarketOperation } from '../../types';
 import { difference } from '../utils';
-
 import { BUY_SOURCES, DEFAULT_GET_MARKET_ORDERS_OPTS, FEE_QUOTE_SOURCES, ONE_ETHER, SELL_SOURCES } from './constants';
 import { createFillPaths, getPathAdjustedRate, getPathAdjustedSlippage } from './fills';
 import {
@@ -83,7 +81,7 @@ export class MarketOperationUtils {
         // Call the sampler contract.
         const samplerPromise = this._sampler.executeAsync(
             // Get native order fillable amounts.
-            DexOrderSampler.ops.getOrderFillableTakerAmounts(nativeOrders),
+            DexOrderSampler.ops.getOrderFillableTakerAmounts(nativeOrders, this.contractAddresses.devUtils),
             // Get the custom liquidity provider from registry.
             DexOrderSampler.ops.getLiquidityProviderFromRegistry(
                 this._liquidityProviderRegistry,
@@ -187,7 +185,7 @@ export class MarketOperationUtils {
         // Call the sampler contract.
         const samplerPromise = this._sampler.executeAsync(
             // Get native order fillable amounts.
-            DexOrderSampler.ops.getOrderFillableMakerAmounts(nativeOrders),
+            DexOrderSampler.ops.getOrderFillableMakerAmounts(nativeOrders, this.contractAddresses.devUtils),
             // Get the custom liquidity provider from registry.
             DexOrderSampler.ops.getLiquidityProviderFromRegistry(
                 this._liquidityProviderRegistry,
@@ -291,7 +289,9 @@ export class MarketOperationUtils {
 
         const sources = difference(BUY_SOURCES, _opts.excludedSources);
         const ops = [
-            ...batchNativeOrders.map(orders => DexOrderSampler.ops.getOrderFillableMakerAmounts(orders)),
+            ...batchNativeOrders.map(orders =>
+                DexOrderSampler.ops.getOrderFillableMakerAmounts(orders, this.contractAddresses.devUtils),
+            ),
             ...(await Promise.all(
                 batchNativeOrders.map(async orders =>
                     DexOrderSampler.ops.getMedianSellRateAsync(

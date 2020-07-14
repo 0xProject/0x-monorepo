@@ -1,5 +1,4 @@
 export { ContractAddresses } from '@0x/contract-addresses';
-export { CallData } from '@0x/contract-wrappers';
 export { WSOpts } from '@0x/mesh-rpc-client';
 export {
     AcceptedRejectedOrders,
@@ -17,6 +16,7 @@ export { RFQTFirmQuote, RFQTIndicativeQuote } from '@0x/quote-server';
 export { APIOrder, Asset, AssetPairsItem, SignedOrder } from '@0x/types';
 export { BigNumber } from '@0x/utils';
 export {
+    CallData,
     DataItem,
     EIP1193Event,
     EIP1193Provider,

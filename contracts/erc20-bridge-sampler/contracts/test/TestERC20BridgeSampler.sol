@@ -463,7 +463,7 @@ contract TestERC20BridgeSampler is
 
     uint8 private constant MAX_ORDER_STATUS = uint8(LibOrder.OrderStatus.CANCELLED) + 1;
 
-    constructor() public ERC20BridgeSampler(address(this)) {
+    constructor() public ERC20BridgeSampler() {
         uniswap = new TestERC20BridgeSamplerUniswapExchangeFactory();
         uniswapV2Router = new TestERC20BridgeSamplerUniswapV2Router01();
         eth2Dai = new TestERC20BridgeSamplerEth2Dai();

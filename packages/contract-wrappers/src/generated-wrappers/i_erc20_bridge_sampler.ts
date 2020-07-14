@@ -276,6 +276,10 @@ export class IERC20BridgeSamplerContract extends BaseContract {
                         name: 'orderSignatures',
                         type: 'bytes[]',
                     },
+                    {
+                        name: 'devUtilsAddress',
+                        type: 'address',
+                    },
                 ],
                 name: 'getOrderFillableMakerAssetAmounts',
                 outputs: [
@@ -356,6 +360,10 @@ export class IERC20BridgeSamplerContract extends BaseContract {
                     {
                         name: 'orderSignatures',
                         type: 'bytes[]',
+                    },
+                    {
+                        name: 'devUtilsAddress',
+                        type: 'address',
                     },
                 ],
                 name: 'getOrderFillableTakerAssetAmounts',
@@ -912,6 +920,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
      * Queries the fillable maker asset amounts of native orders.
      * @param orders Native orders to query.
      * @param orderSignatures Signatures for each respective order in `orders`.
+     * @param devUtilsAddress Address to the DevUtils contract.
      * @returns orderFillableMakerAssetAmounts How much maker asset can be filled         by each order in &#x60;orders&#x60;.
      */
     public getOrderFillableMakerAssetAmounts(
@@ -932,12 +941,14 @@ export class IERC20BridgeSamplerContract extends BaseContract {
             takerFeeAssetData: string;
         }>,
         orderSignatures: string[],
+        devUtilsAddress: string,
     ): ContractFunctionObj<BigNumber[]> {
         const self = (this as any) as IERC20BridgeSamplerContract;
         assert.isArray('orders', orders);
         assert.isArray('orderSignatures', orderSignatures);
+        assert.isString('devUtilsAddress', devUtilsAddress);
         const functionSignature =
-            'getOrderFillableMakerAssetAmounts((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],bytes[])';
+            'getOrderFillableMakerAssetAmounts((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],bytes[],address)';
 
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber[]> {
@@ -951,7 +962,11 @@ export class IERC20BridgeSamplerContract extends BaseContract {
                 return abiEncoder.strictDecodeReturnValue<BigNumber[]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                return self._strictEncodeArguments(functionSignature, [orders, orderSignatures]);
+                return self._strictEncodeArguments(functionSignature, [
+                    orders,
+                    orderSignatures,
+                    devUtilsAddress.toLowerCase(),
+                ]);
             },
         };
     }
@@ -959,6 +974,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
      * Queries the fillable taker asset amounts of native orders.
      * @param orders Native orders to query.
      * @param orderSignatures Signatures for each respective order in `orders`.
+     * @param devUtilsAddress Address to the DevUtils contract.
      * @returns orderFillableTakerAssetAmounts How much taker asset can be filled         by each order in &#x60;orders&#x60;.
      */
     public getOrderFillableTakerAssetAmounts(
@@ -979,12 +995,14 @@ export class IERC20BridgeSamplerContract extends BaseContract {
             takerFeeAssetData: string;
         }>,
         orderSignatures: string[],
+        devUtilsAddress: string,
     ): ContractFunctionObj<BigNumber[]> {
         const self = (this as any) as IERC20BridgeSamplerContract;
         assert.isArray('orders', orders);
         assert.isArray('orderSignatures', orderSignatures);
+        assert.isString('devUtilsAddress', devUtilsAddress);
         const functionSignature =
-            'getOrderFillableTakerAssetAmounts((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],bytes[])';
+            'getOrderFillableTakerAssetAmounts((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],bytes[],address)';
 
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber[]> {
@@ -998,7 +1016,11 @@ export class IERC20BridgeSamplerContract extends BaseContract {
                 return abiEncoder.strictDecodeReturnValue<BigNumber[]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                return self._strictEncodeArguments(functionSignature, [orders, orderSignatures]);
+                return self._strictEncodeArguments(functionSignature, [
+                    orders,
+                    orderSignatures,
+                    devUtilsAddress.toLowerCase(),
+                ]);
             },
         };
     }

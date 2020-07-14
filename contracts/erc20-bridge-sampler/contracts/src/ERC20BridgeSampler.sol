@@ -66,12 +66,6 @@ contract ERC20BridgeSampler is
     /// @dev The Kyber Eth2Dai Reserve address
     address constant internal KYBER_ETH2DAI_RESERVE = 0x1E158c0e93c30d24e918Ef83d1e0bE23595C3c0f;
 
-    address private _devUtilsAddress;
-
-    constructor(address devUtilsAddress) public {
-        _devUtilsAddress = devUtilsAddress;
-    }
-
     /// @dev Call multiple public functions on this contract in a single transaction.
     /// @param callDatas ABI-encoded call data for each function call.
     /// @return callResults ABI-encoded results data for each call.
@@ -95,18 +89,19 @@ contract ERC20BridgeSampler is
     ///      maker/taker asset amounts (returning 0).
     /// @param orders Native orders to query.
     /// @param orderSignatures Signatures for each respective order in `orders`.
+    /// @param devUtilsAddress Address to the DevUtils contract.
     /// @return orderFillableTakerAssetAmounts How much taker asset can be filled
     ///         by each order in `orders`.
     function getOrderFillableTakerAssetAmounts(
         LibOrder.Order[] memory orders,
-        bytes[] memory orderSignatures
+        bytes[] memory orderSignatures,
+        address devUtilsAddress
     )
         public
         view
         returns (uint256[] memory orderFillableTakerAssetAmounts)
     {
         orderFillableTakerAssetAmounts = new uint256[](orders.length);
-        address devUtilsAddress = _devUtilsAddress;
         for (uint256 i = 0; i != orders.length; i++) {
             // Ignore orders with no signature or empty maker/taker amounts.
             if (orderSignatures[i].length == 0 ||
@@ -153,11 +148,13 @@ contract ERC20BridgeSampler is
     ///      Effectively ignores orders that have empty signatures or
     /// @param orders Native orders to query.
     /// @param orderSignatures Signatures for each respective order in `orders`.
+    /// @param devUtilsAddress Address to the DevUtils contract.
     /// @return orderFillableMakerAssetAmounts How much maker asset can be filled
     ///         by each order in `orders`.
     function getOrderFillableMakerAssetAmounts(
         LibOrder.Order[] memory orders,
-        bytes[] memory orderSignatures
+        bytes[] memory orderSignatures,
+        address devUtilsAddress
     )
         public
         view
@@ -165,7 +162,8 @@ contract ERC20BridgeSampler is
     {
         orderFillableMakerAssetAmounts = getOrderFillableTakerAssetAmounts(
             orders,
-            orderSignatures
+            orderSignatures,
+            devUtilsAddress
         );
         // `orderFillableMakerAssetAmounts` now holds taker asset amounts, so
         // convert them to maker asset amounts.
