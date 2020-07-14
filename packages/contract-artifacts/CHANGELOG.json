@@ -3,6 +3,19 @@
         "version": "3.7.0",
         "changes": [
             {
+                "note": "Provide devUtils address as a function parameter in ERC20BridgeSampler",
+                "pr": 2629
+            },
+            {
+                "note": "Remove devUtils address from ERC20BridgeSampler constructor",
+                "pr": 2629
+            }
+        ]
+    },
+    {
+        "version": "3.7.0",
+        "changes": [
+            {
                 "note": "Added `MaximumGasPrice` artifact",
                 "pr": 2511
             },

@@ -37,6 +37,10 @@
             {
                 "note": "Change gas/fee schedule values from constants to functions returning numbers",
                 "pr": 2613
+            },
+            {
+                "note": "Specify overrides to the ERC20Sampler contract, by default the latest bytecode is the override",
+                "pr": 2629
             }
         ]
     },
