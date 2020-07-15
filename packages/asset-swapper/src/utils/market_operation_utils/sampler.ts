@@ -1,5 +1,7 @@
-import { CallData, ERC20BridgeSamplerContract } from '@0x/contract-wrappers';
+import { ERC20BridgeSamplerContract } from '@0x/contract-wrappers';
 import { BigNumber } from '@0x/utils';
+
+import { SamplerOverrides } from '../../types';
 
 import { BalancerPoolsCache } from './balancer_utils';
 import { samplerOperations } from './sampler_operations';
@@ -37,7 +39,7 @@ export class DexOrderSampler {
     constructor(
         private readonly _samplerContract: ERC20BridgeSamplerContract,
         public balancerPoolsCache: BalancerPoolsCache = new BalancerPoolsCache(),
-        private readonly _callDataOverrides: Partial<CallData> = {},
+        private readonly _samplerOverrides?: SamplerOverrides,
     ) {}
 
     /* Type overloads for `executeAsync()`. Could skip this if we would upgrade TS. */
@@ -139,10 +141,13 @@ export class DexOrderSampler {
      */
     public async executeBatchAsync<T extends Array<BatchedOperation<any>>>(ops: T): Promise<any[]> {
         const callDatas = ops.map(o => o.encodeCall(this._samplerContract));
+        const { overrides, block } = this._samplerOverrides
+            ? this._samplerOverrides
+            : { overrides: undefined, block: undefined };
         // Execute all non-empty calldatas.
         const rawCallResults = await this._samplerContract
             .batchCall(callDatas.filter(cd => cd !== '0x'))
-            .callAsync(this._callDataOverrides);
+            .callAsync({ overrides }, block);
         // Return the parsed results.
         let rawCallResultsIdx = 0;
         return Promise.all(

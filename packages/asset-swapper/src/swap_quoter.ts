@@ -5,7 +5,7 @@ import { schemas } from '@0x/json-schemas';
 import { assetDataUtils, SignedOrder } from '@0x/order-utils';
 import { MeshOrderProviderOpts, Orderbook, SRAPollingOrderProviderOpts } from '@0x/orderbook';
 import { BigNumber, providerUtils } from '@0x/utils';
-import { SupportedProvider, ZeroExProvider } from 'ethereum-types';
+import { BlockParamLiteral, SupportedProvider, ZeroExProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { constants } from './constants';
@@ -186,6 +186,18 @@ export class SwapQuoter {
             rfqt ? rfqt.infoLogger : undefined,
             expiryBufferMs,
         );
+        // Allow the sampler bytecode to be overwritten using geths override functionality
+        const samplerBytecode = _.get(ERC20BridgeSampler, 'compilerOutput.evm.deployedBytecode.object');
+        const defaultCodeOverrides = samplerBytecode
+            ? {
+                  [this._contractAddresses.erc20BridgeSampler]: { code: samplerBytecode },
+              }
+            : {};
+        const samplerOverrides = _.merge(
+            {},
+            { block: BlockParamLiteral.Latest, overrides: defaultCodeOverrides },
+            options.samplerOverrides,
+        );
         const samplerContract = new ERC20BridgeSamplerContract(
             this._contractAddresses.erc20BridgeSampler,
             this.provider,
@@ -193,18 +205,8 @@ export class SwapQuoter {
                 gas: samplerGasLimit,
             },
         );
-        // Allow the sampler bytecode to be overwritten using geths override functionality
-        // If explicility set use the value that is set (including undefined)
-        const samplerBytecode = (ERC20BridgeSampler as any).compilerOutput.evm.deployedBytecode.object;
-        const samplerCallDataOverrides = options.hasOwnProperty('samplerCallDataOverrides')
-            ? options.samplerCallDataOverrides
-            : {
-                  overrides: {
-                      [this._contractAddresses.erc20BridgeSampler]: { code: samplerBytecode },
-                  },
-              };
         this._marketOperationUtils = new MarketOperationUtils(
-            new DexOrderSampler(samplerContract, samplerCallDataOverrides),
+            new DexOrderSampler(samplerContract, samplerOverrides),
             this._contractAddresses,
             {
                 chainId,
