@@ -33,7 +33,7 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/sol-trace/README.md",
     "dependencies": {
-        "@0x/sol-tracing-utils": "^7.1.0",
+        "@0x/sol-tracing-utils": "^7.0.9",
         "@0x/subproviders": "^6.1.0",
         "@0x/typescript-typings": "^5.1.0",
         "chalk": "^2.3.0",

@@ -60,7 +60,7 @@
         "@0x/contracts-gen": "^2.0.9",
         "@0x/contracts-test-utils": "^5.3.3",
         "@0x/dev-utils": "^3.2.2",
-        "@0x/order-utils": "^10.3.0",
+        "@0x/order-utils": "^10.2.5",
         "@0x/sol-compiler": "^4.1.0",
         "@0x/ts-doc-gen": "^0.0.22",
         "@0x/tslint-config": "^4.0.0",

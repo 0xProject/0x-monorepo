@@ -66,7 +66,7 @@
         "@0x/coordinator-server": "^1.0.5",
         "@0x/dev-utils": "^3.2.2",
         "@0x/migrations": "^6.3.0",
-        "@0x/order-utils": "^10.3.0",
+        "@0x/order-utils": "^10.2.5",
         "@0x/sol-compiler": "^4.1.0",
         "@0x/tslint-config": "^4.0.0",
         "@0x/web3-wrapper": "^7.1.0",
