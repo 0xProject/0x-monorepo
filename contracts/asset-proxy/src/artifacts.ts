@@ -37,6 +37,7 @@ import * as MixinAuthorizable from '../generated-artifacts/MixinAuthorizable.jso
 import * as MixinGasToken from '../generated-artifacts/MixinGasToken.json';
 import * as MultiAssetProxy from '../generated-artifacts/MultiAssetProxy.json';
 import * as Ownable from '../generated-artifacts/Ownable.json';
+import * as RitualBridge from '../generated-artifacts/RitualBridge.json';
 import * as StaticCallProxy from '../generated-artifacts/StaticCallProxy.json';
 import * as TestChaiBridge from '../generated-artifacts/TestChaiBridge.json';
 import * as TestDexForwarderBridge from '../generated-artifacts/TestDexForwarderBridge.json';
@@ -67,6 +68,7 @@ export const artifacts = {
     Eth2DaiBridge: Eth2DaiBridge as ContractArtifact,
     KyberBridge: KyberBridge as ContractArtifact,
     MixinGasToken: MixinGasToken as ContractArtifact,
+    RitualBridge: RitualBridge as ContractArtifact,
     UniswapBridge: UniswapBridge as ContractArtifact,
     UniswapV2Bridge: UniswapV2Bridge as ContractArtifact,
     IAssetData: IAssetData as ContractArtifact,

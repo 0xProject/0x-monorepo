@@ -35,6 +35,7 @@ export * from '../generated-wrappers/mixin_authorizable';
 export * from '../generated-wrappers/mixin_gas_token';
 export * from '../generated-wrappers/multi_asset_proxy';
 export * from '../generated-wrappers/ownable';
+export * from '../generated-wrappers/ritual_bridge';
 export * from '../generated-wrappers/static_call_proxy';
 export * from '../generated-wrappers/test_chai_bridge';
 export * from '../generated-wrappers/test_dex_forwarder_bridge';
