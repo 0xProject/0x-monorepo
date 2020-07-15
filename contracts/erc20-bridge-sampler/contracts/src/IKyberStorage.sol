@@ -19,16 +19,19 @@
 pragma solidity ^0.5.9;
 
 
-interface IKyberNetworkProxy {
+interface IKyberStorage {
 
-    function kyberNetwork() external view returns (address);
-    function kyberHintHandler() external view returns (address);
+    function getReserveId(
+        address reserve
+    )
+        external
+        view
+        returns (bytes32 reserveId);
 
-    function getExpectedRateAfterFee(
-        address src,
-        address dest,
-        uint256 srcQty,
-        uint256 platformFeeBps,
-        bytes calldata hint
-    ) external view returns (uint256 expectedRate);
+    function getReserveIdsPerTokenSrc(
+        address token
+    )
+        external
+        view
+        returns (bytes32[] memory reserveIds);
 }

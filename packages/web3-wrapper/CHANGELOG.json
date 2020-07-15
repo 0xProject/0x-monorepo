@@ -5,6 +5,10 @@
             {
                 "note": "Add geth eth_call support",
                 "pr": 2620
+            },
+            {
+                "note": "Remove duplicate overrides data from the eth_call rpc call",
+                "pr": 2629
             }
         ]
     },

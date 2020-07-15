@@ -1,5 +1,5 @@
 import { ContractFunctionObj } from '@0x/base-contract';
-import { IERC20BridgeSamplerContract } from '@0x/contract-wrappers';
+import { ERC20BridgeSamplerContract } from '@0x/contract-wrappers';
 import { constants } from '@0x/contracts-test-utils';
 import { Order } from '@0x/types';
 import { BigNumber, hexUtils } from '@0x/utils';
@@ -8,6 +8,7 @@ export type GetOrderFillableAssetAmountResult = BigNumber[];
 export type GetOrderFillableAssetAmountHandler = (
     orders: Order[],
     signatures: string[],
+    devUtilsAddress: string,
 ) => GetOrderFillableAssetAmountResult;
 
 export type SampleResults = BigNumber[];
@@ -58,7 +59,7 @@ interface Handlers {
     sampleBuysFromLiquidityProviderRegistry: SampleSellsLPHandler;
 }
 
-export class MockSamplerContract extends IERC20BridgeSamplerContract {
+export class MockSamplerContract extends ERC20BridgeSamplerContract {
     private readonly _handlers: Partial<Handlers> = {};
 
     public constructor(handlers: Partial<Handlers> = {}) {
@@ -82,6 +83,7 @@ export class MockSamplerContract extends IERC20BridgeSamplerContract {
             this._handlers.getOrderFillableMakerAssetAmounts,
             orders,
             signatures,
+            constants.NULL_ADDRESS,
         );
     }
 
@@ -94,6 +96,7 @@ export class MockSamplerContract extends IERC20BridgeSamplerContract {
             this._handlers.getOrderFillableTakerAssetAmounts,
             orders,
             signatures,
+            constants.NULL_ADDRESS,
         );
     }
 

@@ -83,7 +83,7 @@ export class MarketOperationUtils {
         // Call the sampler contract.
         const samplerPromise = this._sampler.executeAsync(
             // Get native order fillable amounts.
-            DexOrderSampler.ops.getOrderFillableTakerAmounts(nativeOrders),
+            DexOrderSampler.ops.getOrderFillableTakerAmounts(nativeOrders, this.contractAddresses.devUtils),
             // Get the custom liquidity provider from registry.
             DexOrderSampler.ops.getLiquidityProviderFromRegistry(
                 this._liquidityProviderRegistry,
@@ -187,7 +187,7 @@ export class MarketOperationUtils {
         // Call the sampler contract.
         const samplerPromise = this._sampler.executeAsync(
             // Get native order fillable amounts.
-            DexOrderSampler.ops.getOrderFillableMakerAmounts(nativeOrders),
+            DexOrderSampler.ops.getOrderFillableMakerAmounts(nativeOrders, this.contractAddresses.devUtils),
             // Get the custom liquidity provider from registry.
             DexOrderSampler.ops.getLiquidityProviderFromRegistry(
                 this._liquidityProviderRegistry,
@@ -291,7 +291,9 @@ export class MarketOperationUtils {
 
         const sources = difference(BUY_SOURCES, _opts.excludedSources);
         const ops = [
-            ...batchNativeOrders.map(orders => DexOrderSampler.ops.getOrderFillableMakerAmounts(orders)),
+            ...batchNativeOrders.map(orders =>
+                DexOrderSampler.ops.getOrderFillableMakerAmounts(orders, this.contractAddresses.devUtils),
+            ),
             ...(await Promise.all(
                 batchNativeOrders.map(async orders =>
                     DexOrderSampler.ops.getMedianSellRateAsync(

@@ -49,7 +49,6 @@ export class ERC20BridgeSamplerContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
         logDecodeDependencies: { [contractName: string]: ContractArtifact | SimpleContractArtifact },
-        devUtilsAddress: string,
     ): Promise<ERC20BridgeSamplerContract> {
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
             schemas.addressSchema,
@@ -74,7 +73,6 @@ export class ERC20BridgeSamplerContract extends BaseContract {
             provider,
             txDefaults,
             logDecodeDependenciesAbiOnly,
-            devUtilsAddress,
         );
     }
 
@@ -84,7 +82,6 @@ export class ERC20BridgeSamplerContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
         logDecodeDependencies: { [contractName: string]: ContractArtifact | SimpleContractArtifact },
-        devUtilsAddress: string,
     ): Promise<ERC20BridgeSamplerContract> {
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
             schemas.addressSchema,
@@ -115,7 +112,6 @@ export class ERC20BridgeSamplerContract extends BaseContract {
             provider,
             txDefaults,
             logDecodeDependenciesAbiOnly,
-            devUtilsAddress,
         );
     }
 
@@ -125,7 +121,6 @@ export class ERC20BridgeSamplerContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
         logDecodeDependencies: { [contractName: string]: ContractAbi },
-        devUtilsAddress: string,
     ): Promise<ERC20BridgeSamplerContract> {
         assert.isHexString('bytecode', bytecode);
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
@@ -135,14 +130,10 @@ export class ERC20BridgeSamplerContract extends BaseContract {
         ]);
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const constructorAbi = BaseContract._lookupConstructorAbi(abi);
-        [devUtilsAddress] = BaseContract._formatABIDataItemList(
-            constructorAbi.inputs,
-            [devUtilsAddress],
-            BaseContract._bigNumberToString,
-        );
+        [] = BaseContract._formatABIDataItemList(constructorAbi.inputs, [], BaseContract._bigNumberToString);
         const iface = new ethers.utils.Interface(abi);
         const deployInfo = iface.deployFunction;
-        const txData = deployInfo.encode(bytecode, [devUtilsAddress]);
+        const txData = deployInfo.encode(bytecode, []);
         const web3Wrapper = new Web3Wrapper(provider);
         const txDataWithDefaults = await BaseContract._applyDefaultsToContractTxDataAsync(
             {
@@ -161,7 +152,7 @@ export class ERC20BridgeSamplerContract extends BaseContract {
             txDefaults,
             logDecodeDependencies,
         );
-        contractInstance.constructorArgs = [devUtilsAddress];
+        contractInstance.constructorArgs = [];
         return contractInstance;
     }
 
@@ -170,18 +161,6 @@ export class ERC20BridgeSamplerContract extends BaseContract {
      */
     public static ABI(): ContractAbi {
         const abi = [
-            {
-                inputs: [
-                    {
-                        name: 'devUtilsAddress',
-                        type: 'address',
-                    },
-                ],
-                outputs: [],
-                payable: false,
-                stateMutability: 'nonpayable',
-                type: 'constructor',
-            },
             {
                 constant: true,
                 inputs: [
@@ -297,6 +276,10 @@ export class ERC20BridgeSamplerContract extends BaseContract {
                         name: 'orderSignatures',
                         type: 'bytes[]',
                     },
+                    {
+                        name: 'devUtilsAddress',
+                        type: 'address',
+                    },
                 ],
                 name: 'getOrderFillableMakerAssetAmounts',
                 outputs: [
@@ -377,6 +360,10 @@ export class ERC20BridgeSamplerContract extends BaseContract {
                     {
                         name: 'orderSignatures',
                         type: 'bytes[]',
+                    },
+                    {
+                        name: 'devUtilsAddress',
+                        type: 'address',
                     },
                 ],
                 name: 'getOrderFillableTakerAssetAmounts',
@@ -965,6 +952,7 @@ export class ERC20BridgeSamplerContract extends BaseContract {
      * Effectively ignores orders that have empty signatures or
      * @param orders Native orders to query.
      * @param orderSignatures Signatures for each respective order in `orders`.
+     * @param devUtilsAddress Address to the DevUtils contract.
      * @returns orderFillableMakerAssetAmounts How much maker asset can be filled         by each order in &#x60;orders&#x60;.
      */
     public getOrderFillableMakerAssetAmounts(
@@ -985,12 +973,14 @@ export class ERC20BridgeSamplerContract extends BaseContract {
             takerFeeAssetData: string;
         }>,
         orderSignatures: string[],
+        devUtilsAddress: string,
     ): ContractFunctionObj<BigNumber[]> {
         const self = (this as any) as ERC20BridgeSamplerContract;
         assert.isArray('orders', orders);
         assert.isArray('orderSignatures', orderSignatures);
+        assert.isString('devUtilsAddress', devUtilsAddress);
         const functionSignature =
-            'getOrderFillableMakerAssetAmounts((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],bytes[])';
+            'getOrderFillableMakerAssetAmounts((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],bytes[],address)';
 
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber[]> {
@@ -1004,7 +994,11 @@ export class ERC20BridgeSamplerContract extends BaseContract {
                 return abiEncoder.strictDecodeReturnValue<BigNumber[]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                return self._strictEncodeArguments(functionSignature, [orders, orderSignatures]);
+                return self._strictEncodeArguments(functionSignature, [
+                    orders,
+                    orderSignatures,
+                    devUtilsAddress.toLowerCase(),
+                ]);
             },
         };
     }
@@ -1014,6 +1008,7 @@ export class ERC20BridgeSamplerContract extends BaseContract {
      * maker/taker asset amounts (returning 0).
      * @param orders Native orders to query.
      * @param orderSignatures Signatures for each respective order in `orders`.
+     * @param devUtilsAddress Address to the DevUtils contract.
      * @returns orderFillableTakerAssetAmounts How much taker asset can be filled         by each order in &#x60;orders&#x60;.
      */
     public getOrderFillableTakerAssetAmounts(
@@ -1034,12 +1029,14 @@ export class ERC20BridgeSamplerContract extends BaseContract {
             takerFeeAssetData: string;
         }>,
         orderSignatures: string[],
+        devUtilsAddress: string,
     ): ContractFunctionObj<BigNumber[]> {
         const self = (this as any) as ERC20BridgeSamplerContract;
         assert.isArray('orders', orders);
         assert.isArray('orderSignatures', orderSignatures);
+        assert.isString('devUtilsAddress', devUtilsAddress);
         const functionSignature =
-            'getOrderFillableTakerAssetAmounts((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],bytes[])';
+            'getOrderFillableTakerAssetAmounts((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],bytes[],address)';
 
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber[]> {
@@ -1053,7 +1050,11 @@ export class ERC20BridgeSamplerContract extends BaseContract {
                 return abiEncoder.strictDecodeReturnValue<BigNumber[]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                return self._strictEncodeArguments(functionSignature, [orders, orderSignatures]);
+                return self._strictEncodeArguments(functionSignature, [
+                    orders,
+                    orderSignatures,
+                    devUtilsAddress.toLowerCase(),
+                ]);
             },
         };
     }

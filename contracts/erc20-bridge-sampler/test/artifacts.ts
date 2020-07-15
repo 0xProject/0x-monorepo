@@ -12,8 +12,10 @@ import * as ICurve from '../test/generated-artifacts/ICurve.json';
 import * as IDevUtils from '../test/generated-artifacts/IDevUtils.json';
 import * as IERC20BridgeSampler from '../test/generated-artifacts/IERC20BridgeSampler.json';
 import * as IEth2Dai from '../test/generated-artifacts/IEth2Dai.json';
+import * as IKyberHintHandler from '../test/generated-artifacts/IKyberHintHandler.json';
 import * as IKyberNetwork from '../test/generated-artifacts/IKyberNetwork.json';
 import * as IKyberNetworkProxy from '../test/generated-artifacts/IKyberNetworkProxy.json';
+import * as IKyberStorage from '../test/generated-artifacts/IKyberStorage.json';
 import * as ILiquidityProvider from '../test/generated-artifacts/ILiquidityProvider.json';
 import * as ILiquidityProviderRegistry from '../test/generated-artifacts/ILiquidityProviderRegistry.json';
 import * as IMultiBridge from '../test/generated-artifacts/IMultiBridge.json';
@@ -28,8 +30,10 @@ export const artifacts = {
     IDevUtils: IDevUtils as ContractArtifact,
     IERC20BridgeSampler: IERC20BridgeSampler as ContractArtifact,
     IEth2Dai: IEth2Dai as ContractArtifact,
+    IKyberHintHandler: IKyberHintHandler as ContractArtifact,
     IKyberNetwork: IKyberNetwork as ContractArtifact,
     IKyberNetworkProxy: IKyberNetworkProxy as ContractArtifact,
+    IKyberStorage: IKyberStorage as ContractArtifact,
     ILiquidityProvider: ILiquidityProvider as ContractArtifact,
     ILiquidityProviderRegistry: ILiquidityProviderRegistry as ContractArtifact,
     IMultiBridge: IMultiBridge as ContractArtifact,

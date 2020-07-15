@@ -40,11 +40,13 @@ interface IERC20BridgeSampler {
     /// @dev Queries the fillable taker asset amounts of native orders.
     /// @param orders Native orders to query.
     /// @param orderSignatures Signatures for each respective order in `orders`.
+    /// @param devUtilsAddress Address to the DevUtils contract.
     /// @return orderFillableTakerAssetAmounts How much taker asset can be filled
     ///         by each order in `orders`.
     function getOrderFillableTakerAssetAmounts(
         LibOrder.Order[] calldata orders,
-        bytes[] calldata orderSignatures
+        bytes[] calldata orderSignatures,
+        address devUtilsAddress
     )
         external
         view
@@ -53,11 +55,13 @@ interface IERC20BridgeSampler {
     /// @dev Queries the fillable maker asset amounts of native orders.
     /// @param orders Native orders to query.
     /// @param orderSignatures Signatures for each respective order in `orders`.
+    /// @param devUtilsAddress Address to the DevUtils contract.
     /// @return orderFillableMakerAssetAmounts How much maker asset can be filled
     ///         by each order in `orders`.
     function getOrderFillableMakerAssetAmounts(
         LibOrder.Order[] calldata orders,
-        bytes[] calldata orderSignatures
+        bytes[] calldata orderSignatures,
+        address devUtilsAddress
     )
         external
         view
