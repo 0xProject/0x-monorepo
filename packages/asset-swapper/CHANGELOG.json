@@ -25,6 +25,18 @@
             {
                 "note": "\"Fix\" forwarder buys of low decimal tokens.",
                 "pr": 2618
+            },
+            {
+                "note": "Add Balancer support",
+                "pr": 2613
+            },
+            {
+                "note": "Consolidate UniswapV2 sources, Curve sources in `ERC20BridgeSource` enum",
+                "pr": 2613
+            },
+            {
+                "note": "Change gas/fee schedule values from constants to functions returning numbers",
+                "pr": 2613
             }
         ]
     },

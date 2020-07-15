@@ -3,10 +3,12 @@ import { BigNumber } from '@0x/utils';
 import { MarketOperation } from '../../types';
 
 import { ZERO_AMOUNT } from './constants';
-import { getPathSize, isValidPath } from './fills';
+import { getPathAdjustedSize, getPathSize, isValidPath } from './fills';
 import { Fill } from './types';
 
 // tslint:disable: prefer-for-of custom-no-magic-numbers completed-docs
+
+const RUN_LIMIT_DECAY_FACTOR = 0.8;
 
 /**
  * Find the optimal mixture of paths that maximizes (for sells) or minimizes
@@ -16,11 +18,15 @@ export function findOptimalPath(
     side: MarketOperation,
     paths: Fill[][],
     targetInput: BigNumber,
-    runLimit?: number,
+    runLimit: number = 2 ** 15,
 ): Fill[] | undefined {
-    let optimalPath = paths[0] || [];
-    for (const path of paths.slice(1)) {
-        optimalPath = mixPaths(side, optimalPath, path, targetInput, runLimit);
+    // Sort paths in descending order by adjusted output amount.
+    const sortedPaths = paths
+        .slice(0)
+        .sort((a, b) => getPathAdjustedSize(b, targetInput)[1].comparedTo(getPathAdjustedSize(a, targetInput)[1]));
+    let optimalPath = sortedPaths[0] || [];
+    for (const [i, path] of sortedPaths.slice(1).entries()) {
+        optimalPath = mixPaths(side, optimalPath, path, targetInput, runLimit * RUN_LIMIT_DECAY_FACTOR ** i);
     }
     return isPathComplete(optimalPath, targetInput) ? optimalPath : undefined;
 }
@@ -30,7 +36,7 @@ function mixPaths(
     pathA: Fill[],
     pathB: Fill[],
     targetInput: BigNumber,
-    maxSteps: number = 2 ** 15,
+    maxSteps: number,
 ): Fill[] {
     let bestPath: Fill[] = [];
     let bestPathInput = ZERO_AMOUNT;

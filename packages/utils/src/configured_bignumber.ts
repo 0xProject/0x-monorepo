@@ -34,4 +34,9 @@ if (isNode) {
     };
 }
 
+// HACK: CLobber config and set to prevent imported packages from poisoning
+// global BigNumber config
+(orig => (BigNumber.config = (..._args: any[]) => orig({})))(BigNumber.config);
+BigNumber.set = BigNumber.config;
+
 export { BigNumber };

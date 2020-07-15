@@ -1,6 +1,7 @@
 import { IERC20BridgeSamplerContract } from '@0x/contract-wrappers';
 import { BigNumber } from '@0x/utils';
 
+import { BalancerPoolsCache } from './balancer_utils';
 import { samplerOperations } from './sampler_operations';
 import { BatchedOperation } from './types';
 
@@ -11,6 +12,9 @@ export function getSampleAmounts(maxFillAmount: BigNumber, numSamples: number, e
     const distribution = [...Array<BigNumber>(numSamples)].map((_v, i) => new BigNumber(expBase).pow(i));
     const stepSizes = distribution.map(d => d.div(BigNumber.sum(...distribution)));
     const amounts = stepSizes.map((_s, i) => {
+        if (i === numSamples - 1) {
+            return maxFillAmount;
+        }
         return maxFillAmount
             .times(BigNumber.sum(...[0, ...stepSizes.slice(0, i + 1)]))
             .integerValue(BigNumber.ROUND_UP);
@@ -29,11 +33,11 @@ export class DexOrderSampler {
      * for use with `DexOrderSampler.executeAsync()`.
      */
     public static ops = samplerOperations;
-    private readonly _samplerContract: IERC20BridgeSamplerContract;
 
-    constructor(samplerContract: IERC20BridgeSamplerContract) {
-        this._samplerContract = samplerContract;
-    }
+    constructor(
+        private readonly _samplerContract: IERC20BridgeSamplerContract,
+        public balancerPoolsCache: BalancerPoolsCache = new BalancerPoolsCache(),
+    ) {}
 
     /* Type overloads for `executeAsync()`. Could skip this if we would upgrade TS. */
 

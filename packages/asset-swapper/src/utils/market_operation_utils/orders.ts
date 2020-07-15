@@ -5,7 +5,6 @@ import { ERC20BridgeAssetData, SignedOrder } from '@0x/types';
 import { AbiEncoder, BigNumber } from '@0x/utils';
 
 import { MarketOperation, SignedOrderWithFillableAmounts } from '../../types';
-import { getCurveInfo } from '../source_utils';
 
 import {
     ERC20_PROXY_ID,
@@ -20,12 +19,15 @@ import { collapsePath } from './fills';
 import { getMultiBridgeIntermediateToken } from './multibridge_utils';
 import {
     AggregationError,
+    BalancerFillData,
     CollapsedFill,
+    CurveFillData,
     ERC20BridgeSource,
     Fill,
     NativeCollapsedFill,
     OptimizedMarketOrder,
     OrderDomain,
+    UniswapV2FillData,
 } from './types';
 
 // tslint:disable completed-docs no-unnecessary-type-assertion
@@ -151,7 +153,7 @@ export function createOrdersFromPath(path: Fill[], opts: CreateOrderFromPathOpts
     const orders: OptimizedMarketOrder[] = [];
     for (let i = 0; i < collapsedPath.length; ) {
         if (collapsedPath[i].source === ERC20BridgeSource.Native) {
-            orders.push(createNativeOrder(collapsedPath[i]));
+            orders.push(createNativeOrder(collapsedPath[i] as NativeCollapsedFill));
             ++i;
             continue;
         }
@@ -184,14 +186,11 @@ function getBridgeAddressFromSource(source: ERC20BridgeSource, opts: CreateOrder
         case ERC20BridgeSource.Uniswap:
             return opts.contractAddresses.uniswapBridge;
         case ERC20BridgeSource.UniswapV2:
-        case ERC20BridgeSource.UniswapV2Eth:
             return opts.contractAddresses.uniswapV2Bridge;
-        case ERC20BridgeSource.CurveUsdcDai:
-        case ERC20BridgeSource.CurveUsdcDaiUsdt:
-        case ERC20BridgeSource.CurveUsdcDaiUsdtTusd:
-        case ERC20BridgeSource.CurveUsdcDaiUsdtBusd:
-        case ERC20BridgeSource.CurveUsdcDaiUsdtSusd:
+        case ERC20BridgeSource.Curve:
             return opts.contractAddresses.curveBridge;
+        case ERC20BridgeSource.Balancer:
+            return opts.contractAddresses.balancerBridge;
         case ERC20BridgeSource.LiquidityProvider:
             if (opts.liquidityProviderAddress === undefined) {
                 throw new Error('Cannot create a LiquidityProvider order without a LiquidityProvider pool address.');
@@ -214,39 +213,33 @@ function createBridgeOrder(fill: CollapsedFill, opts: CreateOrderFromPathOpts): 
 
     let makerAssetData;
     switch (fill.source) {
-        case ERC20BridgeSource.CurveUsdcDai:
-        case ERC20BridgeSource.CurveUsdcDaiUsdt:
-        case ERC20BridgeSource.CurveUsdcDaiUsdtTusd:
-        case ERC20BridgeSource.CurveUsdcDaiUsdtBusd:
-        case ERC20BridgeSource.CurveUsdcDaiUsdtSusd:
-            const { curveAddress, fromTokenIdx, toTokenIdx, version } = getCurveInfo(
-                fill.source,
-                takerToken,
-                makerToken,
-            );
+        case ERC20BridgeSource.Curve:
+            const curveFillData = (fill as CollapsedFill<CurveFillData>).fillData!; // tslint:disable-line:no-non-null-assertion
             makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
                 makerToken,
                 bridgeAddress,
-                createCurveBridgeData(curveAddress, fromTokenIdx, toTokenIdx, version),
+                createCurveBridgeData(
+                    curveFillData.poolAddress,
+                    curveFillData.fromTokenIdx,
+                    curveFillData.toTokenIdx,
+                    1, // "version"
+                ),
+            );
+            break;
+        case ERC20BridgeSource.Balancer:
+            const balancerFillData = (fill as CollapsedFill<BalancerFillData>).fillData!; // tslint:disable-line:no-non-null-assertion
+            makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
+                makerToken,
+                bridgeAddress,
+                createBalancerBridgeData(takerToken, balancerFillData.poolAddress),
             );
             break;
         case ERC20BridgeSource.UniswapV2:
+            const uniswapV2FillData = (fill as CollapsedFill<UniswapV2FillData>).fillData!; // tslint:disable-line:no-non-null-assertion
             makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
                 makerToken,
                 bridgeAddress,
-                createUniswapV2BridgeData([takerToken, makerToken]),
-            );
-            break;
-        case ERC20BridgeSource.UniswapV2Eth:
-            if (opts.contractAddresses.etherToken === NULL_ADDRESS) {
-                throw new Error(
-                    `Cannot create a ${ERC20BridgeSource.UniswapV2Eth.toString()} order without a WETH address`,
-                );
-            }
-            makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
-                makerToken,
-                bridgeAddress,
-                createUniswapV2BridgeData([takerToken, opts.contractAddresses.etherToken, makerToken]),
+                createUniswapV2BridgeData(uniswapV2FillData.tokenAddressPath),
             );
             break;
         case ERC20BridgeSource.MultiBridge:
@@ -338,6 +331,14 @@ function createMultiBridgeData(takerToken: string, makerToken: string): string {
     return encoder.encode({ takerToken, intermediateToken });
 }
 
+function createBalancerBridgeData(takerToken: string, poolAddress: string): string {
+    const encoder = AbiEncoder.create([
+        { name: 'takerToken', type: 'address' },
+        { name: 'poolAddress', type: 'address' },
+    ]);
+    return encoder.encode({ takerToken, poolAddress });
+}
+
 function createCurveBridgeData(
     curveAddress: string,
     fromTokenIdx: number,
@@ -404,10 +405,10 @@ function createCommonBridgeOrderFields(opts: CreateOrderFromPathOpts): CommonBri
     };
 }
 
-function createNativeOrder(fill: CollapsedFill): OptimizedMarketOrder {
+function createNativeOrder(fill: NativeCollapsedFill): OptimizedMarketOrder {
     return {
         fills: [fill],
-        ...(fill as NativeCollapsedFill).nativeOrder,
+        ...fill.fillData!.order, // tslint:disable-line:no-non-null-assertion
     };
 }
 

@@ -69,6 +69,12 @@ export {
     NativeCollapsedFill,
     OptimizedMarketOrder,
     GetMarketOrdersRfqtOpts,
+    FeeSchedule,
+    FillData,
+    NativeFillData,
+    CurveFillData,
+    BalancerFillData,
+    UniswapV2FillData,
 } from './utils/market_operation_utils/types';
 export { affiliateFeeUtils } from './utils/affiliate_fee_utils';
 export { ProtocolFeeUtils } from './utils/protocol_fee_utils';
