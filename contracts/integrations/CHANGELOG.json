@@ -6,7 +6,8 @@
                 "note": "Add `BalancerBridge` mainnet tests",
                 "pr": 2613
             }
-        ]
+        ],
+        "timestamp": 1594788383
     },
     {
         "version": "2.5.2",

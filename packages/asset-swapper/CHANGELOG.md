@@ -5,6 +5,19 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.6.0 - _July 15, 2020_
+
+    * Use internal Eth Gas Station proxy (#2614)
+    * Renamed RFQT request parameters (#2582)
+    * Fix worst case asset amount calculations. (#2615)
+    * Specify EthGasStation url as an optional parameter (#2617)
+    * Singleton Gas Price Oracle (#2619)
+    * "Fix" forwarder buys of low decimal tokens. (#2618)
+    * Add Balancer support (#2613)
+    * Consolidate UniswapV2 sources, Curve sources in `ERC20BridgeSource` enum (#2613)
+    * Change gas/fee schedule values from constants to functions returning numbers (#2613)
+    * Specify overrides to the ERC20Sampler contract, by default the latest bytecode is the override (#2629)
+
 ## v4.5.0 - _June 24, 2020_
 
     * Add support for private liquidity providers (#2505)

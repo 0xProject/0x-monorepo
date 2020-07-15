@@ -10,7 +10,8 @@
                 "note": "Add `BalancerBridge`",
                 "pr": 2613
             }
-        ]
+        ],
+        "timestamp": 1594788383
     },
     {
         "version": "3.3.0",

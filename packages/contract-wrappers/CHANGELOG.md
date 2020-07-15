@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v13.8.0 - _July 15, 2020_
+
+    * Export `GethCallOverrides` (#2620)
+
 ## v13.7.0 - _June 24, 2020_
 
     * Regenerated wrappers for Broker and GodsUnchainedValidator (#2511)

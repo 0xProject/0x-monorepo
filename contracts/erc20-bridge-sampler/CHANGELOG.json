@@ -10,7 +10,8 @@
                 "note": "Use new Kyber Katalyst functions",
                 "pr": 2629
             }
-        ]
+        ],
+        "timestamp": 1594788383
     },
     {
         "version": "1.6.0",

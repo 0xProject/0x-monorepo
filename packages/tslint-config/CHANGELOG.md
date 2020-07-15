@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.1.0 - _July 15, 2020_
+
+    * Set `no-non-null-assertion` to false (#2613)
+
 ## v4.0.0 - _December 2, 2019_
 
     * Dependencies updated

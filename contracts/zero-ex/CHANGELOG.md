@@ -5,6 +5,12 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v0.2.0 - _July 15, 2020_
+
+    * Export migration tools (#2612)
+    * Export `AffiliateFeeTransformerContract` (#2622)
+    * Add `MetaTransactions` and `SignatureValidator` features (#2610)
+
 ## v0.1.1 - _June 24, 2020_
 
     * Dependencies updated

@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.1.6 - _July 15, 2020_
+
+    * Dependencies updated
+
 ## v1.1.5 - _June 24, 2020_
 
     * Fix broken tests. (#2591)

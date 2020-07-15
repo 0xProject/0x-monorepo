@@ -10,7 +10,8 @@
                 "note": "Add `getOrderHash()`, `getExchangeTransactionHash()`, `getExchangeProxyTransactionHash()`",
                 "pr": 2610
             }
-        ]
+        ],
+        "timestamp": 1594788383
     },
     {
         "timestamp": 1592969527,

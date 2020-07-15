@@ -10,7 +10,8 @@
                 "note": "Remove duplicate overrides data from the eth_call rpc call",
                 "pr": 2629
             }
-        ]
+        ],
+        "timestamp": 1594788383
     },
     {
         "version": "7.1.0",

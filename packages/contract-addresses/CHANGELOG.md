@@ -5,6 +5,16 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.11.0 - _July 15, 2020_
+
+    * Update ganache snapshot Exchange Proxy addresses (#2612)
+    * Add EP flash wallet and affiliate fee transformer (#2622)
+    * Update DFB addresses (#2616)
+    * Deploy FQT from PR 2608 (#2625)
+    * Redeploy DFB on kovan (#2628)
+    * Update ganache snapshot Exchange Proxy addresses for MetaTransactions (#2610)
+    * Add BalancerBridge addresses (#2613)
+
 ## v4.10.0 - _June 24, 2020_
 
     * Updated Kovan's ERC20BridgeSampler address (#2519)

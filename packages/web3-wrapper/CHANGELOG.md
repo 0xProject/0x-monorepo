@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v7.2.0 - _July 15, 2020_
+
+    * Add geth eth_call support (#2620)
+    * Remove duplicate overrides data from the eth_call rpc call (#2629)
+
 ## v7.1.0 - _June 24, 2020_
 
     * Add `getAccountNonce()` to `Web3Wrapper` (#2545)

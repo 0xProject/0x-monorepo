@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.7.0 - _July 15, 2020_
+
+    * Pass in `DevUtils` address to required functions (#2629)
+    * Use new Kyber Katalyst functions (#2629)
+
 ## v1.6.0 - _June 24, 2020_
 
     * Pass in `DevUtils` address as a constructor parameter (#2531)

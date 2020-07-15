@@ -30,7 +30,8 @@
                 "note": "Add BalancerBridge addresses",
                 "pr": 2613
             }
-        ]
+        ],
+        "timestamp": 1594788383
     },
     {
         "version": "4.10.0",

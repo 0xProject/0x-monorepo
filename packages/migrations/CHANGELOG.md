@@ -5,6 +5,12 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v6.4.0 - _July 15, 2020_
+
+    * Add Exchange Proxy migration. (#2612)
+    * Add affiliate fee transformer migration and flash wallet address (#2622)
+    * Add BalancerBridge to returned object in `migration.ts` (#2613)
+
 ## v6.3.0 - _June 24, 2020_
 
     * Add `dexForwarderBridge` to migration output (#2525)

@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.6.0 - _July 15, 2020_
+
+    * Add `BalancerBridge` mainnet tests (#2613)
+
 ## v2.5.2 - _June 24, 2020_
 
     * Update `ERC20BridgeSampler` tests (#2531)
