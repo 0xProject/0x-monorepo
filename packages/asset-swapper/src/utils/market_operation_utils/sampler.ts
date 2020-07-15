@@ -38,8 +38,8 @@ export class DexOrderSampler {
 
     constructor(
         private readonly _samplerContract: ERC20BridgeSamplerContract,
-        public balancerPoolsCache: BalancerPoolsCache = new BalancerPoolsCache(),
         private readonly _samplerOverrides?: SamplerOverrides,
+        public balancerPoolsCache: BalancerPoolsCache = new BalancerPoolsCache(),
     ) {}
 
     /* Type overloads for `executeAsync()`. Could skip this if we would upgrade TS. */

@@ -484,7 +484,7 @@ describe('DexSampler tests', () => {
                     return Promise.resolve(pools);
                 },
             });
-            const dexOrderSampler = new DexOrderSampler(new MockSamplerContract({}), balancerPoolsCache);
+            const dexOrderSampler = new DexOrderSampler(new MockSamplerContract({}), undefined, balancerPoolsCache);
             const [quotes] = await dexOrderSampler.executeAsync(
                 await DexOrderSampler.ops.getSellQuotesAsync(
                     [ERC20BridgeSource.Balancer],
@@ -590,7 +590,7 @@ describe('DexSampler tests', () => {
                     return Promise.resolve(pools);
                 },
             });
-            const dexOrderSampler = new DexOrderSampler(new MockSamplerContract({}), balancerPoolsCache);
+            const dexOrderSampler = new DexOrderSampler(new MockSamplerContract({}), undefined, balancerPoolsCache);
             const [quotes] = await dexOrderSampler.executeAsync(
                 await DexOrderSampler.ops.getBuyQuotesAsync(
                     [ERC20BridgeSource.Balancer],

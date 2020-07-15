@@ -16,7 +16,8 @@ export { RFQTFirmQuote, RFQTIndicativeQuote } from '@0x/quote-server';
 export { APIOrder, Asset, AssetPairsItem, SignedOrder } from '@0x/types';
 export { BigNumber } from '@0x/utils';
 export {
-    CallData,
+    BlockParam,
+    BlockParamLiteral,
     DataItem,
     EIP1193Event,
     EIP1193Provider,
@@ -52,6 +53,7 @@ export {
     MockedRfqtFirmQuoteResponse,
     RfqtMakerAssetOfferings,
     RfqtRequestOpts,
+    SamplerOverrides,
     SignedOrderWithFillableAmounts,
     SwapQuote,
     SwapQuoteConsumerBase,
