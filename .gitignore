@@ -195,3 +195,6 @@ packages/*/docs/README.md
 
 # the snapshot that gets built for migrations sure does have a ton of files
 packages/migrations/0x_ganache_snapshot*
+
+# typescript incremental builds
+*.tsbuildinfo

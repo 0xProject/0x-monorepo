@@ -36,7 +36,7 @@
         "lodash": "^4.17.11",
         "mocha": "^6.2.0",
         "shx": "^0.2.2",
-        "typescript": "3.0.1"
+        "typescript": "^3.9.6"
     },
     "publishConfig": {
         "access": "public"

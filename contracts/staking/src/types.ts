@@ -3,6 +3,7 @@ import { BigNumber } from '@0x/utils';
 import { DecodedLogArgs, LogWithDecodedArgs } from 'ethereum-types';
 
 import { constants as stakingConstants } from './constants';
+export { Numberish } from '@0x/contracts-test-utils';
 
 // tslint:disable:max-classes-per-file
 
@@ -259,5 +260,3 @@ export class AggregatedStats {
 export interface AggregatedStatsByEpoch {
     [epoch: string]: AggregatedStats;
 }
-
-export type Numberish = Numberish;

@@ -11,12 +11,12 @@ import * as crypto from 'crypto';
 import { LogEntry } from 'ethereum-types';
 
 import { artifacts } from '../artifacts';
-
 import {
     IsolatedExchangeContract,
     IsolatedExchangeDispatchTransferFromCalledEventArgs as DispatchTransferFromCallArgs,
     IsolatedExchangeFillEventArgs as FillEventArgs,
 } from '../wrappers';
+export { Order } from '@0x/types';
 
 export interface AssetBalances {
     [assetData: string]: { [address: string]: BigNumber };
@@ -27,7 +27,6 @@ export interface IsolatedExchangeEvents {
     transferFromCalls: DispatchTransferFromCallArgs[];
 }
 
-export type Order = Order;
 export type Numberish = string | number | BigNumber;
 
 export const DEFAULT_GOOD_SIGNATURE = createGoodSignature();

@@ -83,7 +83,7 @@
         "solhint": "^1.4.1",
         "truffle": "^5.0.32",
         "tslint": "5.11.0",
-        "typescript": "3.0.1"
+        "typescript": "^3.9.6"
     },
     "dependencies": {
         "@0x/asset-swapper": "^4.6.0",

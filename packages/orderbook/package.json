@@ -42,7 +42,7 @@
         "sinon": "^4.0.0",
         "ts-jest": "^24.0.2",
         "typedoc": "^0.15.0",
-        "typescript": "3.0.1",
+        "typescript": "^3.9.6",
         "websocket": "^1.0.26"
     },
     "dependencies": {

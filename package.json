@@ -28,6 +28,7 @@
         "build": "lerna link && wsrun $PKG -r --stages --fast-exit --exclude-missing -c build",
         "build:ci": "lerna link && wsrun $PKG -r --stages --fast-exit --exclude-missing -c build:ci",
         "build:ci:dirty": "lerna link && wsrun --changedSince development -r --revRecursive --stages --fast-exit --exclude-missing --report -c build:ci",
+        "test:ci:dirty": "wsrun --changedSince development --revRecursive --stages --fast-exit --exclude-missing --report -c test",
         "build:contracts": "lerna link && wsrun -p ${npm_package_config_contractsPackages} -c --fast-exit -r --stages --exclude-missing -c build",
         "build:monorepo_scripts": "PKG=@0x/monorepo-scripts yarn build",
         "build:ts": "tsc -b",
@@ -42,7 +43,6 @@
         "rebuild": "run-s clean build",
         "test": "wsrun $PKG --fast-exit --serial --exclude-missing --exclude @0x/asset-swapper --exclude @0x/orderbook -c test",
         "test:contracts": "wsrun -p ${npm_package_config_contractsPackages} -c --fast-exit --exclude-missing -c test",
-        "test:ci:dirty": "wsrun --changedSince development --stages --fast-exit --exclude-missing -c test",
         "generate_doc": "node ./packages/monorepo-scripts/lib/doc_generate.js",
         "upload_md_docs": "aws s3 rm --recursive s3://docs-markdown; wsrun s3:sync_md_docs --exclude-missing",
         "diff_md_docs:ci": "wsrun --exclude-missing -c diff_docs",
@@ -90,7 +90,7 @@
         "npm-run-all": "^4.1.2",
         "prettier": "^1.16.3",
         "source-map-support": "^0.5.6",
-        "typescript": "3.0.1",
+        "typescript": "^3.9.6",
         "wsrun": "^5.2.0"
     },
     "resolutions": {

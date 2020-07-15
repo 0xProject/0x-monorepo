@@ -30,7 +30,7 @@
     "devDependencies": {
         "gitpkg": "https://github.com/0xProject/gitpkg.git",
         "shx": "^0.2.2",
-        "typescript": "3.0.1"
+        "typescript": "^3.9.6"
     },
     "publishConfig": {
         "access": "public"

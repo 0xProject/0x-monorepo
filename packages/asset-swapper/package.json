@@ -92,7 +92,7 @@
         "tslint": "5.11.0",
         "typedoc": "^0.15.0",
         "typemoq": "^2.1.0",
-        "typescript": "3.0.1"
+        "typescript": "^3.9.6"
     },
     "publishConfig": {
         "access": "public"

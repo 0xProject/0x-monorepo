@@ -30,21 +30,19 @@ import * as util from 'ethereumjs-util';
 import { default as VM } from 'ethereumjs-vm';
 import PStateManager from 'ethereumjs-vm/dist/state/promisified';
 
-export { linkLibrariesInBytecode, methodAbiToFunctionSignature } from './utils';
-
 import { AwaitTransactionSuccessOpts } from './types';
 import { formatABIDataItem } from './utils';
 
 export { SubscriptionManager } from './subscription_manager';
-
 export {
-    ContractEvent,
-    SendTransactionOpts,
     AwaitTransactionSuccessOpts,
+    ContractEvent,
     ContractFunctionObj,
     ContractTxFunctionObj,
+    SendTransactionOpts,
     SubscriptionErrors,
 } from './types';
+export { linkLibrariesInBytecode, methodAbiToFunctionSignature } from './utils';
 
 export interface AbiEncoderByFunctionSignature {
     [key: string]: AbiEncoder.Method;
@@ -80,9 +78,7 @@ export class PromiseWithTransactionHash<T> implements Promise<T> {
     public finally(onFinally?: (() => void) | null): Promise<T> {
         return this._promise.finally(onFinally);
     }
-    // tslint:enable:promise-function-async
-    // tslint:enable:async-suffix
-    get [Symbol.toStringTag](): 'Promise' {
+    get [Symbol.toStringTag](): string {
         return this._promise[Symbol.toStringTag];
     }
 }

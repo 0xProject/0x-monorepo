@@ -5,6 +5,7 @@ import 'mocha';
 import * as Sinon from 'sinon';
 import * as WebSocket from 'websocket';
 
+import { OrdersChannelSubscriptionOpts } from '../src';
 import { WebSocketOrdersChannel } from '../src/ws_orders_channel';
 
 chai.config.includeStack = true;
@@ -22,15 +23,14 @@ describe('WebSocketOrdersChannel', () => {
     Sinon.stub(openClient, 'readyState').get(() => WebSocket.w3cwebsocket.OPEN);
     Sinon.stub(openClient, 'send').callsFake(_.noop.bind(_));
     const openOrdersChannel = new WebSocketOrdersChannel(openClient, emptyOrdersChannelHandler);
-    const subscriptionOpts = {
-        baseAssetData: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-        quoteAssetData: '0xef7fff64389b814a946f3e92105513705ca6b990',
-        limit: 100,
+    const subscriptionOpts: OrdersChannelSubscriptionOpts = {
+        makerAssetData: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+        takerAssetData: '0xef7fff64389b814a946f3e92105513705ca6b990',
     };
     describe('#subscribe', () => {
         it('throws when subscriptionOpts does not conform to schema', () => {
             const badSubscribeCall = openOrdersChannel.subscribe.bind(openOrdersChannel, {
-                makerAssetData: 5,
+                makerAssetData: '5',
             });
             expect(badSubscribeCall).throws();
         });

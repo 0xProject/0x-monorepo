@@ -431,7 +431,7 @@ export class DocGenerateUtils {
                 return; // It's an external package
             }
 
-            const typeDocSourceIncludes = new Set();
+            const typeDocSourceIncludes = new Set<string>();
             const pathToIndex = `${pathIfExists}/src/index.ts`;
             const exportInfo = DocGenerateUtils._getExportPathToExportedItems(pathToIndex);
             const innerExportPathToExportedItems = exportInfo.exportPathToExportedItems;

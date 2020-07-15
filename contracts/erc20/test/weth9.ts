@@ -12,9 +12,8 @@ import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 
-import { WETH9Contract } from './wrappers';
-
 import { artifacts } from './artifacts';
+import { WETH9Contract } from './wrappers';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -39,8 +38,8 @@ describe('EtherToken', () => {
             artifacts.WETH9,
             provider,
             {
-                gasPrice,
                 ...txDefaults,
+                gasPrice,
             },
             artifacts,
         );

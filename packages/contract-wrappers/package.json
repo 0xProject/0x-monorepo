@@ -52,7 +52,7 @@
         "gitpkg": "https://github.com/0xProject/gitpkg.git",
         "tslint": "5.11.0",
         "typedoc": "^0.15.0",
-        "typescript": "3.0.1"
+        "typescript": "^3.9.6"
     },
     "dependencies": {
         "@0x/assert": "^3.0.9",

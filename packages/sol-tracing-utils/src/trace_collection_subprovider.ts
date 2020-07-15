@@ -2,7 +2,7 @@ import { BlockchainLifecycle } from '@0x/dev-utils';
 import { Callback, ErrorCallback, NextCallback, Subprovider, Web3ProviderEngine } from '@0x/subproviders';
 import { logUtils } from '@0x/utils';
 import { CallDataRPC, marshaller, Web3Wrapper } from '@0x/web3-wrapper';
-import { JSONRPCRequestPayload, TxData } from 'ethereum-types';
+import { JSONRPCRequestPayload } from 'ethereum-types';
 import { utils } from 'ethers';
 import * as _ from 'lodash';
 import { Lock } from 'semaphore-async-await';
@@ -10,7 +10,7 @@ import { Lock } from 'semaphore-async-await';
 import { constants } from './constants';
 import { BlockParamLiteral } from './types';
 
-interface MaybeFakeTxData extends TxData {
+interface MaybeFakeTxData extends utils.Transaction {
     isFakeTransaction?: boolean;
 }
 
@@ -157,7 +157,7 @@ export abstract class TraceCollectionSubprovider extends Subprovider {
         txHash: string | undefined,
         cb: Callback,
     ): Promise<void> {
-        if (!(txData.isFakeTransaction || txData.from === txData.to)) {
+        if (!txData.isFakeTransaction || txData.from === txData.to) {
             // This transaction is a usual transaction. Not a call executed as one.
             // And we don't want it to be executed within a snapshotting period
             await this._lock.acquire();

@@ -77,7 +77,7 @@
         "truffle": "^5.0.32",
         "tslint": "5.11.0",
         "typedoc": "^0.15.0",
-        "typescript": "3.0.1"
+        "typescript": "^3.9.6"
     },
     "dependencies": {
         "@0x/base-contract": "^6.2.3",

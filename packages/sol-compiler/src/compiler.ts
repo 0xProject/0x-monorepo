@@ -22,6 +22,10 @@ import { StandardInput } from 'solc';
 import { promisify } from 'util';
 
 import { compilerOptionsSchema } from './schemas/compiler_options_schema';
+import { ContractContentsByPath, ImportPrefixRemappings, SolcWrapper } from './solc_wrapper';
+import { SolcWrapperV04 } from './solc_wrapper_v04';
+import { SolcWrapperV05 } from './solc_wrapper_v05';
+import { SolcWrapperV06 } from './solc_wrapper_v06';
 import {
     CompiledSources,
     createDirIfDoesNotExistAsync,
@@ -37,11 +41,6 @@ import {
 import { constants } from './utils/constants';
 import { fsWrapper } from './utils/fs_wrapper';
 import { utils } from './utils/utils';
-
-import { ContractContentsByPath, ImportPrefixRemappings, SolcWrapper } from './solc_wrapper';
-import { SolcWrapperV04 } from './solc_wrapper_v04';
-import { SolcWrapperV05 } from './solc_wrapper_v05';
-import { SolcWrapperV06 } from './solc_wrapper_v06';
 
 export type TYPE_ALL_FILES_IDENTIFIER = '*';
 export const ALL_CONTRACTS_IDENTIFIER = '*';
@@ -91,7 +90,7 @@ export class Compiler {
         overrides: Partial<CompilerOptions> = {},
         file: string = 'compiler.json',
     ): Promise<CompilerOptions> {
-        const fileConfig: CompilerOptions = (await promisify(fs.stat)(file)).isFile
+        const fileConfig: CompilerOptions = (await promisify(fs.stat)(file)).isFile()
             ? JSON.parse((await promisify(fs.readFile)(file, 'utf8')).toString())
             : {};
         assert.doesConformToSchema('compiler.json', fileConfig, compilerOptionsSchema);

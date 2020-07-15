@@ -11,7 +11,7 @@ jobs:
         steps:
             - checkout
             - restore_cache:
-                  key: node-modules-{{ checksum "yarn.lock" }}
+                  key: yarn-cache-{{ checksum "yarn.lock" }}
             - run: git fetch --force origin development:development
             - run: git --no-pager diff HEAD..development
             - run: echo 'export PATH=$HOME/CIRCLE_PROJECT_REPONAME/node_modules/.bin:$PATH' >> $BASH_ENV
@@ -24,11 +24,11 @@ jobs:
                   command: yarn --frozen-lockfile --ignore-engines install
             - run: yarn wsrun --changedSince development --report --stages --fast-exit --exclude-missing --bin echo -c abcd
             - run: yarn build:ci:dirty
+            - run: yarn test:ci:dirty
             - save_cache:
                   when: always
-                  key: node-modules-{{ checksum "yarn.lock" }}
+                  key: yarn-cache-{{ checksum "yarn.lock" }}
                   paths:
-                      - ~/repo/node_modules
                       - /usr/local/share/.cache/yarn/v4
 workflows:
     version: 2

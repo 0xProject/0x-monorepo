@@ -20,7 +20,9 @@ describe('Assertions', () => {
         });
         it('should throw for invalid input', () => {
             const invalidInputs = ['test', 42, false, { random: 'test' }, undefined];
-            invalidInputs.forEach(input => expect(assert.isBigNumber.bind(assert, variableName, input)).to.throw());
+            invalidInputs.forEach(input =>
+                expect(assert.isBigNumber.bind(assert, variableName, input as any)).to.throw(),
+            );
         });
     });
     describe('#isNumberLike', () => {
@@ -30,7 +32,9 @@ describe('Assertions', () => {
         });
         it('should throw for invalid input', () => {
             const invalidInputs = ['test', false, { random: 'test' }, undefined];
-            invalidInputs.forEach(input => expect(assert.isNumberLike.bind(assert, variableName, input)).to.throw());
+            invalidInputs.forEach(input =>
+                expect(assert.isNumberLike.bind(assert, variableName, input as any)).to.throw(),
+            );
         });
     });
     describe('#isValidBaseUnitAmount', () => {
@@ -43,7 +47,7 @@ describe('Assertions', () => {
         it('should throw for invalid input', () => {
             const invalidInputs = [0, undefined, new BigNumber(3.145), 3.145, new BigNumber(-400)];
             invalidInputs.forEach(input =>
-                expect(assert.isValidBaseUnitAmount.bind(assert, variableName, input)).to.throw(),
+                expect(assert.isValidBaseUnitAmount.bind(assert, variableName, input as any)).to.throw(),
             );
         });
     });
@@ -54,7 +58,7 @@ describe('Assertions', () => {
         });
         it('should throw for invalid input', () => {
             const invalidInputs = [42, false, { random: 'test' }, undefined, new BigNumber(45)];
-            invalidInputs.forEach(input => expect(assert.isString.bind(assert, variableName, input)).to.throw());
+            invalidInputs.forEach(input => expect(assert.isString.bind(assert, variableName, input as any)).to.throw());
         });
     });
     describe('#isFunction', () => {
@@ -84,7 +88,9 @@ describe('Assertions', () => {
                 new BigNumber(45),
                 '0x61a3ed31B43c8780e905a260a35faYfEc527be7516aa11c0256729b5b351bc33',
             ];
-            invalidInputs.forEach(input => expect(assert.isHexString.bind(assert, variableName, input)).to.throw());
+            invalidInputs.forEach(input =>
+                expect(assert.isHexString.bind(assert, variableName, input as any)).to.throw(),
+            );
         });
     });
     describe('#isETHAddressHex', () => {
@@ -108,7 +114,9 @@ describe('Assertions', () => {
                 '0x6FFFd0ae3f7d88c9b4925323f54c6e4b2918c5fd',
                 '0x6FFFd0ae3f7d88c9b4925323f54c6e4',
             ];
-            invalidInputs.forEach(input => expect(assert.isETHAddressHex.bind(assert, variableName, input)).to.throw());
+            invalidInputs.forEach(input =>
+                expect(assert.isETHAddressHex.bind(assert, variableName, input as any)).to.throw(),
+            );
         });
     });
     describe('#doesBelongToStringEnum', () => {
@@ -125,7 +133,7 @@ describe('Assertions', () => {
         it('should throw for invalid input', () => {
             const invalidInputs = [42, false, { random: 'test' }, undefined, new BigNumber(45)];
             invalidInputs.forEach(input =>
-                expect(assert.doesBelongToStringEnum.bind(assert, variableName, input, TestEnums)).to.throw(),
+                expect(assert.doesBelongToStringEnum.bind(assert, variableName, input as any, TestEnums)).to.throw(),
             );
         });
     });
@@ -151,7 +159,7 @@ describe('Assertions', () => {
         });
         it('should throw for invalid input', () => {
             const invalidInputs = [false, { random: 'test' }, undefined, new BigNumber(45)];
-            invalidInputs.forEach(input => expect(assert.isNumber.bind(assert, variableName, input)).to.throw());
+            invalidInputs.forEach(input => expect(assert.isNumber.bind(assert, variableName, input as any)).to.throw());
         });
     });
     describe('#isBoolean', () => {
@@ -161,7 +169,9 @@ describe('Assertions', () => {
         });
         it('should throw for invalid input', () => {
             const invalidInputs = [42, { random: 'test' }, undefined, new BigNumber(45)];
-            invalidInputs.forEach(input => expect(assert.isBoolean.bind(assert, variableName, input)).to.throw());
+            invalidInputs.forEach(input =>
+                expect(assert.isBoolean.bind(assert, variableName, input as any)).to.throw(),
+            );
         });
     });
     describe('#isWeb3Provider', () => {

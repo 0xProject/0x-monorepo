@@ -1,3 +1,4 @@
+import { EventCallback, IndexedFilterValues } from '@0x/types';
 import { AbiDecoder, intervalUtils, logUtils } from '@0x/utils';
 import { marshaller, Web3Wrapper } from '@0x/web3-wrapper';
 import {
@@ -11,8 +12,6 @@ import {
     RawLogEntry,
 } from 'ethereum-types';
 import { Block, BlockAndLogStreamer, Log } from 'ethereumjs-blockstream';
-
-import { EventCallback, IndexedFilterValues } from '@0x/types';
 
 import { SubscriptionErrors } from './types';
 import { filterUtils } from './utils/filter_utils';
@@ -104,9 +103,9 @@ export class SubscriptionManager<ContractEventArgs, ContractEvents extends strin
     private _onLogStateChanged<ArgsType extends ContractEventArgs>(
         isRemoved: boolean,
         blockHash: string,
-        rawLogs: RawLogEntry[],
+        rawLogs: Log[],
     ): void {
-        const logs: LogEntry[] = rawLogs.map(rawLog => marshaller.unmarshalLog(rawLog));
+        const logs: LogEntry[] = rawLogs.map(rawLog => marshaller.unmarshalLog(rawLog as RawLogEntry));
         logs.forEach(log => {
             Object.entries(this._filters).forEach(([filterToken, filter]) => {
                 if (filterUtils.matchesFilter(log, filter)) {
@@ -166,12 +165,12 @@ export class SubscriptionManager<ContractEventArgs, ContractEvents extends strin
         return blockOrNull;
     }
     // This method only exists in order to comply with the expected interface of Blockstream's constructor
-    private async _blockstreamGetLogsAsync(filterOptions: FilterObject): Promise<RawLogEntry[]> {
+    private async _blockstreamGetLogsAsync(filterOptions: FilterObject): Promise<Log[]> {
         const logs = await this._web3Wrapper.sendRawPayloadAsync<RawLogEntry[]>({
             method: 'eth_getLogs',
             params: [filterOptions],
         });
-        return logs as RawLogEntry[];
+        return logs as Log[];
     }
     private _stopBlockAndLogStream(): void {
         if (this._blockAndLogStreamerIfExists === undefined) {

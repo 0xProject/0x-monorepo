@@ -62,7 +62,7 @@
         "shx": "^0.2.2",
         "tslint": "5.11.0",
         "typedoc": "^0.15.0",
-        "typescript": "3.0.1",
+        "typescript": "^3.9.6",
         "web3-provider-engine": "14.0.6",
         "yargs": "^10.0.3"
     },
