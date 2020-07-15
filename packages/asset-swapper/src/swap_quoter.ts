@@ -193,8 +193,7 @@ export class SwapQuoter {
                   [this._contractAddresses.erc20BridgeSampler]: { code: samplerBytecode },
               }
             : {};
-        const samplerOverrides = _.merge(
-            {},
+        const samplerOverrides = _.assign(
             { block: BlockParamLiteral.Latest, overrides: defaultCodeOverrides },
             options.samplerOverrides,
         );
