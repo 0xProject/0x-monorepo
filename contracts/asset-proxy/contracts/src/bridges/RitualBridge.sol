@@ -41,9 +41,6 @@ contract RitualBridge is
 {
     using LibSafeMath for uint256;
 
-    uint256 public constant BUY_WINDOW_LENGTH = 24 hours;
-    uint256 public constant MIN_INTERVAL_LENGTH = 24 hours;
-
     struct RecurringBuy {
         uint256 sellAmount;
         uint256 interval;
@@ -53,6 +50,9 @@ contract RitualBridge is
         uint256 currentIntervalAmountSold;
         bool unwrapWeth;
     }
+
+    uint256 public constant BUY_WINDOW_LENGTH = 24 hours;
+    uint256 public constant MIN_INTERVAL_LENGTH = 24 hours;
 
     mapping (bytes32 => RecurringBuy) public recurringBuys;
     IExchange internal EXCHANGE; // solhint-disable-line var-name-mixedcase
@@ -242,6 +242,11 @@ contract RitualBridge is
 
         RecurringBuy memory buyState = recurringBuys[recurringBuyID];
 
+        require(
+            buyState.sellAmount > 0,
+            "RitualBridge::_validateAndUpdateRecurringBuy/NO_ACTIVE_RECURRING_BUY_FOUND"
+        );
+
         uint256 minBuyAmountScaled = LibMath.safeGetPartialAmountFloor(
             makerAssetAmount,
             buyState.sellAmount,
@@ -304,6 +309,11 @@ contract RitualBridge is
         amountSold = sellTokenBalance.safeSub(sellTokenRemaining);
 
         amountBought = LibERC20Token.balanceOf(buyToken, address(this));
+
+        if (amountBought == 0) {
+            return (amountSold, amountBought);
+        }
+        
         if (unwrapWeth && buyToken == _getWethAddress()) {
             IEtherToken(buyToken).withdraw(amountBought);
             // The `refundFinalBalance` modifier will handle the transfer.

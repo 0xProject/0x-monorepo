@@ -43,6 +43,7 @@ export * from '../test/generated-wrappers/test_dydx_bridge';
 export * from '../test/generated-wrappers/test_erc20_bridge';
 export * from '../test/generated-wrappers/test_eth2_dai_bridge';
 export * from '../test/generated-wrappers/test_kyber_bridge';
+export * from '../test/generated-wrappers/test_ritual_bridge';
 export * from '../test/generated-wrappers/test_static_call_target';
 export * from '../test/generated-wrappers/test_uniswap_bridge';
 export * from '../test/generated-wrappers/test_uniswap_v2_bridge';
