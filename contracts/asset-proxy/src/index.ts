@@ -14,6 +14,7 @@ export {
     IDydxContract,
     KyberBridgeContract,
     MultiAssetProxyContract,
+    RitualBridgeContract,
     StaticCallProxyContract,
     TestDydxBridgeContract,
     TestStaticCallTargetContract,

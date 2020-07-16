@@ -16,15 +16,17 @@
 
 */
 
-pragma solidity ^0.5.9;
+pragma solidity ^0.5.16;
 pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IEtherToken.sol";
 import "@0x/contracts-erc20/contracts/src/LibERC20Token.sol";
+import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
 import "@0x/contracts-exchange-libs/contracts/src/IWallet.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-utils/contracts/src/DeploymentConstants.sol";
+import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
+import "@0x/contracts-utils/contracts/src/Refundable.sol";
 import "../interfaces/IERC20Bridge.sol";
 
 
@@ -33,26 +35,37 @@ import "../interfaces/IERC20Bridge.sol";
 contract RitualBridge is
     IERC20Bridge,
     IWallet,
+    Refundable,
     DeploymentConstants
 {
+    using LibSafeMath for uint256;
+
     uint256 public constant BUY_WINDOW_LENGTH = 24 hours;
     uint256 public constant MIN_INTERVAL_LENGTH = 24 hours;
 
-    struct RecurringBuyParams {
+    struct RecurringBuy {
         uint256 sellAmount;
         uint256 interval;
         uint256 minBuyAmount;
         uint256 maxSlippageBps;
         uint256 currentBuyWindowStart;
         uint256 currentIntervalAmountSold;
+        bool unwrapWeth;
     }
 
-    mapping (bytes32 => RecurringBuyParams) public recurringBuys;
+    mapping (bytes32 => RecurringBuy) public recurringBuys;
+    IExchange internal EXCHANGE; // solhint-disable-line var-name-mixedcase
 
     function ()
         external
         payable
     {}
+
+    constructor (address _exchange)
+        public
+    {
+        EXCHANGE = IExchange(_exchange);
+    }
 
     /// @dev Callback for `IERC20Bridge`. Tries to buy `makerAssetAmount` of
     ///      `makerToken` by selling the entirety of the `takerToken`
@@ -72,7 +85,49 @@ contract RitualBridge is
     )
         external
         returns (bytes4 success)
-    {}
+    {
+        (
+            address takerToken,
+            address recurringBuyer
+        ) = abi.decode(
+            bridgeData,
+            (address, address)
+        );
+
+        uint256 takerAssetAmount = LibERC20Token.balanceOf(
+            takerToken,
+            address(this)
+        );
+
+        bool unwrapWeth = _validateAndUpdateRecurringBuy(
+            takerAssetAmount,
+            makerAssetAmount,
+            recurringBuyer,
+            takerToken,
+            makerToken
+        );
+
+        if (unwrapWeth) {
+            IEtherToken(takerToken).withdraw(takerAssetAmount);
+            address payable recurringBuyerPayable = address(uint160(recurringBuyer));
+            recurringBuyerPayable.transfer(takerAssetAmount);
+        } else {
+            LibERC20Token.transfer(
+                takerToken,
+                recurringBuyer,
+                takerAssetAmount
+            );
+        }
+
+        LibERC20Token.transferFrom(
+            makerToken,
+            recurringBuyer,
+            taker,
+            makerAssetAmount
+        );
+
+        return BRIDGE_SUCCESS;
+    }
 
     /// @dev `SignatureType.Wallet` callback, so that this bridge can be the maker
     ///      and sign for itself in orders. Always succeeds.
@@ -95,19 +150,67 @@ contract RitualBridge is
         uint256 interval,
         uint256 minBuyAmount,
         uint256 maxSlippageBps,
+        bool unwrapWeth,
         LibOrder.Order[] memory orders,
         bytes[] memory signatures
     )
-        external
+        public
+        payable
+        refundFinalBalance
         returns (bytes32 recurringBuyID, uint256 amountBought)
-    {}
+    {
+        require(
+            interval >= MIN_INTERVAL_LENGTH,
+            'RitualBridge::setRecurringBuy/INTERVAL_TOO_SHORT'
+        );
+        require(
+            sellToken != buyToken,
+            'RitualBridge::setRecurringBuy/INVALID_TOKEN_PAIR'
+        );
+
+        recurringBuyID = keccak256(abi.encode(
+            msg.sender,
+            sellToken,
+            buyToken
+        ));
+
+        uint256 amountSold;
+        if (orders.length > 0) {
+            (amountSold, amountBought) = _initialMarketSell(
+                sellToken,
+                buyToken,
+                sellAmount,
+                orders,
+                signatures,
+                unwrapWeth
+            );
+        }
+
+        recurringBuys[recurringBuyID] = RecurringBuy({
+            sellAmount: sellAmount,
+            interval: interval,
+            minBuyAmount: minBuyAmount,
+            maxSlippageBps: maxSlippageBps,
+            currentBuyWindowStart: block.timestamp,
+            currentIntervalAmountSold: amountSold,
+            unwrapWeth: unwrapWeth
+        });
+    }
 
     function cancelRecurringBuy(
         address sellToken,
         address buyToken
     )
         external
-    {}
+    {
+        bytes32 recurringBuyID = keccak256(abi.encode(
+            msg.sender,
+            sellToken,
+            buyToken
+        ));
+
+        delete recurringBuys[recurringBuyID];
+    }
 
     function flashArbitrage(
         address recipient,
@@ -118,7 +221,7 @@ contract RitualBridge is
         returns (uint256 amountBought)
     {}
 
-    function _validateAndGetParams(
+    function _validateAndUpdateRecurringBuy(
         uint256 takerAssetAmount,
         uint256 makerAssetAmount,
         address recurringBuyer,
@@ -126,6 +229,39 @@ contract RitualBridge is
         address makerToken
     )
         private
-        returns (RecurringBuyParams memory params)
+        returns (bool unwrapWeth)
     {}
+
+    function _initialMarketSell(
+        address sellToken,
+        address buyToken,
+        uint256 sellAmount,
+        LibOrder.Order[] memory orders,
+        bytes[] memory signatures,
+        bool unwrapWeth
+    )
+        private
+        returns (uint256 amountSold, uint256 amountBought)
+    {
+        LibERC20Token.transferFrom(sellToken, msg.sender, address(this), sellAmount);
+        uint256 sellTokenBalance = LibERC20Token.balanceOf(sellToken, address(this));
+
+        EXCHANGE.marketSellOrdersNoThrow.value(msg.value)(
+            orders,
+            sellAmount,
+            signatures
+        );
+
+        uint256 sellTokenRemaining = LibERC20Token.balanceOf(sellToken, address(this));
+        LibERC20Token.transfer(sellToken, msg.sender, sellTokenRemaining);
+        amountSold = sellTokenBalance.safeSub(sellTokenRemaining);
+
+        amountBought = LibERC20Token.balanceOf(buyToken, address(this));
+        if (unwrapWeth && buyToken == _getWethAddress()) {
+            IEtherToken(buyToken).withdraw(amountBought);
+            // The `refundFinalBalance` modifier will handle the transfer.
+        } else {
+            LibERC20Token.transfer(buyToken, msg.sender, amountBought);
+        }
+    }
 }
