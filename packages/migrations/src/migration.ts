@@ -6,7 +6,9 @@ import {
     ERC20ProxyContract,
     ERC721ProxyContract,
     MultiAssetProxyContract,
+    RitualBridgeContract,
     StaticCallProxyContract,
+    TestOracleContract,
 } from '@0x/contracts-asset-proxy';
 import {
     artifacts as coordinatorArtifacts,
@@ -76,6 +78,7 @@ export async function runMigrationsAsync(
     const provider = providerUtils.standardizeOrThrow(supportedProvider);
     const chainId = new BigNumber(await providerUtils.getChainIdAsync(provider));
 
+    /*
     // Proxies
     const erc20Proxy = await ERC20ProxyContract.deployFrom0xArtifactAsync(
         assetProxyArtifacts.ERC20Proxy,
@@ -343,31 +346,47 @@ export async function runMigrationsAsync(
         txDefaults,
         allArtifacts,
     );
+    */
+
+    const testOracle = await TestOracleContract.deployFrom0xArtifactAsync(
+        assetProxyArtifacts.TestOracle,
+        provider,
+        txDefaults,
+        allArtifacts,
+    );
+    const ritualBridge = await RitualBridgeContract.deployFrom0xArtifactAsync(
+        assetProxyArtifacts.RitualBridge,
+        provider,
+        txDefaults,
+        allArtifacts,
+        '0x4eacd0af335451709e1e7b570b8ea68edec8bc97',
+        testOracle.address,
+    );
 
     const contractAddresses = {
-        erc20Proxy: erc20Proxy.address,
-        erc721Proxy: erc721Proxy.address,
-        erc1155Proxy: erc1155Proxy.address,
-        zrxToken: zrxToken.address,
-        etherToken: etherToken.address,
-        exchange: exchange.address,
+        erc20Proxy: NULL_ADDRESS,
+        erc721Proxy: NULL_ADDRESS,
+        erc1155Proxy: NULL_ADDRESS,
+        zrxToken: NULL_ADDRESS,
+        etherToken: NULL_ADDRESS,
+        exchange: NULL_ADDRESS,
         assetProxyOwner: NULL_ADDRESS,
-        erc20BridgeProxy: erc20BridgeProxy.address,
+        erc20BridgeProxy: NULL_ADDRESS,
         zeroExGovernor: NULL_ADDRESS,
-        forwarder: forwarder.address,
-        coordinatorRegistry: coordinatorRegistry.address,
-        coordinator: coordinator.address,
-        multiAssetProxy: multiAssetProxy.address,
-        staticCallProxy: staticCallProxy.address,
-        devUtils: devUtils.address,
-        exchangeV2: exchangeV2Address || NULL_ADDRESS,
-        zrxVault: zrxVault.address,
-        staking: stakingLogic.address,
-        stakingProxy: stakingProxy.address,
+        forwarder: NULL_ADDRESS,
+        coordinatorRegistry: NULL_ADDRESS,
+        coordinator: NULL_ADDRESS,
+        multiAssetProxy: NULL_ADDRESS,
+        staticCallProxy: NULL_ADDRESS,
+        devUtils: NULL_ADDRESS,
+        exchangeV2: NULL_ADDRESS,
+        zrxVault: NULL_ADDRESS,
+        staking: NULL_ADDRESS,
+        stakingProxy: NULL_ADDRESS,
         uniswapBridge: NULL_ADDRESS,
         eth2DaiBridge: NULL_ADDRESS,
         kyberBridge: NULL_ADDRESS,
-        erc20BridgeSampler: erc20BridgeSampler.address,
+        erc20BridgeSampler: NULL_ADDRESS,
         chaiBridge: NULL_ADDRESS,
         dydxBridge: NULL_ADDRESS,
         curveBridge: NULL_ADDRESS,
@@ -380,15 +399,15 @@ export async function runMigrationsAsync(
         multiBridge: NULL_ADDRESS,
         balancerBridge: NULL_ADDRESS,
         exchangeProxyGovernor: NULL_ADDRESS,
-        exchangeProxy: exchangeProxy.address,
-        exchangeProxyAllowanceTarget: exchangeProxyAllowanceTargetAddress,
+        exchangeProxy: NULL_ADDRESS,
+        exchangeProxyAllowanceTarget: NULL_ADDRESS,
         exchangeProxyTransformerDeployer: txDefaults.from,
-        exchangeProxyFlashWallet: exchangeProxyFlashWalletAddress,
+        exchangeProxyFlashWallet: NULL_ADDRESS,
         transformers: {
-            wethTransformer: wethTransformer.address,
-            payTakerTransformer: payTakerTransformer.address,
-            fillQuoteTransformer: fillQuoteTransformer.address,
-            affiliateFeeTransformer: affiliateFeeTransformer.address,
+            wethTransformer: NULL_ADDRESS,
+            payTakerTransformer: NULL_ADDRESS,
+            fillQuoteTransformer: NULL_ADDRESS,
+            affiliateFeeTransformer: NULL_ADDRESS,
         },
     };
     return contractAddresses;

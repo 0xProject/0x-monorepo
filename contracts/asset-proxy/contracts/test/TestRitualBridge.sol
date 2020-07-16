@@ -24,7 +24,7 @@ import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-utils/contracts/src/Refundable.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "../src/bridges/RitualBridge.sol";
-import "./TestOracle.sol";
+import "../src/TestOracle.sol";
 
 
 contract TestExchange is

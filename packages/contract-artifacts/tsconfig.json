@@ -31,6 +31,7 @@
         "./artifacts/CoordinatorRegistry.json",
         "./artifacts/Coordinator.json",
         "./artifacts/ERC1155Proxy.json",
+        "./artifacts/RitualBridge.json",
         "./artifacts/StaticCallProxy.json",
         "./artifacts/Staking.json",
         "./artifacts/StakingProxy.json",

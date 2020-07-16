@@ -16,6 +16,7 @@ export {
     MultiAssetProxyContract,
     RitualBridgeContract,
     StaticCallProxyContract,
+    TestOracleContract,
     TestDydxBridgeContract,
     TestStaticCallTargetContract,
     UniswapBridgeContract,
