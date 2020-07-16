@@ -18,9 +18,8 @@ import {
 import { MarketOperationUtils } from './market_operation_utils';
 import { convertNativeOrderToFullyFillableOptimizedOrders } from './market_operation_utils/orders';
 import { FeeSchedule, FillData, GetMarketOrdersOpts, OptimizedMarketOrder } from './market_operation_utils/types';
-import { isSupportedAssetDataInOrders } from './utils';
-
 import { QuoteFillResult, simulateBestCaseFill, simulateWorstCaseFill } from './quote_simulation';
+import { isSupportedAssetDataInOrders } from './utils';
 
 // TODO(dave4506) How do we want to reintroduce InsufficientAssetLiquidityError?
 export class SwapQuoteCalculator {
@@ -75,6 +74,14 @@ export class SwapQuoteCalculator {
         )) as Array<MarketBuySwapQuote | undefined>;
     }
 
+    public async calculateMarketDepthAsync(
+        prunedOrders: SignedOrder[],
+        takerAssetFillAmount: BigNumber,
+        opts: CalculateSwapQuoteOpts,
+    ): Promise<any> {
+        return this._marketOperationUtils.getMarketDepthAsync(prunedOrders, takerAssetFillAmount, opts);
+    }
+
     private async _calculateBatchBuySwapQuoteAsync(
         batchPrunedOrders: SignedOrder[][],
         assetFillAmounts: BigNumber[],
@@ -107,6 +114,7 @@ export class SwapQuoteCalculator {
         );
         return batchSwapQuotes;
     }
+
     private async _calculateSwapQuoteAsync(
         prunedOrders: SignedOrder[],
         assetFillAmount: BigNumber,

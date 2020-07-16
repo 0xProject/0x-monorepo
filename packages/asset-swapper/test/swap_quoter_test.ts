@@ -73,6 +73,7 @@ const expectLiquidityResult = async (
     const liquidityResult = await mockedSwapQuoter.object.getLiquidityForMakerTakerAssetDataPairAsync(
         FAKE_MAKER_ASSET_DATA,
         WETH_ASSET_DATA,
+        new BigNumber(10e18),
     );
     expect(liquidityResult).to.deep.equal(expectedLiquidityResult);
 };
@@ -101,7 +102,11 @@ describe('SwapQuoter', () => {
                 );
 
                 expect(
-                    swapQuoter.getLiquidityForMakerTakerAssetDataPairAsync(FAKE_MAKER_ASSET_DATA, false as any),
+                    swapQuoter.getLiquidityForMakerTakerAssetDataPairAsync(
+                        FAKE_MAKER_ASSET_DATA,
+                        false as any,
+                        new BigNumber(1e18),
+                    ),
                 ).to.be.rejectedWith('Expected takerAssetData to be of type string, encountered: false');
             });
             it('should ensure makerAssetData is a string', async () => {
@@ -111,7 +116,11 @@ describe('SwapQuoter', () => {
                 );
 
                 expect(
-                    swapQuoter.getLiquidityForMakerTakerAssetDataPairAsync(false as any, FAKE_TAKER_ASSET_DATA),
+                    swapQuoter.getLiquidityForMakerTakerAssetDataPairAsync(
+                        false as any,
+                        FAKE_TAKER_ASSET_DATA,
+                        new BigNumber(1e18),
+                    ),
                 ).to.be.rejectedWith('Expected makerAssetData to be of type string, encountered: false');
             });
         });
@@ -124,6 +133,7 @@ describe('SwapQuoter', () => {
                 const liquidityResult = await swapQuoter.getLiquidityForMakerTakerAssetDataPairAsync(
                     FAKE_MAKER_ASSET_DATA,
                     FAKE_TAKER_ASSET_DATA,
+                    new BigNumber(1e18),
                 );
                 expect(liquidityResult).to.deep.equal({
                     makerAssetAvailableInBaseUnits: new BigNumber(0),
@@ -138,6 +148,7 @@ describe('SwapQuoter', () => {
                 const liquidityResult = await swapQuoter.getLiquidityForMakerTakerAssetDataPairAsync(
                     FAKE_MAKER_ASSET_DATA,
                     FAKE_TAKER_ASSET_DATA,
+                    new BigNumber(1e18),
                 );
                 expect(liquidityResult).to.deep.equal({
                     makerAssetAvailableInBaseUnits: new BigNumber(0),

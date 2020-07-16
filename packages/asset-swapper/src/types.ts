@@ -2,7 +2,7 @@ import { BlockParam, ContractAddresses, GethCallOverrides } from '@0x/contract-w
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
-import { GetMarketOrdersOpts, OptimizedMarketOrder } from './utils/market_operation_utils/types';
+import { ERC20BridgeSource, GetMarketOrdersOpts, OptimizedMarketOrder } from './utils/market_operation_utils/types';
 import { LogFunction } from './utils/quote_requestor';
 
 /**
@@ -285,6 +285,7 @@ export enum SwapQuoterError {
 export interface LiquidityForTakerMakerAssetDataPair {
     makerAssetAvailableInBaseUnits: BigNumber;
     takerAssetAvailableInBaseUnits: BigNumber;
+    depth?: { [key in ERC20BridgeSource]?: Array<{ price?: BigNumber; input: BigNumber; output: BigNumber }> };
 }
 
 /**

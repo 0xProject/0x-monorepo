@@ -1,9 +1,11 @@
 import { ContractAddresses } from '@0x/contract-addresses';
+import { ZERO_AMOUNT } from '@0x/order-utils';
 import { RFQTIndicativeQuote } from '@0x/quote-server';
 import { SignedOrder } from '@0x/types';
 import { BigNumber, NULL_ADDRESS } from '@0x/utils';
+import _ = require('lodash');
 
-import { MarketOperation } from '../../types';
+import { LiquidityForTakerMakerAssetDataPair, MarketOperation } from '../../types';
 import { difference } from '../utils';
 
 import { BUY_SOURCES, DEFAULT_GET_MARKET_ORDERS_OPTS, FEE_QUOTE_SOURCES, ONE_ETHER, SELL_SOURCES } from './constants';
@@ -58,6 +60,146 @@ export class MarketOperationUtils {
     ) {
         this._wethAddress = contractAddresses.etherToken.toLowerCase();
         this._multiBridge = contractAddresses.multiBridge.toLowerCase();
+    }
+
+    public async getMarketDepthAsync(
+        nativeOrders: SignedOrder[],
+        takerAmount: BigNumber,
+        opts?: Partial<GetMarketOrdersOpts>,
+    ): Promise<LiquidityForTakerMakerAssetDataPair> {
+        if (nativeOrders.length === 0) {
+            throw new Error(AggregationError.EmptyOrders);
+        }
+        console.log(opts);
+        console.time('depth-charge');
+        const _opts = { ...DEFAULT_GET_MARKET_ORDERS_OPTS, ...opts };
+        const [makerToken, takerToken] = getNativeOrderTokens(nativeOrders[0]);
+        const sampleAmounts = getSampleAmounts(takerAmount, _opts.numSamples, _opts.sampleDistributionBase);
+
+        // Call the sampler contract.
+        const samplerPromise = this._sampler.executeAsync(
+            // Get native order fillable amounts.
+            DexOrderSampler.ops.getOrderFillableTakerAmounts(nativeOrders, this.contractAddresses.devUtils),
+            // Get sell quotes for taker -> maker.
+            await DexOrderSampler.ops.getSellQuotesAsync(
+                difference(
+                    SELL_SOURCES.concat(this._optionalSources()),
+                    _opts.excludedSources.concat(ERC20BridgeSource.Balancer),
+                ),
+                makerToken,
+                takerToken,
+                sampleAmounts,
+                this._wethAddress,
+                this._sampler.balancerPoolsCache,
+                this._liquidityProviderRegistry,
+                this._multiBridge,
+            ),
+        );
+
+        const balancerPromise = this._sampler.executeAsync(
+            await DexOrderSampler.ops.getSellQuotesAsync(
+                difference([ERC20BridgeSource.Balancer], _opts.excludedSources),
+                makerToken,
+                takerToken,
+                sampleAmounts,
+                this._wethAddress,
+                this._sampler.balancerPoolsCache,
+                this._liquidityProviderRegistry,
+                this._multiBridge,
+            ),
+        );
+
+        const [[orderFillableAmounts, dexQuotes], [balancerQuotes]] = await Promise.all([
+            samplerPromise,
+            balancerPromise,
+        ]);
+        console.log(JSON.stringify(dexQuotes, null, 2));
+        const depth: {
+            [key in ERC20BridgeSource]: Array<{
+                input: BigNumber;
+                output: BigNumber;
+                price: BigNumber;
+                bucket: number;
+            }>
+        } = {} as any;
+        const allDexQuotes = [...dexQuotes, ...balancerQuotes];
+        // find the median price at each sample input
+        const calcPrice = (input: BigNumber, output: BigNumber) => output.dividedBy(input).decimalPlaces(18);
+        const allMedianPrices: BigNumber[] = sampleAmounts.map((sampleAmount, i) => {
+            const valid = allDexQuotes.filter(q => !q[i].output.isZero());
+            const outputs = valid.map(q => q[i].output).sort((a, b) => b.comparedTo(a));
+            const medianPrice = calcPrice(sampleAmount, outputs[Math.floor(outputs.length / 2)]);
+            return medianPrice;
+        });
+        const medianPrices = _.uniqBy(allMedianPrices, p => p.toString());
+        console.log(medianPrices);
+        const findBucketForPrice = (price: BigNumber) => {
+            let bucket = medianPrices.findIndex(v => price.gte(v));
+            if (bucket === -1) {
+                bucket = price.gte(medianPrices[0]) ? 0 : medianPrices.length;
+            }
+            return bucket;
+        };
+        for (const dexQuote of allDexQuotes) {
+            const source = dexQuote[0].source;
+            if (!depth[source]) {
+                depth[source] = [];
+            }
+            for (const [i, fill] of dexQuote.entries()) {
+                const { input, output } = fill;
+                if (output.isZero()) {
+                    break;
+                }
+                const price = calcPrice(input, output);
+                const bucket = findBucketForPrice(price);
+                const prev = depth[source].find(p => p.bucket === bucket);
+                // pricing so good its in the same bucket
+                if (prev) {
+                    // input and output is already cumulative, so replace
+                    prev.output = output;
+                } else {
+                    const result: any = { input, output, price, bucket };
+                    depth[source].push(result);
+                }
+            }
+            // keep the price going until the final bucket
+            depth[source].push({ ...depth[source][depth[source].length - 1], bucket: medianPrices.length });
+            depth[source] = depth[source].sort((a, b) => a.bucket - b.bucket);
+        }
+        let nativeInput = ZERO_AMOUNT;
+        let nativeOutput = ZERO_AMOUNT;
+        orderFillableAmounts.forEach((fillableAmount, i) => {
+            const order = nativeOrders[i];
+            // i.e 90 / 100, scale input down by 0.9
+            const scale = fillableAmount.div(order.takerAssetAmount);
+            if (!depth[ERC20BridgeSource.Native]) {
+                depth[ERC20BridgeSource.Native] = [];
+            }
+            const fillableMakerAmount = order.makerAssetAmount.times(scale).integerValue();
+            nativeInput = nativeInput.plus(fillableAmount);
+            nativeOutput = nativeOutput.plus(fillableMakerAmount);
+            const price = calcPrice(nativeInput, nativeOutput);
+            const bucket = findBucketForPrice(price);
+            const prev = depth[ERC20BridgeSource.Native].find(p => p.bucket === bucket);
+            if (prev) {
+                prev.input = nativeInput;
+                prev.output = nativeOutput;
+            } else {
+                depth[ERC20BridgeSource.Native].push({
+                    input: nativeInput,
+                    output: nativeOutput,
+                    price,
+                    bucket,
+                });
+            }
+        });
+        const liquidityAvailable = {
+            depth,
+            takerAssetAvailableInBaseUnits: ZERO_AMOUNT,
+            makerAssetAvailableInBaseUnits: ZERO_AMOUNT,
+        };
+        console.timeEnd('depth-charge');
+        return liquidityAvailable;
     }
 
     /**

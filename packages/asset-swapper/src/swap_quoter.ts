@@ -22,7 +22,6 @@ import {
     SwapQuoterOpts,
 } from './types';
 import { assert } from './utils/assert';
-import { calculateLiquidity } from './utils/calculate_liquidity';
 import { MarketOperationUtils } from './utils/market_operation_utils';
 import { createDummyOrderForSampler } from './utils/market_operation_utils/orders';
 import { DexOrderSampler } from './utils/market_operation_utils/sampler';
@@ -383,24 +382,43 @@ export class SwapQuoter {
     public async getLiquidityForMakerTakerAssetDataPairAsync(
         makerAssetData: string,
         takerAssetData: string,
+        maxTakerAssetAmount: BigNumber,
+        options: Partial<SwapQuoteRequestOpts> = {},
     ): Promise<LiquidityForTakerMakerAssetDataPair> {
         assert.isString('makerAssetData', makerAssetData);
         assert.isString('takerAssetData', takerAssetData);
         assetDataUtils.decodeAssetDataOrThrow(takerAssetData);
         assetDataUtils.decodeAssetDataOrThrow(makerAssetData);
-        const assetPairs = await this.getAvailableMakerAssetDatasAsync(takerAssetData);
-        if (!assetPairs.includes(makerAssetData)) {
-            return {
-                makerAssetAvailableInBaseUnits: new BigNumber(0),
-                takerAssetAvailableInBaseUnits: new BigNumber(0),
-            };
-        }
 
-        const ordersWithFillableAmounts = await this.getSignedOrdersWithFillableAmountsAsync(
+        const orders = await this._getSignedOrdersAsync(makerAssetData, takerAssetData);
+        // if no native orders, pass in a dummy order for the sampler to have required metadata for sampling
+        if (orders.length === 0) {
+            orders.push(
+                createDummyOrderForSampler(makerAssetData, takerAssetData, this._contractAddresses.uniswapBridge),
+            );
+        }
+        const liquidityForPair = await this._marketOperationUtils.getMarketDepthAsync(
+            orders,
+            maxTakerAssetAmount,
+            options,
+        );
+        return liquidityForPair;
+    }
+
+    public async getLiquidityForMakerTakerAssetPairAsync(
+        makerTokenAddress: string,
+        takerTokenAddress: string,
+        maxTakerAssetAmount: BigNumber,
+        options: Partial<SwapQuoteRequestOpts> = {},
+    ): Promise<LiquidityForTakerMakerAssetDataPair> {
+        const makerAssetData = assetDataUtils.encodeERC20AssetData(makerTokenAddress);
+        const takerAssetData = assetDataUtils.encodeERC20AssetData(takerTokenAddress);
+        return this.getLiquidityForMakerTakerAssetDataPairAsync(
             makerAssetData,
             takerAssetData,
+            maxTakerAssetAmount,
+            options,
         );
-        return calculateLiquidity(ordersWithFillableAmounts);
     }
 
     /**
