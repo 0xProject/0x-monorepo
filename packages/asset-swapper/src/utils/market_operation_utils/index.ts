@@ -64,7 +64,8 @@ export class MarketOperationUtils {
 
     public async getMarketDepthAsync(
         nativeOrders: SignedOrder[],
-        takerAmount: BigNumber,
+        amount: BigNumber,
+        side: MarketOperation = MarketOperation.Sell,
         opts?: Partial<GetMarketOrdersOpts>,
     ): Promise<LiquidityForTakerMakerAssetDataPair> {
         if (nativeOrders.length === 0) {
@@ -74,17 +75,16 @@ export class MarketOperationUtils {
         console.time('depth-charge');
         const _opts = { ...DEFAULT_GET_MARKET_ORDERS_OPTS, ...opts };
         const [makerToken, takerToken] = getNativeOrderTokens(nativeOrders[0]);
-        const sampleAmounts = getSampleAmounts(takerAmount, _opts.numSamples, _opts.sampleDistributionBase);
+        const sampleAmounts = getSampleAmounts(amount, _opts.numSamples, _opts.sampleDistributionBase);
 
         // Call the sampler contract.
         const samplerPromise = this._sampler.executeAsync(
             // Get native order fillable amounts.
             DexOrderSampler.ops.getOrderFillableTakerAmounts(nativeOrders, this.contractAddresses.devUtils),
-            // Get sell quotes for taker -> maker.
             await DexOrderSampler.ops.getSellQuotesAsync(
                 difference(
                     SELL_SOURCES.concat(this._optionalSources()),
-                    _opts.excludedSources.concat(ERC20BridgeSource.Balancer),
+                    _opts.excludedSources.concat(ERC20BridgeSource.Balancer, ERC20BridgeSource.MultiBridge),
                 ),
                 makerToken,
                 takerToken,
@@ -113,7 +113,6 @@ export class MarketOperationUtils {
             samplerPromise,
             balancerPromise,
         ]);
-        console.log(JSON.stringify(dexQuotes, null, 2));
         const depth: {
             [key in ERC20BridgeSource]: Array<{
                 input: BigNumber;
@@ -132,69 +131,123 @@ export class MarketOperationUtils {
             return medianPrice;
         });
         const medianPrices = _.uniqBy(allMedianPrices, p => p.toString());
-        console.log(medianPrices);
         const findBucketForPrice = (price: BigNumber) => {
             let bucket = medianPrices.findIndex(v => price.gte(v));
             if (bucket === -1) {
-                bucket = price.gte(medianPrices[0]) ? 0 : medianPrices.length;
+                bucket = price.gte(medianPrices[0]) ? 0 : medianPrices.length - 1;
             }
             return bucket;
         };
-        for (const dexQuote of allDexQuotes) {
-            const source = dexQuote[0].source;
+        // Remove the accumulation of the samples
+        const unaccumulatedSamples = allDexQuotes.map(samples => {
+            return samples
+                .map((qFs, i) => {
+                    const prev = i === 0 ? undefined : samples[i - 1];
+                    if (qFs.output.isZero()) {
+                        return undefined;
+                    }
+                    return prev
+                        ? {
+                              ...qFs,
+                              input: qFs.input.minus(prev.input),
+                              output: qFs.output.minus(prev.output),
+                              source: qFs.source,
+                              prev,
+                          }
+                        : qFs;
+                })
+                .filter(qFs => qFs) as Array<{ input: BigNumber; output: BigNumber; source: ERC20BridgeSource }>;
+        });
+        let minFinalBucket = medianPrices.length;
+        // if this occurs we join them together into the same bucket
+        for (const quotesForSource of unaccumulatedSamples) {
+            if (!quotesForSource[0]) {
+                continue;
+            }
+            const source = quotesForSource[0].source;
             if (!depth[source]) {
                 depth[source] = [];
             }
-            for (const [i, fill] of dexQuote.entries()) {
-                const { input, output } = fill;
-                if (output.isZero()) {
-                    break;
-                }
-                const price = calcPrice(input, output);
+            quotesForSource.forEach(q => {
+                const price = calcPrice(q.input, q.output);
                 const bucket = findBucketForPrice(price);
-                const prev = depth[source].find(p => p.bucket === bucket);
-                // pricing so good its in the same bucket
-                if (prev) {
-                    // input and output is already cumulative, so replace
-                    prev.output = output;
-                } else {
-                    const result: any = { input, output, price, bucket };
-                    depth[source].push(result);
+                depth[source].push({
+                    input: q.input,
+                    output: q.output,
+                    bucket,
+                    price: medianPrices[bucket],
+                });
+            });
+            // It's possible a Source with  many pools now exists multiple times in the same bucket
+            // here we will just combine them
+            const samplesGroupedByBucket = _.groupBy(depth[source], d => d.bucket);
+            const squashedSamples: Array<{
+                input: BigNumber;
+                output: BigNumber;
+                bucket: number;
+                bucketPrice: BigNumber;
+                price: BigNumber;
+            }> = [];
+            Object.keys(samplesGroupedByBucket).forEach(k => {
+                const samplesByBucket = samplesGroupedByBucket[k];
+                const input = BigNumber.sum(...samplesByBucket.map(s => s.input));
+                const output = BigNumber.sum(...samplesByBucket.map(s => s.output));
+                squashedSamples.push({
+                    input,
+                    output,
+                    bucket: parseInt(k, 10),
+                    price: medianPrices[parseInt(k, 10)],
+                    bucketPrice: medianPrices[parseInt(k, 10)],
+                });
+            });
+            const sourceCompleted = squashedSamples.find(a => a.input.gte(amount));
+            if (sourceCompleted) {
+                minFinalBucket = Math.max(sourceCompleted.bucket, minFinalBucket);
+            }
+            depth[source] = squashedSamples.sort((a, b) => a.bucket - b.bucket);
+        }
+        // Reaccumulate the samples
+        for (const src of Object.keys(depth)) {
+            const source = src as ERC20BridgeSource;
+            let accInput = ZERO_AMOUNT;
+            let accOutput = ZERO_AMOUNT;
+            depth[source] = depth[source]
+                .map(sample => {
+                    // Skip over once a source has achieved its goal
+                    if (sample.bucket > minFinalBucket) {
+                        return undefined;
+                    }
+                    accInput = accInput.plus(sample.input);
+                    accOutput = accOutput.plus(sample.output);
+                    return { ...sample, input: accInput, output: accOutput, price: medianPrices[sample.bucket] };
+                })
+                .filter(a => a) as any;
+        }
+        const sources = Object.keys(depth) as ERC20BridgeSource[];
+        let cumulativeOutput = ZERO_AMOUNT;
+        const dataByBucketPrice = medianPrices.map((price, i) => {
+            const result: any = { price, bucket: i };
+            for (const source of sources) {
+                const sourceSample = depth[source].find(s => s.bucket === i);
+                if (sourceSample) {
+                    cumulativeOutput = cumulativeOutput.plus(sourceSample.output);
+                    result[source] = sourceSample.output;
                 }
             }
-            // keep the price going until the final bucket
-            depth[source].push({ ...depth[source][depth[source].length - 1], bucket: medianPrices.length });
-            depth[source] = depth[source].sort((a, b) => a.bucket - b.bucket);
-        }
-        let nativeInput = ZERO_AMOUNT;
-        let nativeOutput = ZERO_AMOUNT;
-        orderFillableAmounts.forEach((fillableAmount, i) => {
-            const order = nativeOrders[i];
-            // i.e 90 / 100, scale input down by 0.9
-            const scale = fillableAmount.div(order.takerAssetAmount);
-            if (!depth[ERC20BridgeSource.Native]) {
-                depth[ERC20BridgeSource.Native] = [];
+            return { ...result, bucket: i, cumulative: cumulativeOutput };
+            /*
+            DepthData = {
+                price: string;
+                cumulative: string; // kyber.output + uniswap.output + ...
+                Kyber: string // output here
+                Uniswap: string; // uniswap.output
+                Native: string; // native.output
             }
-            const fillableMakerAmount = order.makerAssetAmount.times(scale).integerValue();
-            nativeInput = nativeInput.plus(fillableAmount);
-            nativeOutput = nativeOutput.plus(fillableMakerAmount);
-            const price = calcPrice(nativeInput, nativeOutput);
-            const bucket = findBucketForPrice(price);
-            const prev = depth[ERC20BridgeSource.Native].find(p => p.bucket === bucket);
-            if (prev) {
-                prev.input = nativeInput;
-                prev.output = nativeOutput;
-            } else {
-                depth[ERC20BridgeSource.Native].push({
-                    input: nativeInput,
-                    output: nativeOutput,
-                    price,
-                    bucket,
-                });
-            }
+            */
         });
         const liquidityAvailable = {
             depth,
+            dataByBucketPrice,
             takerAssetAvailableInBaseUnits: ZERO_AMOUNT,
             makerAssetAvailableInBaseUnits: ZERO_AMOUNT,
         };

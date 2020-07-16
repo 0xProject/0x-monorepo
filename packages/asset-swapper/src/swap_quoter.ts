@@ -400,6 +400,7 @@ export class SwapQuoter {
         const liquidityForPair = await this._marketOperationUtils.getMarketDepthAsync(
             orders,
             maxTakerAssetAmount,
+            MarketOperation.Sell,
             options,
         );
         return liquidityForPair;

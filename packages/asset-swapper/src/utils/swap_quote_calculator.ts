@@ -79,7 +79,12 @@ export class SwapQuoteCalculator {
         takerAssetFillAmount: BigNumber,
         opts: CalculateSwapQuoteOpts,
     ): Promise<any> {
-        return this._marketOperationUtils.getMarketDepthAsync(prunedOrders, takerAssetFillAmount, opts);
+        return this._marketOperationUtils.getMarketDepthAsync(
+            prunedOrders,
+            takerAssetFillAmount,
+            MarketOperation.Sell,
+            opts,
+        );
     }
 
     private async _calculateBatchBuySwapQuoteAsync(
