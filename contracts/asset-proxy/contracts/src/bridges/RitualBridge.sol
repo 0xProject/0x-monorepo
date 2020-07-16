@@ -15,6 +15,7 @@
   limitations under the License.
 
 */
+
 pragma solidity ^0.5.16;
 pragma experimental ABIEncoderV2;
 
@@ -53,6 +54,7 @@ contract RitualBridge is
 
     uint256 public constant BUY_WINDOW_LENGTH = 24 hours;
     uint256 public constant MIN_INTERVAL_LENGTH = 24 hours;
+    bytes4 public constant ERC20_PROXY_ID = 0xf47261b0;
 
     mapping (bytes32 => RecurringBuy) public recurringBuys;
 
@@ -213,24 +215,81 @@ contract RitualBridge is
     )
         external
     {
-        bytes32 recurringBuyID = keccak256(abi.encode(
-            msg.sender,
-            sellToken,
-            buyToken
-        ));
-
+        bytes32 recurringBuyID = _calculateRecurringBuyID(msg.sender, sellToken, buyToken);
         delete recurringBuys[recurringBuyID];
     }
 
-    function flashArbitrage(
-        address recipient,
+    function fillRecurringBuy(
+        address recurringBuyer,
         address sellToken,
-        address buyToken
+        address buyToken,
+        LibOrder.Order[] calldata orders,
+        bytes[] calldata signatures
     )
         external
+        payable
         returns (uint256 amountBought)
     {
-        revert("RitualBridge::flashArbitrage/NOT_IMPLEMENTED");
+        require(
+            orders.length == signatures.length,
+            "RitualBridge::fillRecurringBuy/ORDER_AND_SIGNATURE_LENGTH_MISMATCH"
+        );
+
+        uint256 makerAssetAmount = 0;
+        uint256 takerAssetAmount = 0;
+        for (uint i = 0; i != orders.length; i++) {
+            makerAssetAmount = makerAssetAmount.safeAdd(orders.makerAssetAmount);
+            takerAssetAmount = takerAssetAmount.safeAdd(orders.takerAssetAmount);
+        }
+
+        // Get tokens from the recurring buyer to complete the fill.
+        LibERC20Token.transferFrom(sellToken, recurringBuyer, address(this), makerAssetAmount);
+
+        // Set an allowance on the erc20 proxy.
+        address erc20ProxyAddress = EXCHANGE.getAssetProxy(ERC20_PROXY_ID);
+        LibERC20Token.approve(sellToken, erc20ProxyAddress, makerAssetAmount);
+
+        // Fill the order through the exchange.
+        LibFillResults.FillResults memory fillResults = EXCHANGE.marketBuyOrdersFillOrKill.value(msg.value)(
+            orders,
+            makerAssetAmount,
+            signatures
+        );
+
+        // Remove the proxy allowance.
+        LibERC20Token.approve(sellToken, erc20ProxyAddress, 0);
+
+        // Ensure that the correct amount of the buy tokens were received. This
+        // ensures that the submitted orders traded the same tokens as were expected
+        // for this recurring buy.
+        uint256 finalBuyBalance = LibERC20Token.balanceOf(
+            buyToken,
+            address(this)
+        );
+        require(
+            finalBuyBalance >= takerAssetAmount,
+            "RitualBridge::fillRecurringBuy/INVALID_FILL_AMOUNT"
+        );
+
+        bool unwrapWeth = _validateAndUpdateRecurringBuy(
+            fillResults.takerAssetFilledAmount,
+            fillResults.makerAssetFilledAmount,
+            recurringBuyer,
+            buyToken,
+            sellToken
+        );
+
+        if (unwrapWeth) {
+            IEtherToken(takerToken).withdraw(takerAssetAmount);
+            address payable recurringBuyerPayable = address(uint160(recurringBuyer));
+            recurringBuyerPayable.transfer(takerAssetAmount);
+        } else {
+            LibERC20Token.transfer(
+                takerToken,
+                recurringBuyer,
+                takerAssetAmount
+            );
+        }
     }
 
     function _validateAndUpdateRecurringBuy(
@@ -243,11 +302,7 @@ contract RitualBridge is
         private
         returns (bool unwrapWeth)
     {
-        bytes32 recurringBuyID = keccak256(abi.encode(
-            recurringBuyer,
-            makerToken,
-            takerToken
-        ));
+        bytes32 recurringBuyID = _calculateRecurringBuyID(recurringBuyer, makerToken, takerToken);
 
         RecurringBuy memory buyState = recurringBuys[recurringBuyID];
 
@@ -267,6 +322,8 @@ contract RitualBridge is
             "RitualBridge::_validateAndUpdateRecurringBuy/INVALID_PRICE"
         );
 
+        // FIXME(jalextowle): I need to do more validation on the oracle here.
+        // We must revert if the oracle is not correct.
         uint256 orderPrice = LibMath.getPartialAmountFloor(
             makerAssetAmount,
             takerAssetAmount,
@@ -344,5 +401,36 @@ contract RitualBridge is
         } else {
             LibERC20Token.transfer(buyToken, msg.sender, amountBought);
         }
+    }
+
+    function _verifySlippage(
+        uint256 orderPrice,
+        uint256 oraclePrice
+    )
+        private
+        pure
+    {
+        if (orderPrice > oraclePrice) {
+            require(
+                LibMath.getPartialAmountFloor(
+                    orderPrice - oraclePrice,
+                    oraclePrice,
+                    10000
+                ) <= buyState.maxSlippageBps,
+                "RitualBridge::_verifySlippage/EXCEEDS_MAX_ALLOWED_SLIPPAGE"
+            );
+        }
+    }
+
+    function _calculateRecurringBuyID(
+        address buyer,
+        address buyToken,
+        address sellToken
+    )
+        private
+        pure
+        returns (bytes32)
+    {
+        return keccak256(abi.encode(buyer, sellToken, buyToken));
     }
 }
