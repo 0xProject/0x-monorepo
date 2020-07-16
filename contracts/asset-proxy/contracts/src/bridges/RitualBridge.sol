@@ -23,6 +23,7 @@ import "@0x/contracts-erc20/contracts/src/interfaces/IEtherToken.sol";
 import "@0x/contracts-erc20/contracts/src/LibERC20Token.sol";
 import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
 import "@0x/contracts-exchange-libs/contracts/src/IWallet.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-utils/contracts/src/DeploymentConstants.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
@@ -161,11 +162,11 @@ contract RitualBridge is
     {
         require(
             interval >= MIN_INTERVAL_LENGTH,
-            'RitualBridge::setRecurringBuy/INTERVAL_TOO_SHORT'
+            "RitualBridge::setRecurringBuy/INTERVAL_TOO_SHORT"
         );
         require(
             sellToken != buyToken,
-            'RitualBridge::setRecurringBuy/INVALID_TOKEN_PAIR'
+            "RitualBridge::setRecurringBuy/INVALID_TOKEN_PAIR"
         );
 
         recurringBuyID = keccak256(abi.encode(
@@ -219,7 +220,9 @@ contract RitualBridge is
     )
         external
         returns (uint256 amountBought)
-    {}
+    {
+        revert("RitualBridge::flashArbitrage/NOT_IMPLEMENTED");
+    }
 
     function _validateAndUpdateRecurringBuy(
         uint256 takerAssetAmount,
@@ -230,7 +233,51 @@ contract RitualBridge is
     )
         private
         returns (bool unwrapWeth)
-    {}
+    {
+        bytes32 recurringBuyID = keccak256(abi.encode(
+            msg.sender,
+            makerToken,
+            takerToken
+        ));
+
+        RecurringBuy memory buyState = recurringBuys[recurringBuyID];
+
+        uint256 minBuyAmountScaled = LibMath.safeGetPartialAmountFloor(
+            makerAssetAmount,
+            buyState.sellAmount,
+            buyState.minBuyAmount
+        );
+
+        require(
+            takerAssetAmount >= minBuyAmountScaled,
+            "RitualBridge::_validateAndUpdateRecurringBuy/INVALID_PRICE"
+        );
+
+        // TODO: Oracle price protection
+
+        if (block.timestamp < buyState.currentBuyWindowStart.safeAdd(BUY_WINDOW_LENGTH)) {
+            require(
+                buyState.currentIntervalAmountSold.safeAdd(makerAssetAmount) <= buyState.sellAmount,
+                "RitualBridge::_validateAndUpdateRecurringBuy/EXCEEDS_SELL_AMOUNT"
+            );
+
+            recurringBuys[recurringBuyID].currentIntervalAmountSold = buyState.currentIntervalAmountSold
+                .safeAdd(makerAssetAmount);
+        } else {
+            require(
+                block.timestamp.safeSub(buyState.currentBuyWindowStart) % buyState.interval < BUY_WINDOW_LENGTH,
+                "RitualBridge::_validateAndUpdateRecurringBuy/OUTSIDE_OF_BUY_WINDOW"
+            );
+            recurringBuys[recurringBuyID].currentBuyWindowStart = block.timestamp;
+            recurringBuys[recurringBuyID].currentIntervalAmountSold = makerAssetAmount;
+        }
+
+        if (takerToken == _getWethAddress() && buyState.unwrapWeth) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     function _initialMarketSell(
         address sellToken,
