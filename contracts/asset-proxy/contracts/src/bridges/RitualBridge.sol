@@ -235,7 +235,7 @@ contract RitualBridge is
         returns (bool unwrapWeth)
     {
         bytes32 recurringBuyID = keccak256(abi.encode(
-            msg.sender,
+            recurringBuyer,
             makerToken,
             takerToken
         ));
@@ -313,7 +313,7 @@ contract RitualBridge is
         if (amountBought == 0) {
             return (amountSold, amountBought);
         }
-        
+
         if (unwrapWeth && buyToken == _getWethAddress()) {
             IEtherToken(buyToken).withdraw(amountBought);
             // The `refundFinalBalance` modifier will handle the transfer.

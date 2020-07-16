@@ -3,16 +3,13 @@ import {
     blockchainTests,
     constants,
     expect,
-    filterLogsToArguments,
     getRandomInteger,
-    Numberish,
     randomAddress,
     toBaseUnitAmount,
     verifyEventsFromLogs,
 } from '@0x/contracts-test-utils';
-import { AssetProxyId, Order } from '@0x/types';
-import { BigNumber, hexUtils, RawRevertError } from '@0x/utils';
-import { DecodedLogs } from 'ethereum-types';
+import { Order } from '@0x/types';
+import { AbiEncoder, BigNumber, hexUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { artifacts } from './artifacts';
@@ -202,10 +199,7 @@ blockchainTests.only('Eth2DaiBridge unit tests', env => {
             recurringBuyId = id;
         });
         it('updates recurringBuys entry', async () => {
-            const expectedEntry = {
-                ...randomRecurringBuy(),
-                currentBuyWindowStart: new BigNumber(await env.web3Wrapper.getBlockTimestampAsync('latest')),
-            };
+            const expectedEntry = randomRecurringBuy();
             await ritualBridge
                 .setRecurringBuy(
                     sellToken.address,
@@ -229,6 +223,7 @@ blockchainTests.only('Eth2DaiBridge unit tests', env => {
                 actualEntry.currentIntervalAmountSold,
                 actualEntry.unwrapWeth,
             ] = await ritualBridge.recurringBuys(recurringBuyId).callAsync();
+            expectedEntry.currentBuyWindowStart = new BigNumber(await env.web3Wrapper.getBlockTimestampAsync('latest'));
             expect(actualEntry).to.deep.equal(expectedEntry);
         });
         it('calls Exchange.marketSellOrdersNoThrow if orders are provided', async () => {
@@ -275,7 +270,235 @@ blockchainTests.only('Eth2DaiBridge unit tests', env => {
     });
 
     blockchainTests.resets('bridgeTransferFrom()', () => {
-        before(async () => {});
-        it('');
+        const recurringBuy: RecurringBuy = {
+            ...NULL_RECURRING_BUY,
+            sellAmount: toBaseUnitAmount(1337),
+            interval: ONE_DAY_IN_SECONDS.times(7),
+            minBuyAmount: toBaseUnitAmount(420),
+            maxSlippageBps: new BigNumber(123),
+            unwrapWeth: true,
+        };
+
+        const bridgeDataEncoder = AbiEncoder.create([
+            { name: 'takerToken', type: 'address' },
+            { name: 'recurringBuyer', type: 'address' },
+        ]);
+
+        before(async () => {
+            await ritualBridge
+                .setRecurringBuy(
+                    sellToken.address,
+                    buyToken.address,
+                    recurringBuy.sellAmount,
+                    recurringBuy.interval,
+                    recurringBuy.minBuyAmount,
+                    recurringBuy.maxSlippageBps,
+                    recurringBuy.unwrapWeth,
+                    [],
+                    [],
+                )
+                .awaitTransactionSuccessAsync({ from: recurringBuyer });
+            recurringBuy.currentBuyWindowStart = new BigNumber(await env.web3Wrapper.getBlockTimestampAsync('latest'));
+        });
+
+        it('Reverts if there is no active buy', async () => {
+            await ritualBridge
+                .cancelRecurringBuy(sellToken.address, buyToken.address)
+                .awaitTransactionSuccessAsync({ from: recurringBuyer });
+            await buyToken
+                .transfer(ritualBridge.address, recurringBuy.minBuyAmount)
+                .awaitTransactionSuccessAsync({ from: taker });
+            const tx = ritualBridge
+                .bridgeTransferFrom(
+                    sellToken.address,
+                    constants.NULL_ADDRESS,
+                    taker,
+                    recurringBuy.sellAmount,
+                    bridgeDataEncoder.encode({ takerToken: buyToken.address, recurringBuyer }),
+                )
+                .awaitTransactionSuccessAsync({ from: taker });
+            return expect(tx).to.revertWith(
+                'RitualBridge::_validateAndUpdateRecurringBuy/NO_ACTIVE_RECURRING_BUY_FOUND',
+            );
+        });
+        it('Reverts if the order price is worse than the worst acceptable price', async () => {
+            const worstPrice = recurringBuy.minBuyAmount.div(recurringBuy.sellAmount);
+            const takerAssetAmount = getRandomInteger(0, recurringBuy.sellAmount);
+            const minBuyAmountScaled = takerAssetAmount.times(worstPrice).integerValue(BigNumber.ROUND_DOWN);
+            await buyToken
+                .transfer(ritualBridge.address, minBuyAmountScaled.minus(1))
+                .awaitTransactionSuccessAsync({ from: taker });
+            const tx = ritualBridge
+                .bridgeTransferFrom(
+                    sellToken.address,
+                    constants.NULL_ADDRESS,
+                    taker,
+                    takerAssetAmount,
+                    bridgeDataEncoder.encode({ takerToken: buyToken.address, recurringBuyer }),
+                )
+                .awaitTransactionSuccessAsync({ from: taker });
+            return expect(tx).to.revertWith('RitualBridge::_validateAndUpdateRecurringBuy/INVALID_PRICE');
+        });
+        it('Reverts if executing trade would exceed the sell amount of the recurring buy', async () => {
+            await buyToken
+                .transfer(ritualBridge.address, recurringBuy.minBuyAmount.times(2))
+                .awaitTransactionSuccessAsync({ from: taker });
+            const tx = ritualBridge
+                .bridgeTransferFrom(
+                    sellToken.address,
+                    constants.NULL_ADDRESS,
+                    taker,
+                    recurringBuy.sellAmount.times(2),
+                    bridgeDataEncoder.encode({ takerToken: buyToken.address, recurringBuyer }),
+                )
+                .awaitTransactionSuccessAsync({ from: taker });
+            return expect(tx).to.revertWith('RitualBridge::_validateAndUpdateRecurringBuy/EXCEEDS_SELL_AMOUNT');
+        });
+        it('Reverts if outside of buy window', async () => {
+            await env.web3Wrapper.increaseTimeAsync(BUY_WINDOW_LENGTH.plus(1).toNumber());
+            await buyToken
+                .transfer(ritualBridge.address, recurringBuy.minBuyAmount)
+                .awaitTransactionSuccessAsync({ from: taker });
+            const tx = ritualBridge
+                .bridgeTransferFrom(
+                    sellToken.address,
+                    constants.NULL_ADDRESS,
+                    taker,
+                    recurringBuy.sellAmount,
+                    bridgeDataEncoder.encode({ takerToken: buyToken.address, recurringBuyer }),
+                )
+                .awaitTransactionSuccessAsync({ from: taker });
+            return expect(tx).to.revertWith('RitualBridge::_validateAndUpdateRecurringBuy/OUTSIDE_OF_BUY_WINDOW');
+        });
+        it('Succeeds otherwise', async () => {
+            const recurringBuyerBalanceBefore = await buyToken.balanceOf(recurringBuyer).callAsync();
+            const takerBalanceBefore = await sellToken.balanceOf(taker).callAsync();
+            await buyToken
+                .transfer(ritualBridge.address, recurringBuy.minBuyAmount)
+                .awaitTransactionSuccessAsync({ from: taker });
+            await ritualBridge
+                .bridgeTransferFrom(
+                    sellToken.address,
+                    constants.NULL_ADDRESS,
+                    taker,
+                    recurringBuy.sellAmount,
+                    bridgeDataEncoder.encode({ takerToken: buyToken.address, recurringBuyer }),
+                )
+                .awaitTransactionSuccessAsync({ from: taker });
+
+            const recurringBuyerBalanceAfter = await buyToken.balanceOf(recurringBuyer).callAsync();
+            const takerBalanceAfter = await sellToken.balanceOf(taker).callAsync();
+            expect(recurringBuyerBalanceAfter).to.bignumber.equal(
+                recurringBuyerBalanceBefore.plus(recurringBuy.minBuyAmount),
+            );
+            expect(takerBalanceAfter).to.bignumber.equal(takerBalanceBefore.plus(recurringBuy.sellAmount));
+        });
+        it('Succeeds in consecutive intervals', async () => {
+            const recurringBuyerBalanceBefore = await buyToken.balanceOf(recurringBuyer).callAsync();
+            const takerBalanceBefore = await sellToken.balanceOf(taker).callAsync();
+            await buyToken
+                .transfer(ritualBridge.address, recurringBuy.minBuyAmount)
+                .awaitTransactionSuccessAsync({ from: taker });
+            await ritualBridge
+                .bridgeTransferFrom(
+                    sellToken.address,
+                    constants.NULL_ADDRESS,
+                    taker,
+                    recurringBuy.sellAmount,
+                    bridgeDataEncoder.encode({ takerToken: buyToken.address, recurringBuyer }),
+                )
+                .awaitTransactionSuccessAsync({ from: taker });
+            await env.web3Wrapper.increaseTimeAsync(recurringBuy.interval.plus(BUY_WINDOW_LENGTH.div(2)).toNumber());
+            await buyToken
+                .transfer(ritualBridge.address, recurringBuy.minBuyAmount)
+                .awaitTransactionSuccessAsync({ from: taker });
+            await ritualBridge
+                .bridgeTransferFrom(
+                    sellToken.address,
+                    constants.NULL_ADDRESS,
+                    taker,
+                    recurringBuy.sellAmount,
+                    bridgeDataEncoder.encode({ takerToken: buyToken.address, recurringBuyer }),
+                )
+                .awaitTransactionSuccessAsync({ from: taker });
+            const recurringBuyerBalanceAfter = await buyToken.balanceOf(recurringBuyer).callAsync();
+            const takerBalanceAfter = await sellToken.balanceOf(taker).callAsync();
+            expect(recurringBuyerBalanceAfter).to.bignumber.equal(
+                recurringBuyerBalanceBefore.plus(recurringBuy.minBuyAmount.times(2)),
+            );
+            expect(takerBalanceAfter).to.bignumber.equal(takerBalanceBefore.plus(recurringBuy.sellAmount.times(2)));
+        });
+        it('Succeeds with two partial fills in the same buy period', async () => {
+            const recurringBuyerBalanceBefore = await buyToken.balanceOf(recurringBuyer).callAsync();
+            const takerBalanceBefore = await sellToken.balanceOf(taker).callAsync();
+            await buyToken
+                .transfer(ritualBridge.address, recurringBuy.minBuyAmount.div(2))
+                .awaitTransactionSuccessAsync({ from: taker });
+            await ritualBridge
+                .bridgeTransferFrom(
+                    sellToken.address,
+                    constants.NULL_ADDRESS,
+                    taker,
+                    recurringBuy.sellAmount.div(2),
+                    bridgeDataEncoder.encode({ takerToken: buyToken.address, recurringBuyer }),
+                )
+                .awaitTransactionSuccessAsync({ from: taker });
+            await buyToken
+                .transfer(ritualBridge.address, recurringBuy.minBuyAmount.div(2))
+                .awaitTransactionSuccessAsync({ from: taker });
+            await ritualBridge
+                .bridgeTransferFrom(
+                    sellToken.address,
+                    constants.NULL_ADDRESS,
+                    taker,
+                    recurringBuy.sellAmount.div(2),
+                    bridgeDataEncoder.encode({ takerToken: buyToken.address, recurringBuyer }),
+                )
+                .awaitTransactionSuccessAsync({ from: taker });
+            const recurringBuyerBalanceAfter = await buyToken.balanceOf(recurringBuyer).callAsync();
+            const takerBalanceAfter = await sellToken.balanceOf(taker).callAsync();
+            expect(recurringBuyerBalanceAfter).to.bignumber.equal(
+                recurringBuyerBalanceBefore.plus(recurringBuy.minBuyAmount),
+            );
+            expect(takerBalanceAfter).to.bignumber.equal(takerBalanceBefore.plus(recurringBuy.sellAmount));
+        });
+        it('Unwraps wETH before transferring to recurring buyer', async () => {
+            await ritualBridge
+                .setRecurringBuy(
+                    sellToken.address,
+                    weth.address,
+                    recurringBuy.sellAmount,
+                    recurringBuy.interval,
+                    constants.ONE_ETHER,
+                    recurringBuy.maxSlippageBps,
+                    recurringBuy.unwrapWeth,
+                    [],
+                    [],
+                )
+                .awaitTransactionSuccessAsync({ from: recurringBuyer });
+            const recurringBuyerBalanceBefore = await env.web3Wrapper.getBalanceInWeiAsync(recurringBuyer);
+            const takerBalanceBefore = await sellToken.balanceOf(taker).callAsync();
+            await weth.deposit().awaitTransactionSuccessAsync({ from: taker, value: constants.ONE_ETHER });
+            await weth
+                .transfer(ritualBridge.address, constants.ONE_ETHER)
+                .awaitTransactionSuccessAsync({ from: taker });
+            await ritualBridge
+                .bridgeTransferFrom(
+                    sellToken.address,
+                    constants.NULL_ADDRESS,
+                    taker,
+                    recurringBuy.sellAmount,
+                    bridgeDataEncoder.encode({ takerToken: weth.address, recurringBuyer }),
+                )
+                .awaitTransactionSuccessAsync({ from: taker });
+
+            const recurringBuyerBalanceAfter = await env.web3Wrapper.getBalanceInWeiAsync(recurringBuyer);
+            const takerBalanceAfter = await sellToken.balanceOf(taker).callAsync();
+            expect(recurringBuyerBalanceAfter).to.bignumber.equal(
+                recurringBuyerBalanceBefore.plus(constants.ONE_ETHER),
+            );
+            expect(takerBalanceAfter).to.bignumber.equal(takerBalanceBefore.plus(recurringBuy.sellAmount));
+        });
     });
 });
+// tslint:disable max-file-line-count
