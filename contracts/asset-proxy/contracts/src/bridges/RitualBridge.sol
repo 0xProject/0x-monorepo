@@ -28,6 +28,7 @@ import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-utils/contracts/src/DeploymentConstants.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "@0x/contracts-utils/contracts/src/Refundable.sol";
+import "../interfaces/IChainlinkOracle.sol";
 import "../interfaces/IERC20Bridge.sol";
 
 
@@ -55,17 +56,26 @@ contract RitualBridge is
     uint256 public constant MIN_INTERVAL_LENGTH = 24 hours;
 
     mapping (bytes32 => RecurringBuy) public recurringBuys;
+
     IExchange internal EXCHANGE; // solhint-disable-line var-name-mixedcase
+
+    // TODO(jalextowle): For the purposes of the hackathon, we are only supporting
+    // ETH <> USDC swaps, so this will be the only oracle that is registered.
+    IChainlinkOracle internal ORACLE; // solhint-disable-line var-name-mixedcase
 
     function ()
         external
         payable
     {}
 
-    constructor (address _exchange)
+    constructor (
+        address _exchange,
+        address _oracle
+    )
         public
     {
         EXCHANGE = IExchange(_exchange);
+        ORACLE = IChainlinkOracle(_oracle);
     }
 
     /// @dev Callback for `IERC20Bridge`. Tries to buy `makerAssetAmount` of
@@ -258,7 +268,22 @@ contract RitualBridge is
             "RitualBridge::_validateAndUpdateRecurringBuy/INVALID_PRICE"
         );
 
-        // TODO: Oracle price protection
+        uint256 orderPrice = LibMath.getPartialAmountFloor(
+            makerAssetAmount,
+            takerAssetAmount,
+            100000000 // USD oracles are shifted by 100000000
+        );
+        uint256 latestOraclePrice = uint256(ORACLE.latestAnswer());
+        if (orderPrice > latestOraclePrice) {
+            require(
+                LibMath.getPartialAmountFloor(
+                    orderPrice - latestOraclePrice,
+                    latestOraclePrice,
+                    10000
+                ) <= buyState.maxSlippageBps,
+                "RitualBridge::_validateAndUpdateRecurringBuy/EXCEEDS_MAX_ALLOWED_SLIPPAGE"
+            );
+        }
 
         if (block.timestamp < buyState.currentBuyWindowStart.safeAdd(BUY_WINDOW_LENGTH)) {
             require(

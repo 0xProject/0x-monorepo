@@ -21,6 +21,7 @@ import * as IAssetProxyDispatcher from '../test/generated-artifacts/IAssetProxyD
 import * as IAuthorizable from '../test/generated-artifacts/IAuthorizable.json';
 import * as IBalancerPool from '../test/generated-artifacts/IBalancerPool.json';
 import * as IChai from '../test/generated-artifacts/IChai.json';
+import * as IChainlinkOracle from '../test/generated-artifacts/IChainlinkOracle.json';
 import * as ICurve from '../test/generated-artifacts/ICurve.json';
 import * as IDydx from '../test/generated-artifacts/IDydx.json';
 import * as IDydxBridge from '../test/generated-artifacts/IDydxBridge.json';
@@ -45,6 +46,7 @@ import * as TestDydxBridge from '../test/generated-artifacts/TestDydxBridge.json
 import * as TestERC20Bridge from '../test/generated-artifacts/TestERC20Bridge.json';
 import * as TestEth2DaiBridge from '../test/generated-artifacts/TestEth2DaiBridge.json';
 import * as TestKyberBridge from '../test/generated-artifacts/TestKyberBridge.json';
+import * as TestOracle from '../test/generated-artifacts/TestOracle.json';
 import * as TestRitualBridge from '../test/generated-artifacts/TestRitualBridge.json';
 import * as TestStaticCallTarget from '../test/generated-artifacts/TestStaticCallTarget.json';
 import * as TestUniswapBridge from '../test/generated-artifacts/TestUniswapBridge.json';
@@ -78,6 +80,7 @@ export const artifacts = {
     IAuthorizable: IAuthorizable as ContractArtifact,
     IBalancerPool: IBalancerPool as ContractArtifact,
     IChai: IChai as ContractArtifact,
+    IChainlinkOracle: IChainlinkOracle as ContractArtifact,
     ICurve: ICurve as ContractArtifact,
     IDydx: IDydx as ContractArtifact,
     IDydxBridge: IDydxBridge as ContractArtifact,
@@ -94,6 +97,7 @@ export const artifacts = {
     TestERC20Bridge: TestERC20Bridge as ContractArtifact,
     TestEth2DaiBridge: TestEth2DaiBridge as ContractArtifact,
     TestKyberBridge: TestKyberBridge as ContractArtifact,
+    TestOracle: TestOracle as ContractArtifact,
     TestRitualBridge: TestRitualBridge as ContractArtifact,
     TestStaticCallTarget: TestStaticCallTarget as ContractArtifact,
     TestUniswapBridge: TestUniswapBridge as ContractArtifact,

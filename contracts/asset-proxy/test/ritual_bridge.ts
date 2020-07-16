@@ -14,7 +14,7 @@ import * as _ from 'lodash';
 
 import { artifacts } from './artifacts';
 
-import { TestRitualBridgeContract, TestRitualBridgeEvents } from './wrappers';
+import { TestOracleContract, TestRitualBridgeContract, TestRitualBridgeEvents } from './wrappers';
 
 interface RecurringBuy {
     sellAmount: BigNumber;
@@ -183,7 +183,7 @@ blockchainTests.only('Eth2DaiBridge unit tests', env => {
             const [id, amountBought] = await call.callAsync({ from: recurringBuyer });
             expect(amountBought).to.bignumber.equal(constants.ZERO_AMOUNT);
             await call.awaitTransactionSuccessAsync({ from: recurringBuyer });
-            let actualEntry = NULL_RECURRING_BUY;
+            const actualEntry = NULL_RECURRING_BUY;
             [
                 actualEntry.sellAmount,
                 actualEntry.interval,
@@ -213,7 +213,7 @@ blockchainTests.only('Eth2DaiBridge unit tests', env => {
                     [],
                 )
                 .awaitTransactionSuccessAsync({ from: recurringBuyer });
-            let actualEntry = NULL_RECURRING_BUY;
+            const actualEntry = NULL_RECURRING_BUY;
             [
                 actualEntry.sellAmount,
                 actualEntry.interval,
@@ -255,7 +255,7 @@ blockchainTests.only('Eth2DaiBridge unit tests', env => {
             await ritualBridge
                 .cancelRecurringBuy(sellToken.address, buyToken.address)
                 .awaitTransactionSuccessAsync({ from: recurringBuyer });
-            let actualEntry = NULL_RECURRING_BUY;
+            const actualEntry = NULL_RECURRING_BUY;
             [
                 actualEntry.sellAmount,
                 actualEntry.interval,
@@ -370,6 +370,27 @@ blockchainTests.only('Eth2DaiBridge unit tests', env => {
                 .awaitTransactionSuccessAsync({ from: taker });
             return expect(tx).to.revertWith('RitualBridge::_validateAndUpdateRecurringBuy/OUTSIDE_OF_BUY_WINDOW');
         });
+        it('Reverts if outside of slippage range', async () => {
+            const oracleAddress = await ritualBridge.getOracleAddress().callAsync();
+            await new TestOracleContract(oracleAddress, env.provider)
+                .setLatestAnswer(new BigNumber(100000000))
+                .awaitTransactionSuccessAsync({ from: taker });
+            await buyToken
+                .transfer(ritualBridge.address, recurringBuy.minBuyAmount)
+                .awaitTransactionSuccessAsync({ from: taker });
+            const tx = ritualBridge
+                .bridgeTransferFrom(
+                    sellToken.address,
+                    constants.NULL_ADDRESS,
+                    taker,
+                    recurringBuy.sellAmount,
+                    bridgeDataEncoder.encode({ takerToken: buyToken.address, recurringBuyer }),
+                )
+                .awaitTransactionSuccessAsync({ from: taker });
+            return expect(tx).to.revertWith(
+                'RitualBridge::_validateAndUpdateRecurringBuy/EXCEEDS_MAX_ALLOWED_SLIPPAGE',
+            );
+        });
         it('Succeeds otherwise', async () => {
             const recurringBuyerBalanceBefore = await buyToken.balanceOf(recurringBuyer).callAsync();
             const takerBalanceBefore = await sellToken.balanceOf(taker).callAsync();
@@ -482,12 +503,14 @@ blockchainTests.only('Eth2DaiBridge unit tests', env => {
             await weth
                 .transfer(ritualBridge.address, constants.ONE_ETHER)
                 .awaitTransactionSuccessAsync({ from: taker });
+            // NOTE(jalextowle): Changing this to stay within price guardrails
+            const buyAmount = constants.ONE_ETHER;
             await ritualBridge
                 .bridgeTransferFrom(
                     sellToken.address,
                     constants.NULL_ADDRESS,
                     taker,
-                    recurringBuy.sellAmount,
+                    buyAmount,
                     bridgeDataEncoder.encode({ takerToken: weth.address, recurringBuyer }),
                 )
                 .awaitTransactionSuccessAsync({ from: taker });
@@ -497,7 +520,7 @@ blockchainTests.only('Eth2DaiBridge unit tests', env => {
             expect(recurringBuyerBalanceAfter).to.bignumber.equal(
                 recurringBuyerBalanceBefore.plus(constants.ONE_ETHER),
             );
-            expect(takerBalanceAfter).to.bignumber.equal(takerBalanceBefore.plus(recurringBuy.sellAmount));
+            expect(takerBalanceAfter).to.bignumber.equal(takerBalanceBefore.plus(buyAmount));
         });
     });
 });
