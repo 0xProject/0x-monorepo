@@ -51,7 +51,6 @@ describe('OrderStateUtils', () => {
     let makerAssetData: string;
     let takerAssetData: string;
     let orderFactory: OrderFactory;
-    let wethAssetData: string;
     let contractAddresses: ContractAddresses;
     let orderStateUtils: OrderStateUtils;
 
@@ -78,10 +77,9 @@ describe('OrderStateUtils', () => {
         erc20TakerTokenContract = new ERC20TokenContract(takerTokenAddress, provider);
         exchangeContract = new ExchangeContract(contractAddresses.exchange, provider);
 
-        [makerAssetData, takerAssetData, wethAssetData] = [
+        [makerAssetData, takerAssetData] = [
             assetDataUtils.encodeERC20AssetData(makerTokenAddress),
             assetDataUtils.encodeERC20AssetData(takerTokenAddress),
-            assetDataUtils.encodeERC20AssetData(contractAddresses.etherToken),
         ];
 
         // Configure order defaults

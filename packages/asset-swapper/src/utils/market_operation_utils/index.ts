@@ -14,7 +14,7 @@ import {
     createSignedOrdersWithFillableAmounts,
     getNativeOrderTokens,
 } from './orders';
-import { findOptimalPath } from './path_optimizer';
+import { findOptimalPathAsync } from './path_optimizer';
 import { DexOrderSampler, getSampleAmounts } from './sampler';
 import {
     AggregationError,
@@ -143,7 +143,7 @@ export class MarketOperationUtils {
             rfqtIndicativeQuotes,
             [balancerQuotes],
         ] = await Promise.all([samplerPromise, rfqtPromise, balancerPromise]);
-        return this._generateOptimizedOrders({
+        return this._generateOptimizedOrdersAsync({
             orderFillableAmounts,
             nativeOrders,
             dexQuotes: dexQuotes.concat(balancerQuotes),
@@ -247,7 +247,7 @@ export class MarketOperationUtils {
             [balancerQuotes],
         ] = await Promise.all([samplerPromise, rfqtPromise, balancerPromise]);
 
-        return this._generateOptimizedOrders({
+        return this._generateOptimizedOrdersAsync({
             orderFillableAmounts,
             nativeOrders,
             dexQuotes: dexQuotes.concat(balancerQuotes),
@@ -325,42 +325,44 @@ export class MarketOperationUtils {
         const batchEthToTakerAssetRate = executeResults.splice(0, batchNativeOrders.length) as BigNumber[];
         const batchDexQuotes = executeResults.splice(0, batchNativeOrders.length) as DexSample[][][];
 
-        return batchNativeOrders.map((nativeOrders, i) => {
-            if (nativeOrders.length === 0) {
-                throw new Error(AggregationError.EmptyOrders);
-            }
-            const [makerToken, takerToken] = getNativeOrderTokens(nativeOrders[0]);
-            const orderFillableAmounts = batchOrderFillableAmounts[i];
-            const ethToTakerAssetRate = batchEthToTakerAssetRate[i];
-            const dexQuotes = batchDexQuotes[i];
-            const makerAmount = makerAmounts[i];
-            try {
-                return this._generateOptimizedOrders({
-                    orderFillableAmounts,
-                    nativeOrders,
-                    dexQuotes,
-                    rfqtIndicativeQuotes: [],
-                    inputToken: makerToken,
-                    outputToken: takerToken,
-                    side: MarketOperation.Buy,
-                    inputAmount: makerAmount,
-                    ethToOutputRate: ethToTakerAssetRate,
-                    bridgeSlippage: _opts.bridgeSlippage,
-                    maxFallbackSlippage: _opts.maxFallbackSlippage,
-                    excludedSources: _opts.excludedSources,
-                    feeSchedule: _opts.feeSchedule,
-                    allowFallback: _opts.allowFallback,
-                    shouldBatchBridgeOrders: _opts.shouldBatchBridgeOrders,
-                });
-            } catch (e) {
-                // It's possible for one of the pairs to have no path
-                // rather than throw NO_OPTIMAL_PATH we return undefined
-                return undefined;
-            }
-        });
+        return Promise.all(
+            batchNativeOrders.map((nativeOrders, i) => {
+                if (nativeOrders.length === 0) {
+                    throw new Error(AggregationError.EmptyOrders);
+                }
+                const [makerToken, takerToken] = getNativeOrderTokens(nativeOrders[0]);
+                const orderFillableAmounts = batchOrderFillableAmounts[i];
+                const ethToTakerAssetRate = batchEthToTakerAssetRate[i];
+                const dexQuotes = batchDexQuotes[i];
+                const makerAmount = makerAmounts[i];
+                try {
+                    return this._generateOptimizedOrdersAsync({
+                        orderFillableAmounts,
+                        nativeOrders,
+                        dexQuotes,
+                        rfqtIndicativeQuotes: [],
+                        inputToken: makerToken,
+                        outputToken: takerToken,
+                        side: MarketOperation.Buy,
+                        inputAmount: makerAmount,
+                        ethToOutputRate: ethToTakerAssetRate,
+                        bridgeSlippage: _opts.bridgeSlippage,
+                        maxFallbackSlippage: _opts.maxFallbackSlippage,
+                        excludedSources: _opts.excludedSources,
+                        feeSchedule: _opts.feeSchedule,
+                        allowFallback: _opts.allowFallback,
+                        shouldBatchBridgeOrders: _opts.shouldBatchBridgeOrders,
+                    });
+                } catch (e) {
+                    // It's possible for one of the pairs to have no path
+                    // rather than throw NO_OPTIMAL_PATH we return undefined
+                    return undefined;
+                }
+            }),
+        );
     }
 
-    private _generateOptimizedOrders(opts: {
+    private async _generateOptimizedOrdersAsync(opts: {
         side: MarketOperation;
         inputToken: string;
         outputToken: string;
@@ -379,7 +381,7 @@ export class MarketOperationUtils {
         shouldBatchBridgeOrders?: boolean;
         liquidityProviderAddress?: string;
         multiBridgeAddress?: string;
-    }): OptimizedMarketOrder[] {
+    }): Promise<OptimizedMarketOrder[]> {
         const { inputToken, outputToken, side, inputAmount } = opts;
         const maxFallbackSlippage = opts.maxFallbackSlippage || 0;
         // Convert native orders and dex quotes into fill paths.
@@ -397,7 +399,7 @@ export class MarketOperationUtils {
             feeSchedule: opts.feeSchedule,
         });
         // Find the optimal path.
-        let optimalPath = findOptimalPath(side, paths, inputAmount, opts.runLimit) || [];
+        let optimalPath = (await findOptimalPathAsync(side, paths, inputAmount, opts.runLimit)) || [];
         if (optimalPath.length === 0) {
             throw new Error(AggregationError.NoOptimalPath);
         }
@@ -407,7 +409,8 @@ export class MarketOperationUtils {
             // We create a fallback path that is exclusive of Native liquidity
             // This is the optimal on-chain path for the entire input amount
             const nonNativePaths = paths.filter(p => p.length > 0 && p[0].source !== ERC20BridgeSource.Native);
-            const nonNativeOptimalPath = findOptimalPath(side, nonNativePaths, inputAmount, opts.runLimit) || [];
+            const nonNativeOptimalPath =
+                (await findOptimalPathAsync(side, nonNativePaths, inputAmount, opts.runLimit)) || [];
             // Calculate the slippage of on-chain sources compared to the most optimal path
             const fallbackSlippage = getPathAdjustedSlippage(
                 side,

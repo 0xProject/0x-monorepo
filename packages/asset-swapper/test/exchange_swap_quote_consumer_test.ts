@@ -71,7 +71,6 @@ describe('ExchangeSwapQuoteConsumer', () => {
     let takerTokenAddress: string;
     let makerAssetData: string;
     let takerAssetData: string;
-    let wethAssetData: string;
     let contractAddresses: ContractAddresses;
     let exchangeContract: ExchangeContract;
 
@@ -96,10 +95,9 @@ describe('ExchangeSwapQuoteConsumer', () => {
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
         [coinbaseAddress, takerAddress, makerAddress, feeRecipient] = userAddresses;
         [makerTokenAddress, takerTokenAddress] = tokenUtils.getDummyERC20TokenAddresses();
-        [makerAssetData, takerAssetData, wethAssetData] = [
+        [makerAssetData, takerAssetData] = [
             assetDataUtils.encodeERC20AssetData(makerTokenAddress),
             assetDataUtils.encodeERC20AssetData(takerTokenAddress),
-            assetDataUtils.encodeERC20AssetData(contractAddresses.etherToken),
         ];
         erc20MakerTokenContract = new ERC20TokenContract(makerTokenAddress, provider);
         erc20TakerTokenContract = new ERC20TokenContract(takerTokenAddress, provider);

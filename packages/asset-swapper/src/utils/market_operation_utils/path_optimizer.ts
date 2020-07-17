@@ -9,17 +9,19 @@ import { Fill } from './types';
 // tslint:disable: prefer-for-of custom-no-magic-numbers completed-docs
 
 const RUN_LIMIT_DECAY_FACTOR = 0.8;
+// Used to yield the event loop when performing CPU intensive tasks
+const setImmediateAsync = async (delay: number = 0) => new Promise(resolve => setImmediate(() => resolve(), delay));
 
 /**
  * Find the optimal mixture of paths that maximizes (for sells) or minimizes
  * (for buys) output, while meeting the input requirement.
  */
-export function findOptimalPath(
+export async function findOptimalPathAsync(
     side: MarketOperation,
     paths: Fill[][],
     targetInput: BigNumber,
     runLimit: number = 2 ** 15,
-): Fill[] | undefined {
+): Promise<Fill[] | undefined> {
     // Sort paths in descending order by adjusted output amount.
     const sortedPaths = paths
         .slice(0)
@@ -27,6 +29,7 @@ export function findOptimalPath(
     let optimalPath = sortedPaths[0] || [];
     for (const [i, path] of sortedPaths.slice(1).entries()) {
         optimalPath = mixPaths(side, optimalPath, path, targetInput, runLimit * RUN_LIMIT_DECAY_FACTOR ** i);
+        await setImmediateAsync();
     }
     return isPathComplete(optimalPath, targetInput) ? optimalPath : undefined;
 }
