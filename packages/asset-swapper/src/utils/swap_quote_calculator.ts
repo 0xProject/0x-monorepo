@@ -75,16 +75,12 @@ export class SwapQuoteCalculator {
     }
 
     public async calculateMarketDepthAsync(
-        prunedOrders: SignedOrder[],
+        sellOrders: SignedOrder[],
+        buyOrders: SignedOrder[],
         takerAssetFillAmount: BigNumber,
         opts: CalculateSwapQuoteOpts,
     ): Promise<any> {
-        return this._marketOperationUtils.getMarketDepthAsync(
-            prunedOrders,
-            takerAssetFillAmount,
-            MarketOperation.Sell,
-            opts,
-        );
+        return this._marketOperationUtils.getMarketDepthAsync(sellOrders, buyOrders, takerAssetFillAmount, opts);
     }
 
     private async _calculateBatchBuySwapQuoteAsync(

@@ -382,7 +382,7 @@ export class SwapQuoter {
     public async getLiquidityForMakerTakerAssetDataPairAsync(
         makerAssetData: string,
         takerAssetData: string,
-        maxTakerAssetAmount: BigNumber,
+        takerAssetAmount: BigNumber,
         options: Partial<SwapQuoteRequestOpts> = {},
     ): Promise<LiquidityForTakerMakerAssetDataPair> {
         assert.isString('makerAssetData', makerAssetData);
@@ -390,17 +390,26 @@ export class SwapQuoter {
         assetDataUtils.decodeAssetDataOrThrow(takerAssetData);
         assetDataUtils.decodeAssetDataOrThrow(makerAssetData);
 
-        const orders = await this._getSignedOrdersAsync(makerAssetData, takerAssetData);
+        const [sellOrders, buyOrders] = await Promise.all([
+            this._getSignedOrdersAsync(makerAssetData, takerAssetData),
+            this._getSignedOrdersAsync(takerAssetData, makerAssetData),
+        ]);
         // if no native orders, pass in a dummy order for the sampler to have required metadata for sampling
-        if (orders.length === 0) {
-            orders.push(
+        if (sellOrders.length === 0) {
+            sellOrders.push(
                 createDummyOrderForSampler(makerAssetData, takerAssetData, this._contractAddresses.uniswapBridge),
             );
         }
+        if (buyOrders.length === 0) {
+            buyOrders.push(
+                createDummyOrderForSampler(takerAssetData, makerAssetData, this._contractAddresses.uniswapBridge),
+            );
+        }
+        console.log({ sellOrders: sellOrders.length, buyOrders: buyOrders.length });
         const liquidityForPair = await this._marketOperationUtils.getMarketDepthAsync(
-            orders,
-            maxTakerAssetAmount,
-            MarketOperation.Sell,
+            sellOrders,
+            buyOrders,
+            takerAssetAmount,
             options,
         );
         return liquidityForPair;
@@ -570,16 +579,20 @@ export class SwapQuoter {
         marketOperation: MarketOperation,
         options: Partial<SwapQuoteRequestOpts>,
     ): Promise<SwapQuote> {
+        console.time('getSwapQuote');
         const opts = _.merge({}, constants.DEFAULT_SWAP_QUOTE_REQUEST_OPTS, options);
         assert.isString('makerAssetData', makerAssetData);
         assert.isString('takerAssetData', takerAssetData);
         let gasPrice: BigNumber;
+        console.time('\tgetGas');
         if (!!opts.gasPrice) {
             gasPrice = opts.gasPrice;
             assert.isBigNumber('gasPrice', gasPrice);
         } else {
             gasPrice = await this.getGasPriceEstimationOrThrowAsync();
         }
+        console.timeEnd('\tgetGas');
+        console.time('\tgetOrders');
         // get batches of orders from different sources, awaiting sources in parallel
         const orderBatchPromises: Array<Promise<SignedOrder[]>> = [];
         orderBatchPromises.push(this._getSignedOrdersAsync(makerAssetData, takerAssetData)); // order book
@@ -618,6 +631,8 @@ export class SwapQuoter {
                 createDummyOrderForSampler(makerAssetData, takerAssetData, this._contractAddresses.uniswapBridge),
             );
         }
+        console.timeEnd('\tgetOrders');
+        console.time('\tcalculateMarketSwap');
 
         let swapQuote: SwapQuote;
 
@@ -642,7 +657,8 @@ export class SwapQuoter {
                 calcOpts,
             );
         }
-
+        console.timeEnd('\tcalculateMarketSwap');
+        console.timeEnd('getSwapQuote');
         return swapQuote;
     }
     private _shouldEnableIndicativeRfqt(opts: CalculateSwapQuoteOpts['rfqt'], op: MarketOperation): boolean {

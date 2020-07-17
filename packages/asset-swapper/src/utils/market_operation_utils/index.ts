@@ -16,7 +16,7 @@ import {
     createSignedOrdersWithFillableAmounts,
     getNativeOrderTokens,
 } from './orders';
-import { findOptimalPath } from './path_optimizer';
+import { findOptimalPathAsync } from './path_optimizer';
 import { DexOrderSampler, getSampleAmounts } from './sampler';
 import {
     AggregationError,
@@ -82,22 +82,21 @@ export class MarketOperationUtils {
     // tslint:disable-next-line:prefer-function-over-method typedef
     public calculateMarketDepth(
         nativeOrders: SignedOrder[],
+        fillableAmounts: BigNumber[],
         dexQuotes: Array<Array<DexSample<FillData>>>,
         sampleAmounts: BigNumber[],
         side: MarketOperation,
     ) {
         const depth: Depth = {} as any;
         const calcPrice = (input: BigNumber, output: BigNumber) =>
-            output ? output.dividedBy(input).decimalPlaces(18) : ZERO_AMOUNT;
+            output && !output.isZero() ? output.dividedBy(input).decimalPlaces(18) : ZERO_AMOUNT;
         const bestBucketPrices: BigNumber[] = sampleAmounts.map((sampleAmount, i) => {
             const valid = dexQuotes.filter(q => !q[i].output.isZero());
             const outputs = valid.map(q => q[i].output).sort((a, b) => b.comparedTo(a));
-            // Median price
-            // const bucketPrice = calcPrice(sampleAmount, outputs[Math.floor(outputs.length / 2)]);
             // Best price
-            const bestOutput = side === MarketOperation.Sell ? BigNumber.max(...outputs) : BigNumber.min(...outputs);
+            let bestOutput = side === MarketOperation.Sell ? BigNumber.max(...outputs) : BigNumber.min(...outputs);
+            bestOutput = bestOutput && !bestOutput.isZero() ? bestOutput : ZERO_AMOUNT;
             const bucketPrice = calcPrice(sampleAmount, bestOutput);
-            console.log({ input: sampleAmount, output: bestOutput, bucketPrice });
             return bucketPrice;
         });
         const medianBucketPrices: BigNumber[] = sampleAmounts.map((sampleAmount, i) => {
@@ -111,54 +110,20 @@ export class MarketOperationUtils {
 
         const bucketPrices = [
             bestBucketPrices[0],
-            ...getSampleAmountsA(priceDiff.times(2), sampleAmounts.length * 2).map(p => bestBucketPrices[0].plus(p)),
+            // Create enough buckets to cover 2x the price difference
+            ...getSampleAmountsA(priceDiff.times(2), sampleAmounts.length * 2)
+                .map(p => bestBucketPrices[0].plus(p))
+                // price can decrease so stay above 0
+                .filter(p => p.gt(ZERO_AMOUNT)),
         ];
         // Sell side, higher the price the better as I get more ETH. bucketPrices High->low
         // buy side, lower the price the better as it costs less ETH. bucketPrices Low->high
-
-        console.log({ side, priceDiff, bucketPrices });
         const findBucketByPrice = (price: BigNumber, source: ERC20BridgeSource) => {
-            let bucket;
-            if (side === MarketOperation.Sell) {
-                // [ 229.05340183056437874,
-                //   228.8099689580112688298,
-                //   228.5665360854581589196,
-                bucket = bucketPrices.findIndex(bucketPrice => price.gte(bucketPrice));
-                if (bucket === -1) {
-                    console.log('no sell bucket for', {
-                        source,
-                        price,
-                        last: bucketPrices[bucketPrices.length - 1],
-                        first: bucketPrices[0],
-                    });
-                    bucket = 999;
-                    // bucket = price.gte(bucketPrices[0]) ? 0 : bucketPrices.length - 1;
-                }
-            } else {
-                // [ 230.999934885187170879,
-                //   231.03281311369590608505,
-                //   231.0656913422046412911,
-                // Market buy
-                bucket = bucketPrices.findIndex(bucketPrice => price.lte(bucketPrice));
-                if (bucket === -1) {
-                    console.log('no buy bucket for', {
-                        source,
-                        price,
-                        last: bucketPrices[bucketPrices.length - 1],
-                        first: bucketPrices[0],
-                    });
-                    bucket = 999;
-                    // bucket = price.lte(bucketPrices[0]) ? 0 : bucketPrices.length - 1;
-                }
-            }
-            if (bucket === 0) {
-                console.log('this is the best price in the world', {
-                    side,
-                    source,
-                    price,
-                    last: bucketPrices[bucketPrices.length - 1],
-                    first: bucketPrices[0],
-                });
+            let bucket = bucketPrices.findIndex(bucketPrice =>
+                side === MarketOperation.Sell ? price.gte(bucketPrice) : price.lte(bucketPrice),
+            );
+            if (bucket === -1) {
+                bucket = 999;
             }
             return bucket;
         };
@@ -180,10 +145,22 @@ export class MarketOperationUtils {
                           }
                         : qFs;
                 })
-                .filter(qFs => qFs) as Array<{ input: BigNumber; output: BigNumber; source: ERC20BridgeSource }>;
+                .filter(qFs => qFs && !qFs.output.isZero() && !qFs.input.isZero()) as Array<{
+                input: BigNumber;
+                output: BigNumber;
+                source: ERC20BridgeSource;
+            }>;
         });
         let minFinalBucket = bucketPrices.length;
-        // if this occurs we join them together into the same bucket
+        // Combine native to the unaccumulated DEX samples
+        unaccumulatedSamples.push(
+            nativeOrders.map(n => ({
+                // TODO adjust for fillable amount
+                input: n.takerAssetAmount,
+                output: n.makerAssetAmount,
+                source: ERC20BridgeSource.Native,
+            })),
+        );
         for (const quotesForSource of unaccumulatedSamples) {
             if (!quotesForSource[0]) {
                 continue;
@@ -209,19 +186,19 @@ export class MarketOperationUtils {
                 input: BigNumber;
                 output: BigNumber;
                 bucket: number;
-                bucketPrice: BigNumber;
                 price: BigNumber;
             }> = [];
             Object.keys(samplesGroupedByBucket).forEach(k => {
                 const samplesByBucket = samplesGroupedByBucket[k];
                 const input = BigNumber.sum(...samplesByBucket.map(s => s.input));
                 const output = BigNumber.sum(...samplesByBucket.map(s => s.output));
+                // bucket ID becomes a striing when grouped by
+                const bucket = parseInt(k, 10);
                 squashedSamples.push({
                     input,
                     output,
-                    bucket: parseInt(k, 10),
-                    price: bucketPrices[parseInt(k, 10)],
-                    bucketPrice: bucketPrices[parseInt(k, 10)],
+                    bucket,
+                    price: bucketPrices[bucket],
                 });
             });
             const sourceCompleted =
@@ -278,24 +255,23 @@ export class MarketOperationUtils {
         };
     }
     public async getMarketDepthAsync(
-        nativeOrders: SignedOrder[],
+        sellOrders: SignedOrder[],
+        buyOrders: SignedOrder[],
         amount: BigNumber,
-        side: MarketOperation = MarketOperation.Sell,
         opts?: Partial<GetMarketOrdersOpts>,
     ): Promise<LiquidityForTakerMakerAssetDataPair> {
-        if (nativeOrders.length === 0) {
+        if (sellOrders.length === 0) {
             throw new Error(AggregationError.EmptyOrders);
         }
-        console.log(opts);
-        console.time('depth-charge');
         const _opts = { ...DEFAULT_GET_MARKET_ORDERS_OPTS, ...opts };
-        const [makerToken, takerToken] = getNativeOrderTokens(nativeOrders[0]);
+        const [makerToken, takerToken] = getNativeOrderTokens(sellOrders[0]);
         const sampleAmounts = getSampleAmounts(amount, _opts.numSamples, _opts.sampleDistributionBase);
 
         // Call the sampler contract.
         const samplerPromise = this._sampler.executeAsync(
             // Get native order fillable amounts.
-            DexOrderSampler.ops.getOrderFillableTakerAmounts(nativeOrders, this.contractAddresses.devUtils),
+            DexOrderSampler.ops.getOrderFillableTakerAmounts(sellOrders, this.contractAddresses.devUtils),
+            DexOrderSampler.ops.getOrderFillableTakerAmounts(buyOrders, this.contractAddresses.devUtils),
             await DexOrderSampler.ops.getSellQuotesAsync(
                 difference(
                     SELL_SOURCES.concat(this._optionalSources()),
@@ -348,35 +324,31 @@ export class MarketOperationUtils {
         );
 
         const [
-            [orderFillableAmounts, dexSellQuotes, dexBuyQuotes],
+            [sellOrderFillableAmounts, buyOrderFillableAmounts, dexSellQuotes, dexBuyQuotes],
             [balancerSellQuotes],
             [balancerBuyQuotes],
         ] = await Promise.all([samplerPromise, balancerSellPromise, balancerBuyPromise]);
         const sell = this.calculateMarketDepth(
-            nativeOrders,
+            sellOrders,
+            sellOrderFillableAmounts,
             [...dexSellQuotes, ...balancerSellQuotes],
             sampleAmounts,
             MarketOperation.Sell,
         );
-        let buy;
-        try {
-            buy = this.calculateMarketDepth(
-                [],
-                [...dexBuyQuotes, ...balancerBuyQuotes],
-                sampleAmounts,
-                MarketOperation.Buy,
-            );
-        } catch (e) {
-            console.log(e);
-        }
+        const buy = this.calculateMarketDepth(
+            buyOrders,
+            buyOrderFillableAmounts,
+            [...dexBuyQuotes, ...balancerBuyQuotes],
+            sampleAmounts,
+            MarketOperation.Buy,
+        );
         const liquidityAvailable = {
             sell: { dataByBucketPrice: sell.dataByBucketPrice },
-            buy: { dataByBucketPrice: buy ? buy.dataByBucketPrice : {} },
+            buy: { dataByBucketPrice: buy.dataByBucketPrice },
             depth: sell.depth,
             takerAssetAvailableInBaseUnits: ZERO_AMOUNT,
             makerAssetAvailableInBaseUnits: ZERO_AMOUNT,
         };
-        console.timeEnd('depth-charge');
         return liquidityAvailable;
     }
 
@@ -396,10 +368,12 @@ export class MarketOperationUtils {
         if (nativeOrders.length === 0) {
             throw new Error(AggregationError.EmptyOrders);
         }
+        console.time('\t\tgetMarketSellPreNetwork');
         const _opts = { ...DEFAULT_GET_MARKET_ORDERS_OPTS, ...opts };
         const [makerToken, takerToken] = getNativeOrderTokens(nativeOrders[0]);
         const sampleAmounts = getSampleAmounts(takerAmount, _opts.numSamples, _opts.sampleDistributionBase);
 
+        console.time('\t\t\tbuildSamplerPromise');
         // Call the sampler contract.
         const samplerPromise = this._sampler.executeAsync(
             // Get native order fillable amounts.
@@ -436,7 +410,9 @@ export class MarketOperationUtils {
                 this._multiBridge,
             ),
         );
+        console.timeEnd('\t\t\tbuildSamplerPromise');
 
+        console.time('\t\t\tbuildRfqtPromise');
         const rfqtPromise = getRfqtIndicativeQuotesAsync(
             nativeOrders[0].makerAssetData,
             nativeOrders[0].takerAssetData,
@@ -444,7 +420,9 @@ export class MarketOperationUtils {
             takerAmount,
             _opts,
         );
+        console.timeEnd('\t\t\tbuildRfqtPromise');
 
+        console.time('\t\t\tbuildBalancer');
         const balancerPromise = this._sampler.executeAsync(
             await DexOrderSampler.ops.getSellQuotesAsync(
                 difference([ERC20BridgeSource.Balancer], _opts.excludedSources),
@@ -457,13 +435,17 @@ export class MarketOperationUtils {
                 this._multiBridge,
             ),
         );
+        console.timeEnd('\t\t\tbuildBalancer');
 
+        console.timeEnd('\t\tgetMarketSellPreNetwork');
+        console.time('\t\tnetwork');
         const [
             [orderFillableAmounts, liquidityProviderAddress, ethToMakerAssetRate, dexQuotes],
             rfqtIndicativeQuotes,
             [balancerQuotes],
         ] = await Promise.all([samplerPromise, rfqtPromise, balancerPromise]);
-        return this._generateOptimizedOrders({
+        console.timeEnd('\t\tnetwork');
+        return this._generateOptimizedOrdersAsync({
             orderFillableAmounts,
             nativeOrders,
             dexQuotes: dexQuotes.concat(balancerQuotes),
@@ -567,7 +549,7 @@ export class MarketOperationUtils {
             [balancerQuotes],
         ] = await Promise.all([samplerPromise, rfqtPromise, balancerPromise]);
 
-        return this._generateOptimizedOrders({
+        return this._generateOptimizedOrdersAsync({
             orderFillableAmounts,
             nativeOrders,
             dexQuotes: dexQuotes.concat(balancerQuotes),
@@ -645,42 +627,44 @@ export class MarketOperationUtils {
         const batchEthToTakerAssetRate = executeResults.splice(0, batchNativeOrders.length) as BigNumber[];
         const batchDexQuotes = executeResults.splice(0, batchNativeOrders.length) as DexSample[][][];
 
-        return batchNativeOrders.map((nativeOrders, i) => {
-            if (nativeOrders.length === 0) {
-                throw new Error(AggregationError.EmptyOrders);
-            }
-            const [makerToken, takerToken] = getNativeOrderTokens(nativeOrders[0]);
-            const orderFillableAmounts = batchOrderFillableAmounts[i];
-            const ethToTakerAssetRate = batchEthToTakerAssetRate[i];
-            const dexQuotes = batchDexQuotes[i];
-            const makerAmount = makerAmounts[i];
-            try {
-                return this._generateOptimizedOrders({
-                    orderFillableAmounts,
-                    nativeOrders,
-                    dexQuotes,
-                    rfqtIndicativeQuotes: [],
-                    inputToken: makerToken,
-                    outputToken: takerToken,
-                    side: MarketOperation.Buy,
-                    inputAmount: makerAmount,
-                    ethToOutputRate: ethToTakerAssetRate,
-                    bridgeSlippage: _opts.bridgeSlippage,
-                    maxFallbackSlippage: _opts.maxFallbackSlippage,
-                    excludedSources: _opts.excludedSources,
-                    feeSchedule: _opts.feeSchedule,
-                    allowFallback: _opts.allowFallback,
-                    shouldBatchBridgeOrders: _opts.shouldBatchBridgeOrders,
-                });
-            } catch (e) {
-                // It's possible for one of the pairs to have no path
-                // rather than throw NO_OPTIMAL_PATH we return undefined
-                return undefined;
-            }
-        });
+        return Promise.all(
+            batchNativeOrders.map(async (nativeOrders, i) => {
+                if (nativeOrders.length === 0) {
+                    throw new Error(AggregationError.EmptyOrders);
+                }
+                const [makerToken, takerToken] = getNativeOrderTokens(nativeOrders[0]);
+                const orderFillableAmounts = batchOrderFillableAmounts[i];
+                const ethToTakerAssetRate = batchEthToTakerAssetRate[i];
+                const dexQuotes = batchDexQuotes[i];
+                const makerAmount = makerAmounts[i];
+                try {
+                    return await this._generateOptimizedOrdersAsync({
+                        orderFillableAmounts,
+                        nativeOrders,
+                        dexQuotes,
+                        rfqtIndicativeQuotes: [],
+                        inputToken: makerToken,
+                        outputToken: takerToken,
+                        side: MarketOperation.Buy,
+                        inputAmount: makerAmount,
+                        ethToOutputRate: ethToTakerAssetRate,
+                        bridgeSlippage: _opts.bridgeSlippage,
+                        maxFallbackSlippage: _opts.maxFallbackSlippage,
+                        excludedSources: _opts.excludedSources,
+                        feeSchedule: _opts.feeSchedule,
+                        allowFallback: _opts.allowFallback,
+                        shouldBatchBridgeOrders: _opts.shouldBatchBridgeOrders,
+                    });
+                } catch (e) {
+                    // It's possible for one of the pairs to have no path
+                    // rather than throw NO_OPTIMAL_PATH we return undefined
+                    return undefined;
+                }
+            }),
+        );
     }
 
-    private _generateOptimizedOrders(opts: {
+    private async _generateOptimizedOrdersAsync(opts: {
         side: MarketOperation;
         inputToken: string;
         outputToken: string;
@@ -699,7 +683,7 @@ export class MarketOperationUtils {
         shouldBatchBridgeOrders?: boolean;
         liquidityProviderAddress?: string;
         multiBridgeAddress?: string;
-    }): OptimizedMarketOrder[] {
+    }): Promise<OptimizedMarketOrder[]> {
         const { inputToken, outputToken, side, inputAmount } = opts;
         const maxFallbackSlippage = opts.maxFallbackSlippage || 0;
         // Convert native orders and dex quotes into fill paths.
@@ -717,7 +701,7 @@ export class MarketOperationUtils {
             feeSchedule: opts.feeSchedule,
         });
         // Find the optimal path.
-        let optimalPath = findOptimalPath(side, paths, inputAmount, opts.runLimit) || [];
+        let optimalPath = (await findOptimalPathAsync(side, paths, inputAmount, opts.runLimit)) || [];
         if (optimalPath.length === 0) {
             throw new Error(AggregationError.NoOptimalPath);
         }
@@ -727,7 +711,8 @@ export class MarketOperationUtils {
             // We create a fallback path that is exclusive of Native liquidity
             // This is the optimal on-chain path for the entire input amount
             const nonNativePaths = paths.filter(p => p.length > 0 && p[0].source !== ERC20BridgeSource.Native);
-            const nonNativeOptimalPath = findOptimalPath(side, nonNativePaths, inputAmount, opts.runLimit) || [];
+            const nonNativeOptimalPath =
+                (await findOptimalPathAsync(side, nonNativePaths, inputAmount, opts.runLimit)) || [];
             // Calculate the slippage of on-chain sources compared to the most optimal path
             const fallbackSlippage = getPathAdjustedSlippage(
                 side,
