@@ -523,5 +523,122 @@ blockchainTests.only('Eth2DaiBridge unit tests', env => {
             expect(takerBalanceAfter).to.bignumber.equal(takerBalanceBefore.plus(buyAmount));
         });
     });
+    blockchainTests.resets('fillRecurringBuy()', () => {
+        const recurringBuy: RecurringBuy = {
+            ...NULL_RECURRING_BUY,
+            sellAmount: toBaseUnitAmount(1337),
+            interval: ONE_DAY_IN_SECONDS.times(7),
+            minBuyAmount: toBaseUnitAmount(1337),
+            maxSlippageBps: new BigNumber(123),
+            unwrapWeth: true,
+        };
+        before(async () => {
+            await ritualBridge
+                .setRecurringBuy(
+                    sellToken.address,
+                    buyToken.address,
+                    recurringBuy.sellAmount,
+                    recurringBuy.interval,
+                    recurringBuy.minBuyAmount,
+                    recurringBuy.maxSlippageBps,
+                    recurringBuy.unwrapWeth,
+                    [],
+                    [],
+                )
+                .awaitTransactionSuccessAsync({ from: recurringBuyer });
+            recurringBuy.currentBuyWindowStart = new BigNumber(await env.web3Wrapper.getBlockTimestampAsync('latest'));
+            const oracleAddress = await ritualBridge.getOracleAddress().callAsync();
+            await new TestOracleContract(oracleAddress, env.provider)
+                .setLatestAnswer(new BigNumber(100000000))
+                .awaitTransactionSuccessAsync({ from: taker });
+        });
+        it('reverts when there is a mismatch between the number of orders and signatures', async () => {
+            const order = randomOrder();
+            const msgValue = new BigNumber(1337);
+            const tx = ritualBridge
+                .fillRecurringBuy(recurringBuyer, sellToken.address, buyToken.address, [order], ['0x', '0x'])
+                .awaitTransactionSuccessAsync({ from: taker, value: msgValue });
+            return expect(tx).to.revertWith('RitualBridge::fillRecurringBuy/ORDER_AND_SIGNATURE_LENGTH_MISMATCH');
+        });
+        it('reverts to fill an order when the price is outside of the guardrails', async () => {
+            const order = randomOrder();
+            order.makerAssetAmount = toBaseUnitAmount(1337);
+            order.takerAssetAmount = toBaseUnitAmount(420);
+            order.makerFee = constants.ZERO_AMOUNT;
+            order.takerFee = constants.ZERO_AMOUNT;
+            const msgValue = new BigNumber(1337);
+            const tx = ritualBridge
+                .fillRecurringBuy(recurringBuyer, sellToken.address, buyToken.address, [order], ['0x'])
+                .awaitTransactionSuccessAsync({ from: taker, value: msgValue });
+            return expect(tx).to.revertWith(
+                'RitualBridge::_validateAndUpdateRecurringBuy/EXCEEDS_MAX_ALLOWED_SLIPPAGE',
+            );
+        });
+        it('reverts to fill an order when their are fees', async () => {
+            const order = randomOrder();
+            order.makerAssetAmount = toBaseUnitAmount(1337);
+            order.takerAssetAmount = toBaseUnitAmount(1337);
+            order.makerFee = toBaseUnitAmount(1337);
+            const msgValue = new BigNumber(1337);
+            const tx = ritualBridge
+                .fillRecurringBuy(recurringBuyer, sellToken.address, buyToken.address, [order], ['0x'])
+                .awaitTransactionSuccessAsync({ from: taker, value: msgValue });
+            return expect(tx).to.revertWith('RitualBridge::fillRecurringBuy/NO_FEES_ALLOWED');
+        });
+        it('can fill an order when the price is within the guardrails', async () => {
+            const order = randomOrder();
+            order.makerAssetAmount = toBaseUnitAmount(1337);
+            order.takerAssetAmount = toBaseUnitAmount(1337);
+            order.makerFee = constants.ZERO_AMOUNT;
+            order.takerFee = constants.ZERO_AMOUNT;
+            const msgValue = new BigNumber(1337);
+            const tx = await ritualBridge
+                .fillRecurringBuy(recurringBuyer, sellToken.address, buyToken.address, [order], ['0x'])
+                .awaitTransactionSuccessAsync({ from: taker, value: msgValue });
+            verifyEventsFromLogs(
+                tx.logs,
+                [{ takerAssetFillAmount: toBaseUnitAmount(1337), msgValue }],
+                TestRitualBridgeEvents.MarketSellCalled,
+            );
+        });
+        it('reverts when the sale is too large', async () => {
+            const msgValue = new BigNumber(1337);
+            const order = randomOrder();
+            order.makerAssetAmount = toBaseUnitAmount(2674);
+            order.takerAssetAmount = toBaseUnitAmount(2674);
+            order.makerFee = constants.ZERO_AMOUNT;
+            order.takerFee = constants.ZERO_AMOUNT;
+            const tx = ritualBridge
+                .fillRecurringBuy(recurringBuyer, sellToken.address, buyToken.address, [order], ['0x'])
+                .awaitTransactionSuccessAsync({ from: taker, value: msgValue });
+            return expect(tx).to.revertWith('RitualBridge::_validateAndUpdateRecurringBuy/EXCEEDS_SELL_AMOUNT');
+        });
+        it('reverts to fill too many orders when the price is within the guardrails', async () => {
+            const msgValue = new BigNumber(1337);
+            let order = randomOrder();
+            order.makerAssetAmount = toBaseUnitAmount(1337);
+            order.takerAssetAmount = toBaseUnitAmount(1337);
+            order.makerFee = constants.ZERO_AMOUNT;
+            order.takerFee = constants.ZERO_AMOUNT;
+            const tx = await ritualBridge
+                .fillRecurringBuy(recurringBuyer, sellToken.address, buyToken.address, [order], ['0x'])
+                .awaitTransactionSuccessAsync({ from: taker, value: msgValue });
+            verifyEventsFromLogs(
+                tx.logs,
+                [{ takerAssetFillAmount: toBaseUnitAmount(1337), msgValue }],
+                TestRitualBridgeEvents.MarketSellCalled,
+            );
+
+            order = randomOrder();
+            order.makerAssetAmount = toBaseUnitAmount(1337);
+            order.takerAssetAmount = toBaseUnitAmount(1337);
+            order.makerFee = constants.ZERO_AMOUNT;
+            order.takerFee = constants.ZERO_AMOUNT;
+            const failedTx = ritualBridge
+                .fillRecurringBuy(recurringBuyer, sellToken.address, buyToken.address, [order], ['0x'])
+                .awaitTransactionSuccessAsync({ from: taker, value: msgValue });
+            return expect(failedTx).to.revertWith('RitualBridge::_validateAndUpdateRecurringBuy/OUTSIDE_OF_BUY_WINDOW');
+        });
+    });
 });
 // tslint:disable max-file-line-count
