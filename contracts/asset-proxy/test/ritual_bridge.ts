@@ -523,16 +523,33 @@ blockchainTests.only('Eth2DaiBridge unit tests', env => {
             expect(takerBalanceAfter).to.bignumber.equal(takerBalanceBefore.plus(buyAmount));
         });
     });
-    blockchainTests.resets('fillRecurringBuy()', () => {
+    blockchainTests.resets.only('fillRecurringBuy()', () => {
         const recurringBuy: RecurringBuy = {
             ...NULL_RECURRING_BUY,
-            sellAmount: toBaseUnitAmount(1337),
+            sellAmount: toBaseUnitAmount(1, 0),
             interval: ONE_DAY_IN_SECONDS.times(7),
-            minBuyAmount: toBaseUnitAmount(1337),
+            minBuyAmount: toBaseUnitAmount(1, 0),
             maxSlippageBps: new BigNumber(123),
             unwrapWeth: true,
         };
         before(async () => {
+            ritualBridge = await TestRitualBridgeContract.deployFrom0xArtifactAsync(
+                artifacts.TestRitualBridge,
+                env.provider,
+                env.txDefaults,
+                artifacts,
+                weth.address,
+            );
+            const oracleAddress = await ritualBridge.getOracleAddress().callAsync();
+            await new TestOracleContract(oracleAddress, env.provider)
+                .setLatestAnswer(new BigNumber(100000000))
+                .awaitTransactionSuccessAsync({ from: taker });
+            [, recurringBuyer, taker] = await env.getAccountAddressesAsync();
+            await sellToken
+                .approve(ritualBridge.address, constants.INITIAL_ERC20_ALLOWANCE)
+                .awaitTransactionSuccessAsync({ from: recurringBuyer });
+            await sellToken.setBalance(recurringBuyer, constants.INITIAL_ERC20_BALANCE).awaitTransactionSuccessAsync();
+            await buyToken.setBalance(taker, constants.INITIAL_ERC20_BALANCE).awaitTransactionSuccessAsync();
             await ritualBridge
                 .setRecurringBuy(
                     sellToken.address,
@@ -547,10 +564,6 @@ blockchainTests.only('Eth2DaiBridge unit tests', env => {
                 )
                 .awaitTransactionSuccessAsync({ from: recurringBuyer });
             recurringBuy.currentBuyWindowStart = new BigNumber(await env.web3Wrapper.getBlockTimestampAsync('latest'));
-            const oracleAddress = await ritualBridge.getOracleAddress().callAsync();
-            await new TestOracleContract(oracleAddress, env.provider)
-                .setLatestAnswer(new BigNumber(100000000))
-                .awaitTransactionSuccessAsync({ from: taker });
         });
         it('reverts when there is a mismatch between the number of orders and signatures', async () => {
             const order = randomOrder();
@@ -562,8 +575,8 @@ blockchainTests.only('Eth2DaiBridge unit tests', env => {
         });
         it('reverts to fill an order when the price is outside of the guardrails', async () => {
             const order = randomOrder();
-            order.makerAssetAmount = toBaseUnitAmount(1337);
-            order.takerAssetAmount = toBaseUnitAmount(420);
+            order.makerAssetAmount = recurringBuy.sellAmount;
+            order.takerAssetAmount = recurringBuy.sellAmount.div(2);
             order.makerFee = constants.ZERO_AMOUNT;
             order.takerFee = constants.ZERO_AMOUNT;
             const msgValue = new BigNumber(1337);
@@ -576,9 +589,9 @@ blockchainTests.only('Eth2DaiBridge unit tests', env => {
         });
         it('reverts to fill an order when their are fees', async () => {
             const order = randomOrder();
-            order.makerAssetAmount = toBaseUnitAmount(1337);
-            order.takerAssetAmount = toBaseUnitAmount(1337);
-            order.makerFee = toBaseUnitAmount(1337);
+            order.makerAssetAmount = recurringBuy.sellAmount;
+            order.takerAssetAmount = recurringBuy.sellAmount;
+            order.makerFee = toBaseUnitAmount(1);
             const msgValue = new BigNumber(1337);
             const tx = ritualBridge
                 .fillRecurringBuy(recurringBuyer, sellToken.address, buyToken.address, [order], ['0x'])
@@ -587,8 +600,8 @@ blockchainTests.only('Eth2DaiBridge unit tests', env => {
         });
         it('can fill an order when the price is within the guardrails', async () => {
             const order = randomOrder();
-            order.makerAssetAmount = toBaseUnitAmount(1337);
-            order.takerAssetAmount = toBaseUnitAmount(1337);
+            order.makerAssetAmount = recurringBuy.sellAmount;
+            order.takerAssetAmount = recurringBuy.sellAmount;
             order.makerFee = constants.ZERO_AMOUNT;
             order.takerFee = constants.ZERO_AMOUNT;
             const msgValue = new BigNumber(1337);
@@ -604,8 +617,8 @@ blockchainTests.only('Eth2DaiBridge unit tests', env => {
         it('reverts when the sale is too large', async () => {
             const msgValue = new BigNumber(1337);
             const order = randomOrder();
-            order.makerAssetAmount = toBaseUnitAmount(2674);
-            order.takerAssetAmount = toBaseUnitAmount(2674);
+            order.makerAssetAmount = recurringBuy.sellAmount.times(2);
+            order.takerAssetAmount = recurringBuy.sellAmount.times(2);
             order.makerFee = constants.ZERO_AMOUNT;
             order.takerFee = constants.ZERO_AMOUNT;
             const tx = ritualBridge
@@ -616,8 +629,8 @@ blockchainTests.only('Eth2DaiBridge unit tests', env => {
         it('reverts to fill too many orders when the price is within the guardrails', async () => {
             const msgValue = new BigNumber(1337);
             let order = randomOrder();
-            order.makerAssetAmount = toBaseUnitAmount(1337);
-            order.takerAssetAmount = toBaseUnitAmount(1337);
+            order.makerAssetAmount = recurringBuy.sellAmount;
+            order.takerAssetAmount = recurringBuy.sellAmount;
             order.makerFee = constants.ZERO_AMOUNT;
             order.takerFee = constants.ZERO_AMOUNT;
             const tx = await ritualBridge
@@ -625,13 +638,13 @@ blockchainTests.only('Eth2DaiBridge unit tests', env => {
                 .awaitTransactionSuccessAsync({ from: taker, value: msgValue });
             verifyEventsFromLogs(
                 tx.logs,
-                [{ takerAssetFillAmount: toBaseUnitAmount(1337), msgValue }],
+                [{ takerAssetFillAmount: toBaseUnitAmount(1), msgValue }],
                 TestRitualBridgeEvents.MarketSellCalled,
             );
 
             order = randomOrder();
-            order.makerAssetAmount = toBaseUnitAmount(1337);
-            order.takerAssetAmount = toBaseUnitAmount(1337);
+            order.makerAssetAmount = recurringBuy.sellAmount;
+            order.takerAssetAmount = recurringBuy.sellAmount;
             order.makerFee = constants.ZERO_AMOUNT;
             order.takerFee = constants.ZERO_AMOUNT;
             const failedTx = ritualBridge

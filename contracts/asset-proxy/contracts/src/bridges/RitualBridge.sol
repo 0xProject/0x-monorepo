@@ -259,6 +259,10 @@ contract RitualBridge is
             amountBought = LibERC20Token.balanceOf(buyToken, address(this));
         }
 
+        if (amountSold == 0 && amountBought == 0) {
+            return (amountSold, amountBought);
+        }
+
         bool unwrapWeth = _validateAndUpdateRecurringBuy(
             amountBought,
             amountSold,
