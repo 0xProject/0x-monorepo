@@ -294,6 +294,45 @@ contract RitualBridge is
         return (amountSold, amountBought);
     }
 
+    function getFillableMakerAssetAmount(
+        address recurringBuyer,
+        address makerToken,
+        address takerToken
+    )
+        external
+        view
+        returns (uint256 fillableMakerAssetAmount)
+    {
+        bytes32 recurringBuyID = keccak256(abi.encode(
+            recurringBuyer,
+            makerToken,
+            takerToken
+        ));
+
+        RecurringBuy memory buyState = recurringBuys[recurringBuyID];
+        if (buyState.sellAmount == 0) {
+            return 0;
+        }
+        if (block.timestamp < buyState.currentBuyWindowStart.safeAdd(BUY_WINDOW_LENGTH)) {
+            fillableMakerAssetAmount = buyState.sellAmount
+                .safeSub(buyState.currentIntervalAmountSold);
+        } else if (block.timestamp.safeSub(buyState.currentBuyWindowStart) % buyState.interval < BUY_WINDOW_LENGTH) {
+            fillableMakerAssetAmount = buyState.sellAmount;
+        } else {
+            return 0;
+        }
+        fillableMakerAssetAmount = LibSafeMath.min256(
+            LibERC20Token.balanceOf(makerToken, recurringBuyer),
+            fillableMakerAssetAmount
+        );
+        fillableMakerAssetAmount = LibSafeMath.min256(
+            LibERC20Token.allowance(makerToken, recurringBuyer, address(this)),
+            fillableMakerAssetAmount
+        );
+
+        return fillableMakerAssetAmount;
+    }
+
     function _validateAndUpdateRecurringBuy(
         uint256 takerAssetAmount,
         uint256 makerAssetAmount,

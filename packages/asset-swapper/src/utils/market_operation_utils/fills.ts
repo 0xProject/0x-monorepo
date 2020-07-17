@@ -19,6 +19,7 @@ export function createFillPaths(opts: {
     ethToOutputRate?: BigNumber;
     excludedSources?: ERC20BridgeSource[];
     feeSchedule?: FeeSchedule;
+    ritualBridge?: string;
 }): Fill[][] {
     const { side } = opts;
     const excludedSources = opts.excludedSources || [];
@@ -26,8 +27,9 @@ export function createFillPaths(opts: {
     const orders = opts.orders || [];
     const dexQuotes = opts.dexQuotes || [];
     const ethToOutputRate = opts.ethToOutputRate || ZERO_AMOUNT;
+    const ritualBridge = opts.ritualBridge || '';
     // Create native fill paths.
-    const nativePath = nativeOrdersToPath(side, orders, opts.targetInput, ethToOutputRate, feeSchedule);
+    const nativePath = nativeOrdersToPath(side, orders, opts.targetInput, ethToOutputRate, feeSchedule, ritualBridge);
     // Create DEX fill paths.
     const dexPaths = dexQuotesToPaths(side, dexQuotes, ethToOutputRate, feeSchedule);
     return filterPaths([...dexPaths, nativePath].map(p => clipPathToInput(p, opts.targetInput)), excludedSources);
@@ -55,6 +57,7 @@ function nativeOrdersToPath(
     targetInput: BigNumber = POSITIVE_INF,
     ethToOutputRate: BigNumber,
     fees: FeeSchedule,
+    ritualBridge: string,
 ): Fill[] {
     // Create a single path from all orders.
     let path: Fill[] = [];
@@ -63,9 +66,8 @@ function nativeOrdersToPath(
         const takerAmount = fillableAmountsUtils.getTakerAssetAmountSwappedAfterOrderFees(order);
         const input = side === MarketOperation.Sell ? takerAmount : makerAmount;
         const output = side === MarketOperation.Sell ? makerAmount : takerAmount;
-        const penalty = ethToOutputRate.times(
-            fees[ERC20BridgeSource.Native] === undefined ? 0 : fees[ERC20BridgeSource.Native]!(),
-        );
+        const source = order.makerAddress === ritualBridge ? ERC20BridgeSource.Ritual : ERC20BridgeSource.Native;
+        const penalty = ethToOutputRate.times(fees[source] === undefined ? 0 : fees[source]!());
         const rate = makerAmount.div(takerAmount);
         // targetInput can be less than the order size
         // whilst the penalty is constant, it affects the adjusted output
@@ -92,7 +94,7 @@ function nativeOrdersToPath(
             flags: 0,
             index: 0, // TBD
             parent: undefined, // TBD
-            source: ERC20BridgeSource.Native,
+            source,
             fillData: { order },
         });
     }

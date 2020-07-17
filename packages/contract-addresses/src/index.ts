@@ -35,6 +35,7 @@ export interface ContractAddresses {
     dexForwarderBridge: string;
     multiBridge: string;
     balancerBridge: string;
+    ritualBridge: string;
     exchangeProxyGovernor: string;
     exchangeProxy: string;
     exchangeProxyAllowanceTarget: string;

@@ -35,6 +35,7 @@ export enum ERC20BridgeSource {
     LiquidityProvider = 'LiquidityProvider',
     MultiBridge = 'MultiBridge',
     Balancer = 'Balancer',
+    Ritual = 'Ritual',
 }
 
 // Internal `fillData` field for `Fill` objects.

@@ -381,6 +381,37 @@ export class IERC20BridgeSamplerContract extends BaseContract {
                 constant: true,
                 inputs: [
                     {
+                        name: 'recurringBuyers',
+                        type: 'address[]',
+                    },
+                    {
+                        name: 'makerToken',
+                        type: 'address',
+                    },
+                    {
+                        name: 'takerToken',
+                        type: 'address',
+                    },
+                    {
+                        name: 'ritualBridge',
+                        type: 'address',
+                    },
+                ],
+                name: 'getRecurringOrderFillableAmounts',
+                outputs: [
+                    {
+                        name: 'fillableMakerAssetAmounts',
+                        type: 'uint256[]',
+                    },
+                ],
+                payable: false,
+                stateMutability: 'view',
+                type: 'function',
+            },
+            {
+                constant: true,
+                inputs: [
+                    {
                         name: 'curveAddress',
                         type: 'address',
                     },
@@ -1020,6 +1051,40 @@ export class IERC20BridgeSamplerContract extends BaseContract {
                     orders,
                     orderSignatures,
                     devUtilsAddress.toLowerCase(),
+                ]);
+            },
+        };
+    }
+    public getRecurringOrderFillableAmounts(
+        recurringBuyers: string[],
+        makerToken: string,
+        takerToken: string,
+        ritualBridge: string,
+    ): ContractFunctionObj<BigNumber[]> {
+        const self = (this as any) as IERC20BridgeSamplerContract;
+        assert.isArray('recurringBuyers', recurringBuyers);
+        assert.isString('makerToken', makerToken);
+        assert.isString('takerToken', takerToken);
+        assert.isString('ritualBridge', ritualBridge);
+        const functionSignature = 'getRecurringOrderFillableAmounts(address[],address,address,address)';
+
+        return {
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber[]> {
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
+                return abiEncoder.strictDecodeReturnValue<BigNumber[]>(rawCallResult);
+            },
+            getABIEncodedTransactionData(): string {
+                return self._strictEncodeArguments(functionSignature, [
+                    recurringBuyers,
+                    makerToken.toLowerCase(),
+                    takerToken.toLowerCase(),
+                    ritualBridge.toLowerCase(),
                 ]);
             },
         };

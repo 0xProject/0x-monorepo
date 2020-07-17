@@ -98,6 +98,20 @@
             {
                 "constant": true,
                 "inputs": [
+                    { "internalType": "address[]", "name": "recurringBuyers", "type": "address[]" },
+                    { "internalType": "address", "name": "makerToken", "type": "address" },
+                    { "internalType": "address", "name": "takerToken", "type": "address" },
+                    { "internalType": "address", "name": "ritualBridge", "type": "address" }
+                ],
+                "name": "getRecurringOrderFillableAmounts",
+                "outputs": [{ "internalType": "uint256[]", "name": "fillableMakerAssetAmounts", "type": "uint256[]" }],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
                     { "internalType": "address", "name": "curveAddress", "type": "address" },
                     { "internalType": "int128", "name": "fromTokenIdx", "type": "int128" },
                     { "internalType": "int128", "name": "toTokenIdx", "type": "int128" },

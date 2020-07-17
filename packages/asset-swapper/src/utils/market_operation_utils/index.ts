@@ -3,7 +3,7 @@ import { RFQTIndicativeQuote } from '@0x/quote-server';
 import { SignedOrder } from '@0x/types';
 import { BigNumber, NULL_ADDRESS } from '@0x/utils';
 
-import { MarketOperation } from '../../types';
+import { MarketOperation, SignedOrderWithFillableAmounts } from '../../types';
 import { difference } from '../utils';
 
 import { BUY_SOURCES, DEFAULT_GET_MARKET_ORDERS_OPTS, FEE_QUOTE_SOURCES, ONE_ETHER, SELL_SOURCES } from './constants';
@@ -12,6 +12,7 @@ import {
     createOrdersFromPath,
     createSignedOrdersFromRfqtIndicativeQuotes,
     createSignedOrdersWithFillableAmounts,
+    createSignedRecurringOrdersWithFillableAmounts,
     getNativeOrderTokens,
 } from './orders';
 import { findOptimalPath } from './path_optimizer';
@@ -49,6 +50,7 @@ async function getRfqtIndicativeQuotesAsync(
 export class MarketOperationUtils {
     private readonly _wethAddress: string;
     private readonly _multiBridge: string;
+    private readonly _ritualBridge: string;
 
     constructor(
         private readonly _sampler: DexOrderSampler,
@@ -58,30 +60,34 @@ export class MarketOperationUtils {
     ) {
         this._wethAddress = contractAddresses.etherToken.toLowerCase();
         this._multiBridge = contractAddresses.multiBridge.toLowerCase();
+        this._ritualBridge = contractAddresses.ritualBridge.toLowerCase();
     }
 
     /**
      * gets the orders required for a market sell operation by (potentially) merging native orders with
      * generated bridge orders.
-     * @param nativeOrders Native orders.
+     * @param orderbookOrders Orders from the SwapQuoter's orderbook.
      * @param takerAmount Amount of taker asset to sell.
      * @param opts Options object.
      * @return orders.
      */
     public async getMarketSellOrdersAsync(
-        nativeOrders: SignedOrder[],
+        orderbookOrders: SignedOrder[],
         takerAmount: BigNumber,
         opts?: Partial<GetMarketOrdersOpts>,
     ): Promise<OptimizedMarketOrder[]> {
-        if (nativeOrders.length === 0) {
+        if (orderbookOrders.length === 0) {
             throw new Error(AggregationError.EmptyOrders);
         }
         const _opts = { ...DEFAULT_GET_MARKET_ORDERS_OPTS, ...opts };
-        const [makerToken, takerToken] = getNativeOrderTokens(nativeOrders[0]);
+
+        const nativeOrders = orderbookOrders.filter(order => order.makerAddress !== this._ritualBridge);
+        const recurringOrders = orderbookOrders.filter(order => order.makerAddress === this._ritualBridge);
+
+        const [makerToken, takerToken] = getNativeOrderTokens(orderbookOrders[0]);
         const sampleAmounts = getSampleAmounts(takerAmount, _opts.numSamples, _opts.sampleDistributionBase);
 
-        // Call the sampler contract.
-        const samplerPromise = this._sampler.executeAsync(
+        const samplerSubops = [
             // Get native order fillable amounts.
             DexOrderSampler.ops.getOrderFillableTakerAmounts(nativeOrders, this.contractAddresses.devUtils),
             // Get the custom liquidity provider from registry.
@@ -115,11 +121,24 @@ export class MarketOperationUtils {
                 this._liquidityProviderRegistry,
                 this._multiBridge,
             ),
-        );
+        ];
+        if (recurringOrders.length > 0) {
+            samplerSubops.push(
+                DexOrderSampler.ops.getRecurringOrderFillableAmounts(
+                    recurringOrders.map(order => order.feeRecipientAddress),
+                    makerToken,
+                    takerToken,
+                    this._ritualBridge,
+                ),
+            );
+        }
+
+        // Call the sampler contract.
+        const samplerPromise = this._sampler.executeAsync(samplerSubops);
 
         const rfqtPromise = getRfqtIndicativeQuotesAsync(
-            nativeOrders[0].makerAssetData,
-            nativeOrders[0].takerAssetData,
+            orderbookOrders[0].makerAssetData,
+            orderbookOrders[0].takerAssetData,
             MarketOperation.Sell,
             takerAmount,
             _opts,
@@ -138,15 +157,45 @@ export class MarketOperationUtils {
             ),
         );
 
-        const [
-            [orderFillableAmounts, liquidityProviderAddress, ethToMakerAssetRate, dexQuotes],
-            rfqtIndicativeQuotes,
-            [balancerQuotes],
-        ] = await Promise.all([samplerPromise, rfqtPromise, balancerPromise]);
+        let orderFillableAmounts: BigNumber[],
+            liquidityProviderAddress: string,
+            ethToMakerAssetRate: BigNumber,
+            dexQuotes: DexSample[][],
+            rfqtIndicativeQuotes: RFQTIndicativeQuote[],
+            balancerQuotes: DexSample[][],
+            recurringBuyFillableAmounts: BigNumber[] = [];
+
+        if (recurringOrders.length > 0) {
+            [
+                [
+                    orderFillableAmounts,
+                    liquidityProviderAddress,
+                    ethToMakerAssetRate,
+                    dexQuotes,
+                    recurringBuyFillableAmounts,
+                ],
+                rfqtIndicativeQuotes,
+                [balancerQuotes],
+            ] = await Promise.all([samplerPromise as Promise<any>, rfqtPromise, balancerPromise]);
+            dexQuotes = dexQuotes.concat(balancerQuotes);
+        } else {
+            [
+                [orderFillableAmounts, liquidityProviderAddress, ethToMakerAssetRate, dexQuotes],
+                rfqtIndicativeQuotes,
+                [balancerQuotes],
+            ] = await Promise.all([samplerPromise as Promise<any>, rfqtPromise, balancerPromise]);
+            dexQuotes = dexQuotes.concat(balancerQuotes);
+        }
+
         return this._generateOptimizedOrders({
             orderFillableAmounts,
             nativeOrders,
-            dexQuotes: dexQuotes.concat(balancerQuotes),
+            recurringOrders: createSignedRecurringOrdersWithFillableAmounts(
+                recurringOrders,
+                recurringBuyFillableAmounts,
+                dexQuotes.concat(balancerQuotes),
+            ),
+            dexQuotes: dexQuotes,
             rfqtIndicativeQuotes,
             liquidityProviderAddress,
             multiBridgeAddress: this._multiBridge,
@@ -250,6 +299,7 @@ export class MarketOperationUtils {
         return this._generateOptimizedOrders({
             orderFillableAmounts,
             nativeOrders,
+            recurringOrders: [],
             dexQuotes: dexQuotes.concat(balancerQuotes),
             rfqtIndicativeQuotes,
             liquidityProviderAddress,
@@ -339,6 +389,7 @@ export class MarketOperationUtils {
                     orderFillableAmounts,
                     nativeOrders,
                     dexQuotes,
+                    recurringOrders: [],
                     rfqtIndicativeQuotes: [],
                     inputToken: makerToken,
                     outputToken: takerToken,
@@ -369,6 +420,7 @@ export class MarketOperationUtils {
         orderFillableAmounts: BigNumber[];
         dexQuotes: DexSample[][];
         rfqtIndicativeQuotes: RFQTIndicativeQuote[];
+        recurringOrders: SignedOrderWithFillableAmounts[];
         runLimit?: number;
         ethToOutputRate?: BigNumber;
         bridgeSlippage?: number;
@@ -389,12 +441,14 @@ export class MarketOperationUtils {
             orders: [
                 ...createSignedOrdersWithFillableAmounts(side, opts.nativeOrders, opts.orderFillableAmounts),
                 ...createSignedOrdersFromRfqtIndicativeQuotes(opts.rfqtIndicativeQuotes),
+                ...opts.recurringOrders,
             ],
             dexQuotes: opts.dexQuotes,
             targetInput: inputAmount,
             ethToOutputRate: opts.ethToOutputRate,
             excludedSources: opts.excludedSources,
             feeSchedule: opts.feeSchedule,
+            ritualBridge: this._ritualBridge,
         });
         // Find the optimal path.
         let optimalPath = findOptimalPath(side, paths, inputAmount, opts.runLimit) || [];

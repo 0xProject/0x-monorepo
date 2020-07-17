@@ -67,6 +67,16 @@ interface IERC20BridgeSampler {
         view
         returns (uint256[] memory orderFillableMakerAssetAmounts);
 
+    function getRecurringOrderFillableAmounts(
+        address[] calldata recurringBuyers,
+        address makerToken,
+        address takerToken,
+        address ritualBridge
+    )
+        external
+        view
+        returns (uint256[] memory fillableMakerAssetAmounts);
+
     /// @dev Sample sell quotes from Kyber.
     /// @param takerToken Address of the taker token (what to sell).
     /// @param makerToken Address of the maker token (what to buy).

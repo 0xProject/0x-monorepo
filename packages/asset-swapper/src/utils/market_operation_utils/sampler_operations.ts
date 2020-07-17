@@ -45,6 +45,23 @@ export const samplerOperations = {
             },
         };
     },
+    getRecurringOrderFillableAmounts(
+        recurringBuyers: string[],
+        makerToken: string,
+        takerToken: string,
+        ritualBridge: string,
+    ): BatchedOperation<BigNumber[]> {
+        return {
+            encodeCall: contract => {
+                return contract
+                    .getRecurringOrderFillableAmounts(recurringBuyers, makerToken, takerToken, ritualBridge)
+                    .getABIEncodedTransactionData();
+            },
+            handleCallResultsAsync: async (contract, callResults) => {
+                return contract.getABIDecodedReturnData<BigNumber[]>('getRecurringOrderFillableAmounts', callResults);
+            },
+        };
+    },
     getKyberSellQuotes(makerToken: string, takerToken: string, takerFillAmounts: BigNumber[]): SourceQuoteOperation {
         return {
             source: ERC20BridgeSource.Kyber,

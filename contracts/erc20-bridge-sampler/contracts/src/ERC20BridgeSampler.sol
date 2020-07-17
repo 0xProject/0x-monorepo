@@ -20,6 +20,7 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-asset-proxy/contracts/src/interfaces/IUniswapExchangeFactory.sol";
+import "@0x/contracts-dev-utils/contracts/src/LibAssetData.sol";
 import "@0x/contracts-erc20/contracts/src/LibERC20Token.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
@@ -38,6 +39,7 @@ import "./ILiquidityProvider.sol";
 import "./ILiquidityProviderRegistry.sol";
 import "./IUniswapV2Router01.sol";
 import "./IMultiBridge.sol";
+import "./IRitualBridge.sol";
 
 
 contract ERC20BridgeSampler is
@@ -177,6 +179,26 @@ contract ERC20BridgeSampler is
             }
         }
     }
+
+    function getRecurringOrderFillableAmounts(
+        address[] memory recurringBuyers,
+        address makerToken,
+        address takerToken,
+        address ritualBridge
+    )
+        public
+        view
+        returns (uint256[] memory fillableMakerAssetAmounts)
+    {
+        for (uint256 i = 0; i < recurringBuyers.length; ++i) {
+            fillableMakerAssetAmounts[i] = IRitualBridge(ritualBridge).getFillableMakerAssetAmount(
+                recurringBuyers[i],
+                makerToken,
+                takerToken
+            );
+        }
+    }
+
 
     /// @dev Sample sell quotes from Kyber.
     /// @param takerToken Address of the taker token (what to sell).

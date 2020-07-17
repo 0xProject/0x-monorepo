@@ -397,6 +397,7 @@ export async function runMigrationsAsync(
         dexForwarderBridge: NULL_ADDRESS,
         multiBridge: NULL_ADDRESS,
         balancerBridge: NULL_ADDRESS,
+        ritualBridge: NULL_ADDRESS,
         exchangeProxyGovernor: NULL_ADDRESS,
         exchangeProxy: NULL_ADDRESS,
         exchangeProxyAllowanceTarget: NULL_ADDRESS,

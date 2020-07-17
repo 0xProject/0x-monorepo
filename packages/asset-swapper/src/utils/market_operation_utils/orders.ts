@@ -22,9 +22,11 @@ import {
     BalancerFillData,
     CollapsedFill,
     CurveFillData,
+    DexSample,
     ERC20BridgeSource,
     Fill,
     NativeCollapsedFill,
+    NativeFillData,
     OptimizedMarketOrder,
     OrderDomain,
     UniswapV2FillData,
@@ -135,6 +137,35 @@ export function createSignedOrdersWithFillableAmounts(
         });
 }
 
+export function createSignedRecurringOrdersWithFillableAmounts(
+    orders: SignedOrder[],
+    recurringBuyFillableAmounts: BigNumber[],
+    dexQuotes: DexSample[][],
+): SignedOrderWithFillableAmounts[] {
+    // HACK: Use this as a proxy for the midpoint price.
+    const bestDexRate = BigNumber.max(
+        ...dexQuotes.map(sourceSamples =>
+            sourceSamples[0].input.isZero() ? ZERO_AMOUNT : sourceSamples[0].output.div(sourceSamples[0].input),
+        ),
+    );
+    return orders
+        .map((order: SignedOrder, i: number) => {
+            const makerAssetAmount = recurringBuyFillableAmounts[i];
+            const takerAssetAmount = makerAssetAmount.div(bestDexRate);
+            return {
+                ...order,
+                makerAssetAmount,
+                takerAssetAmount,
+                fillableMakerAssetAmount: makerAssetAmount,
+                fillableTakerAssetAmount: takerAssetAmount,
+                fillableTakerFeeAmount: ZERO_AMOUNT,
+            };
+        })
+        .filter(order => {
+            return !order.fillableMakerAssetAmount.isZero() && !order.fillableTakerAssetAmount.isZero();
+        });
+}
+
 export interface CreateOrderFromPathOpts {
     side: MarketOperation;
     inputToken: string;
@@ -191,6 +222,8 @@ function getBridgeAddressFromSource(source: ERC20BridgeSource, opts: CreateOrder
             return opts.contractAddresses.curveBridge;
         case ERC20BridgeSource.Balancer:
             return opts.contractAddresses.balancerBridge;
+        case ERC20BridgeSource.Ritual:
+            return opts.contractAddresses.ritualBridge;
         case ERC20BridgeSource.LiquidityProvider:
             if (opts.liquidityProviderAddress === undefined) {
                 throw new Error('Cannot create a LiquidityProvider order without a LiquidityProvider pool address.');
@@ -232,6 +265,14 @@ function createBridgeOrder(fill: CollapsedFill, opts: CreateOrderFromPathOpts): 
                 makerToken,
                 bridgeAddress,
                 createBalancerBridgeData(takerToken, balancerFillData.poolAddress),
+            );
+            break;
+        case ERC20BridgeSource.Ritual:
+            const ritualFillData = (fill as CollapsedFill<NativeFillData>).fillData!; // tslint:disable-line:no-non-null-assertion
+            makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
+                makerToken,
+                bridgeAddress,
+                createRitualBridgeData(takerToken, ritualFillData.order.feeRecipientAddress),
             );
             break;
         case ERC20BridgeSource.UniswapV2:
@@ -339,6 +380,14 @@ function createBalancerBridgeData(takerToken: string, poolAddress: string): stri
     return encoder.encode({ takerToken, poolAddress });
 }
 
+function createRitualBridgeData(takerToken: string, recurringBuyer: string): string {
+    const encoder = AbiEncoder.create([
+        { name: 'takerToken', type: 'address' },
+        { name: 'recurringBuyer', type: 'address' },
+    ]);
+    return encoder.encode({ takerToken, recurringBuyer });
+}
+
 function createCurveBridgeData(
     curveAddress: string,
     fromTokenIdx: number,
@@ -360,16 +409,25 @@ function createUniswapV2BridgeData(tokenAddressPath: string[]): string {
 }
 
 function getSlippedBridgeAssetAmounts(fill: CollapsedFill, opts: CreateOrderFromPathOpts): [BigNumber, BigNumber] {
-    return [
-        // Maker asset amount.
-        opts.side === MarketOperation.Sell
-            ? fill.output.times(1 - opts.bridgeSlippage).integerValue(BigNumber.ROUND_DOWN)
-            : fill.input,
-        // Taker asset amount.
-        opts.side === MarketOperation.Sell
-            ? fill.input
-            : fill.output.times(opts.bridgeSlippage + 1).integerValue(BigNumber.ROUND_UP),
-    ];
+    if (fill.source === ERC20BridgeSource.Ritual) {
+        return [
+            // Maker asset amount.
+            opts.side === MarketOperation.Sell ? fill.output : fill.input,
+            // Taker asset amount.
+            opts.side === MarketOperation.Sell ? fill.input : fill.output,
+        ];
+    } else {
+        return [
+            // Maker asset amount.
+            opts.side === MarketOperation.Sell
+                ? fill.output.times(1 - opts.bridgeSlippage).integerValue(BigNumber.ROUND_DOWN)
+                : fill.input,
+            // Taker asset amount.
+            opts.side === MarketOperation.Sell
+                ? fill.input
+                : fill.output.times(opts.bridgeSlippage + 1).integerValue(BigNumber.ROUND_UP),
+        ];
+    }
 }
 
 type CommonBridgeOrderFields = Pick<

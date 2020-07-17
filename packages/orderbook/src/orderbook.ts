@@ -79,8 +79,8 @@ export class Orderbook {
         if (!(await this._orderStore.hasAsync(assetPairKey))) {
             await this._orderProvider.createSubscriptionForAssetPairAsync(makerAssetData, takerAssetData);
         }
-        const orders = await this._orderStore.valuesAsync(assetPairKey);
-        return orders.filter(
+        const orders = await this._orderStore.getOrderSetForAssetsAsync(makerAssetData, takerAssetData);
+        return Array.from(orders.values()).filter(
             o => o.order.makerAssetData === makerAssetData && o.order.takerAssetData === takerAssetData,
         );
     }
