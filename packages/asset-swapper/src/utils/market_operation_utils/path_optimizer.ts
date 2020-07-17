@@ -10,7 +10,9 @@ import { Fill } from './types';
 
 const RUN_LIMIT_DECAY_FACTOR = 0.8;
 // Used to yield the event loop when performing CPU intensive tasks
-const setImmediateAsync = async (delay: number = 0) => new Promise(resolve => setImmediate(() => resolve(), delay));
+// tislint:disable-next-line:no-inferred-empty-object-type
+const setImmediateAsync = async (delay: number = 0) =>
+    new Promise<void>(resolve => setImmediate(() => resolve(), delay));
 
 /**
  * Find the optimal mixture of paths that maximizes (for sells) or minimizes

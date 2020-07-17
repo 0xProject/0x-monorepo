@@ -326,7 +326,7 @@ export class MarketOperationUtils {
         const batchDexQuotes = executeResults.splice(0, batchNativeOrders.length) as DexSample[][][];
 
         return Promise.all(
-            batchNativeOrders.map((nativeOrders, i) => {
+            batchNativeOrders.map(async (nativeOrders, i) => {
                 if (nativeOrders.length === 0) {
                     throw new Error(AggregationError.EmptyOrders);
                 }
@@ -336,7 +336,7 @@ export class MarketOperationUtils {
                 const dexQuotes = batchDexQuotes[i];
                 const makerAmount = makerAmounts[i];
                 try {
-                    return this._generateOptimizedOrdersAsync({
+                    return await this._generateOptimizedOrdersAsync({
                         orderFillableAmounts,
                         nativeOrders,
                         dexQuotes,
