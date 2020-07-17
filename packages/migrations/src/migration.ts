@@ -348,19 +348,18 @@ export async function runMigrationsAsync(
     );
     */
 
-    const testOracle = await TestOracleContract.deployFrom0xArtifactAsync(
-        assetProxyArtifacts.TestOracle,
-        provider,
-        txDefaults,
-        allArtifacts,
-    );
+    // const testOracle = await TestOracleContract.deployFrom0xArtifactAsync(
+    //     assetProxyArtifacts.TestOracle,
+    //     provider,
+    //     txDefaults,
+    //     allArtifacts,
+    // );
     const ritualBridge = await RitualBridgeContract.deployFrom0xArtifactAsync(
         assetProxyArtifacts.RitualBridge,
         provider,
         txDefaults,
         allArtifacts,
-        '0x4eacd0af335451709e1e7b570b8ea68edec8bc97',
-        testOracle.address,
+        getContractAddressesForChainOrThrow(chainId.toNumber()).exchange,
     );
 
     const contractAddresses = {

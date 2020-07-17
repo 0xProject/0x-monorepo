@@ -19,17 +19,22 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
+import "@0x/contracts-erc20/contracts/src/LibERC20Token.sol";
+import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
 import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-utils/contracts/src/Refundable.sol";
+import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "../src/bridges/RitualBridge.sol";
-import "../src/TestOracle.sol";
 
 
 contract TestExchange is
     Refundable
 {
+    using LibBytes for bytes;
+
     event MarketSellCalled(
         uint256 takerAssetFillAmount,
         uint256 msgValue
@@ -49,6 +54,34 @@ contract TestExchange is
             takerAssetFillAmount,
             msg.value
         );
+
+        address makerToken = orders[0].makerAssetData.readAddress(16);
+        address takerToken = orders[0].takerAssetData.readAddress(16);
+
+        IERC20Token(takerToken).transferFrom(
+            msg.sender,
+            orders[0].makerAddress,
+            takerAssetFillAmount
+        );
+
+        uint256 makerAssetAmount = LibMath.safeGetPartialAmountFloor(
+            orders[0].makerAssetAmount,
+            orders[0].takerAssetAmount,
+            takerAssetFillAmount
+        );
+        IERC20Token(makerToken).transferFrom(
+            orders[0].makerAddress,
+            msg.sender,
+            makerAssetAmount
+        );
+    }
+
+    function getAssetProxy(bytes4 assetProxyId)
+        public
+        view
+        returns (address)
+    {
+        return address(this);
     }
 }
 
@@ -64,19 +97,17 @@ contract TestRitualBridge is
 
     constructor(address weth)
         public
-        RitualBridge(address(0), address(0))
+        RitualBridge(address(new TestExchange()))
     {
         _weth = weth;
-        EXCHANGE = IExchange(address(new TestExchange()));
-        ORACLE = IChainlinkOracle(address(new TestOracle()));
     }
 
-    function getOracleAddress()
+    function getExchangeAddress()
         external
         view
         returns (address)
     {
-        return address(ORACLE);
+        return address(EXCHANGE);
     }
 
     function _getWethAddress()
@@ -86,5 +117,4 @@ contract TestRitualBridge is
     {
         return _weth;
     }
-
 }

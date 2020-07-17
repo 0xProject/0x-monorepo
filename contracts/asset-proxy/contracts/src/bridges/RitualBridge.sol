@@ -30,6 +30,7 @@ import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "@0x/contracts-utils/contracts/src/Refundable.sol";
 import "../interfaces/IChainlinkOracle.sol";
 import "../interfaces/IERC20Bridge.sol";
+import "../interfaces/IAssetData.sol";
 
 
 // solhint-disable space-after-comma
@@ -49,34 +50,31 @@ contract RitualBridge is
         uint256 maxSlippageBps;
         uint256 currentBuyWindowStart;
         uint256 currentIntervalAmountSold;
+        /* address chainlinkOracle;
+        bool invertOraclePrice; */
         bool unwrapWeth;
     }
 
     uint256 public constant BUY_WINDOW_LENGTH = 24 hours;
     uint256 public constant MIN_INTERVAL_LENGTH = 24 hours;
-    bytes4 public constant ERC20_PROXY_ID = 0xf47261b0;
 
     mapping (bytes32 => RecurringBuy) public recurringBuys;
 
-    IExchange internal EXCHANGE; // solhint-disable-line var-name-mixedcase
-
-    // TODO(jalextowle): For the purposes of the hackathon, we are only supporting
-    // ETH <> USDC swaps, so this will be the only oracle that is registered.
-    IChainlinkOracle internal ORACLE; // solhint-disable-line var-name-mixedcase
+    // solhint-disable var-name-mixedcase
+    IExchange internal EXCHANGE;
+    address internal ERC20_PROXY;
+    // solhint-enable var-name-mixedcase
 
     function ()
         external
         payable
     {}
 
-    constructor (
-        address _exchange,
-        address _oracle
-    )
+    constructor (address _exchange)
         public
     {
         EXCHANGE = IExchange(_exchange);
-        ORACLE = IChainlinkOracle(_oracle);
+        ERC20_PROXY = EXCHANGE.getAssetProxy(IAssetData(address(0)).ERC20Token.selector);
     }
 
     /// @dev Callback for `IERC20Bridge`. Tries to buy `makerAssetAmount` of
@@ -215,7 +213,11 @@ contract RitualBridge is
     )
         external
     {
-        bytes32 recurringBuyID = _calculateRecurringBuyID(msg.sender, sellToken, buyToken);
+        bytes32 recurringBuyID = _calculateRecurringBuyID(
+            msg.sender,
+            sellToken,
+            buyToken
+        );
         delete recurringBuys[recurringBuyID];
     }
 
@@ -223,55 +225,61 @@ contract RitualBridge is
         address recurringBuyer,
         address sellToken,
         address buyToken,
-        LibOrder.Order[] calldata orders,
-        bytes[] calldata signatures
+        LibOrder.Order[] memory orders,
+        bytes[] memory signatures
     )
-        external
+        public
         payable
         returns (uint256 amountSold, uint256 amountBought)
     {
-        require(
-            orders.length == signatures.length,
-            "RitualBridge::fillRecurringBuy/ORDER_AND_SIGNATURE_LENGTH_MISMATCH"
-        );
-
-        {
-            RecurringBuy memory buyState = recurringBuys[_calculateRecurringBuyID(recurringBuyer, sellToken, buyToken)];
-
-            LibERC20Token.transferFrom(sellToken, recurringBuyer, address(this), buyState.sellAmount);
-            uint256 sellTokenBalance = LibERC20Token.balanceOf(sellToken, address(this));
-
-            LibFillResults.FillResults memory fillResults = EXCHANGE.marketSellOrdersNoThrow.value(msg.value)(
-                orders,
-                buyState.sellAmount,
-                signatures
-            );
-
-            require(
-                fillResults.makerFeePaid == fillResults.takerFeePaid &&
-                fillResults.makerFeePaid == 0,
-                "RitualBridge::fillRecurringBuy/NO_FEES_ALLOWED"
-            );
-
-            uint256 sellTokenRemaining = LibERC20Token.balanceOf(sellToken, address(this));
-            LibERC20Token.transfer(sellToken, msg.sender, sellTokenRemaining);
-            amountSold = sellTokenBalance.safeSub(sellTokenRemaining);
-            amountBought = LibERC20Token.balanceOf(buyToken, address(this));
-        }
-
-        if (amountSold == 0 && amountBought == 0) {
-            return (amountSold, amountBought);
-        }
-
-        bool unwrapWeth = _validateAndUpdateRecurringBuy(
-            amountBought,
-            amountSold,
+        bytes32 recurringBuyID = _calculateRecurringBuyID(
             recurringBuyer,
-            buyToken,
-            sellToken
+            sellToken,
+            buyToken
+        );
+        RecurringBuy memory buyState = recurringBuys[recurringBuyID];
+
+        require(
+            buyState.sellAmount > 0,
+            "RitualBridge::fillRecurringBuy/NO_ACTIVE_RECURRING_BUY_FOUND"
         );
 
-        if (unwrapWeth) {
+        uint256 sellAmount;
+        if (block.timestamp < buyState.currentBuyWindowStart.safeAdd(BUY_WINDOW_LENGTH)) {
+            sellAmount = buyState.sellAmount.safeSub(buyState.currentIntervalAmountSold);
+            recurringBuys[recurringBuyID].currentIntervalAmountSold = buyState.currentIntervalAmountSold.safeAdd(sellAmount);
+        } else {
+            uint256 timeSinceBuyWindowStart = block.timestamp
+                .safeSub(buyState.currentBuyWindowStart) % buyState.interval;
+            require(
+                timeSinceBuyWindowStart < BUY_WINDOW_LENGTH,
+                "RitualBridge::fillRecurringBuy/OUTSIDE_OF_BUY_WINDOW"
+            );
+            sellAmount = buyState.sellAmount;
+            recurringBuys[recurringBuyID].currentBuyWindowStart = block.timestamp.safeSub(timeSinceBuyWindowStart);
+            recurringBuys[recurringBuyID].currentIntervalAmountSold = sellAmount;
+        }
+
+        (amountSold, amountBought) = _marketSell(
+            recurringBuyer,
+            sellToken,
+            buyToken,
+            sellAmount,
+            orders,
+            signatures
+        );
+
+        uint256 minBuyAmountScaled = LibMath.safeGetPartialAmountFloor(
+            sellAmount,
+            buyState.sellAmount,
+            buyState.minBuyAmount
+        );
+        require(
+            amountBought >= minBuyAmountScaled,
+            "RitualBridge::fillRecurringBuy/INVALID_PRICE"
+        );
+
+        if (buyToken == _getWethAddress() && buyState.unwrapWeth) {
             IEtherToken(buyToken).withdraw(amountBought);
             address payable recurringBuyerPayable = address(uint160(recurringBuyer));
             recurringBuyerPayable.transfer(amountBought);
@@ -296,7 +304,11 @@ contract RitualBridge is
         private
         returns (bool unwrapWeth)
     {
-        bytes32 recurringBuyID = _calculateRecurringBuyID(recurringBuyer, makerToken, takerToken);
+        bytes32 recurringBuyID = _calculateRecurringBuyID(
+            recurringBuyer,
+            makerToken,
+            takerToken
+        );
 
         RecurringBuy memory buyState = recurringBuys[recurringBuyID];
 
@@ -316,25 +328,6 @@ contract RitualBridge is
             "RitualBridge::_validateAndUpdateRecurringBuy/INVALID_PRICE"
         );
 
-        // FIXME(jalextowle): I need to do more validation on the oracle here.
-        // We must revert if the oracle is not correct.
-        uint256 orderPrice = LibMath.getPartialAmountFloor(
-            makerAssetAmount,
-            takerAssetAmount,
-            100000000 // USD oracles are shifted by 100000000
-        );
-        uint256 latestOraclePrice = uint256(ORACLE.latestAnswer());
-        if (orderPrice > latestOraclePrice) {
-            require(
-                LibMath.getPartialAmountFloor(
-                    orderPrice - latestOraclePrice,
-                    latestOraclePrice,
-                    10000
-                ) <= buyState.maxSlippageBps,
-                "RitualBridge::_validateAndUpdateRecurringBuy/EXCEEDS_MAX_ALLOWED_SLIPPAGE"
-            );
-        }
-
         if (block.timestamp < buyState.currentBuyWindowStart.safeAdd(BUY_WINDOW_LENGTH)) {
             require(
                 buyState.currentIntervalAmountSold.safeAdd(makerAssetAmount) <= buyState.sellAmount,
@@ -344,11 +337,17 @@ contract RitualBridge is
             recurringBuys[recurringBuyID].currentIntervalAmountSold = buyState.currentIntervalAmountSold
                 .safeAdd(makerAssetAmount);
         } else {
+            uint256 timeSinceBuyWindowStart = block.timestamp
+                .safeSub(buyState.currentBuyWindowStart) % buyState.interval;
             require(
-                block.timestamp.safeSub(buyState.currentBuyWindowStart) % buyState.interval < BUY_WINDOW_LENGTH,
+                timeSinceBuyWindowStart < BUY_WINDOW_LENGTH,
                 "RitualBridge::_validateAndUpdateRecurringBuy/OUTSIDE_OF_BUY_WINDOW"
             );
-            recurringBuys[recurringBuyID].currentBuyWindowStart = block.timestamp;
+            require(
+                makerAssetAmount <= buyState.sellAmount,
+                "RitualBridge::_validateAndUpdateRecurringBuy/EXCEEDS_SELL_AMOUNT"
+            );
+            recurringBuys[recurringBuyID].currentBuyWindowStart = block.timestamp.safeSub(timeSinceBuyWindowStart);
             recurringBuys[recurringBuyID].currentIntervalAmountSold = makerAssetAmount;
         }
 
@@ -370,21 +369,14 @@ contract RitualBridge is
         private
         returns (uint256 amountSold, uint256 amountBought)
     {
-        LibERC20Token.transferFrom(sellToken, msg.sender, address(this), sellAmount);
-        uint256 sellTokenBalance = LibERC20Token.balanceOf(sellToken, address(this));
-
-        EXCHANGE.marketSellOrdersNoThrow.value(msg.value)(
-            orders,
+        (amountSold, amountBought) = _marketSell(
+            msg.sender,
+            sellToken,
+            buyToken,
             sellAmount,
+            orders,
             signatures
         );
-
-        uint256 sellTokenRemaining = LibERC20Token.balanceOf(sellToken, address(this));
-        LibERC20Token.transfer(sellToken, msg.sender, sellTokenRemaining);
-        amountSold = sellTokenBalance.safeSub(sellTokenRemaining);
-
-        amountBought = LibERC20Token.balanceOf(buyToken, address(this));
-
         if (amountBought == 0) {
             return (amountSold, amountBought);
         }
@@ -393,8 +385,54 @@ contract RitualBridge is
             IEtherToken(buyToken).withdraw(amountBought);
             // The `refundFinalBalance` modifier will handle the transfer.
         } else {
-            LibERC20Token.transfer(buyToken, msg.sender, amountBought);
+            LibERC20Token.transfer(
+                buyToken,
+                msg.sender,
+                amountBought
+            );
         }
+    }
+
+    function _marketSell(
+        address recurringBuyer,
+        address sellToken,
+        address buyToken,
+        uint256 sellAmount,
+        LibOrder.Order[] memory orders,
+        bytes[] memory signatures
+    )
+        private
+        returns (uint256 amountSold, uint256 amountBought)
+    {
+        LibERC20Token.transferFrom(
+            sellToken,
+            recurringBuyer,
+            address(this),
+            sellAmount
+        );
+        uint256 sellTokenBalance = LibERC20Token.balanceOf(sellToken, address(this));
+        LibERC20Token.approveIfBelow(
+            sellToken,
+            ERC20_PROXY,
+            sellAmount
+        );
+
+        EXCHANGE.marketSellOrdersNoThrow.value(msg.value)(
+            orders,
+            sellAmount,
+            signatures
+        );
+
+        uint256 sellTokenRemaining = LibERC20Token.balanceOf(sellToken, address(this));
+        LibERC20Token.transfer(
+            sellToken,
+            recurringBuyer,
+            sellTokenRemaining
+        );
+
+        amountSold = sellTokenBalance.safeSub(sellTokenRemaining);
+        amountBought = LibERC20Token.balanceOf(buyToken, address(this));
+        return (amountSold, amountBought);
     }
 
     function _calculateRecurringBuyID(
@@ -406,6 +444,10 @@ contract RitualBridge is
         pure
         returns (bytes32)
     {
-        return keccak256(abi.encode(buyer, sellToken, buyToken));
+        return keccak256(abi.encode(
+            buyer,
+            sellToken,
+            buyToken
+        ));
     }
 }

@@ -11,6 +11,7 @@
     },
     "scripts": {
         "build": "yarn pre_build && tsc -b",
+        "build:ts": "tsc -b",
         "build:ci": "yarn build",
         "pre_build": "run-s compile contracts:gen generate_contract_wrappers contracts:copy",
         "test": "yarn run_mocha",
@@ -35,7 +36,8 @@
         "lint-contracts": "solhint -c ../.solhint.json contracts/**/**/**/**/*.sol",
         "compile:truffle": "truffle compile",
         "docs:md": "ts-doc-gen --sourceDir='$PROJECT_FILES' --output=$MD_FILE_DIR --fileExtension=mdx --tsconfig=./typedoc-tsconfig.json",
-        "docs:json": "typedoc --excludePrivate --excludeExternals --excludeProtected --ignoreCompilerErrors --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES"
+        "docs:json": "typedoc --excludePrivate --excludeExternals --excludeProtected --ignoreCompilerErrors --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES",
+        "publish:private": "yarn build && gitpkg publish"
     },
     "config": {
         "abis": "./test/generated-artifacts/@(BalancerBridge|ChaiBridge|CurveBridge|DexForwarderBridge|DydxBridge|ERC1155Proxy|ERC20BridgeProxy|ERC20Proxy|ERC721Proxy|Eth2DaiBridge|IAssetData|IAssetProxy|IAssetProxyDispatcher|IAuthorizable|IBalancerPool|IChai|IChainlinkOracle|ICurve|IDydx|IDydxBridge|IERC20Bridge|IEth2Dai|IGasToken|IKyberNetworkProxy|IUniswapExchange|IUniswapExchangeFactory|IUniswapV2Router01|KyberBridge|MixinAssetProxyDispatcher|MixinAuthorizable|MixinGasToken|MultiAssetProxy|Ownable|RitualBridge|StaticCallProxy|TestChaiBridge|TestDexForwarderBridge|TestDydxBridge|TestERC20Bridge|TestEth2DaiBridge|TestKyberBridge|TestOracle|TestRitualBridge|TestStaticCallTarget|TestUniswapBridge|TestUniswapV2Bridge|UniswapBridge|UniswapV2Bridge).json",
@@ -50,6 +52,9 @@
         "url": "https://github.com/0xProject/0x-monorepo/issues"
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/contracts/protocol/README.md",
+    "gitpkg": {
+        "registry": "git@github.com:0xProject/gitpkg-registry.git"
+    },
     "devDependencies": {
         "@0x/abi-gen": "^5.3.1",
         "@0x/contract-wrappers": "^13.8.0",
@@ -68,6 +73,7 @@
         "chai-bignumber": "^3.0.0",
         "dirty-chai": "^2.0.1",
         "ethereumjs-util": "^5.1.1",
+        "gitpkg": "https://github.com/0xProject/gitpkg.git",
         "make-promises-safe": "^1.1.0",
         "mocha": "^6.2.0",
         "npm-run-all": "^4.1.2",
