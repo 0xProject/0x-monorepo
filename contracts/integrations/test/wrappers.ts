@@ -4,7 +4,10 @@
  * -----------------------------------------------------------------------------
  */
 export * from '../test/generated-wrappers/chainlink_stop_limit';
+export * from '../test/generated-wrappers/e_n_s_validator';
 export * from '../test/generated-wrappers/i_chainlink_aggregator';
+export * from '../test/generated-wrappers/i_resolver';
+export * from '../test/generated-wrappers/iens';
 export * from '../test/generated-wrappers/test_chainlink_aggregator';
 export * from '../test/generated-wrappers/test_contract_wrapper';
 export * from '../test/generated-wrappers/test_dydx_user';

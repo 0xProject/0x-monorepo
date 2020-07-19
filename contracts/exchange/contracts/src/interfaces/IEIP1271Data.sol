@@ -35,7 +35,7 @@ contract IEIP1271Data {
     )
         external
         pure;
-    
+
     /// @dev This function's selector is used when ABI encoding the transaction
     ///      and hash into a byte array before calling `isValidSignature`.
     ///      This function serves no other purpose.

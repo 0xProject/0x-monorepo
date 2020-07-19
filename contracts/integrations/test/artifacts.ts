@@ -6,7 +6,10 @@
 import { ContractArtifact } from 'ethereum-types';
 
 import * as ChainlinkStopLimit from '../test/generated-artifacts/ChainlinkStopLimit.json';
+import * as ENSValidator from '../test/generated-artifacts/ENSValidator.json';
 import * as IChainlinkAggregator from '../test/generated-artifacts/IChainlinkAggregator.json';
+import * as IENS from '../test/generated-artifacts/IENS.json';
+import * as IResolver from '../test/generated-artifacts/IResolver.json';
 import * as TestChainlinkAggregator from '../test/generated-artifacts/TestChainlinkAggregator.json';
 import * as TestContractWrapper from '../test/generated-artifacts/TestContractWrapper.json';
 import * as TestDydxUser from '../test/generated-artifacts/TestDydxUser.json';
@@ -20,7 +23,10 @@ import * as TestUniswapExchange from '../test/generated-artifacts/TestUniswapExc
 import * as TestUniswapExchangeFactory from '../test/generated-artifacts/TestUniswapExchangeFactory.json';
 export const artifacts = {
     ChainlinkStopLimit: ChainlinkStopLimit as ContractArtifact,
+    ENSValidator: ENSValidator as ContractArtifact,
     IChainlinkAggregator: IChainlinkAggregator as ContractArtifact,
+    IENS: IENS as ContractArtifact,
+    IResolver: IResolver as ContractArtifact,
     TestChainlinkAggregator: TestChainlinkAggregator as ContractArtifact,
     TestContractWrapper: TestContractWrapper as ContractArtifact,
     TestDydxUser: TestDydxUser as ContractArtifact,
