@@ -4,7 +4,11 @@
         "changes": [
             {
                 "note": "Allow an empty override for sampler overrides",
-                "pr": 2635
+                "pr": 2637
+            },
+            {
+                "note": "Potentially heavy CPU functions inside the optimizer now yield to the event loop. As such they are now async.",
+                "pr": 2637
             }
         ]
     },
