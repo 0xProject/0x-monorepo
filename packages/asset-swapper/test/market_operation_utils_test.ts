@@ -21,7 +21,7 @@ import { createFillPaths } from '../src/utils/market_operation_utils/fills';
 import { DexOrderSampler } from '../src/utils/market_operation_utils/sampler';
 import { DexSample, ERC20BridgeSource, FillData, NativeFillData } from '../src/utils/market_operation_utils/types';
 
-// tslint:disable: custom-no-magic-numbers
+// tslint:disable: custom-no-magic-numbers promise-function-async
 describe('MarketOperationUtils tests', () => {
     const CHAIN_ID = 1;
     const contractAddresses = { ...getContractAddressesForChainOrThrow(CHAIN_ID), multiBridge: NULL_ADDRESS };
@@ -153,7 +153,7 @@ describe('MarketOperationUtils tests', () => {
         fillAmounts: BigNumber[],
         wethAddress: string,
         liquidityProviderAddress?: string,
-    ) => DexSample[][];
+    ) => Promise<DexSample[][]>;
 
     function createGetMultipleSellQuotesOperationFromRates(rates: RatesBySource): GetMultipleQuotesOperation {
         return (
@@ -163,7 +163,7 @@ describe('MarketOperationUtils tests', () => {
             fillAmounts: BigNumber[],
             _wethAddress: string,
         ) => {
-            return sources.map(s => createSamplesFromRates(s, fillAmounts, rates[s]));
+            return Promise.resolve(sources.map(s => createSamplesFromRates(s, fillAmounts, rates[s])));
         };
     }
 
@@ -206,7 +206,9 @@ describe('MarketOperationUtils tests', () => {
             fillAmounts: BigNumber[],
             _wethAddress: string,
         ) => {
-            return sources.map(s => createSamplesFromRates(s, fillAmounts, rates[s].map(r => new BigNumber(1).div(r))));
+            return Promise.resolve(
+                sources.map(s => createSamplesFromRates(s, fillAmounts, rates[s].map(r => new BigNumber(1).div(r)))),
+            );
         };
     }
 

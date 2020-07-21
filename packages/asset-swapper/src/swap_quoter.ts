@@ -26,6 +26,7 @@ import { calculateLiquidity } from './utils/calculate_liquidity';
 import { MarketOperationUtils } from './utils/market_operation_utils';
 import { createDummyOrderForSampler } from './utils/market_operation_utils/orders';
 import { DexOrderSampler } from './utils/market_operation_utils/sampler';
+import { ERC20BridgeSource } from './utils/market_operation_utils/types';
 import { orderPrunerUtils } from './utils/order_prune_utils';
 import { OrderStateUtils } from './utils/order_state_utils';
 import { ProtocolFeeUtils } from './utils/protocol_fee_utils';
@@ -193,8 +194,7 @@ export class SwapQuoter {
                   [this._contractAddresses.erc20BridgeSampler]: { code: samplerBytecode },
               }
             : {};
-        const samplerOverrides = _.merge(
-            {},
+        const samplerOverrides = _.assign(
             { block: BlockParamLiteral.Latest, overrides: defaultCodeOverrides },
             options.samplerOverrides,
         );
@@ -563,7 +563,12 @@ export class SwapQuoter {
         }
         // get batches of orders from different sources, awaiting sources in parallel
         const orderBatchPromises: Array<Promise<SignedOrder[]>> = [];
-        orderBatchPromises.push(this._getSignedOrdersAsync(makerAssetData, takerAssetData)); // order book
+        orderBatchPromises.push(
+            // Don't fetch from the DB if Native has been excluded
+            opts.excludedSources.includes(ERC20BridgeSource.Native)
+                ? Promise.resolve([])
+                : this._getSignedOrdersAsync(makerAssetData, takerAssetData),
+        );
         if (
             opts.rfqt &&
             opts.rfqt.intentOnFilling &&
