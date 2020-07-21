@@ -256,16 +256,14 @@ export interface SourceQuoteOperation<TFillData extends FillData = FillData> ext
     fillData?: TFillData;
 }
 
-/**
- * Used in the ERC20BridgeSampler when a source does not natively
- * support sampling via a specific buy amount.
- */
-export interface FakeBuyOpts {
-    targetSlippageBps: BigNumber;
-    maxIterations: BigNumber;
-}
-
 export interface OptimizedOrdersAndQuoteReport {
     optimizedOrders: OptimizedMarketOrder[];
     quoteReport: QuoteReport;
+}
+
+export type MarketDepthSide = Array<Array<DexSample<FillData>>>;
+
+export interface MarketDepth {
+    bids: MarketDepthSide;
+    asks: MarketDepthSide;
 }

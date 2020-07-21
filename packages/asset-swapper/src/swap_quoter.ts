@@ -27,7 +27,7 @@ import { calculateLiquidity } from './utils/calculate_liquidity';
 import { MarketOperationUtils } from './utils/market_operation_utils';
 import { createDummyOrderForSampler } from './utils/market_operation_utils/orders';
 import { DexOrderSampler } from './utils/market_operation_utils/sampler';
-import { ERC20BridgeSource } from './utils/market_operation_utils/types';
+import { ERC20BridgeSource, MarketDepth } from './utils/market_operation_utils/types';
 import { orderPrunerUtils } from './utils/order_prune_utils';
 import { OrderStateUtils } from './utils/order_state_utils';
 import { ProtocolFeeUtils } from './utils/protocol_fee_utils';
@@ -391,6 +391,41 @@ export class SwapQuoter {
             takerAssetData,
         );
         return calculateLiquidity(ordersWithFillableAmounts);
+    }
+
+    /**
+     * Returns the bids and asks liquidity for the entire market.
+     * For certain sources (like AMM's) it is recommended to provide a practical maximum takerAssetAmount.
+     * @param   makerTokenAddress The address of the maker asset
+     * @param   takerTokenAddress The address of the taker asset
+     * @param   takerAssetAmount  The amount to sell and buy for the bids and asks.
+     *
+     * @return  An object that conforms to MarketDepth that contains all of the samples and liquidity
+     *          information for the source.
+     */
+    public async getBidAskLiquidityForMakerTakerAssetPairAsync(
+        makerTokenAddress: string,
+        takerTokenAddress: string,
+        takerAssetAmount: BigNumber,
+        options: Partial<SwapQuoteRequestOpts> = {},
+    ): Promise<MarketDepth> {
+        assert.isString('makerTokenAddress', makerTokenAddress);
+        assert.isString('takerTokenAddress', takerTokenAddress);
+        const makerAssetData = assetDataUtils.encodeERC20AssetData(makerTokenAddress);
+        const takerAssetData = assetDataUtils.encodeERC20AssetData(takerTokenAddress);
+        const [sellOrders, buyOrders] =
+            options.excludedSources && options.excludedSources.includes(ERC20BridgeSource.Native)
+                ? Promise.resolve([[], []])
+                : await Promise.all([
+                      this.orderbook.getOrdersAsync(makerAssetData, takerAssetData),
+                      this.orderbook.getOrdersAsync(takerAssetData, makerAssetData),
+                  ]);
+        return this._marketOperationUtils.getMarketDepthAsync(
+            sellOrders.map(o => o.order),
+            buyOrders.map(o => o.order),
+            takerAssetAmount,
+            options,
+        );
     }
 
     /**

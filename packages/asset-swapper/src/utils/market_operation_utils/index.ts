@@ -24,7 +24,10 @@ import {
     DexSample,
     ERC20BridgeSource,
     FeeSchedule,
+    FillData,
     GetMarketOrdersOpts,
+    MarketDepth,
+    MarketDepthSide,
     OptimizedMarketOrder,
     OptimizedOrdersAndQuoteReport,
     OrderDomain,
@@ -375,6 +378,104 @@ export class MarketOperationUtils {
                 }
             }),
         );
+    }
+
+    public async getMarketDepthAsync(
+        sellOrders: SignedOrder[],
+        buyOrders: SignedOrder[],
+        sellAmount: BigNumber,
+        opts?: Partial<GetMarketOrdersOpts>,
+    ): Promise<MarketDepth> {
+        if (sellOrders.length === 0) {
+            throw new Error(AggregationError.EmptyOrders);
+        }
+        const _opts = { ...DEFAULT_GET_MARKET_ORDERS_OPTS, ...opts };
+        const [makerToken, takerToken] = getNativeOrderTokens(sellOrders[0]);
+        const sampleAmounts = getSampleAmounts(sellAmount, _opts.numSamples, _opts.sampleDistributionBase);
+
+        // Call the sampler contract.
+        const samplerPromise = this._sampler.executeAsync(
+            // Get native order fillable amounts.
+            DexOrderSampler.ops.getOrderFillableTakerAmounts(sellOrders, this.contractAddresses.devUtils),
+            DexOrderSampler.ops.getOrderFillableTakerAmounts(buyOrders, this.contractAddresses.devUtils),
+            await DexOrderSampler.ops.getSellQuotesAsync(
+                difference(
+                    SELL_SOURCES.concat(this._optionalSources()),
+                    _opts.excludedSources.concat(ERC20BridgeSource.Balancer),
+                ),
+                makerToken,
+                takerToken,
+                sampleAmounts,
+                this._wethAddress,
+                this._sampler.balancerPoolsCache,
+                this._liquidityProviderRegistry,
+                this._multiBridge,
+            ),
+            await DexOrderSampler.ops.getBuyQuotesAsync(
+                difference(
+                    BUY_SOURCES.concat(this._optionalSources()),
+                    _opts.excludedSources.concat(ERC20BridgeSource.Balancer),
+                ),
+                takerToken,
+                makerToken,
+                sampleAmounts,
+                this._wethAddress,
+                this._sampler.balancerPoolsCache,
+                this._liquidityProviderRegistry,
+            ),
+        );
+        const balancerSellPromise = DexOrderSampler.ops
+            .getSellQuotesAsync(
+                difference([ERC20BridgeSource.Balancer], _opts.excludedSources),
+                makerToken,
+                takerToken,
+                sampleAmounts,
+                this._wethAddress,
+                this._sampler.balancerPoolsCache,
+                this._liquidityProviderRegistry,
+                this._multiBridge,
+            )
+            .then(async result => this._sampler.executeAsync(result));
+        const balancerBuyPromise = DexOrderSampler.ops
+            .getBuyQuotesAsync(
+                difference([ERC20BridgeSource.Balancer], _opts.excludedSources),
+                takerToken,
+                makerToken,
+                sampleAmounts,
+                this._wethAddress,
+                this._sampler.balancerPoolsCache,
+                this._liquidityProviderRegistry,
+            )
+            .then(async result => this._sampler.executeAsync(result));
+
+        const [
+            [sellOrderFillableAmounts, buyOrderFillableAmounts, dexSellQuotes, dexBuyQuotes],
+            [balancerSellQuotes],
+            [balancerBuyQuotes],
+        ] = await Promise.all([samplerPromise, balancerSellPromise, balancerBuyPromise]);
+        // TODO RFQT is currently missing here
+        const getMarketDepthSide = (
+            dexQuotes: Array<Array<DexSample<FillData>>>,
+            nativeOrders: SignedOrder[],
+            orderFillableAmounts: BigNumber[],
+        ): MarketDepthSide => {
+            return [
+                ...dexQuotes,
+                nativeOrders
+                    .sort((a, b) => a.takerAssetAmount.comparedTo(b.takerAssetAmount))
+                    .map(o => ({
+                        input: o.takerAssetAmount,
+                        output: o.makerAssetAmount,
+                        fillData: o,
+                        source: ERC20BridgeSource.Native,
+                    })),
+            ];
+        };
+
+        return {
+            bids: getMarketDepthSide([...dexBuyQuotes, ...balancerBuyQuotes], buyOrders, buyOrderFillableAmounts),
+            asks: getMarketDepthSide([...dexSellQuotes, ...balancerSellQuotes], sellOrders, sellOrderFillableAmounts),
+        };
     }
 
     private async _generateOptimizedOrdersAsync(opts: {
