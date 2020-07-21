@@ -1,4 +1,4 @@
-import { BigNumber } from '@0x/utils';
+import { BigNumber, hexUtils } from '@0x/utils';
 
 import { MarketOperation, SignedOrderWithFillableAmounts } from '../../types';
 import { fillableAmountsUtils } from '../../utils/fillable_amounts_utils';
@@ -56,6 +56,7 @@ function nativeOrdersToPath(
     ethToOutputRate: BigNumber,
     fees: FeeSchedule,
 ): Fill[] {
+    const sourcePathId = hexUtils.random();
     // Create a single path from all orders.
     let path: Fill[] = [];
     for (const order of orders) {
@@ -84,6 +85,7 @@ function nativeOrdersToPath(
             continue;
         }
         path.push({
+            sourcePathId,
             input: clippedInput,
             output: clippedOutput,
             rate,
@@ -114,6 +116,7 @@ function dexQuotesToPaths(
 ): Fill[][] {
     const paths: Fill[][] = [];
     for (let quote of dexQuotes) {
+        const sourcePathId = hexUtils.random();
         const path: Fill[] = [];
         // Drop any non-zero entries. This can occur if the any fills on Kyber were UniswapReserves
         // We need not worry about Kyber fills going to UniswapReserve as the input amount
@@ -136,6 +139,7 @@ function dexQuotesToPaths(
             const adjustedRate = side === MarketOperation.Sell ? adjustedOutput.div(input) : input.div(adjustedOutput);
 
             path.push({
+                sourcePathId,
                 input,
                 output,
                 rate,
@@ -261,35 +265,12 @@ export function collapsePath(path: Fill[]): CollapsedFill[] {
     return collapsed;
 }
 
-export function getFallbackSourcePaths(optimalPath: Fill[], allPaths: Fill[][]): Fill[][] {
-    const optimalSources: ERC20BridgeSource[] = [];
-    for (const fill of optimalPath) {
-        if (!optimalSources.includes(fill.source)) {
-            optimalSources.push(fill.source);
-        }
-    }
-    const fallbackPaths: Fill[][] = [];
-    for (const path of allPaths) {
-        if (optimalSources.includes(path[0].source)) {
-            continue;
-        }
-        // HACK(dorothy-zbornak): We *should* be filtering out paths that
-        // conflict with the optimal path (i.e., Kyber conflicts), but in
-        // practice we often end up not being able to find a fallback path
-        // because we've lost 2 major liquiduty sources. The end result is
-        // we end up with many more reverts than what would be actually caused
-        // by conflicts.
-        fallbackPaths.push(path);
-    }
-    return fallbackPaths;
-}
-
 export function getPathAdjustedRate(side: MarketOperation, path: Fill[], targetInput: BigNumber): BigNumber {
-    const [input, output] = getPathAdjustedSize(path, targetInput);
-    if (input.eq(0) || output.eq(0)) {
+    const [, output] = getPathAdjustedSize(path, targetInput);
+    if (output.eq(0)) {
         return ZERO_AMOUNT;
     }
-    return side === MarketOperation.Sell ? output.div(input) : input.div(output);
+    return side === MarketOperation.Sell ? output.div(targetInput) : targetInput.div(output);
 }
 
 export function getPathAdjustedSlippage(

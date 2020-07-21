@@ -632,15 +632,9 @@ describe('MarketOperationUtils tests', () => {
                     { ...DEFAULT_OPTS, numSamples: 4, allowFallback: true },
                 );
                 const orderSources = improvedOrders.map(o => o.fills[0].source);
-                const firstSources = [
-                    ERC20BridgeSource.Native,
-                    ERC20BridgeSource.Native,
-                    ERC20BridgeSource.Native,
-                    ERC20BridgeSource.Uniswap,
-                ];
-                const secondSources = [ERC20BridgeSource.Eth2Dai, ERC20BridgeSource.Kyber];
-                expect(orderSources.slice(0, firstSources.length).sort()).to.deep.eq(firstSources.sort());
-                expect(orderSources.slice(firstSources.length).sort()).to.deep.eq(secondSources.sort());
+                const firstSources = orderSources.slice(0, 4);
+                const secondSources = orderSources.slice(4);
+                expect(_.intersection(firstSources, secondSources)).to.be.length(0);
             });
 
             it('does not create a fallback if below maxFallbackSlippage', async () => {
@@ -745,9 +739,9 @@ describe('MarketOperationUtils tests', () => {
                 expect(improvedOrders).to.be.length(3);
                 const orderFillSources = improvedOrders.map(o => o.fills.map(f => f.source));
                 expect(orderFillSources).to.deep.eq([
-                    [ERC20BridgeSource.Uniswap],
+                    [ERC20BridgeSource.Uniswap, ERC20BridgeSource.Curve],
                     [ERC20BridgeSource.Native],
-                    [ERC20BridgeSource.Eth2Dai, ERC20BridgeSource.Curve],
+                    [ERC20BridgeSource.Eth2Dai],
                 ]);
             });
         });
@@ -1010,15 +1004,9 @@ describe('MarketOperationUtils tests', () => {
                     { ...DEFAULT_OPTS, numSamples: 4, allowFallback: true },
                 );
                 const orderSources = improvedOrders.map(o => o.fills[0].source);
-                const firstSources = [
-                    ERC20BridgeSource.Native,
-                    ERC20BridgeSource.Native,
-                    ERC20BridgeSource.Native,
-                    ERC20BridgeSource.Uniswap,
-                ];
-                const secondSources = [ERC20BridgeSource.Eth2Dai];
-                expect(orderSources.slice(0, firstSources.length).sort()).to.deep.eq(firstSources.sort());
-                expect(orderSources.slice(firstSources.length).sort()).to.deep.eq(secondSources.sort());
+                const firstSources = orderSources.slice(0, 4);
+                const secondSources = orderSources.slice(4);
+                expect(_.intersection(firstSources, secondSources)).to.be.length(0);
             });
 
             it('does not create a fallback if below maxFallbackSlippage', async () => {
@@ -1062,7 +1050,7 @@ describe('MarketOperationUtils tests', () => {
                 const orderFillSources = improvedOrders.map(o => o.fills.map(f => f.source));
                 expect(orderFillSources).to.deep.eq([
                     [ERC20BridgeSource.Native],
-                    [ERC20BridgeSource.Eth2Dai, ERC20BridgeSource.Uniswap],
+                    [ERC20BridgeSource.Uniswap, ERC20BridgeSource.Eth2Dai],
                 ]);
             });
         });
