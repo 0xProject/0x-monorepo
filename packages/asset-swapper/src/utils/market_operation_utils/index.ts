@@ -136,7 +136,7 @@ export class MarketOperationUtils {
                 this._liquidityProviderRegistry,
                 this._multiBridge,
             )
-            .then(r => this._sampler.executeAsync(r));
+            .then(async r => this._sampler.executeAsync(r));
 
         const [
             [orderFillableAmounts, liquidityProviderAddress, ethToMakerAssetRate, dexQuotes],
