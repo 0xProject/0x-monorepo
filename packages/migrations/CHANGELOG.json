@@ -1,5 +1,14 @@
 [
     {
+        "version": "6.4.1",
+        "changes": [
+            {
+                "note": "Change test protocol fee to 70000.",
+                "pr": 2637
+            }
+        ]
+    },
+    {
         "version": "6.4.0",
         "changes": [
             {
