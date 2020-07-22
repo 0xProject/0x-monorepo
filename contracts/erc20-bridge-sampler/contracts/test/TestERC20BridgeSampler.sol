@@ -244,15 +244,17 @@ contract TestERC20BridgeSamplerUniswapV2Router01 is
 }
 
 
+// solhint-disable space-after-comma
 contract TestERC20BridgeSamplerKyberNetwork is
-    IKyberNetwork,
     DeploymentConstants,
     FailTrigger
 {
     bytes32 constant private SALT = 0x0ff3ca9d46195c39f9a12afb74207b4970349fb3cfb1e459bbf170298d326bc7;
     address constant public ETH_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
-    function kyberNetworkContract()
+    enum TradeType {BestOfAll, MaskIn, MaskOut, Split}
+
+    function kyberNetwork()
         external
         view
         returns (address)
@@ -260,19 +262,91 @@ contract TestERC20BridgeSamplerKyberNetwork is
         return address(this);
     }
 
-    // IKyberNetwork not exposed via IKyberNetworkProxy
-    function searchBestRate(
-        address fromToken,
-        address toToken,
-        uint256 fromAmount,
-        bool  // usePermissionless
+    // IKyberNetwork
+    function getContracts()
+        external
+        view
+        returns (
+            address kyberFeeHandlerAddress,
+            address kyberDaoAddress,
+            address kyberMatchingEngineAddress,
+            address kyberStorageAddress,
+            address gasHelperAddress,
+            address[] memory kyberProxyAddresses
+    )
+    {
+        return (kyberFeeHandlerAddress,
+            kyberDaoAddress,
+            address(this),
+            address(this),
+            gasHelperAddress,
+            kyberProxyAddresses
+        );
+    }
+
+    // IKyberStorage
+    function getReserveIdsPerTokenSrc(
+        address /* token */
     )
         external
         view
-        returns (address reserve, uint256 expectedRate)
+        returns (bytes32[] memory reserveIds)
     {
-        (expectedRate, ) = this.getExpectedRate(fromToken, toToken, fromAmount);
-        return (address(this), expectedRate);
+        return reserveIds;
+    }
+
+    function getReserveId(
+        address /* reserve */
+    )
+        external
+        view
+        returns (bytes32 reserveId)
+    {
+        return reserveId;
+    }
+
+    // IKyberHintHandler
+    function buildTokenToEthHint(
+        address /* tokenSrc */,
+        TradeType /* tokenToEthType */,
+        bytes32[] calldata /* tokenToEthReserveIds */,
+        uint256[] calldata /* tokenToEthSplits */
+    ) external view returns (bytes memory hint)
+    {
+        return hint;
+    }
+
+    function buildEthToTokenHint(
+        address /* tokenDest */,
+        TradeType /* ethToTokenType */,
+        bytes32[] calldata /* ethToTokenReserveIds */,
+        uint256[] calldata /* ethToTokenSplits */
+    ) external view returns (bytes memory hint)
+    {
+        return hint;
+    }
+
+    // Deterministic `IKyberNetworkProxy.getExpectedRateAfterFee()`.
+    function getExpectedRateAfterFee(
+        address fromToken,
+        address toToken,
+        uint256 /* srcQty */,
+        uint256 /* fee */,
+        bytes calldata /* hint */
+    )
+        external
+        view
+        returns
+        (uint256 expectedRate)
+    {
+        _revertIfShouldFail();
+        fromToken = fromToken == ETH_ADDRESS ? _getWethAddress() : fromToken;
+        toToken = toToken == ETH_ADDRESS ? _getWethAddress() : toToken;
+        expectedRate = LibDeterministicQuotes.getDeterministicRate(
+            SALT,
+            fromToken,
+            toToken
+        );
     }
 
     // Deterministic `IKyberNetworkProxy.getExpectedRate()`.
@@ -293,6 +367,14 @@ contract TestERC20BridgeSamplerKyberNetwork is
             fromToken,
             toToken
         );
+    }
+
+    function _getKyberNetworkProxyAddress()
+        internal
+        view
+        returns (address)
+    {
+        return address(this);
     }
 }
 
@@ -381,7 +463,7 @@ contract TestERC20BridgeSampler is
 
     uint8 private constant MAX_ORDER_STATUS = uint8(LibOrder.OrderStatus.CANCELLED) + 1;
 
-    constructor() public ERC20BridgeSampler(address(this)) {
+    constructor() public ERC20BridgeSampler() {
         uniswap = new TestERC20BridgeSamplerUniswapExchangeFactory();
         uniswapV2Router = new TestERC20BridgeSamplerUniswapV2Router01();
         eth2Dai = new TestERC20BridgeSamplerEth2Dai();

@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2019 ZeroEx Intl.
+  Copyright 2020 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -21,14 +21,14 @@ pragma solidity ^0.5.9;
 
 interface IKyberNetworkProxy {
 
-    function kyberNetworkContract() external view returns (address);
+    function kyberNetwork() external view returns (address);
+    function kyberHintHandler() external view returns (address);
 
-    function getExpectedRate(
-        address fromToken,
-        address toToken,
-        uint256 fromAmount
-    )
-        external
-        view
-        returns (uint256 expectedRate, uint256 slippageRate);
+    function getExpectedRateAfterFee(
+        address src,
+        address dest,
+        uint256 srcQty,
+        uint256 platformFeeBps,
+        bytes calldata hint
+    ) external view returns (uint256 expectedRate);
 }

@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.2.1 - _July 15, 2020_
+
+    * Dependencies updated
+
 ## v3.2.0 - _June 24, 2020_
 
     * Add `LibERC20Token.approveIfBelow()` (#2512)

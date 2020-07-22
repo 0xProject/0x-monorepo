@@ -34,11 +34,13 @@ const collapsedFillFromNativeOrder = (order: SignedOrder): NativeCollapsedFill =
         source: ERC20BridgeSource.Native,
         input: order.takerAssetAmount,
         output: order.makerAssetAmount,
-        nativeOrder: {
-            ...order,
-            fillableMakerAssetAmount: new BigNumber(1),
-            fillableTakerAssetAmount: new BigNumber(1),
-            fillableTakerFeeAmount: new BigNumber(1),
+        fillData: {
+            order: {
+                ...order,
+                fillableMakerAssetAmount: new BigNumber(1),
+                fillableTakerAssetAmount: new BigNumber(1),
+                fillableTakerFeeAmount: new BigNumber(1),
+            }
         },
         subFills: [],
     };

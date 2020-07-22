@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.5.1 - _July 15, 2020_
+
+    * Reorganize `DeploymentConstants` addresses (#2628)
+
 ## v4.5.0 - _June 24, 2020_
 
     * Added `GST_ADDRESS` and `GST_COLLECTOR_ADDRESS` (#2523)

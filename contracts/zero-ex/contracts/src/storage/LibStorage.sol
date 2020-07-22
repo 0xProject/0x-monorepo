@@ -34,7 +34,8 @@ library LibStorage {
         SimpleFunctionRegistry,
         Ownable,
         TokenSpender,
-        TransformERC20
+        TransformERC20,
+        MetaTransactions
     }
 
     /// @dev Get the storage slot given a storage ID. We assign unique, well-spaced

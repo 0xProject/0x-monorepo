@@ -16,11 +16,7 @@ import {
 
 import { MarketOperationUtils } from './market_operation_utils';
 import { convertNativeOrderToFullyFillableOptimizedOrders } from './market_operation_utils/orders';
-import {
-    GetMarketOrdersOpts,
-    OptimizedMarketOrder,
-    OptimizedOrdersAndQuoteReport,
-} from './market_operation_utils/types';
+import { FeeSchedule, FillData, GetMarketOrdersOpts, OptimizedMarketOrder, OptimizedOrdersAndQuoteReport } from './market_operation_utils/types';
 import { isSupportedAssetDataInOrders } from './utils';
 
 import { QuoteReport } from './quote_report_generator';
@@ -132,7 +128,9 @@ export class SwapQuoteCalculator {
             // Scale fees by gas price.
             const _opts: GetMarketOrdersOpts = {
                 ...opts,
-                feeSchedule: _.mapValues(opts.feeSchedule, v => v.times(gasPrice)),
+                feeSchedule: _.mapValues(opts.feeSchedule, gasCost => (fillData?: FillData) =>
+                    gasCost === undefined ? 0 : gasPrice.times(gasCost(fillData)),
+                ),
             };
 
             const firstOrderMakerAssetData = !!prunedOrders[0]
@@ -185,7 +183,7 @@ function createSwapQuote(
     operation: MarketOperation,
     assetFillAmount: BigNumber,
     gasPrice: BigNumber,
-    gasSchedule: { [source: string]: number },
+    gasSchedule: FeeSchedule,
     quoteReport?: QuoteReport,
 ): SwapQuote {
     const bestCaseFillResult = simulateBestCaseFill({

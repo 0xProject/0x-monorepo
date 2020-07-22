@@ -1,4 +1,4 @@
-import { ContractAddresses } from '@0x/contract-wrappers';
+import { BlockParam, ContractAddresses, GethCallOverrides } from '@0x/contract-wrappers';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
@@ -220,7 +220,7 @@ export interface SwapQuoteRequestOpts extends CalculateSwapQuoteOpts {
 /**
  * Opts required to generate a SwapQuote with SwapQuoteCalculator
  */
-export interface CalculateSwapQuoteOpts extends GetMarketOrdersOpts {}
+export interface CalculateSwapQuoteOpts extends GetMarketOrdersOpts { }
 
 /**
  * A mapping from RFQ-T quote provider URLs to the trading pairs they support.
@@ -257,6 +257,7 @@ export interface SwapQuoterOpts extends OrderPrunerOpts {
     multiBridgeAddress?: string;
     ethGasStationUrl?: string;
     rfqt?: SwapQuoterRfqtOpts;
+    samplerOverrides?: SamplerOverrides;
 }
 
 /**
@@ -331,4 +332,9 @@ export interface MockedRfqtIndicativeQuoteResponse {
     };
     responseData: any;
     responseCode: number;
+}
+
+export interface SamplerOverrides {
+    overrides: GethCallOverrides;
+    block: BlockParam;
 }

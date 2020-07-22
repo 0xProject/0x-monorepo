@@ -1,4 +1,4 @@
-import { IERC20BridgeSamplerContract } from '@0x/contract-wrappers';
+import { ERC20BridgeSamplerContract } from '@0x/contract-wrappers';
 import { BigNumber } from '@0x/utils';
 
 import { RfqtRequestOpts, SignedOrderWithFillableAmounts } from '../../types';
@@ -30,16 +30,12 @@ export enum ERC20BridgeSource {
     Native = 'Native',
     Uniswap = 'Uniswap',
     UniswapV2 = 'Uniswap_V2',
-    UniswapV2Eth = 'Uniswap_V2_ETH',
     Eth2Dai = 'Eth2Dai',
     Kyber = 'Kyber',
-    CurveUsdcDai = 'Curve_USDC_DAI',
-    CurveUsdcDaiUsdt = 'Curve_USDC_DAI_USDT',
-    CurveUsdcDaiUsdtTusd = 'Curve_USDC_DAI_USDT_TUSD',
-    CurveUsdcDaiUsdtBusd = 'Curve_USDC_DAI_USDT_BUSD',
-    CurveUsdcDaiUsdtSusd = 'Curve_USDC_DAI_USDT_SUSD',
+    Curve = 'Curve',
     LiquidityProvider = 'LiquidityProvider',
     MultiBridge = 'MultiBridge',
+    Balancer = 'Balancer',
 }
 
 // Internal `fillData` field for `Fill` objects.
@@ -50,13 +46,28 @@ export interface NativeFillData extends FillData {
     order: SignedOrderWithFillableAmounts;
 }
 
+export interface CurveFillData extends FillData {
+    poolAddress: string;
+    fromTokenIdx: number;
+    toTokenIdx: number;
+}
+
+export interface BalancerFillData extends FillData {
+    poolAddress: string;
+}
+
+export interface UniswapV2FillData extends FillData {
+    tokenAddressPath: string[];
+}
+
 /**
  * Represents an individual DEX sample from the sampler contract.
  */
-export interface DexSample {
+export interface DexSample<TFillData extends FillData = FillData> {
     source: ERC20BridgeSource;
     input: BigNumber;
     output: BigNumber;
+    fillData?: TFillData;
 }
 
 /**
@@ -72,7 +83,7 @@ export enum FillFlags {
 /**
  * Represents a node on a fill path.
  */
-export interface Fill {
+export interface Fill<TFillData extends FillData = FillData> {
     // See `FillFlags`.
     flags: FillFlags;
     // Input fill amount (taker asset amount in a sell, maker asset amount in a buy).
@@ -93,13 +104,13 @@ export interface Fill {
     source: ERC20BridgeSource;
     // Data associated with this this Fill object. Used to reconstruct orders
     // from paths.
-    fillData?: FillData | NativeFillData;
+    fillData?: TFillData;
 }
 
 /**
  * Represents continguous fills on a path that have been merged together.
  */
-export interface CollapsedFill {
+export interface CollapsedFill<TFillData extends FillData = FillData> {
     /**
      * The source DEX.
      */
@@ -119,14 +130,14 @@ export interface CollapsedFill {
         input: BigNumber;
         output: BigNumber;
     }>;
+
+    fillData?: TFillData;
 }
 
 /**
  * A `CollapsedFill` wrapping a native order.
  */
-export interface NativeCollapsedFill extends CollapsedFill {
-    nativeOrder: SignedOrderWithFillableAmounts;
-}
+export interface NativeCollapsedFill extends CollapsedFill<NativeFillData> {}
 
 /**
  * Optimized orders to fill.
@@ -141,6 +152,9 @@ export interface OptimizedMarketOrder extends SignedOrderWithFillableAmounts {
 export interface GetMarketOrdersRfqtOpts extends RfqtRequestOpts {
     quoteRequestor?: QuoteRequestor;
 }
+
+export type FeeEstimate = (fillData?: FillData) => number | BigNumber;
+export type FeeSchedule = Partial<{ [key in ERC20BridgeSource]: FeeEstimate }>;
 
 /**
  * Options for `getMarketSellOrdersAsync()` and `getMarketBuyOrdersAsync()`.
@@ -185,11 +199,11 @@ export interface GetMarketOrdersOpts {
     /**
      * Fees for each liquidity source, expressed in gas.
      */
-    feeSchedule: { [source: string]: BigNumber };
+    feeSchedule: FeeSchedule;
     /**
      * Estimated gas consumed by each liquidity source.
      */
-    gasSchedule: { [source: string]: number };
+    gasSchedule: FeeSchedule;
     /**
      * Whether to pad the quote with a redundant fallback quote using different
      * sources. Defaults to `true`.
@@ -207,8 +221,13 @@ export interface GetMarketOrdersOpts {
  * A composable operation the be run in `DexOrderSampler.executeAsync()`.
  */
 export interface BatchedOperation<TResult> {
-    encodeCall(contract: IERC20BridgeSamplerContract): string;
-    handleCallResultsAsync(contract: IERC20BridgeSamplerContract, callResults: string): Promise<TResult>;
+    encodeCall(contract: ERC20BridgeSamplerContract): string;
+    handleCallResultsAsync(contract: ERC20BridgeSamplerContract, callResults: string): Promise<TResult>;
+}
+
+export interface SourceQuoteOperation<TFillData extends FillData = FillData> extends BatchedOperation<BigNumber[]> {
+    source: ERC20BridgeSource;
+    fillData?: TFillData;
 }
 
 /**

@@ -5,6 +5,15 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.7.1 - _July 15, 2020_
+
+    * Dependencies updated
+
+## v3.7.0 - _Invalid date_
+
+    * Provide devUtils address as a function parameter in ERC20BridgeSampler (#2629)
+    * Remove devUtils address from ERC20BridgeSampler constructor (#2629)
+
 ## v3.7.0 - _June 24, 2020_
 
     * Added `MaximumGasPrice` artifact (#2511)

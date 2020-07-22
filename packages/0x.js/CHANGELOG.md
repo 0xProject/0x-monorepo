@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v9.2.0 - _July 15, 2020_
+
+    * Export `GethCallOverrides` type (#2620)
+    * Export `ExchangeProxyMetaTransaction` and `SignedExchangeProxyMetaTransaction` (#2610)
+
 ## v9.1.6 - _June 24, 2020_
 
     * Dependencies updated

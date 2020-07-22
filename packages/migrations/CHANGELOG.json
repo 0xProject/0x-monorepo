@@ -9,8 +9,13 @@
             {
                 "note": "Add affiliate fee transformer migration and flash wallet address",
                 "pr": 2622
+            },
+            {
+                "note": "Add BalancerBridge to returned object in `migration.ts`",
+                "pr": 2613
             }
-        ]
+        ],
+        "timestamp": 1594788383
     },
     {
         "version": "6.3.0",

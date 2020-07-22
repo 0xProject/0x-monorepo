@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.5.1 - _July 15, 2020_
+
+    * Dependencies updated
+
 ## v5.5.0 - _June 24, 2020_
 
     * Add `ZeroExRevertErrors` (#2540)
@@ -14,6 +18,7 @@ CHANGELOG
     * Add more `ZeroExRevertErrors` (#2545)
     * Add more `ZeroExRevertErrors` (#2576)
     * Update `ZeroExRevertErrors` (#2597)
+    * Add more revert errors to `ZeroExRevertErrors` (#2610)
 
 ## v5.4.1 - _February 25, 2020_
 

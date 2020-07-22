@@ -9,8 +9,29 @@
             {
                 "note": "Add EP flash wallet and affiliate fee transformer",
                 "pr": 2622
+            },
+            {
+                "note": "Update DFB addresses",
+                "pr": 2616
+            },
+            {
+                "note": "Deploy FQT from PR 2608",
+                "pr": 2625
+            },
+            {
+                "note": "Redeploy DFB on kovan",
+                "pr": 2628
+            },
+            {
+                "note": "Update ganache snapshot Exchange Proxy addresses for MetaTransactions",
+                "pr": 2610
+            },
+            {
+                "note": "Add BalancerBridge addresses",
+                "pr": 2613
             }
-        ]
+        ],
+        "timestamp": 1594788383
     },
     {
         "version": "4.10.0",

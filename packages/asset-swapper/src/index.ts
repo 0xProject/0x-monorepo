@@ -12,15 +12,18 @@ export {
     SRAPollingOrderProviderOpts,
     SRAWebsocketOrderProviderOpts,
 } from '@0x/orderbook';
-export { RFQTIndicativeQuote, RFQTFirmQuote } from '@0x/quote-server';
+export { RFQTFirmQuote, RFQTIndicativeQuote } from '@0x/quote-server';
 export { APIOrder, Asset, AssetPairsItem, SignedOrder } from '@0x/types';
 export { BigNumber } from '@0x/utils';
 export {
+    BlockParam,
+    BlockParamLiteral,
     DataItem,
     EIP1193Event,
     EIP1193Provider,
     EventParameter,
     GanacheProvider,
+    GethCallOverrides,
     JSONRPCErrorCallback,
     JSONRPCRequestPayload,
     JSONRPCResponseError,
@@ -38,6 +41,7 @@ export { SwapQuoteConsumer } from './quote_consumers/swap_quote_consumer';
 export { SwapQuoter } from './swap_quoter';
 export {
     CalldataInfo,
+    ExchangeProxyContractOpts,
     ExtensionContractType,
     ForwarderExtensionContractOpts,
     GetExtensionContractTypeOpts,
@@ -49,30 +53,35 @@ export {
     MockedRfqtFirmQuoteResponse,
     RfqtMakerAssetOfferings,
     RfqtRequestOpts,
+    SamplerOverrides,
+    SignedOrderWithFillableAmounts,
     SwapQuote,
     SwapQuoteConsumerBase,
+    SwapQuoteConsumerError,
     SwapQuoteConsumerOpts,
     SwapQuoteExecutionOpts,
     SwapQuoteGetOutputOpts,
     SwapQuoteInfo,
+    SwapQuoteOrdersBreakdown,
     SwapQuoteRequestOpts,
     SwapQuoterError,
     SwapQuoterOpts,
-    SwapQuoteConsumerError,
-    SwapQuoterRfqtOpts,
-    SignedOrderWithFillableAmounts,
-    SwapQuoteOrdersBreakdown,
-    ExchangeProxyContractOpts,
 } from './types';
 import { ERC20BridgeSource } from './utils/market_operation_utils/types';
-export {
-    ERC20BridgeSource,
-    CollapsedFill,
-    NativeCollapsedFill,
-    OptimizedMarketOrder,
-    GetMarketOrdersRfqtOpts,
-} from './utils/market_operation_utils/types';
 export { affiliateFeeUtils } from './utils/affiliate_fee_utils';
+export {
+    BalancerFillData,
+    CollapsedFill,
+    CurveFillData,
+    ERC20BridgeSource,
+    FeeSchedule,
+    FillData,
+    GetMarketOrdersRfqtOpts,
+    NativeCollapsedFill,
+    NativeFillData,
+    OptimizedMarketOrder,
+    UniswapV2FillData,
+} from './utils/market_operation_utils/types';
 export { ProtocolFeeUtils } from './utils/protocol_fee_utils';
 export { QuoteRequestor } from './utils/quote_requestor';
 export { rfqtMocker } from './utils/rfqt_mocker';

@@ -34,8 +34,25 @@
             {
                 "note": "\"Fix\" forwarder buys of low decimal tokens.",
                 "pr": 2618
+            },
+            {
+                "note": "Add Balancer support",
+                "pr": 2613
+            },
+            {
+                "note": "Consolidate UniswapV2 sources, Curve sources in `ERC20BridgeSource` enum",
+                "pr": 2613
+            },
+            {
+                "note": "Change gas/fee schedule values from constants to functions returning numbers",
+                "pr": 2613
+            },
+            {
+                "note": "Specify overrides to the ERC20Sampler contract, by default the latest bytecode is the override",
+                "pr": 2629
             }
-        ]
+        ],
+        "timestamp": 1594788383
     },
     {
         "version": "4.5.0",

@@ -1,5 +1,19 @@
 [
     {
+        "version": "3.4.0",
+        "changes": [
+            {
+                "note": "Fix instability with DFB.",
+                "pr": 2616
+            },
+            {
+                "note": "Add `BalancerBridge`",
+                "pr": 2613
+            }
+        ],
+        "timestamp": 1594788383
+    },
+    {
         "version": "3.3.0",
         "changes": [
             {

@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.1.0 - _July 15, 2020_
+
+    * Add geth eth_call properties to `CallData` (#2620)
+
 ## v5.0.8 - _June 24, 2020_
 
     * Dependencies updated

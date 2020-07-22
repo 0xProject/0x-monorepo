@@ -49,7 +49,8 @@
                         "name": "orders",
                         "type": "tuple[]"
                     },
-                    { "internalType": "bytes[]", "name": "orderSignatures", "type": "bytes[]" }
+                    { "internalType": "bytes[]", "name": "orderSignatures", "type": "bytes[]" },
+                    { "internalType": "address", "name": "devUtilsAddress", "type": "address" }
                 ],
                 "name": "getOrderFillableMakerAssetAmounts",
                 "outputs": [
@@ -83,7 +84,8 @@
                         "name": "orders",
                         "type": "tuple[]"
                     },
-                    { "internalType": "bytes[]", "name": "orderSignatures", "type": "bytes[]" }
+                    { "internalType": "bytes[]", "name": "orderSignatures", "type": "bytes[]" },
+                    { "internalType": "address", "name": "devUtilsAddress", "type": "address" }
                 ],
                 "name": "getOrderFillableTakerAssetAmounts",
                 "outputs": [
@@ -300,17 +302,19 @@
                     },
                     "return": "providerAddress Address of the liquidity provider."
                 },
-                "getOrderFillableMakerAssetAmounts((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],bytes[])": {
+                "getOrderFillableMakerAssetAmounts((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],bytes[],address)": {
                     "details": "Queries the fillable maker asset amounts of native orders.",
                     "params": {
+                        "devUtilsAddress": "Address to the DevUtils contract.",
                         "orderSignatures": "Signatures for each respective order in `orders`.",
                         "orders": "Native orders to query."
                     },
                     "return": "orderFillableMakerAssetAmounts How much maker asset can be filled         by each order in `orders`."
                 },
-                "getOrderFillableTakerAssetAmounts((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],bytes[])": {
+                "getOrderFillableTakerAssetAmounts((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],bytes[],address)": {
                     "details": "Queries the fillable taker asset amounts of native orders.",
                     "params": {
+                        "devUtilsAddress": "Address to the DevUtils contract.",
                         "orderSignatures": "Signatures for each respective order in `orders`.",
                         "orders": "Native orders to query."
                     },

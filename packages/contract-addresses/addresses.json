@@ -31,8 +31,9 @@
         "chainlinkStopLimit": "0xeb27220f95f364e1d9531992c48613f231839f53",
         "curveBridge": "0x6dc7950423ada9f56fb2c93a23edb787f1e29088",
         "maximumGasPrice": "0xe2bfd35306495d11e3c9db0d8de390cda24563cf",
-        "dexForwarderBridge": "0x5591360f8c7640fea5771c9682d6b5ecb776e1f8",
+        "dexForwarderBridge": "0xc47b7094f378e54347e281aab170e8cca69d880a",
         "multiBridge": "0xc03117a8c9bde203f70aa911cb64a7a0df5ba1e1",
+        "balancerBridge": "0xfe01821ca163844203220cd08e4f2b2fb43ae4e4",
         "exchangeProxyGovernor": "0x618f9c67ce7bf1a50afa1e7e0238422601b0ff6e",
         "exchangeProxy": "0xdef1c0ded9bec7f1a1670819833240f027b25eff",
         "exchangeProxyAllowanceTarget": "0xf740b67da229f2f10bcbd38a7979992fcc71b8eb",
@@ -41,7 +42,7 @@
         "transformers": {
             "wethTransformer": "0x7bab5f7299e1ca123bb44eb71e6c89be7e558cc8",
             "payTakerTransformer": "0xe8c07a119452b55eee2f999478aab97f3656d841",
-            "fillQuoteTransformer": "0x9b81a08ef144e7aa4925f7fd77da1e1b3990e59a",
+            "fillQuoteTransformer": "0xbc33dd7a09da8ca943517a0fb786bcf0192f8be2",
             "affiliateFeeTransformer": "0x9d7174f55b50dad2e417bd567ad2da1ae4eef76d"
         }
     },
@@ -79,6 +80,7 @@
         "maximumGasPrice": "0x407b4128e9ecad8769b2332312a9f655cb9f5f3a",
         "dexForwarderBridge": "0x3be8e59038d8c4e8d8776ca40ef2f024bad95ad1",
         "multiBridge": "0x0000000000000000000000000000000000000000",
+        "balancerBridge": "0x47697b44bd89051e93b4d5857ba8e024800a74ac",
         "exchangeProxyGovernor": "0x618f9c67ce7bf1a50afa1e7e0238422601b0ff6e",
         "exchangeProxy": "0xdef1c0ded9bec7f1a1670819833240f027b25eff",
         "exchangeProxyAllowanceTarget": "0xf740b67da229f2f10bcbd38a7979992fcc71b8eb",
@@ -87,7 +89,7 @@
         "transformers": {
             "wethTransformer": "0x7bab5f7299e1ca123bb44eb71e6c89be7e558cc8",
             "payTakerTransformer": "0xe8c07a119452b55eee2f999478aab97f3656d841",
-            "fillQuoteTransformer": "0x9b81a08ef144e7aa4925f7fd77da1e1b3990e59a",
+            "fillQuoteTransformer": "0x43bea7eaca21a14a411274fb365707080ff25f80",
             "affiliateFeeTransformer": "0x9d7174f55b50dad2e417bd567ad2da1ae4eef76d"
         }
     },
@@ -125,6 +127,7 @@
         "maximumGasPrice": "0x47697b44bd89051e93b4d5857ba8e024800a74ac",
         "dexForwarderBridge": "0x0000000000000000000000000000000000000000",
         "multiBridge": "0x0000000000000000000000000000000000000000",
+        "balancerBridge": "0x5d8c9ba74607d2cbc4176882a42d4ace891c1c00",
         "exchangeProxyGovernor": "0x618f9c67ce7bf1a50afa1e7e0238422601b0ff6e",
         "exchangeProxy": "0xdef1c0ded9bec7f1a1670819833240f027b25eff",
         "exchangeProxyAllowanceTarget": "0xf740b67da229f2f10bcbd38a7979992fcc71b8eb",
@@ -133,7 +136,7 @@
         "transformers": {
             "wethTransformer": "0x7bab5f7299e1ca123bb44eb71e6c89be7e558cc8",
             "payTakerTransformer": "0xe8c07a119452b55eee2f999478aab97f3656d841",
-            "fillQuoteTransformer": "0x9b81a08ef144e7aa4925f7fd77da1e1b3990e59a",
+            "fillQuoteTransformer": "0x2013735f6df965494a0fbc292f84dd44debaba3e",
             "affiliateFeeTransformer": "0x9d7174f55b50dad2e417bd567ad2da1ae4eef76d"
         }
     },
@@ -169,8 +172,9 @@
         "chainlinkStopLimit": "0x0000000000000000000000000000000000000000",
         "curveBridge": "0x90c62c91a9f655f4f739e6cee85c84f9ccf47323",
         "maximumGasPrice": "0x67a094cf028221ffdd93fc658f963151d05e2a74",
-        "dexForwarderBridge": "0x6cce442a48ab07635462a40594054f34f44195ff",
+        "dexForwarderBridge": "0xf220eb0b29e18bbc8ebc964e915b7547c7b4de4f",
         "multiBridge": "0x0000000000000000000000000000000000000000",
+        "balancerBridge": "0x407b4128e9ecad8769b2332312a9f655cb9f5f3a",
         "exchangeProxyGovernor": "0x618f9c67ce7bf1a50afa1e7e0238422601b0ff6e",
         "exchangeProxy": "0xdef1c0ded9bec7f1a1670819833240f027b25eff",
         "exchangeProxyAllowanceTarget": "0xf740b67da229f2f10bcbd38a7979992fcc71b8eb",
@@ -179,7 +183,7 @@
         "transformers": {
             "wethTransformer": "0x7bab5f7299e1ca123bb44eb71e6c89be7e558cc8",
             "payTakerTransformer": "0xe8c07a119452b55eee2f999478aab97f3656d841",
-            "fillQuoteTransformer": "0x9b81a08ef144e7aa4925f7fd77da1e1b3990e59a",
+            "fillQuoteTransformer": "0xbc33dd7a09da8ca943517a0fb786bcf0192f8be2",
             "affiliateFeeTransformer": "0x9d7174f55b50dad2e417bd567ad2da1ae4eef76d"
         }
     },
@@ -217,16 +221,17 @@
         "maximumGasPrice": "0x0000000000000000000000000000000000000000",
         "dexForwarderBridge": "0x0000000000000000000000000000000000000000",
         "multiBridge": "0x0000000000000000000000000000000000000000",
+        "balancerBridge": "0x0000000000000000000000000000000000000000",
         "exchangeProxyGovernor": "0x0000000000000000000000000000000000000000",
-        "exchangeProxy": "0x4b8ce0fa221284de4aaa09be3e7bf6193444b786",
-        "exchangeProxyAllowanceTarget": "0xd6724bf180441a89d08ea3aeded2c995180b9a04",
+        "exchangeProxy": "0x2ebb94cc79d7d0f1195300aaf191d118f53292a8",
+        "exchangeProxyAllowanceTarget": "0x3eab3df72fd584b50184ff7d988a0d8f9328c866",
         "exchangeProxyTransformerDeployer": "0x5409ed021d9299bf6814279a6a1411a7e866a631",
-        "exchangeProxyFlashWallet": "0xdec8629610e2f4087bd9cc441d10ca8be0c6f6c5",
+        "exchangeProxyFlashWallet": "0x8362c3ebd90041b30ec45908332e592721642637",
         "transformers": {
-            "wethTransformer": "0xb125995f5a4766c451cd8c34c4f5cac89b724571",
-            "payTakerTransformer": "0x10a736a7b223f1fe1050264249d1abb975741e75",
-            "fillQuoteTransformer": "0x33def1aa867be09809f3a01ce41d5ec1888846c9",
-            "affiliateFeeTransformer": "0xc7124963ab16c33e5bf421d4c0090116622b3074"
+            "wethTransformer": "0x7209185959d7227fb77274e1e88151d7c4c368d3",
+            "payTakerTransformer": "0xc6b0d3c45a6b5092808196cb00df5c357d55e1d5",
+            "fillQuoteTransformer": "0xc7124963ab16c33e5bf421d4c0090116622b3074",
+            "affiliateFeeTransformer": "0x3f16ca81691dab9184cb4606c361d73c4fd2510a"
         }
     }
 }

@@ -44,14 +44,12 @@ contract TokenSpender is
     string public constant override FEATURE_NAME = "TokenSpender";
     /// @dev Version of this feature.
     uint256 public immutable override FEATURE_VERSION = _encodeVersion(1, 0, 0);
-    /// @dev The implementation address of this feature.
-    address private immutable _implementation;
     // solhint-enable
 
     using LibRichErrorsV06 for bytes;
 
-    constructor() public {
-        _implementation = address(this);
+    constructor() public FixinCommon() {
+        // solhint-disable-next-line no-empty-blocks
     }
 
     /// @dev Initialize and register this feature. Should be delegatecalled
@@ -59,14 +57,14 @@ contract TokenSpender is
     /// @param allowanceTarget An `allowanceTarget` instance, configured to have
     ///        the ZeroeEx contract as an authority.
     /// @return success `MIGRATE_SUCCESS` on success.
-    function migrate(IAllowanceTarget allowanceTarget) external returns (bytes4 success) {
+    function migrate(IAllowanceTarget allowanceTarget)
+        external
+        returns (bytes4 success)
+    {
         LibTokenSpenderStorage.getStorage().allowanceTarget = allowanceTarget;
-        ISimpleFunctionRegistry(address(this))
-            .extend(this.getAllowanceTarget.selector, _implementation);
-        ISimpleFunctionRegistry(address(this))
-            .extend(this._spendERC20Tokens.selector, _implementation);
-        ISimpleFunctionRegistry(address(this))
-            .extend(this.getSpendableERC20BalanceOf.selector, _implementation);
+        _registerFeatureFunction(this.getAllowanceTarget.selector);
+        _registerFeatureFunction(this._spendERC20Tokens.selector);
+        _registerFeatureFunction(this.getSpendableERC20BalanceOf.selector);
         return LibMigrate.MIGRATE_SUCCESS;
     }
 

@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.4.0 - _July 15, 2020_
+
+    * Fix instability with DFB. (#2616)
+    * Add `BalancerBridge` (#2613)
+
 ## v3.3.0 - _June 24, 2020_
 
     * Use `LibERC20Token.approveIfBelow()` in DEX bridges for for approvals. (#2512)

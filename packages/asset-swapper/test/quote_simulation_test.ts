@@ -22,7 +22,7 @@ describe('quote_simulation tests', async () => {
     const TAKER_TOKEN = randomAddress();
     const DEFAULT_MAKER_ASSET_DATA = assetDataUtils.encodeERC20AssetData(MAKER_TOKEN);
     const DEFAULT_TAKER_ASSET_DATA = assetDataUtils.encodeERC20AssetData(TAKER_TOKEN);
-    const GAS_SCHEDULE = { [ERC20BridgeSource.Native]: 1 };
+    const GAS_SCHEDULE = { [ERC20BridgeSource.Native]: _.constant(1) };
 
     // Check if two numbers are within `maxError` error rate within each other (default 1 bps).
     function assertRoughlyEquals(n1: BigNumber, n2: BigNumber, maxError: BigNumber | number = 1e-12): void {

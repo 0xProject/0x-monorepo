@@ -1,5 +1,14 @@
 [
     {
+        "timestamp": 1594788383,
+        "version": "5.5.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "5.5.0",
         "changes": [
             {
@@ -29,6 +38,10 @@
             {
                 "note": "Update `ZeroExRevertErrors`",
                 "pr": 2597
+            },
+            {
+                "note": "Add more revert errors to `ZeroExRevertErrors`",
+                "pr": 2610
             }
         ],
         "timestamp": 1592969527

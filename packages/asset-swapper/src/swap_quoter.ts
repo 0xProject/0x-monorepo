@@ -1,10 +1,11 @@
 import { ContractAddresses, getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
-import { DevUtilsContract, IERC20BridgeSamplerContract } from '@0x/contract-wrappers';
+import { ERC20BridgeSampler } from '@0x/contract-artifacts';
+import { DevUtilsContract, ERC20BridgeSamplerContract } from '@0x/contract-wrappers';
 import { schemas } from '@0x/json-schemas';
 import { assetDataUtils, SignedOrder } from '@0x/order-utils';
 import { MeshOrderProviderOpts, Orderbook, SRAPollingOrderProviderOpts } from '@0x/orderbook';
 import { BigNumber, providerUtils } from '@0x/utils';
-import { SupportedProvider, ZeroExProvider } from 'ethereum-types';
+import { BlockParamLiteral, SupportedProvider, ZeroExProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { constants } from './constants';
@@ -175,13 +176,27 @@ export class SwapQuoter {
             options.ethGasStationUrl,
         );
         this._orderStateUtils = new OrderStateUtils(this._devUtilsContract);
-        const sampler = new DexOrderSampler(
-            new IERC20BridgeSamplerContract(this._contractAddresses.erc20BridgeSampler, this.provider, {
+        // Allow the sampler bytecode to be overwritten using geths override functionality
+        const samplerBytecode = _.get(ERC20BridgeSampler, 'compilerOutput.evm.deployedBytecode.object');
+        const defaultCodeOverrides = samplerBytecode
+            ? {
+                [this._contractAddresses.erc20BridgeSampler]: { code: samplerBytecode },
+            }
+            : {};
+        const samplerOverrides = _.merge(
+            {},
+            { block: BlockParamLiteral.Latest, overrides: defaultCodeOverrides },
+            options.samplerOverrides,
+        );
+        const samplerContract = new ERC20BridgeSamplerContract(
+            this._contractAddresses.erc20BridgeSampler,
+            this.provider,
+            {
                 gas: samplerGasLimit,
-            }),
+            },
         );
         this._marketOperationUtils = new MarketOperationUtils(
-            sampler,
+            new DexOrderSampler(samplerContract, samplerOverrides),
             this._contractAddresses,
             {
                 chainId,

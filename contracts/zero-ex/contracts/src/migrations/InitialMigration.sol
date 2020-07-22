@@ -35,36 +35,39 @@ contract InitialMigration {
         Ownable ownable;
     }
 
-    /// @dev The allowed caller of `deploy()`. In production, this would be
+    /// @dev The allowed caller of `initializeZeroEx()`. In production, this would be
     ///      the governor.
-    address public immutable deployer;
+    address public immutable initializeCaller;
     /// @dev The real address of this contract.
     address private immutable _implementation;
 
-    /// @dev Instantiate this contract and set the allowed caller of `deploy()`
-    ///      to `deployer_`.
-    /// @param deployer_ The allowed caller of `deploy()`.
-    constructor(address deployer_) public {
-        deployer = deployer_;
+    /// @dev Instantiate this contract and set the allowed caller of `initializeZeroEx()`
+    ///      to `initializeCaller_`.
+    /// @param initializeCaller_ The allowed caller of `initializeZeroEx()`.
+    constructor(address initializeCaller_) public {
+        initializeCaller = initializeCaller_;
         _implementation = address(this);
     }
 
-    /// @dev Deploy the `ZeroEx` contract with the minimum feature set,
+    /// @dev Initialize the `ZeroEx` contract with the minimum feature set,
     ///      transfers ownership to `owner`, then self-destructs.
-    ///      Only callable by `deployer` set in the contstructor.
+    ///      Only callable by `initializeCaller` set in the contstructor.
     /// @param owner The owner of the contract.
+    /// @param zeroEx The instance of the ZeroEx contract. ZeroEx should
+    ///        been constructed with this contract as the bootstrapper.
     /// @param features Features to bootstrap into the proxy.
-    /// @return zeroEx The deployed and configured `ZeroEx` contract.
-    function deploy(address payable owner, BootstrapFeatures memory features)
+    /// @return _zeroEx The configured ZeroEx contract. Same as the `zeroEx` parameter.
+    function initializeZeroEx(
+        address payable owner,
+        ZeroEx zeroEx,
+        BootstrapFeatures memory features
+    )
         public
         virtual
-        returns (ZeroEx zeroEx)
+        returns (ZeroEx _zeroEx)
     {
-        // Must be called by the allowed deployer.
-        require(msg.sender == deployer, "InitialMigration/INVALID_SENDER");
-
-        // Deploy the ZeroEx contract, setting ourselves as the bootstrapper.
-        zeroEx = new ZeroEx();
+        // Must be called by the allowed initializeCaller.
+        require(msg.sender == initializeCaller, "InitialMigration/INVALID_SENDER");
 
         // Bootstrap the initial feature set.
         IBootstrap(address(zeroEx)).bootstrap(
@@ -75,6 +78,8 @@ contract InitialMigration {
         // Self-destruct. This contract should not hold any funds but we send
         // them to the owner just in case.
         this.die(owner);
+
+        return zeroEx;
     }
 
     /// @dev Sets up the initial state of the `ZeroEx` contract.

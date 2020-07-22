@@ -4,7 +4,6 @@ export {
     deployFullFeaturesAsync,
     initialMigrateAsync,
     fullMigrateAsync,
-    toFeatureAdddresses,
     FullMigrationOpts,
     FullFeatures,
 } from '../../src/migration';

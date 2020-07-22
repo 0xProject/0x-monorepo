@@ -75,14 +75,18 @@ contract DexForwarderBridge is
         freesGasTokensFromCollector
         returns (bytes4 success)
     {
-        require(msg.sender == _getERC20BridgeProxyAddress(), "DexForwarderBridge/SENDER_NOT_AUTHORIZED");
+        require(
+            msg.sender == _getERC20BridgeProxyAddress(),
+            "DexForwarderBridge/SENDER_NOT_AUTHORIZED"
+        );
         TransferFromState memory state;
         (
             state.inputToken,
             state.calls
         ) = abi.decode(bridgeData, (address, BridgeCall[]));
 
-        state.initialInputTokenBalance = IERC20Token(state.inputToken).balanceOf(address(this));
+        state.initialInputTokenBalance =
+            IERC20Token(state.inputToken).balanceOf(address(this));
 
         for (uint256 i = 0; i < state.calls.length; ++i) {
             // Stop if the we've sold all our input tokens.
@@ -122,11 +126,6 @@ contract DexForwarderBridge is
                 );
             }
         }
-        // Revert if we were not able to sell our entire input token balance.
-        require(
-            state.totalInputTokenSold >= state.initialInputTokenBalance,
-            "DexForwarderBridge/INCOMPLETE_FILL"
-        );
         // Always succeed.
         return BRIDGE_SUCCESS;
     }

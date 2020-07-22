@@ -30,6 +30,8 @@ import "./IERC20BridgeSampler.sol";
 import "./IEth2Dai.sol";
 import "./IKyberNetwork.sol";
 import "./IKyberNetworkProxy.sol";
+import "./IKyberStorage.sol";
+import "./IKyberHintHandler.sol";
 import "./IUniswapExchangeQuotes.sol";
 import "./ICurve.sol";
 import "./ILiquidityProvider.sol";
@@ -58,15 +60,11 @@ contract ERC20BridgeSampler is
     /// @dev Default gas limit for liquidity provider calls.
     uint256 constant internal DEFAULT_CALL_GAS = 400e3; // 400k
     /// @dev The Kyber Uniswap Reserve address
-    address constant internal KYBER_UNIWAP_RESERVE = 0x31E085Afd48a1d6e51Cc193153d625e8f0514C7F;
+    address constant internal KYBER_UNISWAP_RESERVE = 0x31E085Afd48a1d6e51Cc193153d625e8f0514C7F;
+    /// @dev The Kyber Uniswap V2 Reserve address
+    address constant internal KYBER_UNISWAPV2_RESERVE = 0x10908C875D865C66f271F5d3949848971c9595C9;
     /// @dev The Kyber Eth2Dai Reserve address
     address constant internal KYBER_ETH2DAI_RESERVE = 0x1E158c0e93c30d24e918Ef83d1e0bE23595C3c0f;
-
-    address private _devUtilsAddress;
-
-    constructor(address devUtilsAddress) public {
-        _devUtilsAddress = devUtilsAddress;
-    }
 
     /// @dev Call multiple public functions on this contract in a single transaction.
     /// @param callDatas ABI-encoded call data for each function call.
@@ -91,18 +89,19 @@ contract ERC20BridgeSampler is
     ///      maker/taker asset amounts (returning 0).
     /// @param orders Native orders to query.
     /// @param orderSignatures Signatures for each respective order in `orders`.
+    /// @param devUtilsAddress Address to the DevUtils contract.
     /// @return orderFillableTakerAssetAmounts How much taker asset can be filled
     ///         by each order in `orders`.
     function getOrderFillableTakerAssetAmounts(
         LibOrder.Order[] memory orders,
-        bytes[] memory orderSignatures
+        bytes[] memory orderSignatures,
+        address devUtilsAddress
     )
         public
         view
         returns (uint256[] memory orderFillableTakerAssetAmounts)
     {
         orderFillableTakerAssetAmounts = new uint256[](orders.length);
-        address devUtilsAddress = _devUtilsAddress;
         for (uint256 i = 0; i != orders.length; i++) {
             // Ignore orders with no signature or empty maker/taker amounts.
             if (orderSignatures[i].length == 0 ||
@@ -149,11 +148,13 @@ contract ERC20BridgeSampler is
     ///      Effectively ignores orders that have empty signatures or
     /// @param orders Native orders to query.
     /// @param orderSignatures Signatures for each respective order in `orders`.
+    /// @param devUtilsAddress Address to the DevUtils contract.
     /// @return orderFillableMakerAssetAmounts How much maker asset can be filled
     ///         by each order in `orders`.
     function getOrderFillableMakerAssetAmounts(
         LibOrder.Order[] memory orders,
-        bytes[] memory orderSignatures
+        bytes[] memory orderSignatures,
+        address devUtilsAddress
     )
         public
         view
@@ -161,7 +162,8 @@ contract ERC20BridgeSampler is
     {
         orderFillableMakerAssetAmounts = getOrderFillableTakerAssetAmounts(
             orders,
-            orderSignatures
+            orderSignatures,
+            devUtilsAddress
         );
         // `orderFillableMakerAssetAmounts` now holds taker asset amounts, so
         // convert them to maker asset amounts.
@@ -196,26 +198,15 @@ contract ERC20BridgeSampler is
         makerTokenAmounts = new uint256[](numSamples);
         address wethAddress = _getWethAddress();
         uint256 value;
-        address reserve;
         for (uint256 i = 0; i < numSamples; i++) {
             if (takerToken == wethAddress || makerToken == wethAddress) {
                 // Direct ETH based trade
-                (value, reserve) = _sampleSellFromKyberNetwork(takerToken, makerToken, takerTokenAmounts[i]);
-                // If this fills on an on-chain reserve we remove it as that can introduce collisions
-                if (reserve == KYBER_UNIWAP_RESERVE || reserve == KYBER_ETH2DAI_RESERVE) {
-                    value = 0;
-                }
+                value = _sampleSellFromKyberNetwork(takerToken, makerToken, takerTokenAmounts[i]);
             } else {
                 // Hop to ETH
-                (value, reserve) = _sampleSellFromKyberNetwork(takerToken, wethAddress, takerTokenAmounts[i]);
+                value = _sampleSellFromKyberNetwork(takerToken, wethAddress, takerTokenAmounts[i]);
                 if (value != 0) {
-                    address otherReserve;
-                    (value, otherReserve) = _sampleSellFromKyberNetwork(wethAddress, makerToken, value);
-                    // If this fills on Eth2Dai it is ok as we queried a different market
-                    // If this fills on Uniswap on both legs then this is a hard collision
-                    if (reserve == KYBER_UNIWAP_RESERVE && reserve == otherReserve) {
-                        value = 0;
-                    }
+                    value = _sampleSellFromKyberNetwork(wethAddress, makerToken, value);
                 }
             }
             makerTokenAmounts[i] = value;
@@ -960,6 +951,25 @@ contract ERC20BridgeSampler is
         }
     }
 
+    function _appendToList(bytes32[] memory list, bytes32 item) private view returns (bytes32[] memory appendedList)
+    {
+        appendedList = new bytes32[](list.length + 1);
+        for (uint256 i = 0; i < list.length; i++) {
+            appendedList[i] = list[i];
+        }
+        appendedList[appendedList.length - 1] = item;
+    }
+
+    function _getKyberAddresses()
+        private
+        view
+        returns (IKyberHintHandler kyberHint, IKyberStorage kyberStorage)
+    {
+        (, , kyberHint, kyberStorage, ,) = IKyberNetwork(
+            IKyberNetworkProxy(_getKyberNetworkProxyAddress()).kyberNetwork()).getContracts();
+        return (IKyberHintHandler(kyberHint), IKyberStorage(kyberStorage));
+    }
+
     function _sampleSellFromKyberNetwork(
         address takerToken,
         address makerToken,
@@ -967,43 +977,67 @@ contract ERC20BridgeSampler is
     )
         private
         view
-        returns (uint256 makerTokenAmount, address reserve)
+        returns (uint256 makerTokenAmount)
     {
-        address _takerToken = takerToken == _getWethAddress() ? KYBER_ETH_ADDRESS : takerToken;
-        address _makerToken = makerToken == _getWethAddress() ? KYBER_ETH_ADDRESS : makerToken;
-        uint256 takerTokenDecimals = _getTokenDecimals(takerToken);
-        uint256 makerTokenDecimals = _getTokenDecimals(makerToken);
-        (bool didSucceed, bytes memory resultData) = _getKyberNetworkProxyAddress().staticcall.gas(DEFAULT_CALL_GAS)(
-            abi.encodeWithSelector(
-                IKyberNetworkProxy(0).kyberNetworkContract.selector
-            ));
-        if (!didSucceed) {
-            return (0, address(0));
+        (IKyberHintHandler kyberHint, IKyberStorage kyberStorage) = _getKyberAddresses();
+        // Ban reserves which can clash with our internal aggregation
+        bytes32[] memory reserveIds = kyberStorage.getReserveIdsPerTokenSrc(
+            takerToken == _getWethAddress() ? makerToken : takerToken
+        );
+        bytes32[] memory bannedReserveIds = new bytes32[](0);
+        // Poor mans resize and append
+        for (uint256 i = 0; i < reserveIds.length; i++) {
+            if (
+                reserveIds[i] == kyberStorage.getReserveId(KYBER_UNISWAP_RESERVE) ||
+                reserveIds[i] == kyberStorage.getReserveId(KYBER_UNISWAPV2_RESERVE) ||
+                reserveIds[i] == kyberStorage.getReserveId(KYBER_ETH2DAI_RESERVE)
+            ) {
+                bannedReserveIds = _appendToList(bannedReserveIds, reserveIds[i]);
+            }
         }
-        address kyberNetworkContract = abi.decode(resultData, (address));
-        (didSucceed, resultData) =
-            kyberNetworkContract.staticcall.gas(KYBER_CALL_GAS)(
+        // Sampler either detects X->ETH/ETH->X
+        // or subsamples as X->ETH-Y. So token->token here is not possible
+        bytes memory hint;
+        if (takerToken == _getWethAddress()) {
+            // ETH -> X
+            hint = kyberHint.buildEthToTokenHint(
+                    makerToken,
+                    IKyberHintHandler.TradeType.MaskOut,
+                    bannedReserveIds,
+                    new uint256[](0));
+        } else {
+            // X->ETH
+            hint = kyberHint.buildEthToTokenHint(
+                    takerToken,
+                    IKyberHintHandler.TradeType.MaskOut,
+                    bannedReserveIds,
+                    new uint256[](0));
+        }
+        (bool didSucceed, bytes memory resultData) =
+            _getKyberNetworkProxyAddress().staticcall.gas(KYBER_CALL_GAS)(
                 abi.encodeWithSelector(
-                    IKyberNetwork(0).searchBestRate.selector,
-                    _takerToken,
-                    _makerToken,
+                    IKyberNetworkProxy(0).getExpectedRateAfterFee.selector,
+                    takerToken == _getWethAddress() ? KYBER_ETH_ADDRESS : takerToken,
+                    makerToken == _getWethAddress() ? KYBER_ETH_ADDRESS : makerToken,
                     takerTokenAmount,
-                    false // usePermissionless
+                    0, // fee
+                    hint
                 ));
         uint256 rate = 0;
-        address reserve;
         if (didSucceed) {
-            (reserve, rate) = abi.decode(resultData, (address, uint256));
+            (rate) = abi.decode(resultData, (uint256));
         } else {
-            return (0, address(0));
+            return 0;
         }
+
+        uint256 makerTokenDecimals = _getTokenDecimals(makerToken);
+        uint256 takerTokenDecimals = _getTokenDecimals(takerToken);
         makerTokenAmount =
             rate *
             takerTokenAmount *
             10 ** makerTokenDecimals /
             10 ** takerTokenDecimals /
             10 ** 18;
-
-        return (makerTokenAmount, reserve);
+        return makerTokenAmount;
     }
 }

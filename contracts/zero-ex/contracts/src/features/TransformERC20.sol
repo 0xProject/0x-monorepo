@@ -52,39 +52,32 @@ contract TransformERC20 is
         uint256 takerOutputTokenBalanceAfter;
     }
 
-    // solhint-disable
     /// @dev Name of this feature.
     string public constant override FEATURE_NAME = "TransformERC20";
     /// @dev Version of this feature.
     uint256 public immutable override FEATURE_VERSION = _encodeVersion(1, 1, 0);
-    /// @dev The implementation address of this feature.
-    address private immutable _implementation;
-    // solhint-enable
 
     using LibSafeMathV06 for uint256;
     using LibRichErrorsV06 for bytes;
 
-    constructor() public {
-        _implementation = address(this);
+    constructor() public FixinCommon() {
+        // solhint-disable-next-line no-empty-blocks
     }
 
     /// @dev Initialize and register this feature.
     ///      Should be delegatecalled by `Migrate.migrate()`.
     /// @param transformerDeployer The trusted deployer for transformers.
     /// @return success `LibMigrate.SUCCESS` on success.
-    function migrate(address transformerDeployer) external returns (bytes4 success) {
-        ISimpleFunctionRegistry(address(this))
-            .extend(this.getTransformerDeployer.selector, _implementation);
-        ISimpleFunctionRegistry(address(this))
-            .extend(this.createTransformWallet.selector, _implementation);
-        ISimpleFunctionRegistry(address(this))
-            .extend(this.getTransformWallet.selector, _implementation);
-        ISimpleFunctionRegistry(address(this))
-            .extend(this.setTransformerDeployer.selector, _implementation);
-        ISimpleFunctionRegistry(address(this))
-            .extend(this.transformERC20.selector, _implementation);
-        ISimpleFunctionRegistry(address(this))
-            .extend(this._transformERC20.selector, _implementation);
+    function migrate(address transformerDeployer)
+        external
+        returns (bytes4 success)
+    {
+        _registerFeatureFunction(this.getTransformerDeployer.selector);
+        _registerFeatureFunction(this.createTransformWallet.selector);
+        _registerFeatureFunction(this.getTransformWallet.selector);
+        _registerFeatureFunction(this.setTransformerDeployer.selector);
+        _registerFeatureFunction(this.transformERC20.selector);
+        _registerFeatureFunction(this._transformERC20.selector);
         this.createTransformWallet();
         LibTransformERC20Storage.getStorage().transformerDeployer = transformerDeployer;
         return LibMigrate.MIGRATE_SUCCESS;
@@ -191,6 +184,7 @@ contract TransformERC20 is
         Transformation[] memory transformations
     )
         public
+        virtual
         override
         payable
         onlySelf

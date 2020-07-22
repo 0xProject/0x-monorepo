@@ -30,7 +30,6 @@ blockchainTests.resets('DexForwarderBridge unit tests', env => {
     const BRIDGE_SUCCESS = '0xdc1600f3';
     const BRIDGE_FAILURE = '0xffffffff';
     const BRIDGE_REVERT_ERROR = 'oopsie';
-    const INCOMPLETE_FILL_REVERT = 'DexForwarderBridge/INCOMPLETE_FILL';
     const NOT_AUTHORIZED_REVERT = 'DexForwarderBridge/SENDER_NOT_AUTHORIZED';
     const DEFAULTS = {
         toAddress: randomAddress(),
@@ -165,27 +164,26 @@ blockchainTests.resets('DexForwarderBridge unit tests', env => {
             await callBridgeTransferFromAsync({ bridgeData, sellAmount: ZERO_AMOUNT });
         });
 
-        it('fails with no bridge calls and an input balance', async () => {
+        it('succeeds with no bridge calls and an input balance', async () => {
             const bridgeData = dexForwarderBridgeDataEncoder.encode({
                 inputToken,
                 calls: [],
             });
-            return expect(callBridgeTransferFromAsync({ bridgeData, sellAmount: new BigNumber(1) })).to.revertWith(
-                INCOMPLETE_FILL_REVERT,
-            );
+            await callBridgeTransferFromAsync({
+                bridgeData,
+                sellAmount: new BigNumber(1),
+            });
         });
 
-        it('fails if entire input token balance is not consumed', async () => {
+        it('succeeds if entire input token balance is not consumed', async () => {
             const bridgeData = dexForwarderBridgeDataEncoder.encode({
                 inputToken,
                 calls: allBridgeCalls,
             });
-            return expect(
-                callBridgeTransferFromAsync({
-                    bridgeData,
-                    sellAmount: totalFillableInputAmount.plus(1),
-                }),
-            ).to.revertWith(INCOMPLETE_FILL_REVERT);
+            await callBridgeTransferFromAsync({
+                bridgeData,
+                sellAmount: totalFillableInputAmount.plus(1),
+            });
         });
 
         it('fails if not authorized', async () => {

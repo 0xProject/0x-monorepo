@@ -36,6 +36,17 @@ export interface QuoteReport {
     sourcesDelivered: QuoteReportSource[];
 }
 
+const nativeOrderFromCollapsedFill = (cf: CollapsedFill): SignedOrder | undefined => {
+    // Cast as NativeCollapsedFill and then check
+    // if it really is a NativeCollapsedFill
+    const possibleNativeCollapsedFill = (cf as NativeCollapsedFill);
+    if (possibleNativeCollapsedFill.fillData && possibleNativeCollapsedFill.fillData.order) {
+        return possibleNativeCollapsedFill.fillData.order;
+    } else {
+        return undefined;
+    }
+};
+
 export class QuoteReportGenerator {
     private readonly _dexQuotes: DexSample[];
     private readonly _nativeOrders: SignedOrder[];
@@ -77,7 +88,7 @@ export class QuoteReportGenerator {
 
         const sourcesConsidered = [...dexReportSourcesConsidered, ...nativeOrderSourcesConsidered];
         const sourcesDelivered = this._collapsedFills.map(collapsedFill => {
-            const foundNativeOrder = (collapsedFill as NativeCollapsedFill).nativeOrder;
+            const foundNativeOrder = nativeOrderFromCollapsedFill(collapsedFill);
             if (foundNativeOrder) {
                 return this._nativeOrderToReportSource(foundNativeOrder);
             } else {

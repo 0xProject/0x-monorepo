@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.1.0 - _July 15, 2020_
+
+    * Make sol-profiler (mostly) work again (#2607)
+
 ## v3.0.4 - _June 24, 2020_
 
     * Dependencies updated

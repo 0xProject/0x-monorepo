@@ -6,7 +6,8 @@
                 "note": "Add geth eth_call properties to `CallData`",
                 "pr": 2620
             }
-        ]
+        ],
+        "timestamp": 1594788383
     },
     {
         "timestamp": 1592969527,

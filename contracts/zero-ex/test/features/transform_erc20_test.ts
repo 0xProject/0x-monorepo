@@ -40,12 +40,12 @@ blockchainTests.resets('TransformERC20 feature', env => {
             env.provider,
             env.txDefaults,
             {
-                transformERC20: await TransformERC20Contract.deployFrom0xArtifactAsync(
+                transformERC20: (await TransformERC20Contract.deployFrom0xArtifactAsync(
                     artifacts.TestTransformERC20,
                     env.provider,
                     env.txDefaults,
                     artifacts,
-                ),
+                )).address,
             },
             { transformerDeployer },
         );

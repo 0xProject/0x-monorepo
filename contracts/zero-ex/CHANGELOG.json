@@ -9,8 +9,13 @@
             {
                 "note": "Export `AffiliateFeeTransformerContract`",
                 "pr": 2622
+            },
+            {
+                "note": "Add `MetaTransactions` and `SignatureValidator` features",
+                "pr": 2610
             }
-        ]
+        ],
+        "timestamp": 1594788383
     },
     {
         "timestamp": 1592969527,

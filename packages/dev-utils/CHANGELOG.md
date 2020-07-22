@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.3.0 - _July 15, 2020_
+
+    * Export `GethCallOverrides` type (#2620)
+
 ## v3.2.2 - _June 24, 2020_
 
     * Dependencies updated

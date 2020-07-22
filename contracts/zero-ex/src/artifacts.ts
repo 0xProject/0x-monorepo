@@ -16,8 +16,10 @@ import * as IOwnable from '../generated-artifacts/IOwnable.json';
 import * as ISimpleFunctionRegistry from '../generated-artifacts/ISimpleFunctionRegistry.json';
 import * as ITokenSpender from '../generated-artifacts/ITokenSpender.json';
 import * as ITransformERC20 from '../generated-artifacts/ITransformERC20.json';
+import * as MetaTransactions from '../generated-artifacts/MetaTransactions.json';
 import * as Ownable from '../generated-artifacts/Ownable.json';
 import * as PayTakerTransformer from '../generated-artifacts/PayTakerTransformer.json';
+import * as SignatureValidator from '../generated-artifacts/SignatureValidator.json';
 import * as SimpleFunctionRegistry from '../generated-artifacts/SimpleFunctionRegistry.json';
 import * as TokenSpender from '../generated-artifacts/TokenSpender.json';
 import * as TransformERC20 from '../generated-artifacts/TransformERC20.json';
@@ -42,4 +44,6 @@ export const artifacts = {
     TransformERC20: TransformERC20 as ContractArtifact,
     TokenSpender: TokenSpender as ContractArtifact,
     AffiliateFeeTransformer: AffiliateFeeTransformer as ContractArtifact,
+    SignatureValidator: SignatureValidator as ContractArtifact,
+    MetaTransactions: MetaTransactions as ContractArtifact,
 };

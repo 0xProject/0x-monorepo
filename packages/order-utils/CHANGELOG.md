@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v10.3.0 - _July 15, 2020_
+
+    * Add ERC20 Transformer utils and export useful constants. (#2604)
+    * Add `getOrderHash()`, `getExchangeTransactionHash()`, `getExchangeProxyTransactionHash()` (#2610)
+
 ## v10.2.5 - _June 24, 2020_
 
     * Dependencies updated

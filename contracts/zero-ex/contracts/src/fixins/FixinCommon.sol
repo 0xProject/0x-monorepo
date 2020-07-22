@@ -23,12 +23,16 @@ import "@0x/contracts-utils/contracts/src/v06/errors/LibRichErrorsV06.sol";
 import "../errors/LibCommonRichErrors.sol";
 import "../errors/LibOwnableRichErrors.sol";
 import "../features/IOwnable.sol";
+import "../features/ISimpleFunctionRegistry.sol";
 
 
 /// @dev Common feature utilities.
-contract FixinCommon {
+abstract contract FixinCommon {
 
     using LibRichErrorsV06 for bytes;
+
+    /// @dev The implementation address of this feature.
+    address internal immutable _implementation;
 
     /// @dev The caller must be this contract.
     modifier onlySelf() virtual {
@@ -50,6 +54,21 @@ contract FixinCommon {
             }
         }
         _;
+    }
+
+    constructor() internal {
+        // Remember this feature's original address.
+        _implementation = address(this);
+    }
+
+    /// @dev Registers a function implemented by this feature at `_implementation`.
+    ///      Can and should only be called within a `migrate()`.
+    /// @param selector The selector of the function whose implementation
+    ///        is at `_implementation`.
+    function _registerFeatureFunction(bytes4 selector)
+        internal
+    {
+        ISimpleFunctionRegistry(address(this)).extend(selector, _implementation);
     }
 
     /// @dev Encode a feature version as a `uint256`.

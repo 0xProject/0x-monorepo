@@ -1,5 +1,6 @@
 export { artifacts } from './artifacts';
 export {
+    BalancerBridgeContract,
     ChaiBridgeContract,
     ERC1155ProxyContract,
     ERC20BridgeProxyContract,

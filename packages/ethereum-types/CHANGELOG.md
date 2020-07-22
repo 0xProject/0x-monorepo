@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.2.0 - _July 15, 2020_
+
+    * Add geth eth_call types (#2620)
+    * Touch this package to fix publish (#2628)
+
 ## v3.1.1 - _June 24, 2020_
 
     * Dependencies updated

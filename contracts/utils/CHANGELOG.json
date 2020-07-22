@@ -1,5 +1,15 @@
 [
     {
+        "version": "4.5.1",
+        "changes": [
+            {
+                "note": "Reorganize `DeploymentConstants` addresses",
+                "pr": 2628
+            }
+        ],
+        "timestamp": 1594788383
+    },
+    {
         "version": "4.5.0",
         "changes": [
             {

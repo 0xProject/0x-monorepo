@@ -1,5 +1,15 @@
 [
     {
+        "version": "4.1.0",
+        "changes": [
+            {
+                "note": "Set `no-non-null-assertion` to false",
+                "pr": 2613
+            }
+        ],
+        "timestamp": 1594788383
+    },
+    {
         "version": "4.0.0",
         "changes": [
             {

@@ -35,19 +35,15 @@ contract SimpleFunctionRegistry is
     ISimpleFunctionRegistry,
     FixinCommon
 {
-    // solhint-disable
     /// @dev Name of this feature.
     string public constant override FEATURE_NAME = "SimpleFunctionRegistry";
     /// @dev Version of this feature.
     uint256 public immutable override FEATURE_VERSION = _encodeVersion(1, 0, 0);
-    /// @dev The deployed address of this contract.
-    address private immutable _implementation;
-    // solhint-enable
 
     using LibRichErrorsV06 for bytes;
 
-    constructor() public {
-        _implementation = address(this);
+    constructor() public FixinCommon() {
+        // solhint-disable-next-line no-empty-blocks
     }
 
     /// @dev Initializes this feature, registering its own functions.

@@ -1,6 +1,9 @@
-import { IERC20BridgeSamplerContract } from '@0x/contract-wrappers';
+import { ERC20BridgeSamplerContract } from '@0x/contract-wrappers';
 import { BigNumber } from '@0x/utils';
 
+import { SamplerOverrides } from '../../types';
+
+import { BalancerPoolsCache } from './balancer_utils';
 import { samplerOperations } from './sampler_operations';
 import { BatchedOperation } from './types';
 
@@ -11,6 +14,9 @@ export function getSampleAmounts(maxFillAmount: BigNumber, numSamples: number, e
     const distribution = [...Array<BigNumber>(numSamples)].map((_v, i) => new BigNumber(expBase).pow(i));
     const stepSizes = distribution.map(d => d.div(BigNumber.sum(...distribution)));
     const amounts = stepSizes.map((_s, i) => {
+        if (i === numSamples - 1) {
+            return maxFillAmount;
+        }
         return maxFillAmount
             .times(BigNumber.sum(...[0, ...stepSizes.slice(0, i + 1)]))
             .integerValue(BigNumber.ROUND_UP);
@@ -29,11 +35,12 @@ export class DexOrderSampler {
      * for use with `DexOrderSampler.executeAsync()`.
      */
     public static ops = samplerOperations;
-    private readonly _samplerContract: IERC20BridgeSamplerContract;
 
-    constructor(samplerContract: IERC20BridgeSamplerContract) {
-        this._samplerContract = samplerContract;
-    }
+    constructor(
+        private readonly _samplerContract: ERC20BridgeSamplerContract,
+        private readonly _samplerOverrides?: SamplerOverrides,
+        public balancerPoolsCache: BalancerPoolsCache = new BalancerPoolsCache(),
+    ) {}
 
     /* Type overloads for `executeAsync()`. Could skip this if we would upgrade TS. */
 
@@ -134,8 +141,13 @@ export class DexOrderSampler {
      */
     public async executeBatchAsync<T extends Array<BatchedOperation<any>>>(ops: T): Promise<any[]> {
         const callDatas = ops.map(o => o.encodeCall(this._samplerContract));
+        const { overrides, block } = this._samplerOverrides
+            ? this._samplerOverrides
+            : { overrides: undefined, block: undefined };
         // Execute all non-empty calldatas.
-        const rawCallResults = await this._samplerContract.batchCall(callDatas.filter(cd => cd !== '0x')).callAsync();
+        const rawCallResults = await this._samplerContract
+            .batchCall(callDatas.filter(cd => cd !== '0x'))
+            .callAsync({ overrides }, block);
         // Return the parsed results.
         let rawCallResultsIdx = 0;
         return Promise.all(

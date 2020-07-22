@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.1.1 - _July 15, 2020_
+
+    * Dependencies updated
+
 ## v4.1.0 - _June 24, 2020_
 
     * Refactor + add solidity 0.6 support (#2532)

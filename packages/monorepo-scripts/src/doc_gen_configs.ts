@@ -24,6 +24,8 @@ export const docGenConfigs: DocGenConfigs = {
         // HACK: Asset-swapper specifies marketSell and marketBuy quotes with a descriminant MarketOperation Type to ignore the error, linking Buy and Sell to MarketOperation
         Buy: true,
         Sell: true,
+        // HACK: Asset-swapper specifies TFillData as any type that extends FillData
+        TFillData: true,
         IterableIterator: true,
         Set: true,
         Exclude: true,

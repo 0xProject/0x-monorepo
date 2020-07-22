@@ -1,5 +1,15 @@
 [
     {
+        "version": "2.6.0",
+        "changes": [
+            {
+                "note": "Add `BalancerBridge` mainnet tests",
+                "pr": 2613
+            }
+        ],
+        "timestamp": 1594788383
+    },
+    {
         "version": "2.5.2",
         "changes": [
             {

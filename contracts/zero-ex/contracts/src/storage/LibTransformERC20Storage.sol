@@ -23,7 +23,7 @@ import "./LibStorage.sol";
 import "../external/IFlashWallet.sol";
 
 
-/// @dev Storage helpers for the `TokenSpender` feature.
+/// @dev Storage helpers for the `TransformERC20` feature.
 library LibTransformERC20Storage {
 
     /// @dev Storage bucket for this feature.
