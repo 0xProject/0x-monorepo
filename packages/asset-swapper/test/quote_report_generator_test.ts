@@ -40,7 +40,7 @@ const collapsedFillFromNativeOrder = (order: SignedOrder): NativeCollapsedFill =
                 fillableMakerAssetAmount: new BigNumber(1),
                 fillableTakerAssetAmount: new BigNumber(1),
                 fillableTakerFeeAmount: new BigNumber(1),
-            }
+            },
         },
         subFills: [],
     };

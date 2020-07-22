@@ -39,7 +39,7 @@ export interface QuoteReport {
 const nativeOrderFromCollapsedFill = (cf: CollapsedFill): SignedOrder | undefined => {
     // Cast as NativeCollapsedFill and then check
     // if it really is a NativeCollapsedFill
-    const possibleNativeCollapsedFill = (cf as NativeCollapsedFill);
+    const possibleNativeCollapsedFill = cf as NativeCollapsedFill;
     if (possibleNativeCollapsedFill.fillData && possibleNativeCollapsedFill.fillData.order) {
         return possibleNativeCollapsedFill.fillData.order;
     } else {
