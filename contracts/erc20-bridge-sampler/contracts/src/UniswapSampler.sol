@@ -35,8 +35,6 @@ contract UniswapSampler is
 {
     /// @dev Gas limit for Uniswap calls.
     uint256 constant private UNISWAP_CALL_GAS = 150e3; // 150k
-    /// @dev Gas limit for UniswapV2 calls.
-    uint256 constant private UNISWAPV2_CALL_GAS = 150e3; // 150k
 
     /// @dev Sample sell quotes from Uniswap.
     /// @param takerToken Address of the taker token (what to sell).
