@@ -23,7 +23,7 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 const ONE_ETH_IN_WEI = new BigNumber(1000000000000000000);
 const TESTRPC_CHAIN_ID = devConstants.TESTRPC_CHAIN_ID;
 const GAS_PRICE = new BigNumber(devConstants.DEFAULT_GAS_PRICE);
-const PROTOCOL_FEE_MULTIPLIER = 150000;
+const PROTOCOL_FEE_MULTIPLIER = 70000;
 const PROTOCOL_FEE_PER_FILL = GAS_PRICE.times(PROTOCOL_FEE_MULTIPLIER);
 const UNLIMITED_ALLOWANCE_IN_BASE_UNITS = new BigNumber(2).pow(256).minus(1); // tslint:disable-line:custom-no-magic-numbers
 
@@ -51,7 +51,6 @@ describe('OrderStateUtils', () => {
     let makerAssetData: string;
     let takerAssetData: string;
     let orderFactory: OrderFactory;
-    let wethAssetData: string;
     let contractAddresses: ContractAddresses;
     let orderStateUtils: OrderStateUtils;
 
@@ -78,10 +77,9 @@ describe('OrderStateUtils', () => {
         erc20TakerTokenContract = new ERC20TokenContract(takerTokenAddress, provider);
         exchangeContract = new ExchangeContract(contractAddresses.exchange, provider);
 
-        [makerAssetData, takerAssetData, wethAssetData] = [
+        [makerAssetData, takerAssetData] = [
             assetDataUtils.encodeERC20AssetData(makerTokenAddress),
             assetDataUtils.encodeERC20AssetData(takerTokenAddress),
-            assetDataUtils.encodeERC20AssetData(contractAddresses.etherToken),
         ];
 
         // Configure order defaults

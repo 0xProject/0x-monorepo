@@ -27,6 +27,7 @@ import { calculateLiquidity } from './utils/calculate_liquidity';
 import { MarketOperationUtils } from './utils/market_operation_utils';
 import { createDummyOrderForSampler } from './utils/market_operation_utils/orders';
 import { DexOrderSampler } from './utils/market_operation_utils/sampler';
+import { ERC20BridgeSource } from './utils/market_operation_utils/types';
 import { orderPrunerUtils } from './utils/order_prune_utils';
 import { OrderStateUtils } from './utils/order_state_utils';
 import { ProtocolFeeUtils } from './utils/protocol_fee_utils';
@@ -180,11 +181,10 @@ export class SwapQuoter {
         const samplerBytecode = _.get(ERC20BridgeSampler, 'compilerOutput.evm.deployedBytecode.object');
         const defaultCodeOverrides = samplerBytecode
             ? {
-                  [this._contractAddresses.erc20BridgeSampler]: { code: samplerBytecode },
-              }
+                [this._contractAddresses.erc20BridgeSampler]: { code: samplerBytecode },
+            }
             : {};
-        const samplerOverrides = _.merge(
-            {},
+        const samplerOverrides = _.assign(
             { block: BlockParamLiteral.Latest, overrides: defaultCodeOverrides },
             options.samplerOverrides,
         );
@@ -553,7 +553,10 @@ export class SwapQuoter {
         }
         // get batches of orders from different sources, awaiting sources in parallel
         const orderBatchPromises: Array<Promise<SignedOrder[]>> = [];
-        orderBatchPromises.push(this._getSignedOrdersAsync(makerAssetData, takerAssetData)); // order book
+
+        if (!opts.excludedSources.includes(ERC20BridgeSource.Native)) {
+            orderBatchPromises.push(this._getSignedOrdersAsync(makerAssetData, takerAssetData)); // order book
+        }
 
         const rfqtOptions = this._rfqtOptions;
         const quoteRequestor = new QuoteRequestor(
@@ -568,6 +571,7 @@ export class SwapQuoter {
             opts.rfqt.intentOnFilling &&
             opts.rfqt.apiKey &&
             this._isApiKeyWhitelisted(opts.rfqt.apiKey) &&
+            !opts.excludedSources.includes(ERC20BridgeSource.Native) &&
             !(marketOperation === MarketOperation.Buy && this._shouldSkipRfqtBuyRequests())
         ) {
             if (!opts.rfqt.takerAddress || opts.rfqt.takerAddress === constants.NULL_ADDRESS) {

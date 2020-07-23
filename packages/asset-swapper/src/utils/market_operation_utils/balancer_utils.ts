@@ -1,7 +1,6 @@
 import { BigNumber } from '@0x/utils';
 import { bmath, getPoolsWithTokens, parsePoolData } from '@balancer-labs/sor';
 import { Decimal } from 'decimal.js';
-import * as _ from 'lodash';
 
 export interface BalancerPool {
     id: string;
@@ -23,7 +22,7 @@ interface CacheValue {
 // tslint:disable:custom-no-magic-numbers
 const FIVE_SECONDS_MS = 5 * 1000;
 const DEFAULT_TIMEOUT_MS = 1000;
-const MAX_POOLS_FETCHED = 3;
+const MAX_POOLS_FETCHED = 2;
 const Decimal20 = Decimal.clone({ precision: 20 });
 // tslint:enable:custom-no-magic-numbers
 
@@ -31,6 +30,7 @@ export class BalancerPoolsCache {
     constructor(
         private readonly _cache: { [key: string]: CacheValue } = {},
         public cacheExpiryMs: number = FIVE_SECONDS_MS,
+        private readonly maxPoolsFetched: number = MAX_POOLS_FETCHED,
     ) {}
 
     public async getPoolsForPairAsync(
@@ -65,7 +65,7 @@ export class BalancerPoolsCache {
             const pools = parsePoolData(poolData, takerToken, makerToken).sort((a, b) =>
                 b.balanceOut.minus(a.balanceOut).toNumber(),
             );
-            return pools.length > MAX_POOLS_FETCHED ? pools.slice(0, MAX_POOLS_FETCHED) : pools;
+            return pools.length > this.maxPoolsFetched ? pools.slice(0, this.maxPoolsFetched) : pools;
         } catch (err) {
             return [];
         }
