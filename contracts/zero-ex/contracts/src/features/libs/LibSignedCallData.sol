@@ -32,8 +32,9 @@ library LibSignedCallData {
     /// @dev Try to parse potentially signed calldata into its hash and signature
     ///      components. Signed calldata has signature data appended to it.
     /// @param callData the raw call data.
-    /// @return callDataHash The hash of the signed callData, or 0x0 if no signature
-    ///         is present.
+    /// @return callDataHash If a signature is detected, this will be the hash of
+    ///         the bytes preceding the signature data. Otherwise, this
+    ///         will be the hash of the entire `callData`.
     /// @return signature The signature bytes, if present.
     function parseCallData(bytes memory callData)
         internal
@@ -49,6 +50,10 @@ library LibSignedCallData {
         //   );
         // ```
 
+        // Try to detect an appended signature. This isn't foolproof, but an
+        // accidental false positive should highly unlikely. Additinally, the
+        // signature would also have to pass verification, so the risk here is
+        // low.
         if (
             // Signed callData has to be at least 70 bytes long.
             callData.length < 70 ||

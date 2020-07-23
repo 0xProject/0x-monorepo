@@ -126,7 +126,7 @@ blockchainTests.resets('TransformERC20 feature', env => {
             expect(actualSigner).to.eq(newSigner);
         });
 
-        it('non-owner cannot set the transformer deployer with `setTransformerDeployer()`', async () => {
+        it('non-owner cannot set the quote signer with `setQuoteSigner()`', async () => {
             const newSigner = randomAddress();
             const notOwner = randomAddress();
             const tx = feature.setQuoteSigner(newSigner).callAsync({ from: notOwner });
