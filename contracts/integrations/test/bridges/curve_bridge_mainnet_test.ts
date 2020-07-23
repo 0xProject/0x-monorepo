@@ -4,7 +4,7 @@ import { ERC20TokenContract } from '@0x/contracts-erc20';
 import { blockchainTests, constants, describe, toBaseUnitAmount } from '@0x/contracts-test-utils';
 import { AbiEncoder } from '@0x/utils';
 
-const USDC_WALLET = '0xF977814e90dA44bFA03b6295A0616a897441aceC';
+const USDC_WALLET = '0x3dfd23a6c5e8bbcfc9581d2e864a68feb6a076d3';
 const DAI_WALLET = '0x6cc5f688a315f3dc28a7781717a9a798a59fda7b';
 const WBTC_WALLET = '0x56178a0d5F301bAf6CF3e1Cd53d9863437345Bf9';
 blockchainTests.configure({
@@ -13,7 +13,7 @@ blockchainTests.configure({
     },
 });
 
-blockchainTests.fork.resets('Mainnet curve bridge tests', env => {
+blockchainTests.fork('Mainnet curve bridge tests', env => {
     let testContract: CurveBridgeContract;
     const RECEIVER = '0x986ccf5234d9cfbb25246f1a5bfa51f4ccfcb308';
     const bridgeDataEncoder = AbiEncoder.create([
@@ -39,7 +39,7 @@ blockchainTests.fork.resets('Mainnet curve bridge tests', env => {
             const DAI_TOKEN_IDX = 0;
             const USDC_TOKEN_IDX = 1;
             const EXCHANGE_UNDERLYING_SELECTOR = '0xa6417ed6';
-            const CURVE_ADDRESS = '0x45f783cce6b7ff23b2ab2d70e416cdb7d6055f51';
+            const CURVE_ADDRESS = '0xa2b47e3d5c44877cca798226b7b8118f9bfb7a56';
             it('succeeds exchanges DAI for USDC', async () => {
                 const bridgeData = bridgeDataEncoder.encode([
                     CURVE_ADDRESS,
