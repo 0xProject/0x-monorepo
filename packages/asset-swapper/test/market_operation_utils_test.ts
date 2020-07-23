@@ -10,17 +10,17 @@ import {
 } from '@0x/contracts-test-utils';
 import { Web3Wrapper } from '@0x/dev-utils';
 import { assetDataUtils, generatePseudoRandomSalt } from '@0x/order-utils';
-import { AssetProxyId, ERC20BridgeAssetData, SignedOrder, Type } from '@0x/types';
+import { AssetProxyId, ERC20BridgeAssetData, SignedOrder } from '@0x/types';
 import { BigNumber, fromTokenUnitAmount, hexUtils, NULL_ADDRESS } from '@0x/utils';
 import * as _ from 'lodash';
+import * as TypeMoq from 'typemoq';
 
-import { MarketOperation, SignedOrderWithFillableAmounts, QuoteRequestor, RfqtRequestOpts } from '../src';
-import { MarketOperationUtils, getRfqtIndicativeQuotesAsync } from '../src/utils/market_operation_utils/';
+import { MarketOperation, QuoteRequestor, RfqtRequestOpts, SignedOrderWithFillableAmounts } from '../src';
+import { getRfqtIndicativeQuotesAsync, MarketOperationUtils } from '../src/utils/market_operation_utils/';
 import { BUY_SOURCES, POSITIVE_INF, SELL_SOURCES, ZERO_AMOUNT } from '../src/utils/market_operation_utils/constants';
 import { createFillPaths } from '../src/utils/market_operation_utils/fills';
 import { DexOrderSampler } from '../src/utils/market_operation_utils/sampler';
 import { DexSample, ERC20BridgeSource, FillData, NativeFillData } from '../src/utils/market_operation_utils/types';
-import * as TypeMoq from 'typemoq';
 
 const MAKER_TOKEN = randomAddress();
 const TAKER_TOKEN = randomAddress();
