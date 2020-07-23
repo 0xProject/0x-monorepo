@@ -28,24 +28,17 @@ contract TestMetaTransactionsTransformERC20Feature is
     event TransformERC20Called(
         address sender,
         uint256 value,
-        bytes32 callDataHash,
         address taker,
         IERC20TokenV06 inputToken,
         IERC20TokenV06 outputToken,
         uint256 inputTokenAmount,
         uint256 minOutputTokenAmount,
-        Transformation[] transformations
+        Transformation[] transformations,
+        bytes32 callDataHash,
+        bytes callDataSignature
     );
 
-    function _transformERC20(
-        bytes32 callDataHash,
-        address payable taker,
-        IERC20TokenV06 inputToken,
-        IERC20TokenV06 outputToken,
-        uint256 inputTokenAmount,
-        uint256 minOutputTokenAmount,
-        Transformation[] memory transformations
-    )
+    function _transformERC20(TransformERC20Args memory args)
         public
         override
         payable
@@ -58,13 +51,14 @@ contract TestMetaTransactionsTransformERC20Feature is
         emit TransformERC20Called(
             msg.sender,
             msg.value,
-            callDataHash,
-            taker,
-            inputToken,
-            outputToken,
-            inputTokenAmount,
-            minOutputTokenAmount,
-            transformations
+            args.taker,
+            args.inputToken,
+            args.outputToken,
+            args.inputTokenAmount,
+            args.minOutputTokenAmount,
+            args.transformations,
+            args.callDataHash,
+            args.callDataSignature
         );
         return 1337;
     }

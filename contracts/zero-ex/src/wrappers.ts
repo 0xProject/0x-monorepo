@@ -13,6 +13,7 @@ export * from '../generated-wrappers/i_ownable';
 export * from '../generated-wrappers/i_simple_function_registry';
 export * from '../generated-wrappers/i_token_spender';
 export * from '../generated-wrappers/i_transform_erc20';
+export * from '../generated-wrappers/i_zero_ex';
 export * from '../generated-wrappers/initial_migration';
 export * from '../generated-wrappers/meta_transactions';
 export * from '../generated-wrappers/ownable';

@@ -1,5 +1,14 @@
 [
     {
+        "version": "13.9.0",
+        "changes": [
+            {
+                "note": "Add `IZeroEx` wrapper",
+                "pr": 2626
+            }
+        ]
+    },
+    {
         "version": "13.8.0",
         "changes": [
             {

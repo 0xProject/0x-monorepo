@@ -3,7 +3,7 @@ async sendTransactionAsync(
     opts: SendTransactionOpts = { shouldValidate: true },
 ): Promise<string> {
     const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
-        { ...txData, data: this.getABIEncodedTransactionData() },
+        { data: this.getABIEncodedTransactionData(), ...txData },
         this.estimateGasAsync.bind(this),
     );
     if (opts.shouldValidate !== false) {
@@ -21,7 +21,7 @@ async estimateGasAsync(
     txData?: Partial<TxData> | undefined,
 ): Promise<number> {
     const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
-        { ...txData, data: this.getABIEncodedTransactionData() }
+        { data: this.getABIEncodedTransactionData(), ...txData }
     );
     return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
 },

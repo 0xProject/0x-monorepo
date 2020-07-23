@@ -16,6 +16,7 @@ import * as IOwnable from '../generated-artifacts/IOwnable.json';
 import * as ISimpleFunctionRegistry from '../generated-artifacts/ISimpleFunctionRegistry.json';
 import * as ITokenSpender from '../generated-artifacts/ITokenSpender.json';
 import * as ITransformERC20 from '../generated-artifacts/ITransformERC20.json';
+import * as IZeroEx from '../generated-artifacts/IZeroEx.json';
 import * as MetaTransactions from '../generated-artifacts/MetaTransactions.json';
 import * as Ownable from '../generated-artifacts/Ownable.json';
 import * as PayTakerTransformer from '../generated-artifacts/PayTakerTransformer.json';
@@ -26,6 +27,7 @@ import * as TransformERC20 from '../generated-artifacts/TransformERC20.json';
 import * as WethTransformer from '../generated-artifacts/WethTransformer.json';
 import * as ZeroEx from '../generated-artifacts/ZeroEx.json';
 export const artifacts = {
+    IZeroEx: IZeroEx as ContractArtifact,
     ZeroEx: ZeroEx as ContractArtifact,
     FullMigration: FullMigration as ContractArtifact,
     InitialMigration: InitialMigration as ContractArtifact,

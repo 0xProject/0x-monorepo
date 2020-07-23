@@ -106,11 +106,18 @@ contract SignatureValidator is
         override
         returns (bool isValid)
     {
-        try this.validateHashSignature(hash, signer, signature) {
-            isValid = true;
-        } catch (bytes memory) {
-            isValid = false;
-        }
+        // HACK: `validateHashSignature()` is stateless so we can just perform
+        // a staticcall against the implementation contract. This avoids the
+        // overhead of going through the proxy. If `validateHashSignature()` ever
+        // becomes stateful this would need to change.
+        (isValid, ) = _implementation.staticcall(
+            abi.encodeWithSelector(
+                this.validateHashSignature.selector,
+                hash,
+                signer,
+                signature
+            )
+        );
     }
 
     /// @dev Validates a hash-only signature type. Low-level, hidden variant.

@@ -280,7 +280,7 @@ export class TestLibDummyContract extends BaseContract {
                     rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
                 } else {
                     rawCallResult = await self._performCallAsync(
-                        { ...callData, data: this.getABIEncodedTransactionData() },
+                        { data: this.getABIEncodedTransactionData(), ...callData },
                         defaultBlock,
                     );
                 }
@@ -306,7 +306,7 @@ export class TestLibDummyContract extends BaseContract {
                     rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
                 } else {
                     rawCallResult = await self._performCallAsync(
-                        { ...callData, data: this.getABIEncodedTransactionData() },
+                        { data: this.getABIEncodedTransactionData(), ...callData },
                         defaultBlock,
                     );
                 }

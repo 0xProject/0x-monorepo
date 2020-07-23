@@ -30,6 +30,7 @@ import * as ISimpleFunctionRegistry from '../test/generated-artifacts/ISimpleFun
 import * as ITestSimpleFunctionRegistryFeature from '../test/generated-artifacts/ITestSimpleFunctionRegistryFeature.json';
 import * as ITokenSpender from '../test/generated-artifacts/ITokenSpender.json';
 import * as ITransformERC20 from '../test/generated-artifacts/ITransformERC20.json';
+import * as IZeroEx from '../test/generated-artifacts/IZeroEx.json';
 import * as LibBootstrap from '../test/generated-artifacts/LibBootstrap.json';
 import * as LibCommonRichErrors from '../test/generated-artifacts/LibCommonRichErrors.json';
 import * as LibERC20Transformer from '../test/generated-artifacts/LibERC20Transformer.json';
@@ -41,6 +42,7 @@ import * as LibOwnableStorage from '../test/generated-artifacts/LibOwnableStorag
 import * as LibProxyRichErrors from '../test/generated-artifacts/LibProxyRichErrors.json';
 import * as LibProxyStorage from '../test/generated-artifacts/LibProxyStorage.json';
 import * as LibSignatureRichErrors from '../test/generated-artifacts/LibSignatureRichErrors.json';
+import * as LibSignedCallData from '../test/generated-artifacts/LibSignedCallData.json';
 import * as LibSimpleFunctionRegistryRichErrors from '../test/generated-artifacts/LibSimpleFunctionRegistryRichErrors.json';
 import * as LibSimpleFunctionRegistryStorage from '../test/generated-artifacts/LibSimpleFunctionRegistryStorage.json';
 import * as LibSpenderRichErrors from '../test/generated-artifacts/LibSpenderRichErrors.json';
@@ -83,6 +85,7 @@ import * as TransformerDeployer from '../test/generated-artifacts/TransformerDep
 import * as WethTransformer from '../test/generated-artifacts/WethTransformer.json';
 import * as ZeroEx from '../test/generated-artifacts/ZeroEx.json';
 export const artifacts = {
+    IZeroEx: IZeroEx as ContractArtifact,
     ZeroEx: ZeroEx as ContractArtifact,
     LibCommonRichErrors: LibCommonRichErrors as ContractArtifact,
     LibMetaTransactionsRichErrors: LibMetaTransactionsRichErrors as ContractArtifact,
@@ -113,6 +116,7 @@ export const artifacts = {
     SimpleFunctionRegistry: SimpleFunctionRegistry as ContractArtifact,
     TokenSpender: TokenSpender as ContractArtifact,
     TransformERC20: TransformERC20 as ContractArtifact,
+    LibSignedCallData: LibSignedCallData as ContractArtifact,
     FixinCommon: FixinCommon as ContractArtifact,
     FixinEIP712: FixinEIP712 as ContractArtifact,
     FixinGasToken: FixinGasToken as ContractArtifact,

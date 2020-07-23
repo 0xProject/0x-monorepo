@@ -8,6 +8,7 @@ export {
     ISimpleFunctionRegistryEvents,
     ITokenSpenderContract,
     ITransformERC20Contract,
+    IZeroExContract,
     PayTakerTransformerContract,
     WethTransformerContract,
     ZeroExContract,
@@ -45,3 +46,4 @@ export {
 
 export * from './nonce_utils';
 export * from './migration';
+export * from './signed_call_data';

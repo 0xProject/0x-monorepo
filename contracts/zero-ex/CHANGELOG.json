@@ -13,6 +13,10 @@
             {
                 "note": "Add `MetaTransactions` and `SignatureValidator` features",
                 "pr": 2610
+            },
+            {
+                "note": "Update `TransformERC20` and `MetaTransactions` to handle signed calldata.",
+                "pr": 2626
             }
         ],
         "timestamp": 1594788383
