@@ -64,6 +64,7 @@ export {
     SwapQuoteInfo,
     SwapQuoteOrdersBreakdown,
     SwapQuoteRequestOpts,
+    SwapQuoterRfqtOpts,
     SwapQuoterError,
     SwapQuoterOpts,
 } from './types';
