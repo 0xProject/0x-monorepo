@@ -37,6 +37,7 @@
         "./artifacts/ZrxVault.json",
         "./artifacts/ERC20BridgeProxy.json",
         "./artifacts/ERC20BridgeSampler.json",
-        "./artifacts/ITransformERC20.json"
+        "./artifacts/ITransformERC20.json",
+        "./artifacts/IZeroEx.json"
     ]
 }

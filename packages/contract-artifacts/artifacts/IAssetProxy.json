@@ -48,7 +48,7 @@
     },
     "compiler": {
         "name": "solc",
-        "version": "soljson-v0.5.16+commit.9c3226ce.js",
+        "version": "0.5.17+commit.d19bba13",
         "settings": {
             "optimizer": {
                 "enabled": true,

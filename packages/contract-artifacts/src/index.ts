@@ -20,6 +20,7 @@ import * as IAssetProxy from '../artifacts/IAssetProxy.json';
 import * as ITransformERC20 from '../artifacts/ITransformERC20.json';
 import * as IValidator from '../artifacts/IValidator.json';
 import * as IWallet from '../artifacts/IWallet.json';
+import * as IZeroEx from '../artifacts/IZeroEx.json';
 import * as MultiAssetProxy from '../artifacts/MultiAssetProxy.json';
 import * as Staking from '../artifacts/Staking.json';
 import * as StakingProxy from '../artifacts/StakingProxy.json';
@@ -58,4 +59,5 @@ export {
     ZrxVault,
     ERC20BridgeSampler,
     ITransformERC20,
+    IZeroEx,
 };
