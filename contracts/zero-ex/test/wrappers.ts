@@ -27,6 +27,7 @@ export * from '../test/generated-wrappers/i_simple_function_registry';
 export * from '../test/generated-wrappers/i_test_simple_function_registry_feature';
 export * from '../test/generated-wrappers/i_token_spender';
 export * from '../test/generated-wrappers/i_transform_erc20';
+export * from '../test/generated-wrappers/i_zero_ex';
 export * from '../test/generated-wrappers/initial_migration';
 export * from '../test/generated-wrappers/lib_bootstrap';
 export * from '../test/generated-wrappers/lib_common_rich_errors';

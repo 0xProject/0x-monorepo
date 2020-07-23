@@ -8,6 +8,7 @@ export {
     ISimpleFunctionRegistryEvents,
     ITokenSpenderContract,
     ITransformERC20Contract,
+    IZeroExContract,
     PayTakerTransformerContract,
     WethTransformerContract,
     ZeroExContract,
