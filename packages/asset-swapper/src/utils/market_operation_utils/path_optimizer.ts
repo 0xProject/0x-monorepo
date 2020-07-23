@@ -77,7 +77,7 @@ function mixPaths(
                 nextAllFills.splice(i, 1);
                 // Recurse.
                 _walk(
-                    [...path, fill],
+                    nextPath,
                     input.plus(BigNumber.min(remainingInput, fill.input)),
                     output.plus(
                         // Clip the output of the next fill to the remaining
