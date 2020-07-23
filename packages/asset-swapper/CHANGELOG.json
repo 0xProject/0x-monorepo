@@ -13,6 +13,10 @@
             {
                 "note": "Support more varied curves",
                 "pr": 2633
+            },
+            {
+                "note": "Make path optimization go faster",
+                "pr": 2640
             }
         ]
     },
