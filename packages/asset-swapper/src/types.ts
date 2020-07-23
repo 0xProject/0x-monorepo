@@ -199,12 +199,18 @@ export interface SwapQuoteOrdersBreakdown {
     [source: string]: BigNumber;
 }
 
+/**
+ * nativeExclusivelyRFQT: if set to `true`, Swap quote will exclude Open Orderbook liquidity.
+ *                        If set to `true` and `ERC20BridgeSource.Native` is part of the `excludedSources`
+ *                        array in `SwapQuoteRequestOpts`, an Error will be raised.
+ */
 export interface RfqtRequestOpts {
     takerAddress: string;
     apiKey: string;
     intentOnFilling: boolean;
     isIndicative?: boolean;
     makerEndpointMaxResponseTimeMs?: number;
+    nativeExclusivelyRFQT?: boolean;
 }
 
 /**
@@ -249,7 +255,6 @@ export interface SwapQuoterOpts extends OrderPrunerOpts {
     rfqt?: {
         takerApiKeyWhitelist: string[];
         makerAssetOfferings: RfqtMakerAssetOfferings;
-        skipBuyRequests?: boolean;
         warningLogger?: LogFunction;
         infoLogger?: LogFunction;
     };

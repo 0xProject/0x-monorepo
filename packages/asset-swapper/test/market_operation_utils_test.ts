@@ -335,7 +335,7 @@ describe('MarketOperationUtils tests', () => {
         },
     } as any) as DexOrderSampler;
 
-    describe.only('getRfqtIndicativeQuotesAsync', () => {
+    describe('getRfqtIndicativeQuotesAsync', () => {
         const partialRfqt: RfqtRequestOpts = {
             apiKey: 'foo',
             takerAddress: NULL_ADDRESS,
