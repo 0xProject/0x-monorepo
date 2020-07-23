@@ -1,6 +1,6 @@
 [
     {
-        "version": "5.0.0",
+        "version": "4.7.0",
         "changes": [
             {
                 "note": "Return quoteReport from SwapQuoter functions",
