@@ -32,6 +32,8 @@ library LibTransformERC20Storage {
         IFlashWallet wallet;
         // The transformer deployer address.
         address transformerDeployer;
+        // The optional signer for `transformERC20()` calldata.
+        address quoteSigner;
     }
 
     /// @dev Get the storage bucket for this contract.

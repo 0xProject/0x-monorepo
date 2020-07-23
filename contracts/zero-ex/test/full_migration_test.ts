@@ -81,6 +81,8 @@ blockchainTests.resets('Full migration', env => {
                 'createTransformWallet',
                 'getTransformWallet',
                 'setTransformerDeployer',
+                'getQuoteSigner',
+                'setQuoteSigner',
             ],
         },
         SignatureValidator: {

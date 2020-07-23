@@ -865,7 +865,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string[]> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._performCallAsync(
-                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    { data: this.getABIEncodedTransactionData(), ...callData },
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -900,7 +900,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._performCallAsync(
-                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    { data: this.getABIEncodedTransactionData(), ...callData },
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -954,7 +954,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber[]> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._performCallAsync(
-                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    { data: this.getABIEncodedTransactionData(), ...callData },
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -1008,7 +1008,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber[]> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._performCallAsync(
-                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    { data: this.getABIEncodedTransactionData(), ...callData },
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -1049,7 +1049,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber[]> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._performCallAsync(
-                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    { data: this.getABIEncodedTransactionData(), ...callData },
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -1088,7 +1088,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber[]> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._performCallAsync(
-                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    { data: this.getABIEncodedTransactionData(), ...callData },
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -1129,7 +1129,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber[]> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._performCallAsync(
-                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    { data: this.getABIEncodedTransactionData(), ...callData },
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -1175,7 +1175,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber[]> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._performCallAsync(
-                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    { data: this.getABIEncodedTransactionData(), ...callData },
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -1215,7 +1215,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber[]> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._performCallAsync(
-                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    { data: this.getABIEncodedTransactionData(), ...callData },
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -1247,7 +1247,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber[]> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._performCallAsync(
-                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    { data: this.getABIEncodedTransactionData(), ...callData },
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -1284,7 +1284,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber[]> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._performCallAsync(
-                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    { data: this.getABIEncodedTransactionData(), ...callData },
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -1323,7 +1323,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber[]> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._performCallAsync(
-                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    { data: this.getABIEncodedTransactionData(), ...callData },
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -1361,7 +1361,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber[]> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._performCallAsync(
-                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    { data: this.getABIEncodedTransactionData(), ...callData },
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -1402,7 +1402,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber[]> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._performCallAsync(
-                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    { data: this.getABIEncodedTransactionData(), ...callData },
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -1448,7 +1448,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber[]> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._performCallAsync(
-                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    { data: this.getABIEncodedTransactionData(), ...callData },
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -1488,7 +1488,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber[]> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._performCallAsync(
-                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    { data: this.getABIEncodedTransactionData(), ...callData },
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -1520,7 +1520,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber[]> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._performCallAsync(
-                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    { data: this.getABIEncodedTransactionData(), ...callData },
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);

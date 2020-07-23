@@ -28,7 +28,7 @@ interface IMetaTransactions {
     /// @dev Describes an exchange proxy meta transaction.
     struct MetaTransactionData {
         // Signer of meta-transaction. On whose behalf to execute the MTX.
-        address signer;
+        address payable signer;
         // Required sender, or NULL for anyone.
         address sender;
         // Minimum gas price.

@@ -10,7 +10,10 @@ import {
 } from '@0x/contracts-test-utils';
 import { ETH_TOKEN_ADDRESS } from '@0x/order-utils';
 import { AbiEncoder, hexUtils, OwnableRevertErrors, ZeroExRevertErrors } from '@0x/utils';
+import { DecodedLogEntry } from 'ethereum-types';
+import * as ethjs from 'ethereumjs-util';
 
+import { generateCallDataHashSignature, signCallData } from '../../src/signed_call_data';
 import { TransformERC20Contract, ZeroExContract } from '../../src/wrappers';
 import { artifacts } from '../artifacts';
 import { abis } from '../utils/abis';
@@ -21,10 +24,17 @@ import {
     TestMintableERC20TokenContract,
     TestMintTokenERC20TransformerContract,
     TestMintTokenERC20TransformerEvents,
+    TestMintTokenERC20TransformerMintTransformEventArgs,
     TransformERC20Events,
 } from '../wrappers';
 
+const { NULL_BYTES, NULL_BYTES32 } = constants;
+
+type MintTokenTransformerEvent = DecodedLogEntry<TestMintTokenERC20TransformerMintTransformEventArgs>;
+
 blockchainTests.resets('TransformERC20 feature', env => {
+    const callDataSignerKey = hexUtils.random();
+    const callDataSigner = ethjs.bufferToHex(ethjs.privateToAddress(ethjs.toBuffer(callDataSignerKey)));
     let owner: string;
     let taker: string;
     let transformerDeployer: string;
@@ -54,6 +64,7 @@ blockchainTests.resets('TransformERC20 feature', env => {
         allowanceTarget = await new ITokenSpenderContract(zeroEx.address, env.provider, env.txDefaults)
             .getAllowanceTarget()
             .callAsync();
+        await feature.setQuoteSigner(callDataSigner).awaitTransactionSuccessAsync();
     });
 
     const { MAX_UINT256, ZERO_AMOUNT } = constants;
@@ -101,7 +112,29 @@ blockchainTests.resets('TransformERC20 feature', env => {
         });
     });
 
-    describe('_transformERC20()', () => {
+    describe('quote signer', () => {
+        it('`getQuoteSigner()` returns the quote signer', async () => {
+            const actualSigner = await feature.getQuoteSigner().callAsync();
+            expect(actualSigner).to.eq(callDataSigner);
+        });
+
+        it('owner can set the quote signer with `setQuoteSigner()`', async () => {
+            const newSigner = randomAddress();
+            const receipt = await feature.setQuoteSigner(newSigner).awaitTransactionSuccessAsync({ from: owner });
+            verifyEventsFromLogs(receipt.logs, [{ quoteSigner: newSigner }], TransformERC20Events.QuoteSignerUpdated);
+            const actualSigner = await feature.getQuoteSigner().callAsync();
+            expect(actualSigner).to.eq(newSigner);
+        });
+
+        it('non-owner cannot set the quote signer with `setQuoteSigner()`', async () => {
+            const newSigner = randomAddress();
+            const notOwner = randomAddress();
+            const tx = feature.setQuoteSigner(newSigner).callAsync({ from: notOwner });
+            return expect(tx).to.revertWith(new OwnableRevertErrors.OnlyOwnerError(notOwner, owner));
+        });
+    });
+
+    describe('_transformERC20()/transformERC20()', () => {
         let inputToken: TestMintableERC20TokenContract;
         let outputToken: TestMintableERC20TokenContract;
         let mintTransformer: TestMintTokenERC20TransformerContract;
@@ -187,325 +220,552 @@ blockchainTests.resets('TransformERC20 feature', env => {
             };
         }
 
-        it("succeeds if taker's output token balance increases by exactly minOutputTokenAmount", async () => {
-            const startingOutputTokenBalance = getRandomInteger(0, '100e18');
-            const startingInputTokenBalance = getRandomInteger(0, '100e18');
-            await outputToken.mint(taker, startingOutputTokenBalance).awaitTransactionSuccessAsync();
-            await inputToken.mint(taker, startingInputTokenBalance).awaitTransactionSuccessAsync();
-            const inputTokenAmount = getRandomPortion(startingInputTokenBalance);
-            const minOutputTokenAmount = getRandomInteger(1, '1e18');
-            const outputTokenMintAmount = minOutputTokenAmount;
-            const callValue = getRandomInteger(1, '1e18');
-            const callDataHash = hexUtils.random();
-            const transformation = createMintTokenTransformation({
-                outputTokenMintAmount,
-                inputTokenBurnAmunt: inputTokenAmount,
-            });
-            const receipt = await feature
-                ._transformERC20(
-                    callDataHash,
-                    taker,
-                    inputToken.address,
-                    outputToken.address,
-                    inputTokenAmount,
-                    minOutputTokenAmount,
-                    [transformation],
-                )
-                .awaitTransactionSuccessAsync({ value: callValue });
-            verifyEventsFromLogs(
-                receipt.logs,
-                [
-                    {
+        describe('_transformERC20()', () => {
+            it("succeeds if taker's output token balance increases by exactly minOutputTokenAmount", async () => {
+                const startingOutputTokenBalance = getRandomInteger(0, '100e18');
+                const startingInputTokenBalance = getRandomInteger(0, '100e18');
+                await outputToken.mint(taker, startingOutputTokenBalance).awaitTransactionSuccessAsync();
+                await inputToken.mint(taker, startingInputTokenBalance).awaitTransactionSuccessAsync();
+                const inputTokenAmount = getRandomPortion(startingInputTokenBalance);
+                const minOutputTokenAmount = getRandomInteger(1, '1e18');
+                const outputTokenMintAmount = minOutputTokenAmount;
+                const callValue = getRandomInteger(1, '1e18');
+                const callDataHash = hexUtils.random();
+                const transformation = createMintTokenTransformation({
+                    outputTokenMintAmount,
+                    inputTokenBurnAmunt: inputTokenAmount,
+                });
+                const receipt = await feature
+                    ._transformERC20({
                         taker,
-                        inputTokenAmount,
-                        outputTokenAmount: outputTokenMintAmount,
                         inputToken: inputToken.address,
                         outputToken: outputToken.address,
-                    },
-                ],
-                TransformERC20Events.TransformedERC20,
-            );
-            verifyEventsFromLogs(
-                receipt.logs,
-                [
-                    {
-                        callDataHash,
-                        taker,
-                        context: wallet.address,
-                        caller: zeroEx.address,
-                        data: transformation.data,
-                        inputTokenBalance: inputTokenAmount,
-                        ethBalance: callValue,
-                    },
-                ],
-                TestMintTokenERC20TransformerEvents.MintTransform,
-            );
-        });
-
-        it("succeeds if taker's output token balance increases by exactly minOutputTokenAmount, with ETH", async () => {
-            const startingInputTokenBalance = getRandomInteger(0, '100e18');
-            await inputToken.mint(taker, startingInputTokenBalance).awaitTransactionSuccessAsync();
-            const inputTokenAmount = getRandomPortion(startingInputTokenBalance);
-            const minOutputTokenAmount = getRandomInteger(1, '1e18');
-            const outputTokenMintAmount = minOutputTokenAmount;
-            const callValue = outputTokenMintAmount.times(2);
-            const callDataHash = hexUtils.random();
-            const transformation = createMintTokenTransformation({
-                outputTokenMintAmount,
-                inputTokenBurnAmunt: inputTokenAmount,
-                outputTokenAddress: ETH_TOKEN_ADDRESS,
-            });
-            const startingOutputTokenBalance = await env.web3Wrapper.getBalanceInWeiAsync(taker);
-            const receipt = await feature
-                ._transformERC20(
-                    callDataHash,
-                    taker,
-                    inputToken.address,
-                    ETH_TOKEN_ADDRESS,
-                    inputTokenAmount,
-                    minOutputTokenAmount,
-                    [transformation],
-                )
-                .awaitTransactionSuccessAsync({ value: callValue });
-            verifyEventsFromLogs(
-                receipt.logs,
-                [
-                    {
-                        taker,
                         inputTokenAmount,
-                        outputTokenAmount: outputTokenMintAmount,
+                        minOutputTokenAmount,
+                        transformations: [transformation],
+                        callDataHash,
+                        callDataSignature: NULL_BYTES,
+                    })
+                    .awaitTransactionSuccessAsync({ value: callValue });
+                verifyEventsFromLogs(
+                    receipt.logs,
+                    [
+                        {
+                            taker,
+                            inputTokenAmount,
+                            outputTokenAmount: outputTokenMintAmount,
+                            inputToken: inputToken.address,
+                            outputToken: outputToken.address,
+                        },
+                    ],
+                    TransformERC20Events.TransformedERC20,
+                );
+                verifyEventsFromLogs(
+                    receipt.logs,
+                    [
+                        {
+                            callDataHash: NULL_BYTES32,
+                            taker,
+                            context: wallet.address,
+                            caller: zeroEx.address,
+                            data: transformation.data,
+                            inputTokenBalance: inputTokenAmount,
+                            ethBalance: callValue,
+                        },
+                    ],
+                    TestMintTokenERC20TransformerEvents.MintTransform,
+                );
+            });
+
+            it("succeeds if taker's output token balance increases by exactly minOutputTokenAmount, with ETH", async () => {
+                const startingInputTokenBalance = getRandomInteger(0, '100e18');
+                await inputToken.mint(taker, startingInputTokenBalance).awaitTransactionSuccessAsync();
+                const inputTokenAmount = getRandomPortion(startingInputTokenBalance);
+                const minOutputTokenAmount = getRandomInteger(1, '1e18');
+                const outputTokenMintAmount = minOutputTokenAmount;
+                const callValue = outputTokenMintAmount.times(2);
+                const callDataHash = hexUtils.random();
+                const transformation = createMintTokenTransformation({
+                    outputTokenMintAmount,
+                    inputTokenBurnAmunt: inputTokenAmount,
+                    outputTokenAddress: ETH_TOKEN_ADDRESS,
+                });
+                const startingOutputTokenBalance = await env.web3Wrapper.getBalanceInWeiAsync(taker);
+                const receipt = await feature
+                    ._transformERC20({
+                        taker,
                         inputToken: inputToken.address,
                         outputToken: ETH_TOKEN_ADDRESS,
-                    },
-                ],
-                TransformERC20Events.TransformedERC20,
-            );
-            verifyEventsFromLogs(
-                receipt.logs,
-                [
-                    {
+                        inputTokenAmount,
+                        minOutputTokenAmount,
+                        transformations: [transformation],
                         callDataHash,
+                        callDataSignature: NULL_BYTES,
+                    })
+                    .awaitTransactionSuccessAsync({ value: callValue });
+                verifyEventsFromLogs(
+                    receipt.logs,
+                    [
+                        {
+                            taker,
+                            inputTokenAmount,
+                            outputTokenAmount: outputTokenMintAmount,
+                            inputToken: inputToken.address,
+                            outputToken: ETH_TOKEN_ADDRESS,
+                        },
+                    ],
+                    TransformERC20Events.TransformedERC20,
+                );
+                verifyEventsFromLogs(
+                    receipt.logs,
+                    [
+                        {
+                            callDataHash: NULL_BYTES32,
+                            taker,
+                            context: wallet.address,
+                            caller: zeroEx.address,
+                            data: transformation.data,
+                            inputTokenBalance: inputTokenAmount,
+                            ethBalance: callValue,
+                        },
+                    ],
+                    TestMintTokenERC20TransformerEvents.MintTransform,
+                );
+                expect(await env.web3Wrapper.getBalanceInWeiAsync(taker)).to.bignumber.eq(
+                    startingOutputTokenBalance.plus(outputTokenMintAmount),
+                );
+            });
+
+            it("succeeds if taker's output token balance increases by more than minOutputTokenAmount", async () => {
+                const startingOutputTokenBalance = getRandomInteger(0, '100e18');
+                const startingInputTokenBalance = getRandomInteger(0, '100e18');
+                await outputToken.mint(taker, startingOutputTokenBalance).awaitTransactionSuccessAsync();
+                await inputToken.mint(taker, startingInputTokenBalance).awaitTransactionSuccessAsync();
+                const inputTokenAmount = getRandomPortion(startingInputTokenBalance);
+                const minOutputTokenAmount = getRandomInteger(1, '1e18');
+                const outputTokenMintAmount = minOutputTokenAmount.plus(1);
+                const callValue = getRandomInteger(1, '1e18');
+                const callDataHash = hexUtils.random();
+                const transformation = createMintTokenTransformation({
+                    outputTokenMintAmount,
+                    inputTokenBurnAmunt: inputTokenAmount,
+                });
+                const receipt = await feature
+                    ._transformERC20({
                         taker,
-                        context: wallet.address,
-                        caller: zeroEx.address,
-                        data: transformation.data,
-                        inputTokenBalance: inputTokenAmount,
-                        ethBalance: callValue,
-                    },
-                ],
-                TestMintTokenERC20TransformerEvents.MintTransform,
-            );
-            expect(await env.web3Wrapper.getBalanceInWeiAsync(taker)).to.bignumber.eq(
-                startingOutputTokenBalance.plus(outputTokenMintAmount),
-            );
+                        inputToken: inputToken.address,
+                        outputToken: outputToken.address,
+                        inputTokenAmount,
+                        minOutputTokenAmount,
+                        transformations: [transformation],
+                        callDataHash,
+                        callDataSignature: NULL_BYTES,
+                    })
+                    .awaitTransactionSuccessAsync({ value: callValue });
+                verifyEventsFromLogs(
+                    receipt.logs,
+                    [
+                        {
+                            taker,
+                            inputTokenAmount,
+                            outputTokenAmount: outputTokenMintAmount,
+                            inputToken: inputToken.address,
+                            outputToken: outputToken.address,
+                        },
+                    ],
+                    TransformERC20Events.TransformedERC20,
+                );
+                verifyEventsFromLogs(
+                    receipt.logs,
+                    [
+                        {
+                            callDataHash: NULL_BYTES32,
+                            taker,
+                            context: wallet.address,
+                            caller: zeroEx.address,
+                            data: transformation.data,
+                            inputTokenBalance: inputTokenAmount,
+                            ethBalance: callValue,
+                        },
+                    ],
+                    TestMintTokenERC20TransformerEvents.MintTransform,
+                );
+            });
+
+            it("throws if taker's output token balance increases by less than minOutputTokenAmount", async () => {
+                const startingOutputTokenBalance = getRandomInteger(0, '100e18');
+                const startingInputTokenBalance = getRandomInteger(0, '100e18');
+                await outputToken.mint(taker, startingOutputTokenBalance).awaitTransactionSuccessAsync();
+                await inputToken.mint(taker, startingInputTokenBalance).awaitTransactionSuccessAsync();
+                const inputTokenAmount = getRandomPortion(startingInputTokenBalance);
+                const minOutputTokenAmount = getRandomInteger(1, '1e18');
+                const outputTokenMintAmount = minOutputTokenAmount.minus(1);
+                const callValue = getRandomInteger(1, '1e18');
+                const tx = feature
+                    ._transformERC20({
+                        callDataHash: hexUtils.random(),
+                        taker,
+                        inputToken: inputToken.address,
+                        outputToken: outputToken.address,
+                        inputTokenAmount,
+                        minOutputTokenAmount,
+                        callDataSignature: NULL_BYTES,
+                        transformations: [
+                            createMintTokenTransformation({
+                                outputTokenMintAmount,
+                                inputTokenBurnAmunt: inputTokenAmount,
+                            }),
+                        ],
+                    })
+                    .awaitTransactionSuccessAsync({ value: callValue });
+                const expectedError = new ZeroExRevertErrors.TransformERC20.IncompleteTransformERC20Error(
+                    outputToken.address,
+                    outputTokenMintAmount,
+                    minOutputTokenAmount,
+                );
+                return expect(tx).to.revertWith(expectedError);
+            });
+
+            it("throws if taker's output token balance decreases", async () => {
+                const startingOutputTokenBalance = getRandomInteger(0, '100e18');
+                const startingInputTokenBalance = getRandomInteger(0, '100e18');
+                await outputToken.mint(taker, startingOutputTokenBalance).awaitTransactionSuccessAsync();
+                await inputToken.mint(taker, startingInputTokenBalance).awaitTransactionSuccessAsync();
+                const inputTokenAmount = getRandomPortion(startingInputTokenBalance);
+                const minOutputTokenAmount = ZERO_AMOUNT;
+                const outputTokenFeeAmount = 1;
+                const callValue = getRandomInteger(1, '1e18');
+                const tx = feature
+                    ._transformERC20({
+                        callDataHash: hexUtils.random(),
+                        taker,
+                        inputToken: inputToken.address,
+                        outputToken: outputToken.address,
+                        inputTokenAmount,
+                        minOutputTokenAmount,
+                        callDataSignature: NULL_BYTES,
+                        transformations: [
+                            createMintTokenTransformation({
+                                outputTokenFeeAmount,
+                                inputTokenBurnAmunt: inputTokenAmount,
+                            }),
+                        ],
+                    })
+                    .awaitTransactionSuccessAsync({ value: callValue });
+                const expectedError = new ZeroExRevertErrors.TransformERC20.NegativeTransformERC20OutputError(
+                    outputToken.address,
+                    outputTokenFeeAmount,
+                );
+                return expect(tx).to.revertWith(expectedError);
+            });
+
+            it('can call multiple transformers', async () => {
+                const startingOutputTokenBalance = getRandomInteger(0, '100e18');
+                const startingInputTokenBalance = getRandomInteger(2, '100e18');
+                await outputToken.mint(taker, startingOutputTokenBalance).awaitTransactionSuccessAsync();
+                await inputToken.mint(taker, startingInputTokenBalance).awaitTransactionSuccessAsync();
+                const inputTokenAmount = getRandomPortion(startingInputTokenBalance);
+                const minOutputTokenAmount = getRandomInteger(2, '1e18');
+                const outputTokenMintAmount = minOutputTokenAmount;
+                const callValue = getRandomInteger(1, '1e18');
+                const callDataHash = hexUtils.random();
+                // Split the total minting between two transformers.
+                const transformations = [
+                    createMintTokenTransformation({
+                        inputTokenBurnAmunt: 1,
+                        outputTokenMintAmount: 1,
+                    }),
+                    createMintTokenTransformation({
+                        inputTokenBurnAmunt: inputTokenAmount.minus(1),
+                        outputTokenMintAmount: outputTokenMintAmount.minus(1),
+                    }),
+                ];
+                const receipt = await feature
+                    ._transformERC20({
+                        taker,
+                        inputToken: inputToken.address,
+                        outputToken: outputToken.address,
+                        inputTokenAmount,
+                        minOutputTokenAmount,
+                        transformations,
+                        callDataHash,
+                        callDataSignature: NULL_BYTES,
+                    })
+                    .awaitTransactionSuccessAsync({ value: callValue });
+                verifyEventsFromLogs(
+                    receipt.logs,
+                    [
+                        {
+                            callDataHash: NULL_BYTES32,
+                            taker,
+                            context: wallet.address,
+                            caller: zeroEx.address,
+                            data: transformations[0].data,
+                            inputTokenBalance: inputTokenAmount,
+                            ethBalance: callValue,
+                        },
+                        {
+                            callDataHash: NULL_BYTES32,
+                            taker,
+                            context: wallet.address,
+                            caller: zeroEx.address,
+                            data: transformations[1].data,
+                            inputTokenBalance: inputTokenAmount.minus(1),
+                            ethBalance: callValue,
+                        },
+                    ],
+                    TestMintTokenERC20TransformerEvents.MintTransform,
+                );
+            });
+
+            it('fails with invalid transformer nonce', async () => {
+                const startingOutputTokenBalance = getRandomInteger(0, '100e18');
+                const startingInputTokenBalance = getRandomInteger(2, '100e18');
+                await outputToken.mint(taker, startingOutputTokenBalance).awaitTransactionSuccessAsync();
+                await inputToken.mint(taker, startingInputTokenBalance).awaitTransactionSuccessAsync();
+                const inputTokenAmount = getRandomPortion(startingInputTokenBalance);
+                const minOutputTokenAmount = getRandomInteger(2, '1e18');
+                const callValue = getRandomInteger(1, '1e18');
+                const callDataHash = hexUtils.random();
+                const transformations = [createMintTokenTransformation({ deploymentNonce: 1337 })];
+                const tx = feature
+                    ._transformERC20({
+                        taker,
+                        inputToken: inputToken.address,
+                        outputToken: outputToken.address,
+                        inputTokenAmount,
+                        minOutputTokenAmount,
+                        transformations,
+                        callDataHash,
+                        callDataSignature: NULL_BYTES,
+                    })
+                    .awaitTransactionSuccessAsync({ value: callValue });
+                return expect(tx).to.revertWith(
+                    new ZeroExRevertErrors.TransformERC20.TransformerFailedError(
+                        undefined,
+                        transformations[0].data,
+                        constants.NULL_BYTES,
+                    ),
+                );
+            });
+
+            it('passes the calldata hash to transformer with proper signature', async () => {
+                const startingOutputTokenBalance = getRandomInteger(0, '100e18');
+                const startingInputTokenBalance = getRandomInteger(0, '100e18');
+                await outputToken.mint(taker, startingOutputTokenBalance).awaitTransactionSuccessAsync();
+                await inputToken.mint(taker, startingInputTokenBalance).awaitTransactionSuccessAsync();
+                const inputTokenAmount = getRandomPortion(startingInputTokenBalance);
+                const minOutputTokenAmount = getRandomInteger(1, '1e18');
+                const outputTokenMintAmount = minOutputTokenAmount;
+                const callValue = getRandomInteger(1, '1e18');
+                const callDataHash = hexUtils.random();
+                const transformation = createMintTokenTransformation({
+                    outputTokenMintAmount,
+                    inputTokenBurnAmunt: inputTokenAmount,
+                });
+                const receipt = await feature
+                    ._transformERC20({
+                        taker,
+                        inputToken: inputToken.address,
+                        outputToken: outputToken.address,
+                        inputTokenAmount,
+                        minOutputTokenAmount,
+                        transformations: [transformation],
+                        callDataHash,
+                        callDataSignature: generateCallDataHashSignature(callDataHash, callDataSignerKey),
+                    })
+                    .awaitTransactionSuccessAsync({ value: callValue });
+                const { callDataHash: actualCallDataHash } = (receipt.logs[0] as MintTokenTransformerEvent).args;
+                expect(actualCallDataHash).to.eq(callDataHash);
+            });
+
+            it('passes empty calldata hash to transformer with improper signature', async () => {
+                const startingOutputTokenBalance = getRandomInteger(0, '100e18');
+                const startingInputTokenBalance = getRandomInteger(0, '100e18');
+                await outputToken.mint(taker, startingOutputTokenBalance).awaitTransactionSuccessAsync();
+                await inputToken.mint(taker, startingInputTokenBalance).awaitTransactionSuccessAsync();
+                const inputTokenAmount = getRandomPortion(startingInputTokenBalance);
+                const minOutputTokenAmount = getRandomInteger(1, '1e18');
+                const outputTokenMintAmount = minOutputTokenAmount;
+                const callValue = getRandomInteger(1, '1e18');
+                const callDataHash = hexUtils.random();
+                const transformation = createMintTokenTransformation({
+                    outputTokenMintAmount,
+                    inputTokenBurnAmunt: inputTokenAmount,
+                });
+                const receipt = await feature
+                    ._transformERC20({
+                        taker,
+                        inputToken: inputToken.address,
+                        outputToken: outputToken.address,
+                        inputTokenAmount,
+                        minOutputTokenAmount,
+                        transformations: [transformation],
+                        callDataHash,
+                        callDataSignature: generateCallDataHashSignature(callDataHash, hexUtils.random()),
+                    })
+                    .awaitTransactionSuccessAsync({ value: callValue });
+                const { callDataHash: actualCallDataHash } = (receipt.logs[0] as MintTokenTransformerEvent).args;
+                expect(actualCallDataHash).to.eq(NULL_BYTES32);
+            });
+
+            it('passes empty calldata hash to transformer with no signature', async () => {
+                const startingOutputTokenBalance = getRandomInteger(0, '100e18');
+                const startingInputTokenBalance = getRandomInteger(0, '100e18');
+                await outputToken.mint(taker, startingOutputTokenBalance).awaitTransactionSuccessAsync();
+                await inputToken.mint(taker, startingInputTokenBalance).awaitTransactionSuccessAsync();
+                const inputTokenAmount = getRandomPortion(startingInputTokenBalance);
+                const minOutputTokenAmount = getRandomInteger(1, '1e18');
+                const outputTokenMintAmount = minOutputTokenAmount;
+                const callValue = getRandomInteger(1, '1e18');
+                const callDataHash = hexUtils.random();
+                const transformation = createMintTokenTransformation({
+                    outputTokenMintAmount,
+                    inputTokenBurnAmunt: inputTokenAmount,
+                });
+                const receipt = await feature
+                    ._transformERC20({
+                        taker,
+                        inputToken: inputToken.address,
+                        outputToken: outputToken.address,
+                        inputTokenAmount,
+                        minOutputTokenAmount,
+                        transformations: [transformation],
+                        callDataHash,
+                        callDataSignature: NULL_BYTES,
+                    })
+                    .awaitTransactionSuccessAsync({ value: callValue });
+                const { callDataHash: actualCallDataHash } = (receipt.logs[0] as MintTokenTransformerEvent).args;
+                expect(actualCallDataHash).to.eq(NULL_BYTES32);
+            });
         });
 
-        it("succeeds if taker's output token balance increases by more than minOutputTokenAmount", async () => {
-            const startingOutputTokenBalance = getRandomInteger(0, '100e18');
-            const startingInputTokenBalance = getRandomInteger(0, '100e18');
-            await outputToken.mint(taker, startingOutputTokenBalance).awaitTransactionSuccessAsync();
-            await inputToken.mint(taker, startingInputTokenBalance).awaitTransactionSuccessAsync();
-            const inputTokenAmount = getRandomPortion(startingInputTokenBalance);
-            const minOutputTokenAmount = getRandomInteger(1, '1e18');
-            const outputTokenMintAmount = minOutputTokenAmount.plus(1);
-            const callValue = getRandomInteger(1, '1e18');
-            const callDataHash = hexUtils.random();
-            const transformation = createMintTokenTransformation({
-                outputTokenMintAmount,
-                inputTokenBurnAmunt: inputTokenAmount,
-            });
-            const receipt = await feature
-                ._transformERC20(
-                    callDataHash,
-                    taker,
+        describe('transformERC20()', () => {
+            it('passes the calldata hash to transformer with properly signed calldata', async () => {
+                const startingOutputTokenBalance = getRandomInteger(0, '100e18');
+                const startingInputTokenBalance = getRandomInteger(0, '100e18');
+                await outputToken.mint(taker, startingOutputTokenBalance).awaitTransactionSuccessAsync();
+                await inputToken.mint(taker, startingInputTokenBalance).awaitTransactionSuccessAsync();
+                const inputTokenAmount = getRandomPortion(startingInputTokenBalance);
+                const minOutputTokenAmount = getRandomInteger(1, '1e18');
+                const outputTokenMintAmount = minOutputTokenAmount;
+                const callValue = getRandomInteger(1, '1e18');
+                const transformation = createMintTokenTransformation({
+                    outputTokenMintAmount,
+                    inputTokenBurnAmunt: inputTokenAmount,
+                });
+                const bakedCall = feature.transformERC20(
                     inputToken.address,
                     outputToken.address,
                     inputTokenAmount,
                     minOutputTokenAmount,
                     [transformation],
-                )
-                .awaitTransactionSuccessAsync({ value: callValue });
-            verifyEventsFromLogs(
-                receipt.logs,
-                [
-                    {
-                        taker,
-                        inputTokenAmount,
-                        outputTokenAmount: outputTokenMintAmount,
-                        inputToken: inputToken.address,
-                        outputToken: outputToken.address,
-                    },
-                ],
-                TransformERC20Events.TransformedERC20,
-            );
-            verifyEventsFromLogs(
-                receipt.logs,
-                [
-                    {
-                        callDataHash,
-                        taker,
-                        context: wallet.address,
-                        caller: zeroEx.address,
-                        data: transformation.data,
-                        inputTokenBalance: inputTokenAmount,
-                        ethBalance: callValue,
-                    },
-                ],
-                TestMintTokenERC20TransformerEvents.MintTransform,
-            );
-        });
+                );
+                const callData = bakedCall.getABIEncodedTransactionData();
+                const signedCallData = signCallData(callData, callDataSignerKey);
+                const receipt = await bakedCall.awaitTransactionSuccessAsync({
+                    from: taker,
+                    value: callValue,
+                    data: signedCallData,
+                });
+                const { callDataHash: actualCallDataHash } = (receipt.logs[0] as MintTokenTransformerEvent).args;
+                expect(actualCallDataHash).to.eq(hexUtils.hash(callData));
+            });
 
-        it("throws if taker's output token balance increases by less than minOutputTokenAmount", async () => {
-            const startingOutputTokenBalance = getRandomInteger(0, '100e18');
-            const startingInputTokenBalance = getRandomInteger(0, '100e18');
-            await outputToken.mint(taker, startingOutputTokenBalance).awaitTransactionSuccessAsync();
-            await inputToken.mint(taker, startingInputTokenBalance).awaitTransactionSuccessAsync();
-            const inputTokenAmount = getRandomPortion(startingInputTokenBalance);
-            const minOutputTokenAmount = getRandomInteger(1, '1e18');
-            const outputTokenMintAmount = minOutputTokenAmount.minus(1);
-            const callValue = getRandomInteger(1, '1e18');
-            const tx = feature
-                ._transformERC20(
-                    hexUtils.random(),
-                    taker,
+            it('passes empty calldata hash to transformer with improperly signed calldata', async () => {
+                const startingOutputTokenBalance = getRandomInteger(0, '100e18');
+                const startingInputTokenBalance = getRandomInteger(0, '100e18');
+                await outputToken.mint(taker, startingOutputTokenBalance).awaitTransactionSuccessAsync();
+                await inputToken.mint(taker, startingInputTokenBalance).awaitTransactionSuccessAsync();
+                const inputTokenAmount = getRandomPortion(startingInputTokenBalance);
+                const minOutputTokenAmount = getRandomInteger(1, '1e18');
+                const outputTokenMintAmount = minOutputTokenAmount;
+                const callValue = getRandomInteger(1, '1e18');
+                const transformation = createMintTokenTransformation({
+                    outputTokenMintAmount,
+                    inputTokenBurnAmunt: inputTokenAmount,
+                });
+                const bakedCall = feature.transformERC20(
                     inputToken.address,
                     outputToken.address,
                     inputTokenAmount,
                     minOutputTokenAmount,
-                    [
-                        createMintTokenTransformation({
-                            outputTokenMintAmount,
-                            inputTokenBurnAmunt: inputTokenAmount,
-                        }),
-                    ],
-                )
-                .awaitTransactionSuccessAsync({ value: callValue });
-            const expectedError = new ZeroExRevertErrors.TransformERC20.IncompleteTransformERC20Error(
-                outputToken.address,
-                outputTokenMintAmount,
-                minOutputTokenAmount,
-            );
-            return expect(tx).to.revertWith(expectedError);
-        });
+                    [transformation],
+                );
+                const callData = bakedCall.getABIEncodedTransactionData();
+                const signedCallData = signCallData(callData, hexUtils.random());
+                const receipt = await bakedCall.awaitTransactionSuccessAsync({
+                    from: taker,
+                    value: callValue,
+                    data: signedCallData,
+                });
+                const { callDataHash: actualCallDataHash } = (receipt.logs[0] as MintTokenTransformerEvent).args;
+                expect(actualCallDataHash).to.eq(NULL_BYTES32);
+            });
 
-        it("throws if taker's output token balance decreases", async () => {
-            const startingOutputTokenBalance = getRandomInteger(0, '100e18');
-            const startingInputTokenBalance = getRandomInteger(0, '100e18');
-            await outputToken.mint(taker, startingOutputTokenBalance).awaitTransactionSuccessAsync();
-            await inputToken.mint(taker, startingInputTokenBalance).awaitTransactionSuccessAsync();
-            const inputTokenAmount = getRandomPortion(startingInputTokenBalance);
-            const minOutputTokenAmount = ZERO_AMOUNT;
-            const outputTokenFeeAmount = 1;
-            const callValue = getRandomInteger(1, '1e18');
-            const tx = feature
-                ._transformERC20(
-                    hexUtils.random(),
-                    taker,
+            it('passes empty calldata hash to transformer with unsigned calldata', async () => {
+                const startingOutputTokenBalance = getRandomInteger(0, '100e18');
+                const startingInputTokenBalance = getRandomInteger(0, '100e18');
+                await outputToken.mint(taker, startingOutputTokenBalance).awaitTransactionSuccessAsync();
+                await inputToken.mint(taker, startingInputTokenBalance).awaitTransactionSuccessAsync();
+                const inputTokenAmount = getRandomPortion(startingInputTokenBalance);
+                const minOutputTokenAmount = getRandomInteger(1, '1e18');
+                const outputTokenMintAmount = minOutputTokenAmount;
+                const callValue = getRandomInteger(1, '1e18');
+                const transformation = createMintTokenTransformation({
+                    outputTokenMintAmount,
+                    inputTokenBurnAmunt: inputTokenAmount,
+                });
+                const bakedCall = feature.transformERC20(
                     inputToken.address,
                     outputToken.address,
                     inputTokenAmount,
                     minOutputTokenAmount,
-                    [
-                        createMintTokenTransformation({
-                            outputTokenFeeAmount,
-                            inputTokenBurnAmunt: inputTokenAmount,
-                        }),
-                    ],
-                )
-                .awaitTransactionSuccessAsync({ value: callValue });
-            const expectedError = new ZeroExRevertErrors.TransformERC20.NegativeTransformERC20OutputError(
-                outputToken.address,
-                outputTokenFeeAmount,
-            );
-            return expect(tx).to.revertWith(expectedError);
-        });
+                    [transformation],
+                );
+                const callData = bakedCall.getABIEncodedTransactionData();
+                const receipt = await bakedCall.awaitTransactionSuccessAsync({
+                    from: taker,
+                    value: callValue,
+                    data: callData,
+                });
+                const { callDataHash: actualCallDataHash } = (receipt.logs[0] as MintTokenTransformerEvent).args;
+                expect(actualCallDataHash).to.eq(NULL_BYTES32);
+            });
 
-        it('can call multiple transformers', async () => {
-            const startingOutputTokenBalance = getRandomInteger(0, '100e18');
-            const startingInputTokenBalance = getRandomInteger(2, '100e18');
-            await outputToken.mint(taker, startingOutputTokenBalance).awaitTransactionSuccessAsync();
-            await inputToken.mint(taker, startingInputTokenBalance).awaitTransactionSuccessAsync();
-            const inputTokenAmount = getRandomPortion(startingInputTokenBalance);
-            const minOutputTokenAmount = getRandomInteger(2, '1e18');
-            const outputTokenMintAmount = minOutputTokenAmount;
-            const callValue = getRandomInteger(1, '1e18');
-            const callDataHash = hexUtils.random();
-            // Split the total minting between two transformers.
-            const transformations = [
-                createMintTokenTransformation({
-                    inputTokenBurnAmunt: 1,
-                    outputTokenMintAmount: 1,
-                }),
-                createMintTokenTransformation({
-                    inputTokenBurnAmunt: inputTokenAmount.minus(1),
-                    outputTokenMintAmount: outputTokenMintAmount.minus(1),
-                }),
-            ];
-            const receipt = await feature
-                ._transformERC20(
-                    callDataHash,
-                    taker,
+            it('passes empty calldata hash to transformer with calldata with malformed signature', async () => {
+                const startingOutputTokenBalance = getRandomInteger(0, '100e18');
+                const startingInputTokenBalance = getRandomInteger(0, '100e18');
+                await outputToken.mint(taker, startingOutputTokenBalance).awaitTransactionSuccessAsync();
+                await inputToken.mint(taker, startingInputTokenBalance).awaitTransactionSuccessAsync();
+                const inputTokenAmount = getRandomPortion(startingInputTokenBalance);
+                const minOutputTokenAmount = getRandomInteger(1, '1e18');
+                const outputTokenMintAmount = minOutputTokenAmount;
+                const callValue = getRandomInteger(1, '1e18');
+                const transformation = createMintTokenTransformation({
+                    outputTokenMintAmount,
+                    inputTokenBurnAmunt: inputTokenAmount,
+                });
+                const bakedCall = feature.transformERC20(
                     inputToken.address,
                     outputToken.address,
                     inputTokenAmount,
                     minOutputTokenAmount,
-                    transformations,
-                )
-                .awaitTransactionSuccessAsync({ value: callValue });
-            verifyEventsFromLogs(
-                receipt.logs,
-                [
-                    {
-                        callDataHash,
-                        taker,
-                        context: wallet.address,
-                        caller: zeroEx.address,
-                        data: transformations[0].data,
-                        inputTokenBalance: inputTokenAmount,
-                        ethBalance: callValue,
-                    },
-                    {
-                        callDataHash,
-                        taker,
-                        context: wallet.address,
-                        caller: zeroEx.address,
-                        data: transformations[1].data,
-                        inputTokenBalance: inputTokenAmount.minus(1),
-                        ethBalance: callValue,
-                    },
-                ],
-                TestMintTokenERC20TransformerEvents.MintTransform,
-            );
-        });
-
-        it('fails with invalid transformer nonce', async () => {
-            const startingOutputTokenBalance = getRandomInteger(0, '100e18');
-            const startingInputTokenBalance = getRandomInteger(2, '100e18');
-            await outputToken.mint(taker, startingOutputTokenBalance).awaitTransactionSuccessAsync();
-            await inputToken.mint(taker, startingInputTokenBalance).awaitTransactionSuccessAsync();
-            const inputTokenAmount = getRandomPortion(startingInputTokenBalance);
-            const minOutputTokenAmount = getRandomInteger(2, '1e18');
-            const callValue = getRandomInteger(1, '1e18');
-            const callDataHash = hexUtils.random();
-            const transformations = [createMintTokenTransformation({ deploymentNonce: 1337 })];
-            const tx = feature
-                ._transformERC20(
-                    callDataHash,
-                    taker,
-                    inputToken.address,
-                    outputToken.address,
-                    inputTokenAmount,
-                    minOutputTokenAmount,
-                    transformations,
-                )
-                .awaitTransactionSuccessAsync({ value: callValue });
-            return expect(tx).to.revertWith(
-                new ZeroExRevertErrors.TransformERC20.TransformerFailedError(
-                    undefined,
-                    transformations[0].data,
-                    constants.NULL_BYTES,
-                ),
-            );
+                    [transformation],
+                );
+                const callData = bakedCall.getABIEncodedTransactionData();
+                const signedCallData = hexUtils.concat(
+                    hexUtils.slice(signCallData(callData, hexUtils.random()), 0, -1),
+                    127,
+                );
+                const receipt = await bakedCall.awaitTransactionSuccessAsync({
+                    from: taker,
+                    value: callValue,
+                    data: signedCallData,
+                });
+                const { callDataHash: actualCallDataHash } = (receipt.logs[0] as MintTokenTransformerEvent).args;
+                expect(actualCallDataHash).to.eq(NULL_BYTES32);
+            });
         });
     });
 });

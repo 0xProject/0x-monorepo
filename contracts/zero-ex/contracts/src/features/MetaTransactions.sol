@@ -26,6 +26,7 @@ import "../fixins/FixinCommon.sol";
 import "../fixins/FixinEIP712.sol";
 import "../migrations/LibMigrate.sol";
 import "../storage/LibMetaTransactionsStorage.sol";
+import "./libs/LibSignedCallData.sol";
 import "./IMetaTransactions.sol";
 import "./ITransformERC20.sol";
 import "./ISignatureValidator.sol";
@@ -43,18 +44,27 @@ contract MetaTransactions is
     using LibBytesV06 for bytes;
     using LibRichErrorsV06 for bytes;
 
-    /// @dev Intermediate state vars to avoid stack overflows.
+    /// @dev Intermediate state vars used by `_executeMetaTransactionPrivate()`
+    ///      to avoid stack overflows.
     struct ExecuteState {
+        // Sender of the meta-transaction.
         address sender;
+        // Hash of the meta-transaction data.
         bytes32 hash;
+        // The meta-transaction data.
         MetaTransactionData mtx;
+        // The meta-transaction signature (by `mtx.signer`).
         bytes signature;
+        // The selector of the function being called.
         bytes4 selector;
+        // The ETH balance of this contract before performing the call.
         uint256 selfBalance;
+        // The block number at which the meta-transaction was executed.
         uint256 executedBlockNumber;
     }
 
-    struct TransformERC20Args {
+    /// @dev Arguments for a `TransformERC20.transformERC20()` call.
+    struct ExternalTransformERC20Args {
         IERC20TokenV06 inputToken;
         IERC20TokenV06 outputToken;
         uint256 inputTokenAmount;
@@ -379,7 +389,7 @@ contract MetaTransactions is
         // | transformations (offset) |     160 | = 32
         // | transformations (data)   |     192 |
 
-        TransformERC20Args memory args;
+        ExternalTransformERC20Args memory args;
         {
             bytes memory encodedStructArgs = new bytes(state.mtx.callData.length - 4 + 32);
             // Copy the args data from the original, after the new struct offset prefix.
@@ -388,8 +398,8 @@ contract MetaTransactions is
             uint256 fromMem;
             uint256 toMem;
             assembly {
-                // Prefix the original calldata with a struct offset,
-                // which is just one word over.
+                // Prefix the calldata with a struct offset,
+                // which points to just one word over.
                 mstore(add(encodedStructArgs, 32), 32)
                 // Copy everything after the selector.
                 fromMem := add(fromCallData, 36)
@@ -398,20 +408,27 @@ contract MetaTransactions is
             }
             LibBytesV06.memCopy(toMem, fromMem, fromCallData.length - 4);
             // Decode call args for `ITransformERC20.transformERC20()` as a struct.
-            args = abi.decode(encodedStructArgs, (TransformERC20Args));
+            args = abi.decode(encodedStructArgs, (ExternalTransformERC20Args));
         }
+        // Parse the signature and hash out of the calldata so `_transformERC20()`
+        // can authenticate it.
+        (bytes32 callDataHash, bytes memory callDataSignature) =
+            LibSignedCallData.parseCallData(state.mtx.callData);
         // Call `ITransformERC20._transformERC20()` (internal variant).
         return _callSelf(
             state.hash,
             abi.encodeWithSelector(
                 ITransformERC20._transformERC20.selector,
-                keccak256(state.mtx.callData),
-                state.mtx.signer, // taker is mtx signer
-                args.inputToken,
-                args.outputToken,
-                args.inputTokenAmount,
-                args.minOutputTokenAmount,
-                args.transformations
+                ITransformERC20.TransformERC20Args({
+                    taker: state.mtx.signer, // taker is mtx signer
+                    inputToken: args.inputToken,
+                    outputToken: args.outputToken,
+                    inputTokenAmount: args.inputTokenAmount,
+                    minOutputTokenAmount: args.minOutputTokenAmount,
+                    transformations: args.transformations,
+                    callDataHash: callDataHash,
+                    callDataSignature: callDataSignature
+              })
             ),
             state.mtx.value
         );

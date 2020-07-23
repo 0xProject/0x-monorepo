@@ -37,6 +37,33 @@ interface ITransformERC20 {
         bytes data;
     }
 
+    /// @dev Arguments for `_transformERC20()`.
+    struct TransformERC20Args {
+        // The taker address.
+        address payable taker;
+        // The token being provided by the taker.
+        // If `0xeee...`, ETH is implied and should be provided with the call.`
+        IERC20TokenV06 inputToken;
+        // The token to be acquired by the taker.
+        // `0xeee...` implies ETH.
+        IERC20TokenV06 outputToken;
+        // The amount of `inputToken` to take from the taker.
+        // If set to `uint256(-1)`, the entire spendable balance of the taker
+        // will be solt.
+        uint256 inputTokenAmount;
+        // The minimum amount of `outputToken` the taker
+        // must receive for the entire transformation to succeed. If set to zero,
+        // the minimum output token transfer will not be asserted.
+        uint256 minOutputTokenAmount;
+        // The transformations to execute on the token balance(s)
+        // in sequence.
+        Transformation[] transformations;
+        // The hash of the calldata for the `transformERC20()` call.
+        bytes32 callDataHash;
+        // The signature for `callDataHash` signed by `getQuoteSigner()`.
+        bytes callDataSignature;
+    }
+
     /// @dev Raised upon a successful `transformERC20`.
     /// @param taker The taker (caller) address.
     /// @param inputToken The token being provided by the taker.
@@ -57,10 +84,21 @@ interface ITransformERC20 {
     /// @param transformerDeployer The new deployer address.
     event TransformerDeployerUpdated(address transformerDeployer);
 
+    /// @dev Raised when `setQuoteSigner()` is called.
+    /// @param quoteSigner The new quote signer.
+    event QuoteSignerUpdated(address quoteSigner);
+
     /// @dev Replace the allowed deployer for transformers.
     ///      Only callable by the owner.
-    /// @param transformerDeployer The address of the trusted deployer for transformers.
+    /// @param transformerDeployer The address of the new trusted deployer
+    ///        for transformers.
     function setTransformerDeployer(address transformerDeployer)
+        external;
+
+    /// @dev Replace the optional signer for `transformERC20()` calldata.
+    ///      Only callable by the owner.
+    /// @param quoteSigner The address of the new calldata signer.
+    function setQuoteSigner(address quoteSigner)
         external;
 
     /// @dev Deploy a new flash wallet instance and replace the current one with it.
@@ -95,27 +133,9 @@ interface ITransformERC20 {
         returns (uint256 outputTokenAmount);
 
     /// @dev Internal version of `transformERC20()`. Only callable from within.
-    /// @param callDataHash Hash of the ingress calldata.
-    /// @param taker The taker address.
-    /// @param inputToken The token being provided by the taker.
-    ///        If `0xeee...`, ETH is implied and should be provided with the call.`
-    /// @param outputToken The token to be acquired by the taker.
-    ///        `0xeee...` implies ETH.
-    /// @param inputTokenAmount The amount of `inputToken` to take from the taker.
-    /// @param minOutputTokenAmount The minimum amount of `outputToken` the taker
-    ///        must receive for the entire transformation to succeed.
-    /// @param transformations The transformations to execute on the token balance(s)
-    ///        in sequence.
+    /// @param args A `TransformERC20Args` struct.
     /// @return outputTokenAmount The amount of `outputToken` received by the taker.
-    function _transformERC20(
-        bytes32 callDataHash,
-        address payable taker,
-        IERC20TokenV06 inputToken,
-        IERC20TokenV06 outputToken,
-        uint256 inputTokenAmount,
-        uint256 minOutputTokenAmount,
-        Transformation[] calldata transformations
-    )
+    function _transformERC20(TransformERC20Args calldata args)
         external
         payable
         returns (uint256 outputTokenAmount);
@@ -134,4 +154,11 @@ interface ITransformERC20 {
         external
         view
         returns (address deployer);
+
+    /// @dev Return the optional signer for `transformERC20()` calldata.
+    /// @return signer The transform deployer address.
+    function getQuoteSigner()
+        external
+        view
+        returns (address signer);
 }
