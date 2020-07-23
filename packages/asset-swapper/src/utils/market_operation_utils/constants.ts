@@ -56,15 +56,13 @@ export const FEE_QUOTE_SOURCES = [
  * Mainnet Curve configuration
  */
 export const MAINNET_CURVE_INFOS: { [name: string]: CurveInfo } = {
-    // Busted?
-    // DaiUsdc: {
-    //     exchangeFunctionSelector: CurveFunctionSelectors.exchange_underlying,
-    //     sellQuoteFunctionSelector: CurveFunctionSelectors.get_dy_underlying,
-    //     buyQuoteFunctionSelector: CurveFunctionSelectors.get_dx_underlying,
-    //     poolAddress: '0xa2b47e3d5c44877cca798226b7b8118f9bfb7a56',
-    //     tokens: ['0x6b175474e89094c44da98b954eedeac495271d0f', '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'],
-    // },
-    // Busted?
+    DaiUsdc: {
+        exchangeFunctionSelector: CurveFunctionSelectors.exchange_underlying,
+        sellQuoteFunctionSelector: CurveFunctionSelectors.get_dy_underlying,
+        buyQuoteFunctionSelector: CurveFunctionSelectors.get_dx_underlying,
+        poolAddress: '0xa2b47e3d5c44877cca798226b7b8118f9bfb7a56',
+        tokens: ['0x6b175474e89094c44da98b954eedeac495271d0f', '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'],
+    },
     // DaiUsdcUsdt: {
     //     exchangeFunctionSelector: CurveFunctionSelectors.exchange_underlying,
     //     sellQuoteFunctionSelector: CurveFunctionSelectors.get_dy_underlying,
