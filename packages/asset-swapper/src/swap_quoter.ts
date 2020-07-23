@@ -181,8 +181,8 @@ export class SwapQuoter {
         const samplerBytecode = _.get(ERC20BridgeSampler, 'compilerOutput.evm.deployedBytecode.object');
         const defaultCodeOverrides = samplerBytecode
             ? {
-                [this._contractAddresses.erc20BridgeSampler]: { code: samplerBytecode },
-            }
+                  [this._contractAddresses.erc20BridgeSampler]: { code: samplerBytecode },
+              }
             : {};
         const samplerOverrides = _.assign(
             { block: BlockParamLiteral.Latest, overrides: defaultCodeOverrides },
