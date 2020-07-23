@@ -351,41 +351,45 @@ describe('MarketOperationUtils tests', () => {
                 MarketOperation.Sell,
                 new BigNumber('100e18'),
                 {
-                    rfqt: {quoteRequestor: requestor.object, ...partialRfqt},
+                    rfqt: { quoteRequestor: requestor.object, ...partialRfqt },
                     excludedSources: [ERC20BridgeSource.Native],
                 },
             );
             expect(result.length).to.eql(0);
             requestor.verify(
-                r => r.requestRfqtIndicativeQuotesAsync(
-                    TypeMoq.It.isAny(),
-                    TypeMoq.It.isAny(),
-                    TypeMoq.It.isAny(),
-                    TypeMoq.It.isAny(),
-                    TypeMoq.It.isAny(),
-                ),
+                r =>
+                    r.requestRfqtIndicativeQuotesAsync(
+                        TypeMoq.It.isAny(),
+                        TypeMoq.It.isAny(),
+                        TypeMoq.It.isAny(),
+                        TypeMoq.It.isAny(),
+                        TypeMoq.It.isAny(),
+                    ),
                 TypeMoq.Times.never(),
             );
         });
 
         it('calls RFQT if Native source is not excluded', async () => {
             const requestor = TypeMoq.Mock.ofType(QuoteRequestor, TypeMoq.MockBehavior.Loose);
-            requestor.setup(
-                r => r.requestRfqtIndicativeQuotesAsync(
-                    TypeMoq.It.isAny(),
-                    TypeMoq.It.isAny(),
-                    TypeMoq.It.isAny(),
-                    TypeMoq.It.isAny(),
-                    TypeMoq.It.isAny(),
-                ),
-            ).returns(() => Promise.resolve([])).verifiable(TypeMoq.Times.once());
+            requestor
+                .setup(r =>
+                    r.requestRfqtIndicativeQuotesAsync(
+                        TypeMoq.It.isAny(),
+                        TypeMoq.It.isAny(),
+                        TypeMoq.It.isAny(),
+                        TypeMoq.It.isAny(),
+                        TypeMoq.It.isAny(),
+                    ),
+                )
+                .returns(() => Promise.resolve([]))
+                .verifiable(TypeMoq.Times.once());
             await getRfqtIndicativeQuotesAsync(
                 MAKER_ASSET_DATA,
                 TAKER_ASSET_DATA,
                 MarketOperation.Sell,
                 new BigNumber('100e18'),
                 {
-                    rfqt: {quoteRequestor: requestor.object, ...partialRfqt},
+                    rfqt: { quoteRequestor: requestor.object, ...partialRfqt },
                     excludedSources: [],
                 },
             );

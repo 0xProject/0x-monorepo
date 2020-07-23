@@ -26,6 +26,14 @@ import {
     OrderDomain,
 } from './types';
 
+/**
+ * Returns a indicative quotes or an empty array if RFQT is not enabled or requested
+ * @param makerAssetData the maker asset data
+ * @param takerAssetData the taker asset data
+ * @param marketOperation Buy or Sell
+ * @param assetFillAmount the amount to fill, in base units
+ * @param opts market request options
+ */
 export async function getRfqtIndicativeQuotesAsync(
     makerAssetData: string,
     takerAssetData: string,

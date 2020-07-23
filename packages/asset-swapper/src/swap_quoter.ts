@@ -559,7 +559,11 @@ export class SwapQuoter {
 
         // If RFQT is enabled and `nativeExclusivelyRFQT` is set, then `ERC20BridgeSource.Native` should
         // never be excluded.
-        if ((opts.rfqt && opts.rfqt.nativeExclusivelyRFQT === true) && opts.excludedSources.includes(ERC20BridgeSource.Native)) {
+        if (
+            opts.rfqt &&
+            opts.rfqt.nativeExclusivelyRFQT === true &&
+            opts.excludedSources.includes(ERC20BridgeSource.Native)
+        ) {
             throw new Error('Native liquidity cannot be excluded if "rfqt.nativeExclusivelyRFQT" is set');
         }
 
@@ -567,15 +571,16 @@ export class SwapQuoter {
         const orderBatchPromises: Array<Promise<SignedOrder[]>> = [];
         orderBatchPromises.push(
             // Don't fetch Open Orderbook orders from the DB if Native has been excluded, or if `nativeExclusivelyRFQT` has been set.
-            opts.excludedSources.includes(ERC20BridgeSource.Native) || (opts.rfqt && opts.rfqt.nativeExclusivelyRFQT === true)
+            opts.excludedSources.includes(ERC20BridgeSource.Native) ||
+                (opts.rfqt && opts.rfqt.nativeExclusivelyRFQT === true)
                 ? Promise.resolve([])
                 : this._getSignedOrdersAsync(makerAssetData, takerAssetData),
         );
         if (
-            opts.rfqt &&    // This is an RFQT-enabled API request
-            opts.rfqt.intentOnFilling &&    // The requestor is asking for a firm quote
-            !opts.excludedSources.includes(ERC20BridgeSource.Native) &&   // Native liquidity is not excluded
-            this._rfqtTakerApiKeyWhitelist.includes(opts.rfqt.apiKey)    // A valid API key was provided
+            opts.rfqt && // This is an RFQT-enabled API request
+            opts.rfqt.intentOnFilling && // The requestor is asking for a firm quote
+            !opts.excludedSources.includes(ERC20BridgeSource.Native) && // Native liquidity is not excluded
+            this._rfqtTakerApiKeyWhitelist.includes(opts.rfqt.apiKey) // A valid API key was provided
         ) {
             if (!opts.rfqt.takerAddress || opts.rfqt.takerAddress === constants.NULL_ADDRESS) {
                 throw new Error('RFQ-T requests must specify a taker address');
