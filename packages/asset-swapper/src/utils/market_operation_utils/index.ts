@@ -394,10 +394,9 @@ export class MarketOperationUtils {
         const sampleAmounts = getSampleAmounts(sellAmount, _opts.numSamples, _opts.sampleDistributionBase);
 
         // Call the sampler contract.
-        const samplerPromise = this._sampler.executeAsync(
+        const sellSamplerPromise = this._sampler.executeAsync(
             // Get native order fillable amounts.
             DexOrderSampler.ops.getOrderFillableTakerAmounts(sellOrders, this.contractAddresses.devUtils),
-            DexOrderSampler.ops.getOrderFillableTakerAmounts(buyOrders, this.contractAddresses.devUtils),
             await DexOrderSampler.ops.getSellQuotesAsync(
                 difference(
                     SELL_SOURCES.concat(this._optionalSources()),
@@ -411,6 +410,10 @@ export class MarketOperationUtils {
                 this._liquidityProviderRegistry,
                 this._multiBridge,
             ),
+        );
+        const buySamplerPromise = this._sampler.executeAsync(
+            // Get native order fillable amounts.
+            DexOrderSampler.ops.getOrderFillableTakerAmounts(buyOrders, this.contractAddresses.devUtils),
             await DexOrderSampler.ops.getBuyQuotesAsync(
                 difference(
                     BUY_SOURCES.concat(this._optionalSources()),
@@ -436,6 +439,7 @@ export class MarketOperationUtils {
                 this._multiBridge,
             )
             .then(async result => this._sampler.executeAsync(result));
+
         const balancerBuyPromise = DexOrderSampler.ops
             .getBuyQuotesAsync(
                 difference([ERC20BridgeSource.Balancer], _opts.excludedSources),
@@ -449,32 +453,49 @@ export class MarketOperationUtils {
             .then(async result => this._sampler.executeAsync(result));
 
         const [
-            [sellOrderFillableAmounts, buyOrderFillableAmounts, dexSellQuotes, dexBuyQuotes],
+            [sellOrderFillableAmounts, dexSellQuotes],
+            [buyOrderFillableAmounts, dexBuyQuotes],
             [balancerSellQuotes],
             [balancerBuyQuotes],
-        ] = await Promise.all([samplerPromise, balancerSellPromise, balancerBuyPromise]);
-        // TODO RFQT is currently missing here
+        ] = await Promise.all([sellSamplerPromise, buySamplerPromise, balancerSellPromise, balancerBuyPromise]);
+        // TODO RFQT is currently missing
         const getMarketDepthSide = (
             dexQuotes: Array<Array<DexSample<FillData>>>,
             nativeOrders: SignedOrder[],
             orderFillableAmounts: BigNumber[],
+            side: MarketOperation,
         ): MarketDepthSide => {
             return [
                 ...dexQuotes,
-                nativeOrders
-                    .sort((a, b) => a.takerAssetAmount.comparedTo(b.takerAssetAmount))
-                    .map(o => ({
-                        input: o.takerAssetAmount,
-                        output: o.makerAssetAmount,
+                nativeOrders.map((o, i) => {
+                    const scaleFactor = orderFillableAmounts[i].div(o.takerAssetAmount);
+                    return {
+                        input: (side === MarketOperation.Sell ? o.takerAssetAmount : o.makerAssetAmount)
+                            .times(scaleFactor)
+                            .integerValue(),
+                        output: (side === MarketOperation.Sell ? o.makerAssetAmount : o.takerAssetAmount)
+                            .times(scaleFactor)
+                            .integerValue(),
                         fillData: o,
                         source: ERC20BridgeSource.Native,
-                    })),
+                    };
+                }),
             ];
         };
 
         return {
-            bids: getMarketDepthSide([...dexBuyQuotes, ...balancerBuyQuotes], buyOrders, buyOrderFillableAmounts),
-            asks: getMarketDepthSide([...dexSellQuotes, ...balancerSellQuotes], sellOrders, sellOrderFillableAmounts),
+            bids: getMarketDepthSide(
+                [...dexBuyQuotes, ...balancerBuyQuotes],
+                buyOrders,
+                buyOrderFillableAmounts,
+                MarketOperation.Buy,
+            ),
+            asks: getMarketDepthSide(
+                [...dexSellQuotes, ...balancerSellQuotes],
+                sellOrders,
+                sellOrderFillableAmounts,
+                MarketOperation.Sell,
+            ),
         };
     }
 

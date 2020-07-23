@@ -413,16 +413,28 @@ export class SwapQuoter {
         assert.isString('takerTokenAddress', takerTokenAddress);
         const makerAssetData = assetDataUtils.encodeERC20AssetData(makerTokenAddress);
         const takerAssetData = assetDataUtils.encodeERC20AssetData(takerTokenAddress);
-        const [sellOrders, buyOrders] =
+        let [sellOrders, buyOrders] =
             options.excludedSources && options.excludedSources.includes(ERC20BridgeSource.Native)
                 ? Promise.resolve([[], []])
                 : await Promise.all([
                       this.orderbook.getOrdersAsync(makerAssetData, takerAssetData),
                       this.orderbook.getOrdersAsync(takerAssetData, makerAssetData),
                   ]);
+        if (!sellOrders || sellOrders.length === 0) {
+            sellOrders = [
+                {
+                    metaData: {},
+                    order: createDummyOrderForSampler(
+                        makerAssetData,
+                        takerAssetData,
+                        this._contractAddresses.uniswapBridge,
+                    ),
+                },
+            ];
+        }
         return this._marketOperationUtils.getMarketDepthAsync(
-            sellOrders.map(o => o.order),
-            buyOrders.map(o => o.order),
+            (sellOrders || []).map(o => o.order),
+            (buyOrders || []).map(o => o.order),
             takerAssetAmount,
             options,
         );
