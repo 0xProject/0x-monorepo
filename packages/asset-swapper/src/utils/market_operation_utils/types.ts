@@ -65,7 +65,7 @@ export interface CurveInfo {
 }
 
 // Internal `fillData` field for `Fill` objects.
-export interface FillData { }
+export interface FillData {}
 
 // `FillData` for native fills.
 export interface NativeFillData extends FillData {
@@ -163,7 +163,7 @@ export interface CollapsedFill<TFillData extends FillData = FillData> {
 /**
  * A `CollapsedFill` wrapping a native order.
  */
-export interface NativeCollapsedFill extends CollapsedFill<NativeFillData> { }
+export interface NativeCollapsedFill extends CollapsedFill<NativeFillData> {}
 
 /**
  * Optimized orders to fill.

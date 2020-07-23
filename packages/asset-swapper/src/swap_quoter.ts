@@ -181,8 +181,8 @@ export class SwapQuoter {
         const samplerBytecode = _.get(ERC20BridgeSampler, 'compilerOutput.evm.deployedBytecode.object');
         const defaultCodeOverrides = samplerBytecode
             ? {
-                [this._contractAddresses.erc20BridgeSampler]: { code: samplerBytecode },
-            }
+                  [this._contractAddresses.erc20BridgeSampler]: { code: samplerBytecode },
+              }
             : {};
         const samplerOverrides = _.assign(
             { block: BlockParamLiteral.Latest, overrides: defaultCodeOverrides },
@@ -565,7 +565,8 @@ export class SwapQuoter {
         // get batches of orders from different sources, awaiting sources in parallel
         const orderBatchPromises: Array<Promise<SignedOrder[]>> = [];
 
-        const skipOpenOrderbook = opts.excludedSources.includes(ERC20BridgeSource.Native) ||
+        const skipOpenOrderbook =
+            opts.excludedSources.includes(ERC20BridgeSource.Native) ||
             (opts.rfqt && opts.rfqt.nativeExclusivelyRFQT === true);
         if (!skipOpenOrderbook) {
             orderBatchPromises.push(this._getSignedOrdersAsync(makerAssetData, takerAssetData)); // order book
