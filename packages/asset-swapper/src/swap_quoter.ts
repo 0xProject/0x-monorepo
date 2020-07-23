@@ -584,7 +584,7 @@ export class SwapQuoter {
             opts.rfqt.intentOnFilling && // The requestor is asking for a firm quote
             opts.rfqt.apiKey &&
             this._isApiKeyWhitelisted(opts.rfqt.apiKey) && // A valid API key was provided
-            !opts.excludedSources.includes(ERC20BridgeSource.Native) && // Native liquidity is not excluded
+            !opts.excludedSources.includes(ERC20BridgeSource.Native) // Native liquidity is not excluded
         ) {
             if (!opts.rfqt.takerAddress || opts.rfqt.takerAddress === constants.NULL_ADDRESS) {
                 throw new Error('RFQ-T requests must specify a taker address');
