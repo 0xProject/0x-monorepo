@@ -5,12 +5,7 @@
             {
                 "note": "Return quoteReport from SwapQuoter functions",
                 "pr": 2627
-            }
-        ]
-    },
-    {
-        "version": "4.6.1",
-        "changes": [
+            },
             {
                 "note": "Allow an empty override for sampler overrides",
                 "pr": 2637
