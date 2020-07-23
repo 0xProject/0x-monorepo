@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.7.0",
+        "changes": [
+            {
+                "note": "Update curveBridge tests",
+                "pr": 2633
+            }
+        ]
+    },
+    {
         "version": "2.6.0",
         "changes": [
             {

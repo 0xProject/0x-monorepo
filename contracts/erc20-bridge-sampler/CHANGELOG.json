@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.8.0",
+        "changes": [
+            {
+                "note": "Refactor and support more varied curves",
+                "pr": 2633
+            }
+        ]
+    },
+    {
         "version": "1.7.0",
         "changes": [
             {

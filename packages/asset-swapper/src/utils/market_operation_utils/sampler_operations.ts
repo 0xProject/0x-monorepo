@@ -3,15 +3,14 @@ import * as _ from 'lodash';
 import { BigNumber, ERC20BridgeSource, SignedOrder } from '../..';
 
 import { BalancerPool, BalancerPoolsCache, computeBalancerBuyQuote, computeBalancerSellQuote } from './balancer_utils';
-import { DEFAULT_FAKE_BUY_OPTS, MAINNET_CURVE_CONTRACTS } from './constants';
-import { getCurveAddressesForPair } from './curve_utils';
+import { getCurveInfosForPair } from './curve_utils';
 import { getMultiBridgeIntermediateToken } from './multibridge_utils';
 import {
     BalancerFillData,
     BatchedOperation,
     CurveFillData,
+    CurveInfo,
     DexSample,
-    FakeBuyOpts,
     SourceQuoteOperation,
     UniswapV2FillData,
 } from './types';
@@ -58,17 +57,12 @@ export const samplerOperations = {
             },
         };
     },
-    getKyberBuyQuotes(
-        makerToken: string,
-        takerToken: string,
-        makerFillAmounts: BigNumber[],
-        fakeBuyOpts: FakeBuyOpts = DEFAULT_FAKE_BUY_OPTS,
-    ): SourceQuoteOperation {
+    getKyberBuyQuotes(makerToken: string, takerToken: string, makerFillAmounts: BigNumber[]): SourceQuoteOperation {
         return {
             source: ERC20BridgeSource.Kyber,
             encodeCall: contract => {
                 return contract
-                    .sampleBuysFromKyberNetwork(takerToken, makerToken, makerFillAmounts, fakeBuyOpts)
+                    .sampleBuysFromKyberNetwork(takerToken, makerToken, makerFillAmounts)
                     .getABIEncodedTransactionData();
             },
             handleCallResultsAsync: async (contract, callResults) => {
@@ -162,19 +156,12 @@ export const samplerOperations = {
         makerToken: string,
         takerToken: string,
         makerFillAmounts: BigNumber[],
-        fakeBuyOpts: FakeBuyOpts = DEFAULT_FAKE_BUY_OPTS,
     ): SourceQuoteOperation {
         return {
             source: ERC20BridgeSource.LiquidityProvider,
             encodeCall: contract => {
                 return contract
-                    .sampleBuysFromLiquidityProviderRegistry(
-                        registryAddress,
-                        takerToken,
-                        makerToken,
-                        makerFillAmounts,
-                        fakeBuyOpts,
-                    )
+                    .sampleBuysFromLiquidityProviderRegistry(registryAddress, takerToken, makerToken, makerFillAmounts)
                     .getABIEncodedTransactionData();
             },
             handleCallResultsAsync: async (contract, callResults) => {
@@ -237,7 +224,7 @@ export const samplerOperations = {
         };
     },
     getCurveSellQuotes(
-        curveAddress: string,
+        curve: CurveInfo,
         fromTokenIdx: number,
         toTokenIdx: number,
         takerFillAmounts: BigNumber[],
@@ -245,14 +232,18 @@ export const samplerOperations = {
         return {
             source: ERC20BridgeSource.Curve,
             fillData: {
-                poolAddress: curveAddress,
+                curve,
                 fromTokenIdx,
                 toTokenIdx,
             },
             encodeCall: contract => {
                 return contract
                     .sampleSellsFromCurve(
-                        curveAddress,
+                        {
+                            poolAddress: curve.poolAddress,
+                            sellQuoteFunctionSelector: curve.sellQuoteFunctionSelector,
+                            buyQuoteFunctionSelector: curve.buyQuoteFunctionSelector,
+                        },
                         new BigNumber(fromTokenIdx),
                         new BigNumber(toTokenIdx),
                         takerFillAmounts,
@@ -265,7 +256,7 @@ export const samplerOperations = {
         };
     },
     getCurveBuyQuotes(
-        curveAddress: string,
+        curve: CurveInfo,
         fromTokenIdx: number,
         toTokenIdx: number,
         makerFillAmounts: BigNumber[],
@@ -273,14 +264,18 @@ export const samplerOperations = {
         return {
             source: ERC20BridgeSource.Curve,
             fillData: {
-                poolAddress: curveAddress,
+                curve,
                 fromTokenIdx,
                 toTokenIdx,
             },
             encodeCall: contract => {
                 return contract
                     .sampleBuysFromCurve(
-                        curveAddress,
+                        {
+                            poolAddress: curve.poolAddress,
+                            sellQuoteFunctionSelector: curve.sellQuoteFunctionSelector,
+                            buyQuoteFunctionSelector: curve.buyQuoteFunctionSelector,
+                        },
                         new BigNumber(fromTokenIdx),
                         new BigNumber(toTokenIdx),
                         makerFillAmounts,
@@ -416,11 +411,11 @@ export const samplerOperations = {
                             case ERC20BridgeSource.Kyber:
                                 return samplerOperations.getKyberSellQuotes(makerToken, takerToken, takerFillAmounts);
                             case ERC20BridgeSource.Curve:
-                                return getCurveAddressesForPair(takerToken, makerToken).map(curveAddress =>
+                                return getCurveInfosForPair(takerToken, makerToken).map(curve =>
                                     samplerOperations.getCurveSellQuotes(
-                                        curveAddress,
-                                        MAINNET_CURVE_CONTRACTS[curveAddress].indexOf(takerToken),
-                                        MAINNET_CURVE_CONTRACTS[curveAddress].indexOf(makerToken),
+                                        curve,
+                                        curve.tokens.indexOf(takerToken),
+                                        curve.tokens.indexOf(makerToken),
                                         takerFillAmounts,
                                     ),
                                 );
@@ -502,7 +497,6 @@ export const samplerOperations = {
         wethAddress: string,
         balancerPoolsCache?: BalancerPoolsCache,
         liquidityProviderRegistryAddress?: string,
-        fakeBuyOpts: FakeBuyOpts = DEFAULT_FAKE_BUY_OPTS,
     ): Promise<BatchedOperation<DexSample[][]>> => {
         const subOps = _.flatten(
             await Promise.all(
@@ -527,18 +521,13 @@ export const samplerOperations = {
                                 }
                                 return ops;
                             case ERC20BridgeSource.Kyber:
-                                return samplerOperations.getKyberBuyQuotes(
-                                    makerToken,
-                                    takerToken,
-                                    makerFillAmounts,
-                                    fakeBuyOpts,
-                                );
+                                return samplerOperations.getKyberBuyQuotes(makerToken, takerToken, makerFillAmounts);
                             case ERC20BridgeSource.Curve:
-                                return getCurveAddressesForPair(takerToken, makerToken).map(curveAddress =>
+                                return getCurveInfosForPair(takerToken, makerToken).map(curve =>
                                     samplerOperations.getCurveBuyQuotes(
-                                        curveAddress,
-                                        MAINNET_CURVE_CONTRACTS[curveAddress].indexOf(takerToken),
-                                        MAINNET_CURVE_CONTRACTS[curveAddress].indexOf(makerToken),
+                                        curve,
+                                        curve.tokens.indexOf(takerToken),
+                                        curve.tokens.indexOf(makerToken),
                                         makerFillAmounts,
                                     ),
                                 );
@@ -553,7 +542,6 @@ export const samplerOperations = {
                                     makerToken,
                                     takerToken,
                                     makerFillAmounts,
-                                    fakeBuyOpts,
                                 );
                             case ERC20BridgeSource.Balancer:
                                 if (balancerPoolsCache === undefined) {

@@ -1,6 +1,6 @@
 [
     {
-        "version": "4.6.1",
+        "version": "4.7.0",
         "changes": [
             {
                 "note": "Allow an empty override for sampler overrides",
@@ -9,6 +9,10 @@
             {
                 "note": "Potentially heavy CPU functions inside the optimizer now yield to the event loop. As such they are now async.",
                 "pr": 2637
+            },
+            {
+                "note": "Support more varied curves",
+                "pr": 2633
             }
         ]
     },

@@ -5,6 +5,10 @@
             {
                 "note": "Add `IZeroEx` artifact",
                 "pr": 2626
+            },
+            {
+                "note": "Update `ERC20BridgeSampler` artifact",
+                "pr": 2633
             }
         ]
     },

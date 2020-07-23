@@ -26,7 +26,6 @@ import "@0x/contracts-exchange-libs/contracts/src/IWallet.sol";
 import "@0x/contracts-utils/contracts/src/DeploymentConstants.sol";
 import "../interfaces/IERC20Bridge.sol";
 import "../interfaces/ICurve.sol";
-import "./MixinGasToken.sol";
 
 
 // solhint-disable not-rely-on-time
@@ -34,14 +33,14 @@ import "./MixinGasToken.sol";
 contract CurveBridge is
     IERC20Bridge,
     IWallet,
-    DeploymentConstants,
-    MixinGasToken
+    DeploymentConstants
 {
     struct CurveBridgeData {
         address curveAddress;
+        bytes4 exchangeFunctionSelector;
+        address fromTokenAddress;
         int128 fromCoinIdx;
         int128 toCoinIdx;
-        int128 version;
     }
 
     /// @dev Callback for `ICurve`. Tries to buy `amount` of
@@ -62,39 +61,31 @@ contract CurveBridge is
         bytes calldata bridgeData
     )
         external
-        freesGasTokensFromCollector
         returns (bytes4 success)
     {
         // Decode the bridge data to get the Curve metadata.
         CurveBridgeData memory data = abi.decode(bridgeData, (CurveBridgeData));
 
-        address fromTokenAddress = ICurve(data.curveAddress).underlying_coins(data.fromCoinIdx);
-        require(toTokenAddress != fromTokenAddress, "CurveBridge/INVALID_PAIR");
-        uint256 fromTokenBalance = IERC20Token(fromTokenAddress).balanceOf(address(this));
+        require(toTokenAddress != data.fromTokenAddress, "CurveBridge/INVALID_PAIR");
+        uint256 fromTokenBalance = IERC20Token(data.fromTokenAddress).balanceOf(address(this));
         // Grant an allowance to the exchange to spend `fromTokenAddress` token.
-        LibERC20Token.approveIfBelow(fromTokenAddress, data.curveAddress, fromTokenBalance);
+        LibERC20Token.approveIfBelow(data.fromTokenAddress, data.curveAddress, fromTokenBalance);
 
         // Try to sell all of this contract's `fromTokenAddress` token balance.
-        if (data.version == 0) {
-            ICurve(data.curveAddress).exchange_underlying(
-                data.fromCoinIdx,
-                data.toCoinIdx,
-                // dx
-                fromTokenBalance,
-                // min dy
-                amount,
-                // expires
-                block.timestamp + 1
-            );
-        } else {
-            ICurve(data.curveAddress).exchange_underlying(
-                data.fromCoinIdx,
-                data.toCoinIdx,
-                // dx
-                fromTokenBalance,
-                // min dy
-                amount
-            );
+        {
+            (bool didSucceed, bytes memory resultData) =
+                data.curveAddress.call(abi.encodeWithSelector(
+                    data.exchangeFunctionSelector,
+                    data.fromCoinIdx,
+                    data.toCoinIdx,
+                    // dx
+                    fromTokenBalance,
+                    // min dy
+                    amount
+                ));
+            if (!didSucceed) {
+                assembly { revert(add(resultData, 32), mload(resultData)) }
+            }
         }
 
         uint256 toTokenBalance = IERC20Token(toTokenAddress).balanceOf(address(this));
@@ -102,7 +93,7 @@ contract CurveBridge is
         LibERC20Token.transfer(toTokenAddress, to, toTokenBalance);
 
         emit ERC20BridgeTransfer(
-            fromTokenAddress,
+            data.fromTokenAddress,
             toTokenAddress,
             fromTokenBalance,
             toTokenBalance,

@@ -302,7 +302,17 @@ describe('MarketOperationUtils tests', () => {
     const DEFAULT_FILL_DATA: FillDataBySource = {
         [ERC20BridgeSource.UniswapV2]: { tokenAddressPath: [] },
         [ERC20BridgeSource.Balancer]: { poolAddress: randomAddress() },
-        [ERC20BridgeSource.Curve]: { poolAddress: randomAddress(), fromTokenIdx: 0, toTokenIdx: 1 },
+        [ERC20BridgeSource.Curve]: {
+            curve: {
+                poolAddress: randomAddress(),
+                tokens: [TAKER_TOKEN, MAKER_TOKEN],
+                exchangeFunctionSelector: hexUtils.random(4),
+                sellQuoteFunctionSelector: hexUtils.random(4),
+                buyQuoteFunctionSelector: hexUtils.random(4),
+            },
+            fromTokenIdx: 0,
+            toTokenIdx: 1,
+        },
     };
 
     const DEFAULT_OPS = {
