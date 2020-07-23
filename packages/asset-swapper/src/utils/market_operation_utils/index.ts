@@ -432,8 +432,8 @@ export class MarketOperationUtils {
                 const [last, penultimateIfExists] = optimalPath.slice().reverse();
                 const lastNativeFillIfExists =
                     last.source === ERC20BridgeSource.Native &&
-                        penultimateIfExists &&
-                        penultimateIfExists.source !== ERC20BridgeSource.Native
+                    penultimateIfExists &&
+                    penultimateIfExists.source !== ERC20BridgeSource.Native
                         ? last
                         : undefined;
                 // By prepending native paths to the front they cannot split on-chain sources and incur
