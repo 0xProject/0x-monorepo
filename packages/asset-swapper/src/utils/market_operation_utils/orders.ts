@@ -219,10 +219,11 @@ function createBridgeOrder(fill: CollapsedFill, opts: CreateOrderFromPathOpts): 
                 makerToken,
                 bridgeAddress,
                 createCurveBridgeData(
-                    curveFillData.poolAddress,
+                    curveFillData.curve.poolAddress,
+                    curveFillData.curve.exchangeFunctionSelector,
+                    takerToken,
                     curveFillData.fromTokenIdx,
                     curveFillData.toTokenIdx,
-                    1, // "version"
                 ),
             );
             break;
@@ -341,17 +342,25 @@ function createBalancerBridgeData(takerToken: string, poolAddress: string): stri
 
 function createCurveBridgeData(
     curveAddress: string,
+    exchangeFunctionSelector: string,
+    takerToken: string,
     fromTokenIdx: number,
     toTokenIdx: number,
-    version: number,
 ): string {
     const curveBridgeDataEncoder = AbiEncoder.create([
         { name: 'curveAddress', type: 'address' },
+        { name: 'exchangeFunctionSelector', type: 'bytes4' },
+        { name: 'fromTokenAddress', type: 'address' },
         { name: 'fromTokenIdx', type: 'int128' },
         { name: 'toTokenIdx', type: 'int128' },
-        { name: 'version', type: 'int128' },
     ]);
-    return curveBridgeDataEncoder.encode([curveAddress, fromTokenIdx, toTokenIdx, version]);
+    return curveBridgeDataEncoder.encode([
+        curveAddress,
+        exchangeFunctionSelector,
+        takerToken,
+        fromTokenIdx,
+        toTokenIdx,
+    ]);
 }
 
 function createUniswapV2BridgeData(tokenAddressPath: string[]): string {

@@ -1,5 +1,14 @@
 [
     {
+        "version": "3.5.0",
+        "changes": [
+            {
+                "note": "Update `CurveBridge` to support more varied curves",
+                "pr": 2633
+            }
+        ]
+    },
+    {
         "version": "3.4.0",
         "changes": [
             {

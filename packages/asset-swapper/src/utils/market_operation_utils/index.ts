@@ -30,14 +30,23 @@ import {
     OrderDomain,
 } from './types';
 
-async function getRfqtIndicativeQuotesAsync(
+/**
+ * Returns a indicative quotes or an empty array if RFQT is not enabled or requested
+ * @param makerAssetData the maker asset data
+ * @param takerAssetData the taker asset data
+ * @param marketOperation Buy or Sell
+ * @param assetFillAmount the amount to fill, in base units
+ * @param opts market request options
+ */
+export async function getRfqtIndicativeQuotesAsync(
     makerAssetData: string,
     takerAssetData: string,
     marketOperation: MarketOperation,
     assetFillAmount: BigNumber,
     opts: Partial<GetMarketOrdersOpts>,
 ): Promise<RFQTIndicativeQuote[]> {
-    if (opts.rfqt && opts.rfqt.isIndicative === true && opts.rfqt.quoteRequestor) {
+    const hasExcludedNativeLiquidity = opts.excludedSources && opts.excludedSources.includes(ERC20BridgeSource.Native);
+    if (!hasExcludedNativeLiquidity && opts.rfqt && opts.rfqt.isIndicative === true && opts.rfqt.quoteRequestor) {
         return opts.rfqt.quoteRequestor.requestRfqtIndicativeQuotesAsync(
             makerAssetData,
             takerAssetData,

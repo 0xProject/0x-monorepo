@@ -5,6 +5,10 @@
             {
                 "note": "Add `IZeroEx` wrapper",
                 "pr": 2626
+            },
+            {
+                "note": "Update `ERC20BridgeSampler` wrapper",
+                "pr": 2633
             }
         ]
     },

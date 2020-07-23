@@ -181,8 +181,8 @@ export class SwapQuoter {
         const samplerBytecode = _.get(ERC20BridgeSampler, 'compilerOutput.evm.deployedBytecode.object');
         const defaultCodeOverrides = samplerBytecode
             ? {
-                  [this._contractAddresses.erc20BridgeSampler]: { code: samplerBytecode },
-              }
+                [this._contractAddresses.erc20BridgeSampler]: { code: samplerBytecode },
+            }
             : {};
         const samplerOverrides = _.assign(
             { block: BlockParamLiteral.Latest, overrides: defaultCodeOverrides },
@@ -551,10 +551,23 @@ export class SwapQuoter {
         } else {
             gasPrice = await this.getGasPriceEstimationOrThrowAsync();
         }
+
+        // If RFQT is enabled and `nativeExclusivelyRFQT` is set, then `ERC20BridgeSource.Native` should
+        // never be excluded.
+        if (
+            opts.rfqt &&
+            opts.rfqt.nativeExclusivelyRFQT === true &&
+            opts.excludedSources.includes(ERC20BridgeSource.Native)
+        ) {
+            throw new Error('Native liquidity cannot be excluded if "rfqt.nativeExclusivelyRFQT" is set');
+        }
+
         // get batches of orders from different sources, awaiting sources in parallel
         const orderBatchPromises: Array<Promise<SignedOrder[]>> = [];
 
-        if (!opts.excludedSources.includes(ERC20BridgeSource.Native)) {
+        const skipOpenOrderbook = opts.excludedSources.includes(ERC20BridgeSource.Native) ||
+            (opts.rfqt && opts.rfqt.nativeExclusivelyRFQT === true);
+        if (!skipOpenOrderbook) {
             orderBatchPromises.push(this._getSignedOrdersAsync(makerAssetData, takerAssetData)); // order book
         }
 
@@ -567,12 +580,11 @@ export class SwapQuoter {
         );
 
         if (
-            opts.rfqt &&
-            opts.rfqt.intentOnFilling &&
+            opts.rfqt && // This is an RFQT-enabled API request
+            opts.rfqt.intentOnFilling && // The requestor is asking for a firm quote
             opts.rfqt.apiKey &&
-            this._isApiKeyWhitelisted(opts.rfqt.apiKey) &&
-            !opts.excludedSources.includes(ERC20BridgeSource.Native) &&
-            !(marketOperation === MarketOperation.Buy && this._shouldSkipRfqtBuyRequests())
+            this._isApiKeyWhitelisted(opts.rfqt.apiKey) && // A valid API key was provided
+            !opts.excludedSources.includes(ERC20BridgeSource.Native) && // Native liquidity is not excluded
         ) {
             if (!opts.rfqt.takerAddress || opts.rfqt.takerAddress === constants.NULL_ADDRESS) {
                 throw new Error('RFQ-T requests must specify a taker address');
@@ -632,20 +644,6 @@ export class SwapQuoter {
     private _isApiKeyWhitelisted(apiKey: string): boolean {
         const whitelistedApiKeys = this._rfqtOptions ? this._rfqtOptions.takerApiKeyWhitelist : [];
         return whitelistedApiKeys.includes(apiKey);
-    }
-    private _shouldSkipRfqtBuyRequests(): boolean {
-        const rfqtOptions = this._rfqtOptions;
-
-        if (rfqtOptions && rfqtOptions.skipBuyRequests !== undefined) {
-            return rfqtOptions.skipBuyRequests;
-        }
-
-        const defaultRfqtOptions = constants.DEFAULT_SWAP_QUOTER_OPTS.rfqt;
-        if (defaultRfqtOptions && defaultRfqtOptions.skipBuyRequests !== undefined) {
-            return defaultRfqtOptions.skipBuyRequests;
-        }
-
-        return false;
     }
 }
 // tslint:disable-next-line: max-file-line-count

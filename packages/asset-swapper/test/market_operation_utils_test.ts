@@ -13,13 +13,19 @@ import { assetDataUtils, generatePseudoRandomSalt } from '@0x/order-utils';
 import { AssetProxyId, ERC20BridgeAssetData, SignedOrder } from '@0x/types';
 import { BigNumber, fromTokenUnitAmount, hexUtils, NULL_ADDRESS } from '@0x/utils';
 import * as _ from 'lodash';
+import * as TypeMoq from 'typemoq';
 
-import { MarketOperation, SignedOrderWithFillableAmounts } from '../src';
-import { MarketOperationUtils } from '../src/utils/market_operation_utils/';
+import { MarketOperation, QuoteRequestor, RfqtRequestOpts, SignedOrderWithFillableAmounts } from '../src';
+import { getRfqtIndicativeQuotesAsync, MarketOperationUtils } from '../src/utils/market_operation_utils/';
 import { BUY_SOURCES, POSITIVE_INF, SELL_SOURCES, ZERO_AMOUNT } from '../src/utils/market_operation_utils/constants';
 import { createFillPaths } from '../src/utils/market_operation_utils/fills';
 import { DexOrderSampler } from '../src/utils/market_operation_utils/sampler';
 import { DexSample, ERC20BridgeSource, FillData, NativeFillData } from '../src/utils/market_operation_utils/types';
+
+const MAKER_TOKEN = randomAddress();
+const TAKER_TOKEN = randomAddress();
+const MAKER_ASSET_DATA = assetDataUtils.encodeERC20AssetData(MAKER_TOKEN);
+const TAKER_ASSET_DATA = assetDataUtils.encodeERC20AssetData(TAKER_TOKEN);
 
 // tslint:disable: custom-no-magic-numbers promise-function-async
 describe('MarketOperationUtils tests', () => {
@@ -30,11 +36,6 @@ describe('MarketOperationUtils tests', () => {
     const UNISWAP_BRIDGE_ADDRESS = contractAddresses.uniswapBridge;
     const UNISWAP_V2_BRIDGE_ADDRESS = contractAddresses.uniswapV2Bridge;
     const CURVE_BRIDGE_ADDRESS = contractAddresses.curveBridge;
-
-    const MAKER_TOKEN = randomAddress();
-    const TAKER_TOKEN = randomAddress();
-    const MAKER_ASSET_DATA = assetDataUtils.encodeERC20AssetData(MAKER_TOKEN);
-    const TAKER_ASSET_DATA = assetDataUtils.encodeERC20AssetData(TAKER_TOKEN);
     let originalSamplerOperations: any;
 
     before(() => {
@@ -302,7 +303,17 @@ describe('MarketOperationUtils tests', () => {
     const DEFAULT_FILL_DATA: FillDataBySource = {
         [ERC20BridgeSource.UniswapV2]: { tokenAddressPath: [] },
         [ERC20BridgeSource.Balancer]: { poolAddress: randomAddress() },
-        [ERC20BridgeSource.Curve]: { poolAddress: randomAddress(), fromTokenIdx: 0, toTokenIdx: 1 },
+        [ERC20BridgeSource.Curve]: {
+            curve: {
+                poolAddress: randomAddress(),
+                tokens: [TAKER_TOKEN, MAKER_TOKEN],
+                exchangeFunctionSelector: hexUtils.random(4),
+                sellQuoteFunctionSelector: hexUtils.random(4),
+                buyQuoteFunctionSelector: hexUtils.random(4),
+            },
+            fromTokenIdx: 0,
+            toTokenIdx: 1,
+        },
     };
 
     const DEFAULT_OPS = {
@@ -333,6 +344,68 @@ describe('MarketOperationUtils tests', () => {
             return ops;
         },
     } as any) as DexOrderSampler;
+
+    describe('getRfqtIndicativeQuotesAsync', () => {
+        const partialRfqt: RfqtRequestOpts = {
+            apiKey: 'foo',
+            takerAddress: NULL_ADDRESS,
+            isIndicative: true,
+            intentOnFilling: false,
+        };
+
+        it('returns an empty array if native liquidity is excluded from the salad', async () => {
+            const requestor = TypeMoq.Mock.ofType(QuoteRequestor, TypeMoq.MockBehavior.Strict);
+            const result = await getRfqtIndicativeQuotesAsync(
+                MAKER_ASSET_DATA,
+                TAKER_ASSET_DATA,
+                MarketOperation.Sell,
+                new BigNumber('100e18'),
+                {
+                    rfqt: { quoteRequestor: requestor.object, ...partialRfqt },
+                    excludedSources: [ERC20BridgeSource.Native],
+                },
+            );
+            expect(result.length).to.eql(0);
+            requestor.verify(
+                r =>
+                    r.requestRfqtIndicativeQuotesAsync(
+                        TypeMoq.It.isAny(),
+                        TypeMoq.It.isAny(),
+                        TypeMoq.It.isAny(),
+                        TypeMoq.It.isAny(),
+                        TypeMoq.It.isAny(),
+                    ),
+                TypeMoq.Times.never(),
+            );
+        });
+
+        it('calls RFQT if Native source is not excluded', async () => {
+            const requestor = TypeMoq.Mock.ofType(QuoteRequestor, TypeMoq.MockBehavior.Loose);
+            requestor
+                .setup(r =>
+                    r.requestRfqtIndicativeQuotesAsync(
+                        TypeMoq.It.isAny(),
+                        TypeMoq.It.isAny(),
+                        TypeMoq.It.isAny(),
+                        TypeMoq.It.isAny(),
+                        TypeMoq.It.isAny(),
+                    ),
+                )
+                .returns(() => Promise.resolve([]))
+                .verifiable(TypeMoq.Times.once());
+            await getRfqtIndicativeQuotesAsync(
+                MAKER_ASSET_DATA,
+                TAKER_ASSET_DATA,
+                MarketOperation.Sell,
+                new BigNumber('100e18'),
+                {
+                    rfqt: { quoteRequestor: requestor.object, ...partialRfqt },
+                    excludedSources: [],
+                },
+            );
+            requestor.verifyAll();
+        });
+    });
 
     describe('MarketOperationUtils', () => {
         let marketOperationUtils: MarketOperationUtils;

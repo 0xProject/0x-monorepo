@@ -38,8 +38,34 @@ export enum ERC20BridgeSource {
     Balancer = 'Balancer',
 }
 
+// tslint:disable: enum-naming
+/**
+ * Curve contract function selectors.
+ */
+export enum CurveFunctionSelectors {
+    None = '0x00000000',
+    exchange = '0x3df02124',
+    exchange_underlying = '0xa6417ed6',
+    get_dy_underlying = '0x07211ef7',
+    get_dx_underlying = '0x0e71d1b9',
+    get_dy = '0x5e0d443f',
+    get_dx = '0x67df02ca',
+}
+// tslint:enable: enum-naming
+
+/**
+ * Configuration info on a Curve pool.
+ */
+export interface CurveInfo {
+    exchangeFunctionSelector: CurveFunctionSelectors;
+    sellQuoteFunctionSelector: CurveFunctionSelectors;
+    buyQuoteFunctionSelector: CurveFunctionSelectors;
+    poolAddress: string;
+    tokens: string[];
+}
+
 // Internal `fillData` field for `Fill` objects.
-export interface FillData {}
+export interface FillData { }
 
 // `FillData` for native fills.
 export interface NativeFillData extends FillData {
@@ -47,9 +73,9 @@ export interface NativeFillData extends FillData {
 }
 
 export interface CurveFillData extends FillData {
-    poolAddress: string;
     fromTokenIdx: number;
     toTokenIdx: number;
+    curve: CurveInfo;
 }
 
 export interface BalancerFillData extends FillData {
@@ -137,7 +163,7 @@ export interface CollapsedFill<TFillData extends FillData = FillData> {
 /**
  * A `CollapsedFill` wrapping a native order.
  */
-export interface NativeCollapsedFill extends CollapsedFill<NativeFillData> {}
+export interface NativeCollapsedFill extends CollapsedFill<NativeFillData> { }
 
 /**
  * Optimized orders to fill.

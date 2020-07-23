@@ -23,22 +23,6 @@ pragma solidity ^0.5.9;
 interface ICurve {
 
     /// @dev Sell `sellAmount` of `fromToken` token and receive `toToken` token.
-    ///      This function exists on early versions of Curve (USDC/DAI)
-    /// @param i The token index being sold.
-    /// @param j The token index being bought.
-    /// @param sellAmount The amount of token being bought.
-    /// @param minBuyAmount The minimum buy amount of the token being bought.
-    /// @param deadline The time in seconds when this operation should expire.
-    function exchange_underlying(
-        int128 i,
-        int128 j,
-        uint256 sellAmount,
-        uint256 minBuyAmount,
-        uint256 deadline
-    )
-        external;
-
-    /// @dev Sell `sellAmount` of `fromToken` token and receive `toToken` token.
     ///      This function exists on later versions of Curve (USDC/DAI/USDT)
     /// @param i The token index being sold.
     /// @param j The token index being bought.
