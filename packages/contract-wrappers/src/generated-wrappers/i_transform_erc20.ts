@@ -36,12 +36,18 @@ import * as ethers from 'ethers';
 // tslint:enable:no-unused-variable
 
 export type ITransformERC20EventArgs =
+    | ITransformERC20QuoteSignerUpdatedEventArgs
     | ITransformERC20TransformedERC20EventArgs
     | ITransformERC20TransformerDeployerUpdatedEventArgs;
 
 export enum ITransformERC20Events {
+    QuoteSignerUpdated = 'QuoteSignerUpdated',
     TransformedERC20 = 'TransformedERC20',
     TransformerDeployerUpdated = 'TransformerDeployerUpdated',
+}
+
+export interface ITransformERC20QuoteSignerUpdatedEventArgs extends DecodedLogArgs {
+    quoteSigner: string;
 }
 
 export interface ITransformERC20TransformedERC20EventArgs extends DecodedLogArgs {
@@ -177,6 +183,19 @@ export class ITransformERC20Contract extends BaseContract {
                 anonymous: false,
                 inputs: [
                     {
+                        name: 'quoteSigner',
+                        type: 'address',
+                        indexed: false,
+                    },
+                ],
+                name: 'QuoteSignerUpdated',
+                outputs: [],
+                type: 'event',
+            },
+            {
+                anonymous: false,
+                inputs: [
+                    {
                         name: 'taker',
                         type: 'address',
                         indexed: true,
@@ -222,39 +241,49 @@ export class ITransformERC20Contract extends BaseContract {
             {
                 inputs: [
                     {
-                        name: 'callDataHash',
-                        type: 'bytes32',
-                    },
-                    {
-                        name: 'taker',
-                        type: 'address',
-                    },
-                    {
-                        name: 'inputToken',
-                        type: 'address',
-                    },
-                    {
-                        name: 'outputToken',
-                        type: 'address',
-                    },
-                    {
-                        name: 'inputTokenAmount',
-                        type: 'uint256',
-                    },
-                    {
-                        name: 'minOutputTokenAmount',
-                        type: 'uint256',
-                    },
-                    {
-                        name: 'transformations',
-                        type: 'tuple[]',
+                        name: 'args',
+                        type: 'tuple',
                         components: [
                             {
-                                name: 'deploymentNonce',
-                                type: 'uint32',
+                                name: 'taker',
+                                type: 'address',
                             },
                             {
-                                name: 'data',
+                                name: 'inputToken',
+                                type: 'address',
+                            },
+                            {
+                                name: 'outputToken',
+                                type: 'address',
+                            },
+                            {
+                                name: 'inputTokenAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'minOutputTokenAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'transformations',
+                                type: 'tuple[]',
+                                components: [
+                                    {
+                                        name: 'deploymentNonce',
+                                        type: 'uint32',
+                                    },
+                                    {
+                                        name: 'data',
+                                        type: 'bytes',
+                                    },
+                                ],
+                            },
+                            {
+                                name: 'callDataHash',
+                                type: 'bytes32',
+                            },
+                            {
+                                name: 'callDataSignature',
                                 type: 'bytes',
                             },
                         ],
@@ -284,6 +313,18 @@ export class ITransformERC20Contract extends BaseContract {
             },
             {
                 inputs: [],
+                name: 'getQuoteSigner',
+                outputs: [
+                    {
+                        name: 'signer',
+                        type: 'address',
+                    },
+                ],
+                stateMutability: 'view',
+                type: 'function',
+            },
+            {
+                inputs: [],
                 name: 'getTransformWallet',
                 outputs: [
                     {
@@ -304,6 +345,18 @@ export class ITransformERC20Contract extends BaseContract {
                     },
                 ],
                 stateMutability: 'view',
+                type: 'function',
+            },
+            {
+                inputs: [
+                    {
+                        name: 'quoteSigner',
+                        type: 'address',
+                    },
+                ],
+                name: 'setQuoteSigner',
+                outputs: [],
+                stateMutability: 'nonpayable',
                 type: 'function',
             },
             {
@@ -442,36 +495,22 @@ export class ITransformERC20Contract extends BaseContract {
 
     /**
      * Internal version of `transformERC20()`. Only callable from within.
-     * @param callDataHash Hash of the ingress calldata.
-     * @param taker The taker address.
-     * @param inputToken The token being provided by the taker.        If
-     *     `0xeee...`, ETH is implied and should be provided with the call.`
-     * @param outputToken The token to be acquired by the taker.        `0xeee...`
-     *     implies ETH.
-     * @param inputTokenAmount The amount of `inputToken` to take from the taker.
-     * @param minOutputTokenAmount The minimum amount of `outputToken` the taker
-     *         must receive for the entire transformation to succeed.
-     * @param transformations The transformations to execute on the token
-     *     balance(s)        in sequence.
+     * @param args A `TransformERC20Args` struct.
      */
-    public _transformERC20(
-        callDataHash: string,
-        taker: string,
-        inputToken: string,
-        outputToken: string,
-        inputTokenAmount: BigNumber,
-        minOutputTokenAmount: BigNumber,
-        transformations: Array<{ deploymentNonce: number | BigNumber; data: string }>,
-    ): ContractTxFunctionObj<BigNumber> {
+    public _transformERC20(args: {
+        taker: string;
+        inputToken: string;
+        outputToken: string;
+        inputTokenAmount: BigNumber;
+        minOutputTokenAmount: BigNumber;
+        transformations: Array<{ deploymentNonce: number | BigNumber; data: string }>;
+        callDataHash: string;
+        callDataSignature: string;
+    }): ContractTxFunctionObj<BigNumber> {
         const self = (this as any) as ITransformERC20Contract;
-        assert.isString('callDataHash', callDataHash);
-        assert.isString('taker', taker);
-        assert.isString('inputToken', inputToken);
-        assert.isString('outputToken', outputToken);
-        assert.isBigNumber('inputTokenAmount', inputTokenAmount);
-        assert.isBigNumber('minOutputTokenAmount', minOutputTokenAmount);
-        assert.isArray('transformations', transformations);
-        const functionSignature = '_transformERC20(bytes32,address,address,address,uint256,uint256,(uint32,bytes)[])';
+
+        const functionSignature =
+            '_transformERC20((address,address,address,uint256,uint256,(uint32,bytes)[],bytes32,bytes))';
 
         return {
             async sendTransactionAsync(
@@ -479,7 +518,7 @@ export class ITransformERC20Contract extends BaseContract {
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
                 const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
-                    { ...txData, data: this.getABIEncodedTransactionData() },
+                    { data: this.getABIEncodedTransactionData(), ...txData },
                     this.estimateGasAsync.bind(this),
                 );
                 if (opts.shouldValidate !== false) {
@@ -495,15 +534,15 @@ export class ITransformERC20Contract extends BaseContract {
             },
             async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
                 const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({
-                    ...txData,
                     data: this.getABIEncodedTransactionData(),
+                    ...txData,
                 });
                 return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             },
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._performCallAsync(
-                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    { data: this.getABIEncodedTransactionData(), ...callData },
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -511,22 +550,14 @@ export class ITransformERC20Contract extends BaseContract {
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                return self._strictEncodeArguments(functionSignature, [
-                    callDataHash,
-                    taker.toLowerCase(),
-                    inputToken.toLowerCase(),
-                    outputToken.toLowerCase(),
-                    inputTokenAmount,
-                    minOutputTokenAmount,
-                    transformations,
-                ]);
+                return self._strictEncodeArguments(functionSignature, [args]);
             },
         };
     }
     /**
      * Deploy a new flash wallet instance and replace the current one with it.
      * Useful if we somehow break the current wallet instance.
-     * Anyone can call this.
+     * Only callable by the owner.
      */
     public createTransformWallet(): ContractTxFunctionObj<string> {
         const self = (this as any) as ITransformERC20Contract;
@@ -538,7 +569,7 @@ export class ITransformERC20Contract extends BaseContract {
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
                 const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
-                    { ...txData, data: this.getABIEncodedTransactionData() },
+                    { data: this.getABIEncodedTransactionData(), ...txData },
                     this.estimateGasAsync.bind(this),
                 );
                 if (opts.shouldValidate !== false) {
@@ -554,15 +585,64 @@ export class ITransformERC20Contract extends BaseContract {
             },
             async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
                 const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({
-                    ...txData,
                     data: this.getABIEncodedTransactionData(),
+                    ...txData,
                 });
                 return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             },
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._performCallAsync(
-                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    { data: this.getABIEncodedTransactionData(), ...callData },
+                    defaultBlock,
+                );
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
+                return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
+            },
+            getABIEncodedTransactionData(): string {
+                return self._strictEncodeArguments(functionSignature, []);
+            },
+        };
+    }
+    /**
+     * Return the optional signer for `transformERC20()` calldata.
+     */
+    public getQuoteSigner(): ContractTxFunctionObj<string> {
+        const self = (this as any) as ITransformERC20Contract;
+        const functionSignature = 'getQuoteSigner()';
+
+        return {
+            async sendTransactionAsync(
+                txData?: Partial<TxData> | undefined,
+                opts: SendTransactionOpts = { shouldValidate: true },
+            ): Promise<string> {
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { data: this.getABIEncodedTransactionData(), ...txData },
+                    this.estimateGasAsync.bind(this),
+                );
+                if (opts.shouldValidate !== false) {
+                    await this.callAsync(txDataWithDefaults);
+                }
+                return self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            },
+            awaitTransactionSuccessAsync(
+                txData?: Partial<TxData>,
+                opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
+            ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+                return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
+            },
+            async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({
+                    data: this.getABIEncodedTransactionData(),
+                    ...txData,
+                });
+                return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            },
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { data: this.getABIEncodedTransactionData(), ...callData },
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -588,7 +668,7 @@ export class ITransformERC20Contract extends BaseContract {
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
                 const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
-                    { ...txData, data: this.getABIEncodedTransactionData() },
+                    { data: this.getABIEncodedTransactionData(), ...txData },
                     this.estimateGasAsync.bind(this),
                 );
                 if (opts.shouldValidate !== false) {
@@ -604,15 +684,15 @@ export class ITransformERC20Contract extends BaseContract {
             },
             async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
                 const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({
-                    ...txData,
                     data: this.getABIEncodedTransactionData(),
+                    ...txData,
                 });
                 return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             },
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._performCallAsync(
-                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    { data: this.getABIEncodedTransactionData(), ...callData },
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -637,7 +717,7 @@ export class ITransformERC20Contract extends BaseContract {
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
                 const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
-                    { ...txData, data: this.getABIEncodedTransactionData() },
+                    { data: this.getABIEncodedTransactionData(), ...txData },
                     this.estimateGasAsync.bind(this),
                 );
                 if (opts.shouldValidate !== false) {
@@ -653,15 +733,15 @@ export class ITransformERC20Contract extends BaseContract {
             },
             async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
                 const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({
-                    ...txData,
                     data: this.getABIEncodedTransactionData(),
+                    ...txData,
                 });
                 return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             },
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._performCallAsync(
-                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    { data: this.getABIEncodedTransactionData(), ...callData },
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -674,15 +754,14 @@ export class ITransformERC20Contract extends BaseContract {
         };
     }
     /**
-     * Replace the allowed deployer for transformers.
+     * Replace the optional signer for `transformERC20()` calldata.
      * Only callable by the owner.
-     * @param transformerDeployer The address of the trusted deployer for
-     *     transformers.
+     * @param quoteSigner The address of the new calldata signer.
      */
-    public setTransformerDeployer(transformerDeployer: string): ContractTxFunctionObj<void> {
+    public setQuoteSigner(quoteSigner: string): ContractTxFunctionObj<void> {
         const self = (this as any) as ITransformERC20Contract;
-        assert.isString('transformerDeployer', transformerDeployer);
-        const functionSignature = 'setTransformerDeployer(address)';
+        assert.isString('quoteSigner', quoteSigner);
+        const functionSignature = 'setQuoteSigner(address)';
 
         return {
             async sendTransactionAsync(
@@ -690,7 +769,7 @@ export class ITransformERC20Contract extends BaseContract {
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
                 const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
-                    { ...txData, data: this.getABIEncodedTransactionData() },
+                    { data: this.getABIEncodedTransactionData(), ...txData },
                     this.estimateGasAsync.bind(this),
                 );
                 if (opts.shouldValidate !== false) {
@@ -706,15 +785,68 @@ export class ITransformERC20Contract extends BaseContract {
             },
             async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
                 const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({
-                    ...txData,
                     data: this.getABIEncodedTransactionData(),
+                    ...txData,
                 });
                 return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             },
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._performCallAsync(
-                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    { data: this.getABIEncodedTransactionData(), ...callData },
+                    defaultBlock,
+                );
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
+                return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
+            },
+            getABIEncodedTransactionData(): string {
+                return self._strictEncodeArguments(functionSignature, [quoteSigner.toLowerCase()]);
+            },
+        };
+    }
+    /**
+     * Replace the allowed deployer for transformers.
+     * Only callable by the owner.
+     * @param transformerDeployer The address of the new trusted deployer
+     *     for transformers.
+     */
+    public setTransformerDeployer(transformerDeployer: string): ContractTxFunctionObj<void> {
+        const self = (this as any) as ITransformERC20Contract;
+        assert.isString('transformerDeployer', transformerDeployer);
+        const functionSignature = 'setTransformerDeployer(address)';
+
+        return {
+            async sendTransactionAsync(
+                txData?: Partial<TxData> | undefined,
+                opts: SendTransactionOpts = { shouldValidate: true },
+            ): Promise<string> {
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { data: this.getABIEncodedTransactionData(), ...txData },
+                    this.estimateGasAsync.bind(this),
+                );
+                if (opts.shouldValidate !== false) {
+                    await this.callAsync(txDataWithDefaults);
+                }
+                return self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            },
+            awaitTransactionSuccessAsync(
+                txData?: Partial<TxData>,
+                opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
+            ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+                return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
+            },
+            async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({
+                    data: this.getABIEncodedTransactionData(),
+                    ...txData,
+                });
+                return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            },
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { data: this.getABIEncodedTransactionData(), ...callData },
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -760,7 +892,7 @@ export class ITransformERC20Contract extends BaseContract {
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
                 const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
-                    { ...txData, data: this.getABIEncodedTransactionData() },
+                    { data: this.getABIEncodedTransactionData(), ...txData },
                     this.estimateGasAsync.bind(this),
                 );
                 if (opts.shouldValidate !== false) {
@@ -776,15 +908,15 @@ export class ITransformERC20Contract extends BaseContract {
             },
             async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
                 const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({
-                    ...txData,
                     data: this.getABIEncodedTransactionData(),
+                    ...txData,
                 });
                 return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             },
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._performCallAsync(
-                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    { data: this.getABIEncodedTransactionData(), ...callData },
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
