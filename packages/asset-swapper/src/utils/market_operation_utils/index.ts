@@ -26,14 +26,15 @@ import {
     OrderDomain,
 } from './types';
 
-async function getRfqtIndicativeQuotesAsync(
+export async function getRfqtIndicativeQuotesAsync(
     makerAssetData: string,
     takerAssetData: string,
     marketOperation: MarketOperation,
     assetFillAmount: BigNumber,
     opts: Partial<GetMarketOrdersOpts>,
 ): Promise<RFQTIndicativeQuote[]> {
-    if (opts.rfqt && opts.rfqt.isIndicative === true && opts.rfqt.quoteRequestor) {
+    const hasExcludedNativeLiquidity = opts.excludedSources && opts.excludedSources.includes(ERC20BridgeSource.Native);
+    if (!hasExcludedNativeLiquidity && opts.rfqt && opts.rfqt.isIndicative === true && opts.rfqt.quoteRequestor) {
         return opts.rfqt.quoteRequestor.requestRfqtIndicativeQuotesAsync(
             makerAssetData,
             takerAssetData,
