@@ -168,8 +168,12 @@ export class SwapQuoter {
         this.orderbook = orderbook;
         this.expiryBufferMs = expiryBufferMs;
         this.permittedOrderFeeTypes = permittedOrderFeeTypes;
+<<<<<<< HEAD
 
         this._rfqtOptions = rfqt;
+=======
+        this._rfqtTakerApiKeyWhitelist = rfqt ? rfqt.takerApiKeyWhitelist || [] : [];
+>>>>>>> development
         this._contractAddresses = options.contractAddresses || getContractAddressesForChainOrThrow(chainId);
         this._devUtilsContract = new DevUtilsContract(this._contractAddresses.devUtils, provider);
         this._protocolFeeUtils = ProtocolFeeUtils.getInstance(
@@ -181,8 +185,8 @@ export class SwapQuoter {
         const samplerBytecode = _.get(ERC20BridgeSampler, 'compilerOutput.evm.deployedBytecode.object');
         const defaultCodeOverrides = samplerBytecode
             ? {
-                  [this._contractAddresses.erc20BridgeSampler]: { code: samplerBytecode },
-              }
+                [this._contractAddresses.erc20BridgeSampler]: { code: samplerBytecode },
+            }
             : {};
         const samplerOverrides = _.assign(
             { block: BlockParamLiteral.Latest, overrides: defaultCodeOverrides },
