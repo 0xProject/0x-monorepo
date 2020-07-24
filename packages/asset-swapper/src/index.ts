@@ -64,9 +64,11 @@ export {
     SwapQuoteInfo,
     SwapQuoteOrdersBreakdown,
     SwapQuoteRequestOpts,
+    SwapQuoterRfqtOpts,
     SwapQuoterError,
     SwapQuoterOpts,
 } from './types';
+import { ERC20BridgeSource } from './utils/market_operation_utils/types';
 export { affiliateFeeUtils } from './utils/affiliate_fee_utils';
 export {
     BalancerFillData,
@@ -86,3 +88,11 @@ export {
 export { ProtocolFeeUtils } from './utils/protocol_fee_utils';
 export { QuoteRequestor } from './utils/quote_requestor';
 export { rfqtMocker } from './utils/rfqt_mocker';
+export {
+    BridgeReportSource,
+    NativeOrderbookReportSource,
+    NativeRFQTReportSource,
+    QuoteReport,
+    QuoteReportSource,
+} from './utils/quote_report_generator';
+export type Native = ERC20BridgeSource.Native;

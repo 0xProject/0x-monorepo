@@ -3,6 +3,7 @@ import { BigNumber } from '@0x/utils';
 
 import { RfqtRequestOpts, SignedOrderWithFillableAmounts } from '../../types';
 import { QuoteRequestor } from '../../utils/quote_requestor';
+import { QuoteReport } from '../quote_report_generator';
 
 /**
  * Order domain keys: chainId and exchange
@@ -253,4 +254,18 @@ export interface BatchedOperation<TResult> {
 export interface SourceQuoteOperation<TFillData extends FillData = FillData> extends BatchedOperation<BigNumber[]> {
     source: ERC20BridgeSource;
     fillData?: TFillData;
+}
+
+/**
+ * Used in the ERC20BridgeSampler when a source does not natively
+ * support sampling via a specific buy amount.
+ */
+export interface FakeBuyOpts {
+    targetSlippageBps: BigNumber;
+    maxIterations: BigNumber;
+}
+
+export interface OptimizedOrdersAndQuoteReport {
+    optimizedOrders: OptimizedMarketOrder[];
+    quoteReport: QuoteReport;
 }
