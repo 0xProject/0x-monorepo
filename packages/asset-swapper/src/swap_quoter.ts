@@ -605,7 +605,7 @@ export class SwapQuoter {
 
         const orderBatches: SignedOrder[][] = await Promise.all(orderBatchPromises);
 
-        const unsortedOrders: SignedOrder[] = orderBatches.reduce((_orders, batch) => _orders.concat(...batch));
+        const unsortedOrders: SignedOrder[] = orderBatches.reduce((_orders, batch) => _orders.concat(...batch), []);
 
         const orders = sortingUtils.sortOrders(unsortedOrders);
 
