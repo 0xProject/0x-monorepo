@@ -27,7 +27,12 @@ import { calculateLiquidity } from './utils/calculate_liquidity';
 import { MarketOperationUtils } from './utils/market_operation_utils';
 import { createDummyOrderForSampler } from './utils/market_operation_utils/orders';
 import { DexOrderSampler } from './utils/market_operation_utils/sampler';
-import { ERC20BridgeSource, MarketDepth } from './utils/market_operation_utils/types';
+import {
+    ERC20BridgeSource,
+    MarketDepth,
+    MarketDepthSide,
+    MarketSideLiquidity,
+} from './utils/market_operation_utils/types';
 import { orderPrunerUtils } from './utils/order_prune_utils';
 import { OrderStateUtils } from './utils/order_state_utils';
 import { ProtocolFeeUtils } from './utils/protocol_fee_utils';
@@ -413,7 +418,6 @@ export class SwapQuoter {
         assert.isString('takerTokenAddress', takerTokenAddress);
         const makerAssetData = assetDataUtils.encodeERC20AssetData(makerTokenAddress);
         const takerAssetData = assetDataUtils.encodeERC20AssetData(takerTokenAddress);
-        // tslint:disable-next-line:prefer-const
         let [sellOrders, buyOrders] =
             options.excludedSources && options.excludedSources.includes(ERC20BridgeSource.Native)
                 ? Promise.resolve([[], []])
@@ -433,12 +437,53 @@ export class SwapQuoter {
                 },
             ];
         }
-        return this._marketOperationUtils.getMarketDepthAsync(
-            (sellOrders || []).map(o => o.order),
-            (buyOrders || []).map(o => o.order),
-            takerAssetAmount,
-            options,
-        );
+        if (!buyOrders || buyOrders.length === 0) {
+            buyOrders = [
+                {
+                    metaData: {},
+                    order: createDummyOrderForSampler(
+                        takerAssetData,
+                        makerAssetData,
+                        this._contractAddresses.uniswapBridge,
+                    ),
+                },
+            ];
+        }
+        const getMarketDepthSide = (marketSideLiquidity: MarketSideLiquidity): MarketDepthSide => {
+            const { dexQuotes, nativeOrders, orderFillableAmounts, side } = marketSideLiquidity;
+            return [
+                ...dexQuotes,
+                nativeOrders.map((o, i) => {
+                    const scaleFactor = orderFillableAmounts[i].div(o.takerAssetAmount);
+                    return {
+                        input: (side === MarketOperation.Sell ? o.takerAssetAmount : o.makerAssetAmount)
+                            .times(scaleFactor)
+                            .integerValue(),
+                        output: (side === MarketOperation.Sell ? o.makerAssetAmount : o.takerAssetAmount)
+                            .times(scaleFactor)
+                            .integerValue(),
+                        fillData: o,
+                        source: ERC20BridgeSource.Native,
+                    };
+                }),
+            ];
+        };
+        const [bids, asks] = await Promise.all([
+            this._marketOperationUtils.getMarketBuyLiquidityAsync(
+                (buyOrders || []).map(o => o.order),
+                takerAssetAmount,
+                options,
+            ),
+            this._marketOperationUtils.getMarketSellLiquidityAsync(
+                (sellOrders || []).map(o => o.order),
+                takerAssetAmount,
+                options,
+            ),
+        ]);
+        return {
+            bids: getMarketDepthSide(bids),
+            asks: getMarketDepthSide(asks),
+        };
     }
 
     /**
