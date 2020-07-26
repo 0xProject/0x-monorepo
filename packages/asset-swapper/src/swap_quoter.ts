@@ -413,6 +413,7 @@ export class SwapQuoter {
         assert.isString('takerTokenAddress', takerTokenAddress);
         const makerAssetData = assetDataUtils.encodeERC20AssetData(makerTokenAddress);
         const takerAssetData = assetDataUtils.encodeERC20AssetData(takerTokenAddress);
+        // tslint:disable-next-line:prefer-const
         let [sellOrders, buyOrders] =
             options.excludedSources && options.excludedSources.includes(ERC20BridgeSource.Native)
                 ? Promise.resolve([[], []])
