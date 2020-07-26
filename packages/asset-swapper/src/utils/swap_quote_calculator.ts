@@ -18,9 +18,8 @@ import {
 import { MarketOperationUtils } from './market_operation_utils';
 import { convertNativeOrderToFullyFillableOptimizedOrders } from './market_operation_utils/orders';
 import { FeeSchedule, FillData, GetMarketOrdersOpts, OptimizedMarketOrder } from './market_operation_utils/types';
-import { isSupportedAssetDataInOrders } from './utils';
-
 import { QuoteFillResult, simulateBestCaseFill, simulateWorstCaseFill } from './quote_simulation';
+import { isSupportedAssetDataInOrders } from './utils';
 
 // TODO(dave4506) How do we want to reintroduce InsufficientAssetLiquidityError?
 export class SwapQuoteCalculator {

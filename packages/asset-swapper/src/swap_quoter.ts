@@ -2,7 +2,7 @@ import { ContractAddresses, getContractAddressesForChainOrThrow } from '@0x/cont
 import { ERC20BridgeSampler } from '@0x/contract-artifacts';
 import { DevUtilsContract, ERC20BridgeSamplerContract } from '@0x/contract-wrappers';
 import { schemas } from '@0x/json-schemas';
-import { assetDataUtils, SignedOrder } from '@0x/order-utils';
+import { assetDataUtils, ERC20AssetData, SignedOrder } from '@0x/order-utils';
 import { MeshOrderProviderOpts, Orderbook, SRAPollingOrderProviderOpts } from '@0x/orderbook';
 import { BigNumber, providerUtils } from '@0x/utils';
 import { BlockParamLiteral, SupportedProvider, ZeroExProvider } from 'ethereum-types';
@@ -621,12 +621,88 @@ export class SwapQuoter {
                 calcOpts,
             );
         } else {
-            swapQuote = await this._swapQuoteCalculator.calculateMarketSellSwapQuoteAsync(
-                orders,
-                assetFillAmount,
-                gasPrice,
-                calcOpts,
+            const bunnyHopTokens: Array<{ symbol: string; address: string }> = [
+                { symbol: 'DAI', address: '0x6b175474e89094c44da98b954eedeac495271d0f' },
+                { symbol: 'WETH', address: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' },
+                { symbol: 'USDC', address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48' },
+                { symbol: 'WBTC', address: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599' },
+                { symbol: 'USDT', address: '0xdac17f958d2ee523a2206206994597c13d831ec7' },
+            ];
+            const calculateBunnyHopAsync = async (
+                intermediateAssetData: string,
+            ): Promise<MarketSellSwapQuote | undefined> => {
+                try {
+                    const first = await this._swapQuoteCalculator.calculateMarketSellSwapQuoteAsync(
+                        [
+                            createDummyOrderForSampler(
+                                intermediateAssetData,
+                                takerAssetData,
+                                this._contractAddresses.uniswapBridge,
+                            ),
+                        ],
+                        assetFillAmount,
+                        gasPrice,
+                        { ...calcOpts, numSamples: 1, runLimit: 2 ** 5, excludedSources: [ERC20BridgeSource.Native] },
+                    );
+                    const second = await this._swapQuoteCalculator.calculateMarketSellSwapQuoteAsync(
+                        [
+                            createDummyOrderForSampler(
+                                makerAssetData,
+                                intermediateAssetData,
+                                this._contractAddresses.uniswapBridge,
+                            ),
+                        ],
+                        first.worstCaseQuoteInfo.makerAssetAmount,
+                        gasPrice,
+                        { ...calcOpts, numSamples: 1, runLimit: 2 ** 5, excludedSources: [ERC20BridgeSource.Native] },
+                    );
+                    return second;
+                } catch (e) {
+                    console.log(e);
+                }
+                return undefined;
+            };
+            const decodeTokenAddress = (a: string) =>
+                (assetDataUtils.decodeAssetDataOrThrow(a) as ERC20AssetData).tokenAddress;
+            const viableHops = bunnyHopTokens.filter(
+                t =>
+                    t.address !== decodeTokenAddress(makerAssetData) &&
+                    t.address !== decodeTokenAddress(takerAssetData),
             );
+            const hopSwapQuotesPromises = viableHops.map(t =>
+                calculateBunnyHopAsync(assetDataUtils.encodeERC20AssetData(t.address)),
+            );
+            let hopSwaps: Array<MarketSellSwapQuote | undefined> = [];
+            [swapQuote, hopSwaps] = await Promise.all([
+                this._swapQuoteCalculator.calculateMarketSellSwapQuoteAsync(
+                    orders,
+                    assetFillAmount,
+                    gasPrice,
+                    calcOpts,
+                ),
+                Promise.all(hopSwapQuotesPromises),
+            ]);
+            const { makerAssetAmount } = swapQuote.bestCaseQuoteInfo;
+            console.log(
+                `${[takerAssetData, makerAssetData].map(decodeTokenAddress).join('->')} ${
+                    swapQuote.bestCaseQuoteInfo.makerAssetAmount
+                }`,
+            );
+            hopSwaps.forEach(hopSwap => {
+                if (!hopSwap) {
+                    return;
+                }
+                const { makerAssetAmount: hopMakerAssetAmount } = hopSwap!.bestCaseQuoteInfo;
+                const tokens = [takerAssetData, hopSwap!.takerAssetData, makerAssetData].map(decodeTokenAddress);
+                const symbols = tokens.map(t => bunnyHopTokens.find(s => t === s.address)).map(t => t && t.symbol);
+                if (hopMakerAssetAmount.isGreaterThan(makerAssetAmount)) {
+                    console.log(
+                        `🐰 better rate via: ${symbols.join('->')} ${hopMakerAssetAmount} ${new BigNumber(1).minus(
+                            makerAssetAmount.div(hopMakerAssetAmount).decimalPlaces(4),
+                        )}`,
+                    );
+                }
+            });
         }
 
         return swapQuote;
