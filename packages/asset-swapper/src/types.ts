@@ -3,6 +3,7 @@ import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
 import { GetMarketOrdersOpts, OptimizedMarketOrder } from './utils/market_operation_utils/types';
+import { QuoteReport } from './utils/quote_report_generator';
 import { LogFunction } from './utils/quote_requestor';
 
 /**
@@ -155,6 +156,7 @@ export interface SwapQuoteBase {
     bestCaseQuoteInfo: SwapQuoteInfo;
     worstCaseQuoteInfo: SwapQuoteInfo;
     sourceBreakdown: SwapQuoteOrdersBreakdown;
+    quoteReport?: QuoteReport;
 }
 
 /**
@@ -199,12 +201,18 @@ export interface SwapQuoteOrdersBreakdown {
     [source: string]: BigNumber;
 }
 
+/**
+ * nativeExclusivelyRFQT: if set to `true`, Swap quote will exclude Open Orderbook liquidity.
+ *                        If set to `true` and `ERC20BridgeSource.Native` is part of the `excludedSources`
+ *                        array in `SwapQuoteRequestOpts`, an Error will be raised.
+ */
 export interface RfqtRequestOpts {
     takerAddress: string;
     apiKey: string;
     intentOnFilling: boolean;
     isIndicative?: boolean;
     makerEndpointMaxResponseTimeMs?: number;
+    nativeExclusivelyRFQT?: boolean;
 }
 
 /**
@@ -230,6 +238,13 @@ export interface RfqtMakerAssetOfferings {
 
 export { LogFunction } from './utils/quote_requestor';
 
+export interface SwapQuoterRfqtOpts {
+    takerApiKeyWhitelist: string[];
+    makerAssetOfferings: RfqtMakerAssetOfferings;
+    warningLogger?: LogFunction;
+    infoLogger?: LogFunction;
+}
+
 /**
  * chainId: The ethereum chain id. Defaults to 1 (mainnet).
  * orderRefreshIntervalMs: The interval in ms that getBuyQuoteAsync should trigger an refresh of orders and order states. Defaults to 10000ms (10s).
@@ -246,13 +261,7 @@ export interface SwapQuoterOpts extends OrderPrunerOpts {
     liquidityProviderRegistryAddress?: string;
     multiBridgeAddress?: string;
     ethGasStationUrl?: string;
-    rfqt?: {
-        takerApiKeyWhitelist: string[];
-        makerAssetOfferings: RfqtMakerAssetOfferings;
-        skipBuyRequests?: boolean;
-        warningLogger?: LogFunction;
-        infoLogger?: LogFunction;
-    };
+    rfqt?: SwapQuoterRfqtOpts;
     samplerOverrides?: SamplerOverrides;
 }
 

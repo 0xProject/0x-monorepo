@@ -3,6 +3,10 @@
         "version": "4.7.0",
         "changes": [
             {
+                "note": "Return quoteReport from SwapQuoter functions",
+                "pr": 2627
+            },
+            {
                 "note": "Allow an empty override for sampler overrides",
                 "pr": 2637
             },
@@ -17,6 +21,10 @@
             {
                 "note": "Make path optimization go faster",
                 "pr": 2640
+            },
+            {
+                "note": "Adds `getBidAskLiquidityForMakerTakerAssetPairAsync` to return more detailed sample information",
+                "pr": 2641
             }
         ]
     },

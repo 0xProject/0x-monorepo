@@ -1,8 +1,11 @@
 import { ERC20BridgeSamplerContract } from '@0x/contract-wrappers';
+import { RFQTIndicativeQuote } from '@0x/quote-server';
+import { MarketOperation, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
 import { RfqtRequestOpts, SignedOrderWithFillableAmounts } from '../../types';
 import { QuoteRequestor } from '../../utils/quote_requestor';
+import { QuoteReport } from '../quote_report_generator';
 
 /**
  * Order domain keys: chainId and exchange
@@ -83,6 +86,14 @@ export interface BalancerFillData extends FillData {
 
 export interface UniswapV2FillData extends FillData {
     tokenAddressPath: string[];
+}
+
+export interface LiquidityProviderFillData extends FillData {
+    poolAddress: string;
+}
+
+export interface MultiBridgeFillData extends FillData {
+    poolAddress: string;
 }
 
 /**
@@ -257,4 +268,28 @@ export interface BatchedOperation<TResult> {
 export interface SourceQuoteOperation<TFillData extends FillData = FillData> extends BatchedOperation<BigNumber[]> {
     source: ERC20BridgeSource;
     fillData?: TFillData;
+}
+
+export interface OptimizedOrdersAndQuoteReport {
+    optimizedOrders: OptimizedMarketOrder[];
+    quoteReport: QuoteReport;
+}
+
+export type MarketDepthSide = Array<Array<DexSample<FillData>>>;
+
+export interface MarketDepth {
+    bids: MarketDepthSide;
+    asks: MarketDepthSide;
+}
+
+export interface MarketSideLiquidity {
+    side: MarketOperation;
+    inputAmount: BigNumber;
+    inputToken: string;
+    outputToken: string;
+    dexQuotes: Array<Array<DexSample<FillData>>>;
+    nativeOrders: SignedOrder[];
+    orderFillableAmounts: BigNumber[];
+    ethToOutputRate: BigNumber;
+    rfqtIndicativeQuotes: RFQTIndicativeQuote[];
 }
