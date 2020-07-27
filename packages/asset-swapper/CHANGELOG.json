@@ -17,6 +17,10 @@
             {
                 "note": "Support more varied curves",
                 "pr": 2633
+            },
+            {
+                "note": "Adds `getBidAskLiquidityForMakerTakerAssetPairAsync` to return more detailed sample information",
+                "pr": 2641
             }
         ]
     },

@@ -24,6 +24,8 @@ import {
     CurveFillData,
     ERC20BridgeSource,
     Fill,
+    LiquidityProviderFillData,
+    MultiBridgeFillData,
     NativeCollapsedFill,
     OptimizedMarketOrder,
     OrderDomain,
@@ -143,8 +145,6 @@ export interface CreateOrderFromPathOpts {
     contractAddresses: ContractAddresses;
     bridgeSlippage: number;
     shouldBatchBridgeOrders: boolean;
-    liquidityProviderAddress?: string;
-    multiBridgeAddress?: string;
 }
 
 // Convert sell fills into orders.
@@ -177,7 +177,8 @@ export function createOrdersFromPath(path: Fill[], opts: CreateOrderFromPathOpts
     return orders;
 }
 
-function getBridgeAddressFromSource(source: ERC20BridgeSource, opts: CreateOrderFromPathOpts): string {
+function getBridgeAddressFromFill(fill: CollapsedFill, opts: CreateOrderFromPathOpts): string {
+    const source = fill.source;
     switch (source) {
         case ERC20BridgeSource.Eth2Dai:
             return opts.contractAddresses.eth2DaiBridge;
@@ -192,15 +193,9 @@ function getBridgeAddressFromSource(source: ERC20BridgeSource, opts: CreateOrder
         case ERC20BridgeSource.Balancer:
             return opts.contractAddresses.balancerBridge;
         case ERC20BridgeSource.LiquidityProvider:
-            if (opts.liquidityProviderAddress === undefined) {
-                throw new Error('Cannot create a LiquidityProvider order without a LiquidityProvider pool address.');
-            }
-            return opts.liquidityProviderAddress;
+            return (fill.fillData as LiquidityProviderFillData).poolAddress;
         case ERC20BridgeSource.MultiBridge:
-            if (opts.multiBridgeAddress === undefined) {
-                throw new Error('Cannot create a MultiBridge order without a MultiBridge address.');
-            }
-            return opts.multiBridgeAddress;
+            return (fill.fillData as MultiBridgeFillData).poolAddress;
         default:
             break;
     }
@@ -209,7 +204,7 @@ function getBridgeAddressFromSource(source: ERC20BridgeSource, opts: CreateOrder
 
 function createBridgeOrder(fill: CollapsedFill, opts: CreateOrderFromPathOpts): OptimizedMarketOrder {
     const [makerToken, takerToken] = getMakerTakerTokens(opts);
-    const bridgeAddress = getBridgeAddressFromSource(fill.source, opts);
+    const bridgeAddress = getBridgeAddressFromFill(fill, opts);
 
     let makerAssetData;
     switch (fill.source) {
