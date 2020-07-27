@@ -19,6 +19,10 @@
                 "pr": 2633
             },
             {
+                "note": "Make path optimization go faster",
+                "pr": 2640
+            },
+            {
                 "note": "Adds `getBidAskLiquidityForMakerTakerAssetPairAsync` to return more detailed sample information",
                 "pr": 2641
             }

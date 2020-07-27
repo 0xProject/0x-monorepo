@@ -120,6 +120,10 @@ export enum FillFlags {
  * Represents a node on a fill path.
  */
 export interface Fill<TFillData extends FillData = FillData> {
+    // Unique ID of the original source path this fill belongs to.
+    // This is generated when the path is generated and is useful to distinguish
+    // paths that have the same `source` IDs but are distinct (e.g., Curves).
+    sourcePathId: string;
     // See `FillFlags`.
     flags: FillFlags;
     // Input fill amount (taker asset amount in a sell, maker asset amount in a buy).
