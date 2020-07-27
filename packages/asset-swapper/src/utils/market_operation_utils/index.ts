@@ -440,7 +440,6 @@ export class MarketOperationUtils {
             feeSchedule?: FeeSchedule;
             allowFallback?: boolean;
             shouldBatchBridgeOrders?: boolean;
-            multiBridgeAddress?: string;
             quoteRequestor?: QuoteRequestor;
         },
     ): Promise<OptimizedOrdersAndQuoteReport> {
