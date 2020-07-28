@@ -5,6 +5,10 @@
             {
                 "note": "Update `CurveBridge` address on all networks",
                 "pr": 2633
+            },
+            {
+                "note": "Redeploy ERC20BridgeSampler on Kovan",
+                "pr": 2644
             }
         ]
     },
