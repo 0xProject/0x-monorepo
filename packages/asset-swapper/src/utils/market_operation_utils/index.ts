@@ -302,6 +302,7 @@ export class MarketOperationUtils {
             feeSchedule: _opts.feeSchedule,
             allowFallback: _opts.allowFallback,
             shouldBatchBridgeOrders: _opts.shouldBatchBridgeOrders,
+            quoteRequestor: _opts.rfqt ? _opts.rfqt.quoteRequestor : undefined,
         });
     }
 
