@@ -1,5 +1,14 @@
 [
     {
+        "version": "3.3.0",
+        "changes": [
+            {
+                "note": "Make `payable` field in `ConstructorAbi` optional",
+                "pr": 2648
+            }
+        ]
+    },
+    {
         "version": "3.2.0",
         "changes": [
             {
