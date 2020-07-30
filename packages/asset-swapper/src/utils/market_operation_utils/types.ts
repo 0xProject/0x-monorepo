@@ -38,6 +38,7 @@ export enum ERC20BridgeSource {
     LiquidityProvider = 'LiquidityProvider',
     MultiBridge = 'MultiBridge',
     Balancer = 'Balancer',
+    Bancor = 'Bancor',
 }
 
 // tslint:disable: enum-naming
@@ -94,6 +95,16 @@ export interface LiquidityProviderFillData extends FillData {
 
 export interface MultiBridgeFillData extends FillData {
     poolAddress: string;
+}
+export interface BancorFillData extends FillData {
+    path: string[];
+}
+
+export interface QuoteData {}
+
+export interface BancorQuoteData extends QuoteData {
+    fillData: BancorFillData;
+    amount: BigNumber;
 }
 
 /**
@@ -265,7 +276,8 @@ export interface BatchedOperation<TResult> {
     handleCallResultsAsync(contract: ERC20BridgeSamplerContract, callResults: string): Promise<TResult>;
 }
 
-export interface SourceQuoteOperation<TFillData extends FillData = FillData> extends BatchedOperation<BigNumber[]> {
+export interface SourceQuoteOperation<TFillData extends FillData = FillData, TQuoteData extends QuoteData = BigNumber>
+    extends BatchedOperation<TQuoteData[]> {
     source: ERC20BridgeSource;
     fillData?: TFillData;
 }

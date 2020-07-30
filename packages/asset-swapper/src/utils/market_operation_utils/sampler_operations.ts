@@ -3,14 +3,18 @@ import * as _ from 'lodash';
 import { BigNumber, ERC20BridgeSource, SignedOrder } from '../..';
 
 import { BalancerPool, BalancerPoolsCache, computeBalancerBuyQuote, computeBalancerSellQuote } from './balancer_utils';
+import { BancorService } from './bancor_service';
 import { getCurveInfosForPair } from './curve_utils';
 import { getMultiBridgeIntermediateToken } from './multibridge_utils';
 import {
     BalancerFillData,
+    BancorQuoteData,
     BatchedOperation,
     CurveFillData,
     CurveInfo,
     DexSample,
+    FillData,
+    QuoteData,
     SourceQuoteOperation,
     UniswapV2FillData,
 } from './types';
@@ -287,6 +291,42 @@ export const samplerOperations = {
             },
         };
     },
+    getBancorSellQuotes(
+        makerToken: string,
+        takerToken: string,
+        takerFillAmounts: BigNumber[],
+        bancorService: BancorService,
+    ): SourceQuoteOperation<FillData, BancorQuoteData> {
+        return {
+            source: ERC20BridgeSource.Bancor,
+            encodeCall: _contract => {
+                return '0x';
+            },
+            handleCallResultsAsync: async (_contract, _callResults) => {
+                return Promise.all(
+                    takerFillAmounts.map(amt => bancorService.getQuoteAsync(makerToken, takerToken, amt)), // tslint:disable-line:promise-function-async
+                );
+            },
+        };
+    },
+    getBancorBuyQuotes(
+        makerToken: string,
+        takerToken: string,
+        makerFillAmounts: BigNumber[],
+        bancorService: BancorService,
+    ): SourceQuoteOperation<FillData, BancorQuoteData> {
+        return {
+            source: ERC20BridgeSource.Bancor,
+            encodeCall: _contract => {
+                return '0x';
+            },
+            handleCallResultsAsync: async (_contract, _callResults) => {
+                return Promise.all(
+                    makerFillAmounts.map(amt => bancorService.getQuoteAsync(takerToken, makerToken, amt)), // tslint:disable-line:promise-function-async
+                );
+            },
+        };
+    },
     getBalancerSellQuotes(pool: BalancerPool, takerFillAmounts: BigNumber[]): SourceQuoteOperation<BalancerFillData> {
         return {
             source: ERC20BridgeSource.Balancer,
@@ -310,6 +350,7 @@ export const samplerOperations = {
         balancerPoolsCache?: BalancerPoolsCache,
         liquidityProviderRegistryAddress?: string,
         multiBridgeAddress?: string,
+        bancorService?: BancorService,
     ): Promise<BatchedOperation<BigNumber>> => {
         if (makerToken.toLowerCase() === takerToken.toLowerCase()) {
             return samplerOperations.constant(new BigNumber(1));
@@ -323,6 +364,7 @@ export const samplerOperations = {
             balancerPoolsCache,
             liquidityProviderRegistryAddress,
             multiBridgeAddress,
+            bancorService,
         );
         return {
             encodeCall: contract => {
@@ -382,11 +424,16 @@ export const samplerOperations = {
         balancerPoolsCache?: BalancerPoolsCache,
         liquidityProviderRegistryAddress?: string,
         multiBridgeAddress?: string,
+        bancorService?: BancorService,
     ): Promise<BatchedOperation<DexSample[][]>> => {
         const subOps = _.flatten(
             await Promise.all(
                 sources.map(
-                    async (source): Promise<SourceQuoteOperation | SourceQuoteOperation[]> => {
+                    async (
+                        source,
+                    ): Promise<
+                        SourceQuoteOperation<FillData, QuoteData> | Array<SourceQuoteOperation<FillData, QuoteData>>
+                    > => {
                         switch (source) {
                             case ERC20BridgeSource.Eth2Dai:
                                 return samplerOperations.getEth2DaiSellQuotes(makerToken, takerToken, takerFillAmounts);
@@ -456,6 +503,18 @@ export const samplerOperations = {
                                 return pools.map(pool =>
                                     samplerOperations.getBalancerSellQuotes(pool, takerFillAmounts),
                                 );
+                            case ERC20BridgeSource.Bancor:
+                                if (bancorService === undefined) {
+                                    throw new Error(
+                                        'Cannot sample liquidity from Bancor; no Bancor service instantiated.',
+                                    );
+                                }
+                                return samplerOperations.getBancorSellQuotes(
+                                    makerToken,
+                                    takerToken,
+                                    takerFillAmounts,
+                                    bancorService,
+                                );
                             default:
                                 throw new Error(`Unsupported sell sample source: ${source}`);
                         }
@@ -463,8 +522,16 @@ export const samplerOperations = {
                 ),
             ),
         );
-        const samplerOps = subOps.filter(op => op.source !== ERC20BridgeSource.Balancer);
-        const nonSamplerOps = subOps.filter(op => op.source === ERC20BridgeSource.Balancer);
+        const nonSamplerSources = [ERC20BridgeSource.Balancer, ERC20BridgeSource.Bancor];
+        const samplerOps: Array<SourceQuoteOperation<FillData, QuoteData>> = [];
+        const nonSamplerOps: Array<SourceQuoteOperation<FillData, QuoteData>> = [];
+        subOps.forEach(op => {
+            if (nonSamplerSources.find(s => s === op.source) !== undefined) {
+                nonSamplerOps.push(op);
+            } else {
+                samplerOps.push(op);
+            }
+        });
         return {
             encodeCall: contract => {
                 const subCalls = samplerOps.map(op => op.encodeCall(contract));
@@ -481,9 +548,13 @@ export const samplerOperations = {
                 return [...samplerOps, ...nonSamplerOps].map((op, i) => {
                     return samples[i].map((output, j) => ({
                         source: op.source,
-                        output,
+                        output:
+                            op.source === ERC20BridgeSource.Bancor
+                                ? (output as BancorQuoteData).amount
+                                : (output as BigNumber), // hack; all QuoteData other than Bancor defaults to BigNumber
                         input: takerFillAmounts[j],
-                        fillData: op.fillData,
+                        fillData:
+                            op.source === ERC20BridgeSource.Bancor ? (output as BancorQuoteData).fillData : op.fillData,
                     }));
                 });
             },
@@ -497,11 +568,16 @@ export const samplerOperations = {
         wethAddress: string,
         balancerPoolsCache?: BalancerPoolsCache,
         liquidityProviderRegistryAddress?: string,
+        bancorService?: BancorService,
     ): Promise<BatchedOperation<DexSample[][]>> => {
         const subOps = _.flatten(
             await Promise.all(
                 sources.map(
-                    async (source): Promise<SourceQuoteOperation | SourceQuoteOperation[]> => {
+                    async (
+                        source,
+                    ): Promise<
+                        SourceQuoteOperation<FillData, QuoteData> | Array<SourceQuoteOperation<FillData, QuoteData>>
+                    > => {
                         switch (source) {
                             case ERC20BridgeSource.Eth2Dai:
                                 return samplerOperations.getEth2DaiBuyQuotes(makerToken, takerToken, makerFillAmounts);
@@ -553,6 +629,18 @@ export const samplerOperations = {
                                 return pools.map(pool =>
                                     samplerOperations.getBalancerBuyQuotes(pool, makerFillAmounts),
                                 );
+                            case ERC20BridgeSource.Bancor:
+                                if (bancorService === undefined) {
+                                    throw new Error(
+                                        'Cannot sample liquidity from Bancor; no Bancor service instantiated.',
+                                    );
+                                }
+                                return samplerOperations.getBancorBuyQuotes(
+                                    makerToken,
+                                    takerToken,
+                                    makerFillAmounts,
+                                    bancorService,
+                                );
                             default:
                                 throw new Error(`Unsupported buy sample source: ${source}`);
                         }
@@ -560,8 +648,16 @@ export const samplerOperations = {
                 ),
             ),
         );
-        const samplerOps = subOps.filter(op => op.source !== ERC20BridgeSource.Balancer);
-        const nonSamplerOps = subOps.filter(op => op.source === ERC20BridgeSource.Balancer);
+        const nonSamplerSources = [ERC20BridgeSource.Balancer, ERC20BridgeSource.Bancor];
+        const samplerOps: Array<SourceQuoteOperation<FillData, QuoteData>> = [];
+        const nonSamplerOps: Array<SourceQuoteOperation<FillData, QuoteData>> = [];
+        subOps.forEach(op => {
+            if (nonSamplerSources.find(s => s === op.source) !== undefined) {
+                nonSamplerOps.push(op);
+            } else {
+                samplerOps.push(op);
+            }
+        });
         return {
             encodeCall: contract => {
                 const subCalls = samplerOps.map(op => op.encodeCall(contract));
@@ -578,9 +674,13 @@ export const samplerOperations = {
                 return [...samplerOps, ...nonSamplerOps].map((op, i) => {
                     return samples[i].map((output, j) => ({
                         source: op.source,
-                        output,
+                        output:
+                            op.source === ERC20BridgeSource.Bancor
+                                ? (output as BancorQuoteData).amount
+                                : (output as BigNumber), // hack; all QuoteData other than Bancor defaults to BigNumber
                         input: makerFillAmounts[j],
-                        fillData: op.fillData,
+                        fillData:
+                            op.source === ERC20BridgeSource.Bancor ? (output as BancorQuoteData).fillData : op.fillData,
                     }));
                 });
             },

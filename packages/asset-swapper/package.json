@@ -57,6 +57,7 @@
         "@0x/utils": "^5.5.1",
         "@0x/web3-wrapper": "^7.2.0",
         "@balancer-labs/sor": "0.3.2",
+        "@bancor/sdk": "^0.2.5",
         "axios": "^0.19.2",
         "axios-mock-adapter": "^1.18.1",
         "decimal.js": "^10.2.0",

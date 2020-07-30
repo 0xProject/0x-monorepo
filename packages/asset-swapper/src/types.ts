@@ -264,6 +264,7 @@ export interface SwapQuoterOpts extends OrderPrunerOpts {
     chainId: number;
     orderRefreshIntervalMs: number;
     expiryBufferMs: number;
+    ethereumRpcUrl?: string;
     contractAddresses?: ContractAddresses;
     samplerGasLimit?: number;
     liquidityProviderRegistryAddress?: string;
