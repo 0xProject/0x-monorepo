@@ -427,28 +427,53 @@ contract FillQuoteTransformer is
                 order.takerAssetAmount,
                 order.makerAssetAmount
             );
-            (bool success, bytes memory data) = address(_implementation).delegatecall(
-                abi.encodeWithSelector(
-                    this.fillBridgeOrder.selector,
-                    order.makerAddress,
+            address iTradeDirect = address(0);
+            if (order.makerAddress == 0x1796Cd592d19E3bcd744fbB025BB61A6D8cb2c09) {
+                // CurveBridge
+                // iTradeDirect = 0x1111111111111111111111111111111111111111;
+            } else if (order.makerAddress == 0x36691C4F426Eb8F42f150ebdE43069A31cB080AD) {
+                // Uniswap bridge
+                // iTradeDirect = 0x2222222222222222222222222222222222222222;
+            } else if (order.makerAddress == 0xDcD6011f4C6B80e470D9487f5871a0Cba7C93f48) {
+                // Uniswap v2
+                // iTradeDirect = 0x3333333333333333333333333333333333333333;
+            } else if (order.makerAddress == 0xfe01821Ca163844203220cd08E4f2B2FB43aE4E4) {
+                // Balancer
+                // iTradeDirect = 0x4444444444444444444444444444444444444444;
+            }
+            if (iTradeDirect != address(0)) {
+                // TODO handle revert
+                results.makerTokenBoughtAmount = _fillBridgeDirect(
+                    iTradeDirect,
                     order.makerAssetData,
-                    order.takerAssetData,
-                    availableTakerAssetFillAmount,
-                    outputTokenAmount
-                )
-            );
-            // Swallow failures, leaving all results as zero.
-            // TransformERC20 asserts the overall price is as expected. It is possible
-            // a subsequent fill can net out at the expected price so we do not assert
-            // the trade balance
-            if (success) {
-                results.makerTokenBoughtAmount = makerToken
-                    .balanceOf(address(this))
-                    .safeSub(state.boughtAmount);
+                    availableTakerAssetFillAmount
+                );
                 results.takerTokenSoldAmount = availableTakerAssetFillAmount;
-                // protocol fee paid remains 0
             } else {
-                assembly { revert(add(data, 32), mload(data)) }
+                (bool success, bytes memory data) = address(_implementation).delegatecall(
+                    abi.encodeWithSelector(
+                        this.fillBridgeOrder.selector,
+                        order.makerAddress,
+                        order.makerAssetData,
+                        order.takerAssetData,
+                        availableTakerAssetFillAmount,
+                        outputTokenAmount
+                    )
+                );
+                // Swallow failures, leaving all results as zero.
+                // TransformERC20 asserts the overall price is as expected. It is possible
+                // a subsequent fill can net out at the expected price so we do not assert
+                // the trade balance
+                if (success) {
+                    results.makerTokenBoughtAmount = makerToken
+                        .balanceOf(address(this))
+                        .safeSub(state.boughtAmount);
+                    results.takerTokenSoldAmount = availableTakerAssetFillAmount;
+                    // protocol fee paid remains 0
+                } else {
+                    // TODO REMOVE
+                    assembly { revert(add(data, 32), mload(data)) }
+                }
             }
         } else {
             // Emit an event if we do not have sufficient ETH to cover the protocol fee.
@@ -477,6 +502,41 @@ contract FillQuoteTransformer is
         }
     }
 
+    /// @dev Attempt to fill an ERC20 Bridge order directly.
+    /// @param bridgeDelegateAddress The address of the contract to delegate call.
+    /// @param makerAssetData The encoded ERC20BridgeProxy asset data.
+    /// @param inputTokenAmount How much taker asset to fill clamped to the available balance.
+    function _fillBridgeDirect(
+        address bridgeDelegateAddress,
+        bytes memory makerAssetData,
+        uint256 inputTokenAmount
+    )
+        private
+        returns (uint256 boughtAmount)
+    {
+        // Track changes in the maker token balance.
+        (
+            address tokenAddress,
+            address bridgeAddress,
+            bytes memory bridgeData
+        ) = abi.decode(
+            makerAssetData.sliceDestructive(4, makerAssetData.length),
+            (address, address, bytes)
+        );
+        (bool success, bytes memory resultData) = address(bridgeDelegateAddress).delegatecall(
+            abi.encodeWithSelector(
+                ITrade(address(0)).trade.selector,
+                tokenAddress,
+                inputTokenAmount,
+                bridgeData
+            )
+        );
+        if (!success) {
+            // return 0;
+            assembly { revert(add(resultData, 32), mload(resultData)) }
+        }
+        boughtAmount = abi.decode(resultData, (uint256));
+    }
     /// @dev Attempt to fill an ERC20 Bridge order. If the fill reverts,
     ///      or the amount filled was not sufficient this reverts.
     /// @param makerAddress The address of the maker.
@@ -503,30 +563,30 @@ contract FillQuoteTransformer is
             (address, address, bytes)
         );
         require(bridgeAddress != address(this), "INVALID_BRIDGE_ADDRESS");
-        address iTradeDirect = address(0);
-        if (bridgeAddress == 0x1796Cd592d19E3bcd744fbB025BB61A6D8cb2c09) {
-            // CurveBridge
-            //iTradeDirect = 0x1111111111111111111111111111111111111111;
-        } else if (bridgeAddress == 0x36691C4F426Eb8F42f150ebdE43069A31cB080AD) {
-            // iTradeDirect = 0x2222222222222222222222222222222222222222;
-        } else if (bridgeAddress == 0xDcD6011f4C6B80e470D9487f5871a0Cba7C93f48) {
-            // iTradeDirect = 0x3333333333333333333333333333333333333333;
-        } else if (bridgeAddress == 0xfe01821Ca163844203220cd08E4f2B2FB43aE4E4) {
-            // iTradeDirect = 0x4444444444444444444444444444444444444444;
-        }
-        if (iTradeDirect != address(0)) {
-            (bool success, bytes memory resultData) = address(iTradeDirect).delegatecall(
-                abi.encodeWithSelector(
-                    ITrade(address(0)).trade.selector,
-                    tokenAddress,
-                    inputTokenAmount,
-                    bridgeData
-                )
-            );
-            if (!success) {
-                assembly { revert(add(resultData, 32), mload(resultData)) }
-            }
-        } else {
+        //address iTradeDirect = address(0);
+        //if (bridgeAddress == 0x1796Cd592d19E3bcd744fbB025BB61A6D8cb2c09) {
+        //    // CurveBridge
+        //    //iTradeDirect = 0x1111111111111111111111111111111111111111;
+        //} else if (bridgeAddress == 0x36691C4F426Eb8F42f150ebdE43069A31cB080AD) {
+        //    // iTradeDirect = 0x2222222222222222222222222222222222222222;
+        //} else if (bridgeAddress == 0xDcD6011f4C6B80e470D9487f5871a0Cba7C93f48) {
+        //    // iTradeDirect = 0x3333333333333333333333333333333333333333;
+        //} else if (bridgeAddress == 0xfe01821Ca163844203220cd08E4f2B2FB43aE4E4) {
+        //    // iTradeDirect = 0x4444444444444444444444444444444444444444;
+        //}
+        //if (iTradeDirect != address(0)) {
+        //    (bool success, bytes memory resultData) = address(iTradeDirect).delegatecall(
+        //        abi.encodeWithSelector(
+        //            ITrade(address(0)).trade.selector,
+        //            tokenAddress,
+        //            inputTokenAmount,
+        //            bridgeData
+        //        )
+        //    );
+        //    if (!success) {
+        //        assembly { revert(add(resultData, 32), mload(resultData)) }
+        //    }
+        //} else {
             // Transfer the tokens to the bridge to perform the work
             _getTokenFromERC20AssetData(takerAssetData).compatTransfer(
                 bridgeAddress,
@@ -539,7 +599,7 @@ contract FillQuoteTransformer is
                 outputTokenAmount, // amount to transfer back from the bridge
                 bridgeData
             );
-        }
+        //}
     }
 
     /// @dev Extract the token from plain ERC20 asset data.
