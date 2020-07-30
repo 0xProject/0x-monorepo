@@ -32,6 +32,16 @@ import "./Transformer.sol";
 import "./LibERC20Transformer.sol";
 import "../fixins/FixinGasToken.sol";
 
+interface ITrade {
+    function trade(
+        address toTokenAddress,
+        uint256 sellAmount,
+        bytes calldata bridgeData
+    )
+        external
+        returns (uint256);
+}
+
 
 /// @dev A transformer that fills an ERC20 market sell/buy quote.
 ///      This transformer shortcuts bridge orders and fills them directly
@@ -113,19 +123,24 @@ contract FillQuoteTransformer is
     uint256 private constant MAX_UINT256 = uint256(-1);
 
     /// @dev The Exchange contract.
-    IExchange public immutable exchange;
+    IExchange public constant exchange = IExchange(0x61935CbDd02287B511119DDb11Aeb42F1593b7Ef);
     /// @dev The ERC20Proxy address.
-    address public immutable erc20Proxy;
+    address public constant erc20Proxy = 0x95E6F48254609A6ee006F7D493c8e5fB97094ceF;
 
-    /// @dev Create this contract.
-    /// @param exchange_ The Exchange V3 instance.
-    constructor(IExchange exchange_)
-        public
-        Transformer()
-    {
-        exchange = exchange_;
-        erc20Proxy = exchange_.getAssetProxy(ERC20_ASSET_PROXY_ID);
-    }
+    ///// @dev The Exchange contract.
+    //IExchange public immutable exchange;
+    ///// @dev The ERC20Proxy address.
+    //address public immutable erc20Proxy;
+
+    ///// @dev Create this contract.
+    ///// @param exchange_ The Exchange V3 instance.
+    //constructor(IExchange exchange_)
+    //    public
+    //    Transformer()
+    //{
+    //    exchange = exchange_;
+    //    erc20Proxy = exchange_.getAssetProxy(ERC20_ASSET_PROXY_ID);
+    //}
 
     /// @dev Sell this contract's entire balance of of `sellToken` in exchange
     ///      for `buyToken` by filling `orders`. Protocol fees should be attached
@@ -432,6 +447,8 @@ contract FillQuoteTransformer is
                     .safeSub(state.boughtAmount);
                 results.takerTokenSoldAmount = availableTakerAssetFillAmount;
                 // protocol fee paid remains 0
+            } else {
+                assembly { revert(add(data, 32), mload(data)) }
             }
         } else {
             // Emit an event if we do not have sufficient ETH to cover the protocol fee.
@@ -486,18 +503,43 @@ contract FillQuoteTransformer is
             (address, address, bytes)
         );
         require(bridgeAddress != address(this), "INVALID_BRIDGE_ADDRESS");
-        // Transfer the tokens to the bridge to perform the work
-        _getTokenFromERC20AssetData(takerAssetData).compatTransfer(
-            bridgeAddress,
-            inputTokenAmount
-        );
-        IERC20Bridge(bridgeAddress).bridgeTransferFrom(
-            tokenAddress,
-            makerAddress,
-            address(this),
-            outputTokenAmount, // amount to transfer back from the bridge
-            bridgeData
-        );
+        address iTradeDirect = address(0);
+        if (bridgeAddress == 0x1796Cd592d19E3bcd744fbB025BB61A6D8cb2c09) {
+            // CurveBridge
+            //iTradeDirect = 0x1111111111111111111111111111111111111111;
+        } else if (bridgeAddress == 0x36691C4F426Eb8F42f150ebdE43069A31cB080AD) {
+            // iTradeDirect = 0x2222222222222222222222222222222222222222;
+        } else if (bridgeAddress == 0xDcD6011f4C6B80e470D9487f5871a0Cba7C93f48) {
+            // iTradeDirect = 0x3333333333333333333333333333333333333333;
+        } else if (bridgeAddress == 0xfe01821Ca163844203220cd08E4f2B2FB43aE4E4) {
+            // iTradeDirect = 0x4444444444444444444444444444444444444444;
+        }
+        if (iTradeDirect != address(0)) {
+            (bool success, bytes memory resultData) = address(iTradeDirect).delegatecall(
+                abi.encodeWithSelector(
+                    ITrade(address(0)).trade.selector,
+                    tokenAddress,
+                    inputTokenAmount,
+                    bridgeData
+                )
+            );
+            if (!success) {
+                assembly { revert(add(resultData, 32), mload(resultData)) }
+            }
+        } else {
+            // Transfer the tokens to the bridge to perform the work
+            _getTokenFromERC20AssetData(takerAssetData).compatTransfer(
+                bridgeAddress,
+                inputTokenAmount
+            );
+            IERC20Bridge(bridgeAddress).bridgeTransferFrom(
+                tokenAddress,
+                makerAddress,
+                address(this),
+                outputTokenAmount, // amount to transfer back from the bridge
+                bridgeData
+            );
+        }
     }
 
     /// @dev Extract the token from plain ERC20 asset data.

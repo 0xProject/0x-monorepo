@@ -19,6 +19,7 @@
 pragma solidity ^0.6.5;
 
 import "@0x/contracts-erc20/contracts/src/v06/LibERC20TokenV06.sol";
+import "@0x/contracts-erc20/contracts/src/v06/IERC20TokenV06.sol";
 
 interface IUniswapExchangeFactory {
 
@@ -80,18 +81,20 @@ interface IUniswapExchange {
         returns (uint256 tokensBought);
 }
 
-contract IEtherToken
+interface IEtherToken
 {
     function deposit()
-        public
+        external
         payable;
 
     function withdraw(uint256 amount)
-        public;
+        external;
 }
 
 contract UniswapBridge
 {
+
+    using LibERC20TokenV06 for IERC20TokenV06;
 
     // Struct to hold `bridgeTransferFrom()` local variables in memory and to avoid
     // stack overflows.
@@ -107,16 +110,13 @@ contract UniswapBridge
     /// @dev Mainnet address of the `UniswapExchangeFactory` contract.
     address constant private UNISWAP_EXCHANGE_FACTORY_ADDRESS = 0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95;
 
-    // FlashWallet probably has this
-    // // solhint-disable no-empty-blocks
-    // /// @dev Payable fallback to receive ETH from uniswap.
-    // function ()
-    //     external
-    //     payable
-    // {}
+    // solhint-disable
+    /// @dev Allows this contract to receive ether.
+    receive() external payable {}
+    // solhint-enable
 
     function trade(
-        address toTokenAdddress,
+        address toTokenAddress,
         uint256 sellAmount,
         bytes calldata bridgeData
     )
@@ -143,20 +143,19 @@ contract UniswapBridge
             state.weth.withdraw(sellAmount);
             // Buy as much of `toTokenAddress` token with ETH as possible and
             // transfer it to `to`.
-            state.boughtAmount = state.exchange.ethToTokenTransferInput.value(sellAmount)(
+            state.boughtAmount = state.exchange.ethToTokenTransferInput{ value: sellAmount }(
                 // Minimum buy amount.
-                0,
+                1,
                 // Expires after this block.
                 block.timestamp,
                 // Recipient is `this`.
-                adddress(this)
+                address(this)
             );
 
         // Convert from a token to WETH.
         } else if (toTokenAddress == address(state.weth)) {
             // Grant the exchange an allowance.
-            LibERC20TokenV06.approveIfBelow(
-                fromTokenAddress,
+            IERC20TokenV06(fromTokenAddress).approveIfBelow(
                 address(state.exchange),
                 sellAmount
             );
@@ -174,8 +173,7 @@ contract UniswapBridge
         // Convert from one token to another.
         } else {
             // Grant the exchange an allowance.
-            LibERC20TokenV06.approveIfBelow(
-                fromTokenAddress,
+            IERC20TokenV06(fromTokenAddress).approveIfBelow(
                 address(state.exchange),
                 sellAmount
             );

@@ -19,6 +19,7 @@
 pragma solidity ^0.6.5;
 
 import "@0x/contracts-erc20/contracts/src/v06/LibERC20TokenV06.sol";
+import "@0x/contracts-erc20/contracts/src/v06/IERC20TokenV06.sol";
 
 interface IUniswapV2Router02 {
 
@@ -44,10 +45,12 @@ interface IUniswapV2Router02 {
 contract UniswapV2Bridge
 {
 
+    using LibERC20TokenV06 for IERC20TokenV06;
+
     address constant private UNISWAP_V2_ROUTER_02_ADDRESS = 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D;
 
     function trade(
-        address toTokenAdddress,
+        address toTokenAddress,
         uint256 sellAmount,
         bytes calldata bridgeData
     )
@@ -56,24 +59,23 @@ contract UniswapV2Bridge
     {
         // Decode the bridge data to get the `fromTokenAddress`.
         // solhint-disable indent
-        address[] path = abi.decode(bridgeData, (address[]));
+        address[] memory path = abi.decode(bridgeData, (address[]));
         // solhint-enable indent
 
         require(path.length >= 2, "UniswapV2Bridge/PATH_LENGTH_MUST_BE_AT_LEAST_TWO");
         require(path[path.length - 1] == toTokenAddress, "UniswapV2Bridge/LAST_ELEMENT_OF_PATH_MUST_MATCH_OUTPUT_TOKEN");
         // Grant the Uniswap router an allowance.
-        LibERC20TokenV06.approveIfBelow(
-            path[0],
+        IERC20TokenV06(path[0]).approveIfBelow(
             UNISWAP_V2_ROUTER_02_ADDRESS,
             sellAmount
         );
 
-        IUniswapV2Router01 router = IUniswapV2Router02(UNISWAP_V2_ROUTER_02_ADDRESS);
+        IUniswapV2Router02 router = IUniswapV2Router02(UNISWAP_V2_ROUTER_02_ADDRESS);
         uint[] memory amounts = router.swapExactTokensForTokens(
              // Sell all tokens we hold.
             sellAmount,
              // Minimum buy amount.
-            0,
+            1,
             // Convert `fromTokenAddress` to `toTokenAddress`.
             path,
             // Recipient is `to`.

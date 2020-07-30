@@ -19,6 +19,7 @@
 pragma solidity ^0.6.5;
 
 import "@0x/contracts-erc20/contracts/src/v06/LibERC20TokenV06.sol";
+import "@0x/contracts-erc20/contracts/src/v06/IERC20TokenV06.sol";
 
 interface IBalancerPool {
     /// @dev Sell `tokenAmountIn` of `tokenIn` and receive `tokenOut`.
@@ -41,8 +42,10 @@ interface IBalancerPool {
 
 contract BalancerBridge
 {
+    using LibERC20TokenV06 for IERC20TokenV06;
+
     function trade(
-        address toTokenAdddress,
+        address toTokenAddress,
         uint256 sellAmount,
         bytes calldata bridgeData
     )
@@ -54,8 +57,7 @@ contract BalancerBridge
             bridgeData,
             (address, address)
         );
-        LibERC20TokenV06.approveIfBelow(
-            fromTokenAddress,
+        IERC20TokenV06(fromTokenAddress).approveIfBelow(
             poolAddress,
             sellAmount
         );
@@ -64,7 +66,7 @@ contract BalancerBridge
             fromTokenAddress, // tokenIn
             sellAmount,       // tokenAmountIn
             toTokenAddress,   // tokenOut
-            0,                // minAmountOut
+            1,                // minAmountOut
             uint256(-1)       // maxPrice
         );
         return boughtAmount;

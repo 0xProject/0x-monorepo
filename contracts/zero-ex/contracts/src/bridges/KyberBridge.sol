@@ -19,15 +19,16 @@
 pragma solidity ^0.6.5;
 
 import "@0x/contracts-erc20/contracts/src/v06/LibERC20TokenV06.sol";
+import "@0x/contracts-erc20/contracts/src/v06/IERC20TokenV06.sol";
 
-contract IEtherToken
+interface IEtherToken
 {
     function deposit()
-        public
+        external
         payable;
 
     function withdraw(uint256 amount)
-        public;
+        external;
 }
 
 interface IKyberNetworkProxy {
@@ -58,6 +59,8 @@ interface IKyberNetworkProxy {
 
 contract KyberBridge
 {
+    using LibERC20TokenV06 for IERC20TokenV06;
+
     // @dev Structure used internally to get around stack limits.
     struct TradeState {
         IKyberNetworkProxy kyber;
@@ -86,7 +89,7 @@ contract KyberBridge
     //{}
 
     function trade(
-        address toTokenAdddress,
+        address toTokenAddress,
         uint256 sellAmount,
         bytes calldata bridgeData
     )
@@ -103,9 +106,8 @@ contract KyberBridge
         if (state.fromTokenAddress != address(state.weth)) {
             // If the input token is not WETH, grant an allowance to the exchange
             // to spend them.
-            LibERC20TokenV06.approveIfBelow(
-                fromTokenAddress,
-                state.kyber,
+            IERC20TokenV06(state.fromTokenAddress).approveIfBelow(
+                address(state.kyber),
                 state.fromTokenBalance
             );
         } else {
@@ -118,7 +120,7 @@ contract KyberBridge
 
         // Try to sell all of this contract's input token balance through
         // `KyberNetworkProxy.trade()`.
-        uint256 boughtAmount = state.kyber.trade.value(state.payableAmount)(
+        uint256 boughtAmount = state.kyber.trade{ value: state.payableAmount }(
             // Input token.
             state.fromTokenAddress,
             // Sell amount.

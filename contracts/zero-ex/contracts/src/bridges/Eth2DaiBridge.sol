@@ -19,6 +19,7 @@
 pragma solidity ^0.6.5;
 
 import "@0x/contracts-erc20/contracts/src/v06/LibERC20TokenV06.sol";
+import "@0x/contracts-erc20/contracts/src/v06/IERC20TokenV06.sol";
 
 interface IEth2Dai {
 
@@ -42,11 +43,13 @@ interface IEth2Dai {
 contract Eth2DaiBridge
 {
 
+    using LibERC20TokenV06 for IERC20TokenV06;
+
     /// @dev Mainnet address of the Eth2Dai `MatchingMarket` contract.
     address constant private ETH2DAI_ADDRESS = 0x794e6e91555438aFc3ccF1c5076A74F42133d08D;
 
     function trade(
-        address toTokenAdddress,
+        address toTokenAddress,
         uint256 sellAmount,
         bytes calldata bridgeData
     )
@@ -57,8 +60,7 @@ contract Eth2DaiBridge
         (address fromTokenAddress) = abi.decode(bridgeData, (address));
         IEth2Dai exchange = IEth2Dai(ETH2DAI_ADDRESS);
         // Grant an allowance to the exchange to spend `fromTokenAddress` token.
-        LibERC20TokenV06.approveIfBelow(
-            fromTokenAddress,
+        IERC20TokenV06(fromTokenAddress).approveIfBelow(
             address(exchange),
             sellAmount
         );

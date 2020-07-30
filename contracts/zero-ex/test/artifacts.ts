@@ -7,7 +7,10 @@ import { ContractArtifact } from 'ethereum-types';
 
 import * as AffiliateFeeTransformer from '../test/generated-artifacts/AffiliateFeeTransformer.json';
 import * as AllowanceTarget from '../test/generated-artifacts/AllowanceTarget.json';
+import * as BalancerBridge from '../test/generated-artifacts/BalancerBridge.json';
 import * as Bootstrap from '../test/generated-artifacts/Bootstrap.json';
+import * as CurveBridge from '../test/generated-artifacts/CurveBridge.json';
+import * as Eth2DaiBridge from '../test/generated-artifacts/Eth2DaiBridge.json';
 import * as FillQuoteTransformer from '../test/generated-artifacts/FillQuoteTransformer.json';
 import * as FixinCommon from '../test/generated-artifacts/FixinCommon.json';
 import * as FixinEIP712 from '../test/generated-artifacts/FixinEIP712.json';
@@ -31,6 +34,7 @@ import * as ITestSimpleFunctionRegistryFeature from '../test/generated-artifacts
 import * as ITokenSpender from '../test/generated-artifacts/ITokenSpender.json';
 import * as ITransformERC20 from '../test/generated-artifacts/ITransformERC20.json';
 import * as IZeroEx from '../test/generated-artifacts/IZeroEx.json';
+import * as KyberBridge from '../test/generated-artifacts/KyberBridge.json';
 import * as LibBootstrap from '../test/generated-artifacts/LibBootstrap.json';
 import * as LibCommonRichErrors from '../test/generated-artifacts/LibCommonRichErrors.json';
 import * as LibERC20Transformer from '../test/generated-artifacts/LibERC20Transformer.json';
@@ -82,11 +86,19 @@ import * as TokenSpender from '../test/generated-artifacts/TokenSpender.json';
 import * as Transformer from '../test/generated-artifacts/Transformer.json';
 import * as TransformERC20 from '../test/generated-artifacts/TransformERC20.json';
 import * as TransformerDeployer from '../test/generated-artifacts/TransformerDeployer.json';
+import * as UniswapBridge from '../test/generated-artifacts/UniswapBridge.json';
+import * as UniswapV2Bridge from '../test/generated-artifacts/UniswapV2Bridge.json';
 import * as WethTransformer from '../test/generated-artifacts/WethTransformer.json';
 import * as ZeroEx from '../test/generated-artifacts/ZeroEx.json';
 export const artifacts = {
     IZeroEx: IZeroEx as ContractArtifact,
     ZeroEx: ZeroEx as ContractArtifact,
+    BalancerBridge: BalancerBridge as ContractArtifact,
+    CurveBridge: CurveBridge as ContractArtifact,
+    Eth2DaiBridge: Eth2DaiBridge as ContractArtifact,
+    KyberBridge: KyberBridge as ContractArtifact,
+    UniswapBridge: UniswapBridge as ContractArtifact,
+    UniswapV2Bridge: UniswapV2Bridge as ContractArtifact,
     LibCommonRichErrors: LibCommonRichErrors as ContractArtifact,
     LibMetaTransactionsRichErrors: LibMetaTransactionsRichErrors as ContractArtifact,
     LibOwnableRichErrors: LibOwnableRichErrors as ContractArtifact,

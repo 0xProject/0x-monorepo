@@ -17,11 +17,25 @@
 */
 
 pragma solidity ^0.6.5;
+pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-erc20/contracts/src/v06/LibERC20TokenV06.sol";
+import "@0x/contracts-erc20/contracts/src/v06/IERC20TokenV06.sol";
 
-contract CurveBridge
+interface ITrade {
+    function trade(
+        address toTokenAddress,
+        uint256 sellAmount,
+        bytes calldata bridgeData
+    )
+        external
+        returns (uint256);
+}
+contract CurveBridge is
+    ITrade
 {
+    using LibERC20TokenV06 for IERC20TokenV06;
+
     struct CurveBridgeData {
         address curveAddress;
         bytes4 exchangeFunctionSelector;
@@ -30,17 +44,23 @@ contract CurveBridge
         int128 toCoinIdx;
     }
 
+    fallback() external payable
+    {
+        require(false, "FALLBACK");
+    }
+
     function trade(
-        address toTokenAdddress,
+        address toTokenAddress,
         uint256 sellAmount,
         bytes calldata bridgeData
     )
         external
+        override
         returns (uint256 boughtAmount)
     {
         // Decode the bridge data to get the Curve metadata.
         CurveBridgeData memory data = abi.decode(bridgeData, (CurveBridgeData));
-        LibERC20TokenV06.approveIfBelow(data.fromTokenAddress, data.curveAddress, sellAmount);
+        IERC20TokenV06(data.fromTokenAddress).approveIfBelow(data.curveAddress, sellAmount);
         {
             (bool didSucceed, bytes memory resultData) =
                 data.curveAddress.call(abi.encodeWithSelector(
@@ -50,13 +70,13 @@ contract CurveBridge
                     // dx
                     sellAmount,
                     // min dy
-                    0
+                    1
                 ));
             if (!didSucceed) {
                 assembly { revert(add(resultData, 32), mload(resultData)) }
             }
         }
         // TODO event, maybe idk
-        return LibERC20TokenV06.balanceOf(toTokenAdddress, address(this));
+        return IERC20TokenV06(toTokenAddress).compatBalanceOf(address(this));
     }
 }
