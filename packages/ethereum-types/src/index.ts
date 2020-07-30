@@ -101,7 +101,7 @@ export interface ConstructorAbi {
     // from JSON files, and this value has type `string` not type `'constructor'`
     type: string;
     inputs: DataItem[];
-    payable: boolean;
+    payable?: boolean;
     stateMutability: ConstructorStateMutability;
 }
 
