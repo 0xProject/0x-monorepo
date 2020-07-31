@@ -267,12 +267,13 @@ export class QuoteRequestor {
     }
 
     private _makerSupportsPair(makerUrl: string, makerAssetData: string, takerAssetData: string): boolean {
-        const makerTokenAddress = getTokenAddressOrThrow(makerAssetData);
-        const takerTokenAddress = getTokenAddressOrThrow(takerAssetData);
+        const makerTokenAddress = getTokenAddressOrThrow(makerAssetData).toLowerCase();
+        const takerTokenAddress = getTokenAddressOrThrow(takerAssetData).toLowerCase();
         for (const assetPair of this._rfqtAssetOfferings[makerUrl]) {
             if (
-                (assetPair[0] === makerTokenAddress && assetPair[1] === takerTokenAddress) ||
-                (assetPair[0] === takerTokenAddress && assetPair[1] === makerTokenAddress)
+                (assetPair[0].toLowerCase() === makerTokenAddress &&
+                    assetPair[1].toLowerCase() === takerTokenAddress) ||
+                (assetPair[0].toLowerCase() === takerTokenAddress && assetPair[1].toLowerCase() === makerTokenAddress)
             ) {
                 return true;
             }
