@@ -436,7 +436,7 @@ contract FillQuoteTransformer is
                 // iTradeDirect = 0x2222222222222222222222222222222222222222;
             } else if (order.makerAddress == 0xDcD6011f4C6B80e470D9487f5871a0Cba7C93f48) {
                 // Uniswap v2
-                // iTradeDirect = 0x3333333333333333333333333333333333333333;
+                iTradeDirect = 0x3333333333333333333333333333333333333333;
             } else if (order.makerAddress == 0xfe01821Ca163844203220cd08E4f2B2FB43aE4E4) {
                 // Balancer
                 // iTradeDirect = 0x4444444444444444444444444444444444444444;

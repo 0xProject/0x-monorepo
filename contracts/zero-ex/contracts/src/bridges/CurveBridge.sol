@@ -44,11 +44,6 @@ contract CurveBridge is
         int128 toCoinIdx;
     }
 
-    fallback() external payable
-    {
-        require(false, "FALLBACK");
-    }
-
     function trade(
         address toTokenAddress,
         uint256 sellAmount,
