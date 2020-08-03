@@ -82,11 +82,10 @@ contract KyberBridge
     /// @dev Precision of Kyber rates.
     uint256 constant private KYBER_RATE_BASE = 10 ** 18;
 
-    // TODO this is probably already defined in FlashWallet
-    //function ()
-    //    external
-    //    payable
-    //{}
+    // solhint-disable
+    /// @dev Allows this contract to receive ether.
+    receive() external payable {}
+    // solhint-enable
 
     function trade(
         address toTokenAddress,
@@ -133,7 +132,7 @@ contract KyberBridge
             uint256(-1),
             // Compute the minimum conversion rate, which is expressed in units with
             // 18 decimal places.
-            0,
+            1,
             // No affiliate address.
             address(0)
         );

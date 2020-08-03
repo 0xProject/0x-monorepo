@@ -69,7 +69,7 @@ contract Eth2DaiBridge
             fromTokenAddress,
             sellAmount,
             toTokenAddress,
-            0
+            1
         );
         return boughtAmount;
     }

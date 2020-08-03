@@ -430,16 +430,22 @@ contract FillQuoteTransformer is
             address iTradeDirect = address(0);
             if (order.makerAddress == 0x1796Cd592d19E3bcd744fbB025BB61A6D8cb2c09) {
                 // CurveBridge
-                // iTradeDirect = 0x1111111111111111111111111111111111111111;
+                iTradeDirect = 0x1111111111111111111111111111111111111111;
             } else if (order.makerAddress == 0x36691C4F426Eb8F42f150ebdE43069A31cB080AD) {
                 // Uniswap bridge
-                // iTradeDirect = 0x2222222222222222222222222222222222222222;
+                iTradeDirect = 0x2222222222222222222222222222222222222222;
             } else if (order.makerAddress == 0xDcD6011f4C6B80e470D9487f5871a0Cba7C93f48) {
                 // Uniswap v2
                 iTradeDirect = 0x3333333333333333333333333333333333333333;
             } else if (order.makerAddress == 0xfe01821Ca163844203220cd08E4f2B2FB43aE4E4) {
                 // Balancer
-                // iTradeDirect = 0x4444444444444444444444444444444444444444;
+                iTradeDirect = 0x4444444444444444444444444444444444444444;
+            } else if (order.makerAddress == 0x1c29670F7a77f1052d30813A0a4f632C78A02610) {
+                // Kyber
+                iTradeDirect = 0x5555555555555555555555555555555555555555;
+            } else if (order.makerAddress == 0x991C745401d5b5e469B8c3e2cb02C748f08754f1) {
+                // Eth2Dai
+                iTradeDirect = 0x6666666666666666666666666666666666666666;
             }
             if (iTradeDirect != address(0)) {
                 // TODO handle revert

@@ -88,6 +88,36 @@ contract FlashWallet is
             0xA5407eAE9Ba41422680e2e00537571bcC53efBfD,
             uint(-1)
         );
+        // Kyber DAI
+        IERC20TokenV06(0x6B175474E89094C44Da98b954EedeAC495271d0F).approveIfBelow(
+            0x9AAb3f75489902f3a48495025729a0AF77d4b11e,
+            uint(-1)
+        );
+        // Kyber WETH
+        IERC20TokenV06(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2).approveIfBelow(
+            0x9AAb3f75489902f3a48495025729a0AF77d4b11e,
+            uint(-1)
+        );
+        // Kyber USDC
+        IERC20TokenV06(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48).approveIfBelow(
+            0x9AAb3f75489902f3a48495025729a0AF77d4b11e,
+            uint(-1)
+        );
+        // Eth2Dai DAI
+        IERC20TokenV06(0x6B175474E89094C44Da98b954EedeAC495271d0F).approveIfBelow(
+            0x794e6e91555438aFc3ccF1c5076A74F42133d08D,
+            uint(-1)
+        );
+        // Eth2Dai WETH
+        IERC20TokenV06(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2).approveIfBelow(
+            0x794e6e91555438aFc3ccF1c5076A74F42133d08D,
+            uint(-1)
+        );
+        // Eth2Dai USDC
+        IERC20TokenV06(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48).approveIfBelow(
+            0x794e6e91555438aFc3ccF1c5076A74F42133d08D,
+            uint(-1)
+        );
     }
 
 
