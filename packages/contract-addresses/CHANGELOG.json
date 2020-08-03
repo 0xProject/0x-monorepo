@@ -11,7 +11,8 @@
                 "pr": 2644
             },
             {
-                "note": "Deploy `UniswapV2Bridge` on Kovan"
+                "note": "Deploy `UniswapV2Bridge` on Kovan",
+                "pr": 2652
             }
         ]
     },
