@@ -47,7 +47,7 @@ contract UniswapV2Bridge
 
     using LibERC20TokenV06 for IERC20TokenV06;
 
-    address constant private UNISWAP_V2_ROUTER_02_ADDRESS = 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D;
+    IUniswapV2Router02 constant private UNISWAP_V2_ROUTER = IUniswapV2Router02(0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D);
 
     function trade(
         address toTokenAddress,
@@ -66,12 +66,11 @@ contract UniswapV2Bridge
         require(path[path.length - 1] == toTokenAddress, "UniswapV2Bridge/LAST_ELEMENT_OF_PATH_MUST_MATCH_OUTPUT_TOKEN");
         // Grant the Uniswap router an allowance.
         IERC20TokenV06(path[0]).approveIfBelow(
-            UNISWAP_V2_ROUTER_02_ADDRESS,
+            address(UNISWAP_V2_ROUTER),
             sellAmount
         );
 
-        IUniswapV2Router02 router = IUniswapV2Router02(UNISWAP_V2_ROUTER_02_ADDRESS);
-        uint[] memory amounts = router.swapExactTokensForTokens(
+        uint[] memory amounts = UNISWAP_V2_ROUTER.swapExactTokensForTokens(
              // Sell all tokens we hold.
             sellAmount,
              // Minimum buy amount.

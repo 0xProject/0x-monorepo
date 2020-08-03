@@ -96,19 +96,10 @@ contract UniswapBridge
 
     using LibERC20TokenV06 for IERC20TokenV06;
 
-    // Struct to hold `bridgeTransferFrom()` local variables in memory and to avoid
-    // stack overflows.
-    struct TransferState {
-        IUniswapExchange exchange;
-        uint256 fromTokenBalance;
-        IEtherToken weth;
-        uint256 boughtAmount;
-    }
-
     /// @dev Mainnet address of the WETH contract.
-    address constant private WETH_ADDRESS = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
+    IEtherToken constant private WETH = IEtherToken(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
     /// @dev Mainnet address of the `UniswapExchangeFactory` contract.
-    address constant private UNISWAP_EXCHANGE_FACTORY_ADDRESS = 0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95;
+    IUniswapExchangeFactory constant private UNISWAP_EXCHANGE_FACTORY = IUniswapExchangeFactory(0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95);
 
     // solhint-disable
     /// @dev Allows this contract to receive ether.
@@ -121,29 +112,24 @@ contract UniswapBridge
         bytes calldata bridgeData
     )
         external
-        returns (uint256)
+        returns (uint256 boughtAmount)
     {
-        // State memory object to avoid stack overflows.
-        TransferState memory state;
         // Decode the bridge data to get the `fromTokenAddress`.
         (address fromTokenAddress) = abi.decode(bridgeData, (address));
 
         // Get the exchange for the token pair.
-        state.exchange = _getUniswapExchangeForTokenPair(
+        IUniswapExchange exchange = _getUniswapExchangeForTokenPair(
             fromTokenAddress,
             toTokenAddress
         );
 
-        // Get the weth contract.
-        state.weth = IEtherToken(WETH_ADDRESS);
-
         // Convert from WETH to a token.
-        if (fromTokenAddress == address(state.weth)) {
+        if (fromTokenAddress == address(WETH)) {
             // Unwrap the WETH.
-            state.weth.withdraw(sellAmount);
+            WETH.withdraw(sellAmount);
             // Buy as much of `toTokenAddress` token with ETH as possible and
             // transfer it to `to`.
-            state.boughtAmount = state.exchange.ethToTokenTransferInput{ value: sellAmount }(
+            boughtAmount = exchange.ethToTokenTransferInput{ value: sellAmount }(
                 // Minimum buy amount.
                 1,
                 // Expires after this block.
@@ -153,14 +139,14 @@ contract UniswapBridge
             );
 
         // Convert from a token to WETH.
-        } else if (toTokenAddress == address(state.weth)) {
+        } else if (toTokenAddress == address(WETH)) {
             // Grant the exchange an allowance.
             IERC20TokenV06(fromTokenAddress).approveIfBelow(
-                address(state.exchange),
+                address(exchange),
                 sellAmount
             );
             // Buy as much ETH with `fromTokenAddress` token as possible.
-            state.boughtAmount = state.exchange.tokenToEthSwapInput(
+            boughtAmount = exchange.tokenToEthSwapInput(
                 // Sell all tokens we hold.
                 sellAmount,
                 // Minimum buy amount.
@@ -169,17 +155,17 @@ contract UniswapBridge
                 block.timestamp
             );
             // Wrap the ETH.
-            state.weth.deposit.value(state.boughtAmount)();
+            WETH.deposit{ value: boughtAmount }();
         // Convert from one token to another.
         } else {
             // Grant the exchange an allowance.
             IERC20TokenV06(fromTokenAddress).approveIfBelow(
-                address(state.exchange),
+                address(exchange),
                 sellAmount
             );
             // Buy as much `toTokenAddress` token with `fromTokenAddress` token
             // and transfer it to `to`.
-            state.boughtAmount = state.exchange.tokenToTokenTransferInput(
+            boughtAmount = exchange.tokenToTokenTransferInput(
                 // Sell all tokens we hold.
                 sellAmount,
                 // Minimum buy amount.
@@ -195,7 +181,7 @@ contract UniswapBridge
             );
         }
 
-        return state.boughtAmount;
+        return boughtAmount;
     }
 
     /// @dev Retrieves the uniswap exchange for a given token pair.
@@ -214,13 +200,10 @@ contract UniswapBridge
     {
         address exchangeTokenAddress = fromTokenAddress;
         // Whichever isn't WETH is the exchange token.
-        if (fromTokenAddress == WETH_ADDRESS) {
+        if (fromTokenAddress == address(WETH)) {
             exchangeTokenAddress = toTokenAddress;
         }
-        exchange = IUniswapExchange(
-            IUniswapExchangeFactory(UNISWAP_EXCHANGE_FACTORY_ADDRESS)
-            .getExchange(exchangeTokenAddress)
-        );
+        exchange = IUniswapExchange(UNISWAP_EXCHANGE_FACTORY.getExchange(exchangeTokenAddress));
         require(address(exchange) != address(0), "NO_UNISWAP_EXCHANGE_FOR_TOKEN");
         return exchange;
     }
