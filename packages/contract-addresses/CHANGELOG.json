@@ -7,8 +7,12 @@
                 "pr": 2633
             },
             {
-                "note": "Redeploy ERC20BridgeSampler on Kovan",
+                "note": "Redeploy `ERC20BridgeSampler` on Kovan",
                 "pr": 2644
+            },
+            {
+                "note": "Deploy `UniswapV2Bridge` on Kovan",
+                "pr": 2652
             }
         ]
     },
