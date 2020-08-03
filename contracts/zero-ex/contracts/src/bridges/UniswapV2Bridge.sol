@@ -55,7 +55,7 @@ contract UniswapV2Bridge
         bytes calldata bridgeData
     )
         external
-        returns (uint256 boughtAmount)
+        returns (uint256)
     {
         // Decode the bridge data to get the `fromTokenAddress`.
         // solhint-disable indent

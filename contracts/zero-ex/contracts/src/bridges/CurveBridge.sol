@@ -22,17 +22,7 @@ pragma experimental ABIEncoderV2;
 import "@0x/contracts-erc20/contracts/src/v06/LibERC20TokenV06.sol";
 import "@0x/contracts-erc20/contracts/src/v06/IERC20TokenV06.sol";
 
-interface ITrade {
-    function trade(
-        address toTokenAddress,
-        uint256 sellAmount,
-        bytes calldata bridgeData
-    )
-        external
-        returns (uint256);
-}
-contract CurveBridge is
-    ITrade
+contract CurveBridge
 {
     using LibERC20TokenV06 for IERC20TokenV06;
 
@@ -50,7 +40,6 @@ contract CurveBridge is
         bytes calldata bridgeData
     )
         external
-        override
         returns (uint256 boughtAmount)
     {
         // Decode the bridge data to get the Curve metadata.

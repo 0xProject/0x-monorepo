@@ -427,36 +427,26 @@ contract FillQuoteTransformer is
                 order.takerAssetAmount,
                 order.makerAssetAmount
             );
-            address iTradeDirect = address(0);
-            if (order.makerAddress == 0x1796Cd592d19E3bcd744fbB025BB61A6D8cb2c09) {
-                // CurveBridge
-                iTradeDirect = 0x1111111111111111111111111111111111111111;
-            } else if (order.makerAddress == 0x36691C4F426Eb8F42f150ebdE43069A31cB080AD) {
-                // Uniswap bridge
-                iTradeDirect = 0x2222222222222222222222222222222222222222;
-            } else if (order.makerAddress == 0xDcD6011f4C6B80e470D9487f5871a0Cba7C93f48) {
-                // Uniswap v2
-                iTradeDirect = 0x3333333333333333333333333333333333333333;
-            } else if (order.makerAddress == 0xfe01821Ca163844203220cd08E4f2B2FB43aE4E4) {
-                // Balancer
-                iTradeDirect = 0x4444444444444444444444444444444444444444;
-            } else if (order.makerAddress == 0x1c29670F7a77f1052d30813A0a4f632C78A02610) {
-                // Kyber
-                iTradeDirect = 0x5555555555555555555555555555555555555555;
-            } else if (order.makerAddress == 0x991C745401d5b5e469B8c3e2cb02C748f08754f1) {
-                // Eth2Dai
-                iTradeDirect = 0x6666666666666666666666666666666666666666;
-            }
-            if (iTradeDirect != address(0)) {
-                // TODO handle revert
-                results.makerTokenBoughtAmount = _fillBridgeDirect(
-                    iTradeDirect,
-                    order.makerAssetData,
-                    availableTakerAssetFillAmount
+            bool success;
+            bytes memory data;
+            // If possible, fill the bridge directly by a delegate call
+            address bridgeDelegateAddress = _determineBridgeDelegateAddress(order.makerAddress);
+            if (bridgeDelegateAddress != address(0)) {
+                (success, data) = address(_implementation).delegatecall(
+                    abi.encodeWithSelector(
+                        this.fillBridgeDirect.selector,
+                        bridgeDelegateAddress,
+                        order.makerAssetData,
+                        availableTakerAssetFillAmount
+                    )
                 );
-                results.takerTokenSoldAmount = availableTakerAssetFillAmount;
+                if (success) {
+                    results.makerTokenBoughtAmount = abi.decode(data, (uint256));
+                    results.takerTokenSoldAmount = availableTakerAssetFillAmount;
+                    // protocol fee paid remains 0
+                }
             } else {
-                (bool success, bytes memory data) = address(_implementation).delegatecall(
+                (success, data) = address(_implementation).delegatecall(
                     abi.encodeWithSelector(
                         this.fillBridgeOrder.selector,
                         order.makerAddress,
@@ -471,14 +461,13 @@ contract FillQuoteTransformer is
                 // a subsequent fill can net out at the expected price so we do not assert
                 // the trade balance
                 if (success) {
+                    // Since we do not trust the bridge, we pull the amount bought
+                    // directly from the maker token contract
                     results.makerTokenBoughtAmount = makerToken
                         .balanceOf(address(this))
                         .safeSub(state.boughtAmount);
                     results.takerTokenSoldAmount = availableTakerAssetFillAmount;
                     // protocol fee paid remains 0
-                } else {
-                    // TODO REMOVE
-                    assembly { revert(add(data, 32), mload(data)) }
                 }
             }
         } else {
@@ -508,19 +497,48 @@ contract FillQuoteTransformer is
         }
     }
 
+    /// @dev Determines the delegate bridge address, if one exists, else address(0)
+    /// @param makerAddress the address of the maker of an order
+    function _determineBridgeDelegateAddress(
+        address makerAddress
+    )
+        private
+        returns (address)
+    {
+        if (makerAddress == 0x1796Cd592d19E3bcd744fbB025BB61A6D8cb2c09) {
+            // CurveBridge
+            return 0x1111111111111111111111111111111111111111;
+        } else if (makerAddress == 0x36691C4F426Eb8F42f150ebdE43069A31cB080AD) {
+            // Uniswap bridge
+            return 0x2222222222222222222222222222222222222222;
+        } else if (makerAddress == 0xDcD6011f4C6B80e470D9487f5871a0Cba7C93f48) {
+            // Uniswap v2
+            return 0x3333333333333333333333333333333333333333;
+        } else if (makerAddress == 0xfe01821Ca163844203220cd08E4f2B2FB43aE4E4) {
+            // Balancer
+            return 0x4444444444444444444444444444444444444444;
+        } else if (makerAddress == 0x1c29670F7a77f1052d30813A0a4f632C78A02610) {
+            // Kyber
+            return 0x5555555555555555555555555555555555555555;
+        } else if (makerAddress == 0x991C745401d5b5e469B8c3e2cb02C748f08754f1) {
+            // Eth2Dai
+            return 0x6666666666666666666666666666666666666666;
+        }
+        return address(0);
+    }
+
     /// @dev Attempt to fill an ERC20 Bridge order directly.
     /// @param bridgeDelegateAddress The address of the contract to delegate call.
     /// @param makerAssetData The encoded ERC20BridgeProxy asset data.
     /// @param inputTokenAmount How much taker asset to fill clamped to the available balance.
-    function _fillBridgeDirect(
+    function fillBridgeDirect(
         address bridgeDelegateAddress,
-        bytes memory makerAssetData,
+        bytes calldata makerAssetData,
         uint256 inputTokenAmount
     )
-        private
+        external
         returns (uint256 boughtAmount)
     {
-        // Track changes in the maker token balance.
         (
             address tokenAddress,
             address bridgeAddress,
@@ -569,43 +587,19 @@ contract FillQuoteTransformer is
             (address, address, bytes)
         );
         require(bridgeAddress != address(this), "INVALID_BRIDGE_ADDRESS");
-        //address iTradeDirect = address(0);
-        //if (bridgeAddress == 0x1796Cd592d19E3bcd744fbB025BB61A6D8cb2c09) {
-        //    // CurveBridge
-        //    //iTradeDirect = 0x1111111111111111111111111111111111111111;
-        //} else if (bridgeAddress == 0x36691C4F426Eb8F42f150ebdE43069A31cB080AD) {
-        //    // iTradeDirect = 0x2222222222222222222222222222222222222222;
-        //} else if (bridgeAddress == 0xDcD6011f4C6B80e470D9487f5871a0Cba7C93f48) {
-        //    // iTradeDirect = 0x3333333333333333333333333333333333333333;
-        //} else if (bridgeAddress == 0xfe01821Ca163844203220cd08E4f2B2FB43aE4E4) {
-        //    // iTradeDirect = 0x4444444444444444444444444444444444444444;
-        //}
-        //if (iTradeDirect != address(0)) {
-        //    (bool success, bytes memory resultData) = address(iTradeDirect).delegatecall(
-        //        abi.encodeWithSelector(
-        //            ITrade(address(0)).trade.selector,
-        //            tokenAddress,
-        //            inputTokenAmount,
-        //            bridgeData
-        //        )
-        //    );
-        //    if (!success) {
-        //        assembly { revert(add(resultData, 32), mload(resultData)) }
-        //    }
-        //} else {
-            // Transfer the tokens to the bridge to perform the work
-            _getTokenFromERC20AssetData(takerAssetData).compatTransfer(
-                bridgeAddress,
-                inputTokenAmount
-            );
-            IERC20Bridge(bridgeAddress).bridgeTransferFrom(
-                tokenAddress,
-                makerAddress,
-                address(this),
-                outputTokenAmount, // amount to transfer back from the bridge
-                bridgeData
-            );
-        //}
+        // Transfer the tokens to the bridge to perform the work
+        _getTokenFromERC20AssetData(takerAssetData).compatTransfer(
+            bridgeAddress,
+            inputTokenAmount
+        );
+        IERC20Bridge(bridgeAddress).bridgeTransferFrom(
+            tokenAddress,
+            makerAddress,
+            address(this),
+            outputTokenAmount, // amount to transfer back from the bridge
+            bridgeData
+        );
+
     }
 
     /// @dev Extract the token from plain ERC20 asset data.

@@ -46,7 +46,7 @@ contract Eth2DaiBridge
     using LibERC20TokenV06 for IERC20TokenV06;
 
     /// @dev Mainnet address of the Eth2Dai `MatchingMarket` contract.
-    address constant private ETH2DAI_ADDRESS = 0x794e6e91555438aFc3ccF1c5076A74F42133d08D;
+    IEth2Dai constant private ETH2DAI = IEth2Dai(0x794e6e91555438aFc3ccF1c5076A74F42133d08D);
 
     function trade(
         address toTokenAddress,
@@ -58,14 +58,13 @@ contract Eth2DaiBridge
     {
         // Decode the bridge data to get the `fromTokenAddress`.
         (address fromTokenAddress) = abi.decode(bridgeData, (address));
-        IEth2Dai exchange = IEth2Dai(ETH2DAI_ADDRESS);
         // Grant an allowance to the exchange to spend `fromTokenAddress` token.
         IERC20TokenV06(fromTokenAddress).approveIfBelow(
-            address(exchange),
+            address(ETH2DAI),
             sellAmount
         );
         // Try to sell all of this contract's `fromTokenAddress` token balance.
-        uint256 boughtAmount = exchange.sellAllAmount(
+        boughtAmount = ETH2DAI.sellAllAmount(
             fromTokenAddress,
             sellAmount,
             toTokenAddress,
