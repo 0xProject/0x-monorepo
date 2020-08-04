@@ -510,8 +510,8 @@ export const samplerOperations = {
                                     );
                                 }
                                 return samplerOperations.getBancorSellQuotes(
-                                    makerToken,
                                     takerToken,
+                                    makerToken,
                                     takerFillAmounts,
                                     bancorService,
                                 );
@@ -636,8 +636,8 @@ export const samplerOperations = {
                                     );
                                 }
                                 return samplerOperations.getBancorBuyQuotes(
-                                    makerToken,
                                     takerToken,
+                                    makerToken,
                                     makerFillAmounts,
                                     bancorService,
                                 );
