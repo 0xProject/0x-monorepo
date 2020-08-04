@@ -1,7 +1,7 @@
 // tslint:disable:custom-no-magic-numbers
 import { orderHashUtils } from '@0x/order-utils';
 import { SignedOrder } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, hexUtils } from '@0x/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 import 'mocha';
@@ -31,6 +31,7 @@ const expect = chai.expect;
 
 const collapsedFillFromNativeOrder = (order: SignedOrder): NativeCollapsedFill => {
     return {
+        sourcePathId: hexUtils.random(),
         source: ERC20BridgeSource.Native,
         input: order.takerAssetAmount,
         output: order.makerAssetAmount,
@@ -102,8 +103,8 @@ describe('QuoteReportGenerator', async () => {
             ];
 
             // generate path
-            const uniswap2Fill: CollapsedFill = { ...uniswapSample2, subFills: [] };
-            const kyber2Fill: CollapsedFill = { ...kyberSample2, subFills: [] };
+            const uniswap2Fill: CollapsedFill = { ...uniswapSample2, subFills: [], sourcePathId: hexUtils.random() };
+            const kyber2Fill: CollapsedFill = { ...kyberSample2, subFills: [], sourcePathId: hexUtils.random() };
             const orderbookOrder2Fill: CollapsedFill = collapsedFillFromNativeOrder(orderbookOrder2);
             const rfqtOrder2Fill: CollapsedFill = collapsedFillFromNativeOrder(rfqtOrder2);
             const pathGenerated: CollapsedFill[] = [rfqtOrder2Fill, orderbookOrder2Fill, uniswap2Fill, kyber2Fill];
@@ -274,8 +275,8 @@ describe('QuoteReportGenerator', async () => {
 
             // generate path
             const orderbookOrder1Fill: CollapsedFill = collapsedFillFromNativeOrder(orderbookOrder1);
-            const uniswap1Fill: CollapsedFill = { ...uniswapSample1, subFills: [] };
-            const kyber1Fill: CollapsedFill = { ...kyberSample1, subFills: [] };
+            const uniswap1Fill: CollapsedFill = { ...uniswapSample1, subFills: [], sourcePathId: hexUtils.random() };
+            const kyber1Fill: CollapsedFill = { ...kyberSample1, subFills: [], sourcePathId: hexUtils.random() };
             const pathGenerated: CollapsedFill[] = [orderbookOrder1Fill, uniswap1Fill, kyber1Fill];
 
             const orderReport = new QuoteReportGenerator(

@@ -151,6 +151,10 @@ export interface Fill<TFillData extends FillData = FillData> {
  * Represents continguous fills on a path that have been merged together.
  */
 export interface CollapsedFill<TFillData extends FillData = FillData> {
+    // Unique ID of the original source path this fill belongs to.
+    // This is generated when the path is generated and is useful to distinguish
+    // paths that have the same `source` IDs but are distinct (e.g., Curves).
+    sourcePathId: string;
     /**
      * The source DEX.
      */
