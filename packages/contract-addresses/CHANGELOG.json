@@ -13,6 +13,10 @@
             {
                 "note": "Deploy `UniswapV2Bridge` on Kovan",
                 "pr": 2652
+            },
+            {
+                "note": "Redeploy previously unverified contracts on testnets",
+                "pr": 2656
             }
         ]
     },

@@ -5,6 +5,10 @@
             {
                 "note": "Update `CurveBridge` to support more varied curves",
                 "pr": 2633
+            },
+            {
+                "note": "Export DexForwarderBridgeContract",
+                "pr": 2656
             }
         ]
     },
