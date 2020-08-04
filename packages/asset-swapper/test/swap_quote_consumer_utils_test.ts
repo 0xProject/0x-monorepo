@@ -121,6 +121,7 @@ describe('swapQuoteConsumerUtils', () => {
 
         swapQuoteConsumer = new SwapQuoteConsumer(provider, {
             chainId,
+            contractAddresses,
         });
     });
     after(async () => {

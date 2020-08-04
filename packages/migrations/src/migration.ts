@@ -15,9 +15,9 @@ import {
 } from '@0x/contracts-coordinator';
 import { artifacts as devUtilsArtifacts, DevUtilsContract } from '@0x/contracts-dev-utils';
 import { artifacts as erc1155Artifacts } from '@0x/contracts-erc1155';
-import { artifacts as erc20Artifacts } from '@0x/contracts-erc20';
+import { artifacts as erc20Artifacts, DummyERC20TokenContract, WETH9Contract } from '@0x/contracts-erc20';
 import { artifacts as erc20BridgeSamplerArtifacts } from '@0x/contracts-erc20-bridge-sampler';
-import { artifacts as erc721Artifacts } from '@0x/contracts-erc721';
+import { artifacts as erc721Artifacts, DummyERC721TokenContract } from '@0x/contracts-erc721';
 import { artifacts as exchangeArtifacts, ExchangeContract } from '@0x/contracts-exchange';
 import { artifacts as forwarderArtifacts, ForwarderContract } from '@0x/contracts-exchange-forwarder';
 import {
@@ -42,6 +42,7 @@ import { BigNumber, providerUtils } from '@0x/utils';
 import { SupportedProvider, TxData } from 'ethereum-types';
 
 import { constants } from './utils/constants';
+import { erc20TokenInfo, erc721TokenInfo } from './utils/token_info';
 
 const allArtifacts = {
     ...assetProxyArtifacts,
@@ -119,7 +120,28 @@ export async function runMigrationsAsync(
 ): Promise<ContractAddresses> {
     const provider = providerUtils.standardizeOrThrow(supportedProvider);
     const chainId = new BigNumber(await providerUtils.getChainIdAsync(provider));
-    const { exchangeV2, etherToken, zrxToken } = getContractAddressesForChainOrThrow(chainId.toNumber());
+    const { exchangeV2 } = getContractAddressesForChainOrThrow(chainId.toNumber());
+
+    const zrxToken = await DummyERC20TokenContract.deployFrom0xArtifactAsync(
+        erc20Artifacts.DummyERC20Token,
+        provider,
+        txDefaults,
+        allArtifacts,
+        '0x Protocol Token',
+        'ZRX',
+        new BigNumber(18),
+        new BigNumber(1000000000000000000000000000),
+    );
+
+    // Ether token
+    const etherToken = await WETH9Contract.deployFrom0xArtifactAsync(
+        erc20Artifacts.WETH9,
+        provider,
+        txDefaults,
+        allArtifacts,
+    );
+
+    await _migrateDummyTokensAsync(provider, txDefaults);
 
     // Exchange
     const exchange = await ExchangeContract.deployFrom0xArtifactAsync(
@@ -128,18 +150,6 @@ export async function runMigrationsAsync(
         txDefaults,
         allArtifacts,
         chainId,
-    );
-
-    // Dev Utils
-    const devUtils = await DevUtilsContract.deployWithLibrariesFrom0xArtifactAsync(
-        devUtilsArtifacts.DevUtils,
-        devUtilsArtifacts,
-        provider,
-        txDefaults,
-        allArtifacts,
-        exchange.address,
-        NULL_ADDRESS,
-        NULL_ADDRESS,
     );
 
     // CoordinatorRegistry
@@ -169,11 +179,23 @@ export async function runMigrationsAsync(
         erc20BridgeProxy,
     ] = await _migrateAssetProxiesAsync(exchange, provider, txDefaults);
 
+    // Dev Utils
+    const devUtils = await DevUtilsContract.deployWithLibrariesFrom0xArtifactAsync(
+        devUtilsArtifacts.DevUtils,
+        devUtilsArtifacts,
+        provider,
+        txDefaults,
+        allArtifacts,
+        exchange.address,
+        NULL_ADDRESS,
+        NULL_ADDRESS,
+    );
+
     const [zrxVault, stakingLogic, stakingProxy] = await _migrateStakingAsync(
         exchange,
         erc20Proxy,
-        zrxToken,
-        etherToken,
+        zrxToken.address,
+        etherToken.address,
         provider,
         txDefaults,
     );
@@ -188,7 +210,7 @@ export async function runMigrationsAsync(
         allArtifacts,
         exchange.address,
         exchangeV2,
-        etherToken,
+        etherToken.address,
     );
 
     const [
@@ -199,15 +221,15 @@ export async function runMigrationsAsync(
         affiliateFeeTransformer,
         exchangeProxyFlashWalletAddress,
         exchangeProxyAllowanceTargetAddress,
-    ] = await _migrateExchangeProxyAsync(exchange, etherToken, provider, txDefaults);
+    ] = await _migrateExchangeProxyAsync(exchange, etherToken.address, provider, txDefaults);
 
     const contractAddresses = {
         ...NULL_ADDRESSES,
         erc20Proxy: erc20Proxy.address,
         erc721Proxy: erc721Proxy.address,
         erc1155Proxy: erc1155Proxy.address,
-        zrxToken,
-        etherToken,
+        zrxToken: zrxToken.address,
+        etherToken: etherToken.address,
         exchange: exchange.address,
         erc20BridgeProxy: erc20BridgeProxy.address,
         forwarder: forwarder.address,
@@ -216,7 +238,6 @@ export async function runMigrationsAsync(
         multiAssetProxy: multiAssetProxy.address,
         staticCallProxy: staticCallProxy.address,
         devUtils: devUtils.address,
-        exchangeV2: exchangeV2,
         zrxVault: zrxVault.address,
         staking: stakingLogic.address,
         stakingProxy: stakingProxy.address,
@@ -439,6 +460,33 @@ async function _migrateExchangeProxyAsync(
     ];
 }
 
+async function _migrateDummyTokensAsync(provider: ZeroExProvider, txDefaults: TxData): Promise<void> {
+    // Dummy ERC20 tokens
+    for (const token of erc20TokenInfo) {
+        const totalSupply = new BigNumber(1000000000000000000000000000);
+        await DummyERC20TokenContract.deployFrom0xArtifactAsync(
+            erc20Artifacts.DummyERC20Token,
+            provider,
+            txDefaults,
+            allArtifacts,
+            token.name,
+            token.symbol,
+            token.decimals,
+            totalSupply,
+        );
+    }
+
+    // Dummy ERC721 token
+    await DummyERC721TokenContract.deployFrom0xArtifactAsync(
+        erc721Artifacts.DummyERC721Token,
+        provider,
+        txDefaults,
+        allArtifacts,
+        erc721TokenInfo[0].name,
+        erc721TokenInfo[0].symbol,
+    );
+}
+
 let _cachedContractAddresses: ContractAddresses;
 
 /**
@@ -459,3 +507,4 @@ export async function runMigrationsOnceAsync(
     _cachedContractAddresses = await runMigrationsAsync(provider, txDefaults);
     return _cachedContractAddresses;
 }
+// tslint:disable-next-line: max-file-line-count
