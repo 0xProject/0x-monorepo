@@ -25,6 +25,10 @@
             {
                 "note": "Adds `getBidAskLiquidityForMakerTakerAssetPairAsync` to return more detailed sample information",
                 "pr": 2641
+            },
+            {
+                "note": "Fix regression where a split on the same source was collapsed into a single fill",
+                "pr": 2654
             }
         ]
     },

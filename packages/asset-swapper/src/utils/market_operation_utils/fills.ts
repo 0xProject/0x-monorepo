@@ -247,7 +247,7 @@ export function collapsePath(path: Fill[]): CollapsedFill[] {
         if (collapsed.length !== 0 && source !== ERC20BridgeSource.Native) {
             const prevFill = collapsed[collapsed.length - 1];
             // If the last fill is from the same source, merge them.
-            if (prevFill.source === source) {
+            if (prevFill.sourcePathId === fill.sourcePathId) {
                 prevFill.input = prevFill.input.plus(fill.input);
                 prevFill.output = prevFill.output.plus(fill.output);
                 prevFill.subFills.push(fill);
@@ -255,6 +255,7 @@ export function collapsePath(path: Fill[]): CollapsedFill[] {
             }
         }
         collapsed.push({
+            sourcePathId: fill.sourcePathId,
             source: fill.source,
             fillData: fill.fillData,
             input: fill.input,
