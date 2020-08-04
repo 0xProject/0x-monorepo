@@ -194,7 +194,9 @@ export function getPathAdjustedSize(path: Fill[], targetInput: BigNumber = POSIT
         if (input.plus(fill.input).gte(targetInput)) {
             const di = targetInput.minus(input);
             input = input.plus(di);
-            output = output.plus(fill.adjustedOutput.times(di.div(fill.input)));
+            // Penalty does not get interpolated.
+            const penalty = fill.adjustedOutput.minus(fill.output);
+            output = output.plus(fill.output.times(di.div(fill.input)).plus(penalty));
             break;
         } else {
             input = input.plus(fill.input);
@@ -223,6 +225,10 @@ export function isValidPath(path: Fill[], skipDuplicateCheck: boolean = false): 
         }
         flags |= path[i].flags;
     }
+    return arePathFlagsAllowed(flags);
+}
+
+export function arePathFlagsAllowed(flags: number): boolean {
     const multiBridgeConflict = FillFlags.MultiBridge | FillFlags.ConflictsWithMultiBridge;
     return (flags & multiBridgeConflict) !== multiBridgeConflict;
 }
