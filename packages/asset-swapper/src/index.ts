@@ -71,6 +71,7 @@ export {
 } from './types';
 export { affiliateFeeUtils } from './utils/affiliate_fee_utils';
 export {
+    BancorFillData,
     BalancerFillData,
     CollapsedFill,
     CurveFillData,
