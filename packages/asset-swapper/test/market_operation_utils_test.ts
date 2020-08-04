@@ -1114,8 +1114,8 @@ describe('MarketOperationUtils tests', () => {
             it('batches contiguous bridge sources', async () => {
                 const rates: RatesBySource = {};
                 rates[ERC20BridgeSource.Native] = [0.5, 0.01, 0.01, 0.01];
-                rates[ERC20BridgeSource.Eth2Dai] = [0.49, 0.01, 0.01, 0.01];
-                rates[ERC20BridgeSource.Uniswap] = [0.48, 0.47, 0.01, 0.01];
+                rates[ERC20BridgeSource.Eth2Dai] = [0.49, 0.02, 0.01, 0.01];
+                rates[ERC20BridgeSource.Uniswap] = [0.48, 0.01, 0.01, 0.01];
                 replaceSamplerOps({
                     getBuyQuotesAsync: createGetMultipleBuyQuotesOperationFromRates(rates),
                 });
@@ -1133,7 +1133,7 @@ describe('MarketOperationUtils tests', () => {
                 const orderFillSources = improvedOrders.map(o => o.fills.map(f => f.source));
                 expect(orderFillSources).to.deep.eq([
                     [ERC20BridgeSource.Native],
-                    [ERC20BridgeSource.Uniswap, ERC20BridgeSource.Eth2Dai],
+                    [ERC20BridgeSource.Eth2Dai, ERC20BridgeSource.Uniswap],
                 ]);
             });
         });

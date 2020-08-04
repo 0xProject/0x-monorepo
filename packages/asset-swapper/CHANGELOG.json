@@ -29,6 +29,10 @@
             {
                 "note": "Fix regression where a split on the same source was collapsed into a single fill",
                 "pr": 2654
+            },
+            {
+                "note": "Fix optimization of buy paths",
+                "pr": 2655
             }
         ]
     },
