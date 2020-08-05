@@ -3,7 +3,7 @@ import { BigNumber } from '@0x/utils';
 import { MarketOperation } from '../../types';
 
 import { ZERO_AMOUNT } from './constants';
-import { getPathAdjustedRate, getPathAdjustedCompleteRate, getPathSize, arePathFlagsAllowed, isValidPath } from './fills';
+import { clipPathToInput, getPathAdjustedRate, getPathAdjustedCompleteRate, getPathSize, arePathFlagsAllowed, isValidPath } from './fills';
 import { Fill } from './types';
 
 // tslint:disable: prefer-for-of custom-no-magic-numbers completed-docs
@@ -24,27 +24,60 @@ export async function findOptimalPathAsync(
     const sortedPaths = paths
         .slice(0)
         .sort((a, b) =>
-            getPathAdjustedCompleteRate(side, b, targetInput)
-                .comparedTo(getPathAdjustedCompleteRate(side, a, targetInput)),
+            getPathAdjustedRate(side, b, targetInput)
+                .comparedTo(getPathAdjustedRate(side, a, targetInput)),
         );
     let optimalPath = sortedPaths[0] || [];
+    // console.log(optimalPath.map(f => `${f.source}-${f.sourcePathId.slice(0,4)}-${f.index}: ${f.rate}`));
     for (const [i, path] of sortedPaths.slice(1).entries()) {
-        optimalPath = mixPaths(side, optimalPath, path, targetInput, runLimit * RUN_LIMIT_DECAY_FACTOR ** i);
+        optimalPath = stackPaths(side, optimalPath, path, targetInput);
+        // console.log(optimalPath.map(f => `${f.source}-${f.sourcePathId.slice(0,4)}-${f.index}: ${f.rate}`));
         // Yield to event loop.
         await Promise.resolve();
     }
     return isPathComplete(optimalPath, targetInput) ? optimalPath : undefined;
 }
 
-// function stackPaths(
-//     side: MarketOperation,
-//     pathA: Fill[],
-//     pathB: Fill[],
-//     targetInput: BigNumber,
-//     maxSteps: number,
-// ): Fill[] {
-//
-// }
+function stackPaths(
+    side: MarketOperation,
+    pathA: Fill[],
+    pathB: Fill[],
+    targetInput: BigNumber,
+): Fill[] {
+    if (pathB.length === 0 || targetInput.lte(0)) {
+        return pathA;
+    }
+    for (let i = 0; i < pathA.length; ++i) {
+        const head = pathA.slice(0, i);
+        const tail = pathA.slice(i);
+        const [headInput,] = getPathSize(head, targetInput);
+        const remainingInput = BigNumber.max(targetInput.minus(headInput), 0);
+        if (remainingInput.eq(0)) {
+            return head;
+        }
+        const tailRate = getPathAdjustedCompleteRate(side, tail, remainingInput);
+        const newTailRate = getPathAdjustedCompleteRate(side, pathB, remainingInput);
+        // console.log(tail.length, tailRate.div(newTailRate), remainingInput.div('1e18'));
+        if (tailRate.lt(newTailRate)) {
+            if (tail.length) {
+                // console.log(`<${tail[0].source}-${tail[0].sourcePathId.slice(0,4)}-${tail[0].index}`);
+            } else {
+                // console.log(`>${head[head.length-1].source}-${head[head.length-1].sourcePathId.slice(0,4)}-${head[head.length-1].index}`);
+            }
+            const n = tail.findIndex(v => !v.parent);
+            const _tail = tail.slice(n === -1 ? tail.length : n);
+            return [
+                ...head,
+                ...stackPaths(side, clipPathToInput(pathB, remainingInput), _tail, remainingInput),
+            ];
+        }
+    }
+    const [pathAInput,] = getPathSize(pathA, targetInput);
+    if (pathAInput.gte(targetInput)) {
+        return pathA;
+    }
+    return [...pathA, ...clipPathToInput(pathB, targetInput.minus(pathAInput))];
+}
 
 function mixPaths(
     side: MarketOperation,
