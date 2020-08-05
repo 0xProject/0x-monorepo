@@ -20,17 +20,15 @@ pragma solidity ^0.6.5;
 pragma experimental ABIEncoderV2;
 
 import "../src/transformers/Transformer.sol";
+import "../src/transformers/IERC20Transformer.sol";
 import "../src/transformers/LibERC20Transformer.sol";
 
 
 contract TestTransformerBase is
+    IERC20Transformer,
     Transformer
 {
-    function transform(
-        bytes32,
-        address payable,
-        bytes calldata
-    )
+    function transform(TransformContext calldata context)
         external
         override
         returns (bytes4 success)

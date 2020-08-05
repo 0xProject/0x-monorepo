@@ -85,6 +85,10 @@
             {
                 "note": "Enable Quote Report to be generated with an option `shouldGenerateQuoteReport`. Default is `false`",
                 "pr": 2687
+            },
+            {
+                "note": "Add `refundReceiver` to `ExchangeProxySwapQuoteConsumer` options.",
+                "pr": 2657
             }
         ]
     },

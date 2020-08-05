@@ -42,6 +42,7 @@ import * as LibOwnableRichErrors from '../test/generated-artifacts/LibOwnableRic
 import * as LibOwnableStorage from '../test/generated-artifacts/LibOwnableStorage.json';
 import * as LibProxyRichErrors from '../test/generated-artifacts/LibProxyRichErrors.json';
 import * as LibProxyStorage from '../test/generated-artifacts/LibProxyStorage.json';
+import * as LibReentrancyGuardStorage from '../test/generated-artifacts/LibReentrancyGuardStorage.json';
 import * as LibSignatureRichErrors from '../test/generated-artifacts/LibSignatureRichErrors.json';
 import * as LibSignedCallData from '../test/generated-artifacts/LibSignedCallData.json';
 import * as LibSimpleFunctionRegistryRichErrors from '../test/generated-artifacts/LibSimpleFunctionRegistryRichErrors.json';
@@ -147,6 +148,7 @@ export const artifacts = {
     LibMetaTransactionsStorage: LibMetaTransactionsStorage as ContractArtifact,
     LibOwnableStorage: LibOwnableStorage as ContractArtifact,
     LibProxyStorage: LibProxyStorage as ContractArtifact,
+    LibReentrancyGuardStorage: LibReentrancyGuardStorage as ContractArtifact,
     LibSimpleFunctionRegistryStorage: LibSimpleFunctionRegistryStorage as ContractArtifact,
     LibStorage: LibStorage as ContractArtifact,
     LibTokenSpenderStorage: LibTokenSpenderStorage as ContractArtifact,

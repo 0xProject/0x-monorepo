@@ -86,7 +86,12 @@ blockchainTests.resets('AffiliateFeeTransformer', env => {
         await mintHostTokensAsync(amounts[0]);
         await sendEtherAsync(host.address, amounts[1]);
         await host
-            .rawExecuteTransform(transformer.address, hexUtils.random(), randomAddress(), data)
+            .rawExecuteTransform(transformer.address, {
+                data,
+                callDataHash: hexUtils.random(),
+                sender: randomAddress(),
+                taker: randomAddress(),
+            })
             .awaitTransactionSuccessAsync();
         expect(await getBalancesAsync(host.address)).to.deep.eq(ZERO_BALANCES);
         expect(await getBalancesAsync(recipients[0])).to.deep.eq({
@@ -112,7 +117,12 @@ blockchainTests.resets('AffiliateFeeTransformer', env => {
         await mintHostTokensAsync(amounts[0]);
         await sendEtherAsync(host.address, amounts[1]);
         await host
-            .rawExecuteTransform(transformer.address, hexUtils.random(), randomAddress(), data)
+            .rawExecuteTransform(transformer.address, {
+                data,
+                callDataHash: hexUtils.random(),
+                sender: randomAddress(),
+                taker: randomAddress(),
+            })
             .awaitTransactionSuccessAsync();
         expect(await getBalancesAsync(host.address)).to.deep.eq(ZERO_BALANCES);
         expect(await getBalancesAsync(recipients[0])).to.deep.eq({
@@ -138,7 +148,12 @@ blockchainTests.resets('AffiliateFeeTransformer', env => {
         await mintHostTokensAsync(amounts[0]);
         await sendEtherAsync(host.address, amounts[1]);
         await host
-            .rawExecuteTransform(transformer.address, hexUtils.random(), randomAddress(), data)
+            .rawExecuteTransform(transformer.address, {
+                data,
+                callDataHash: hexUtils.random(),
+                sender: randomAddress(),
+                taker: randomAddress(),
+            })
             .awaitTransactionSuccessAsync();
         expect(await getBalancesAsync(host.address)).to.deep.eq({
             tokenBalance: new BigNumber(1),

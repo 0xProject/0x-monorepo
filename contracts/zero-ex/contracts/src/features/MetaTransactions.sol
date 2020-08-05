@@ -21,8 +21,10 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/v06/errors/LibRichErrorsV06.sol";
 import "@0x/contracts-utils/contracts/src/v06/LibBytesV06.sol";
+import "@0x/contracts-utils/contracts/src/v06/LibSafeMathV06.sol";
 import "../errors/LibMetaTransactionsRichErrors.sol";
 import "../fixins/FixinCommon.sol";
+import "../fixins/FixinReentrancyGuard.sol";
 import "../fixins/FixinEIP712.sol";
 import "../migrations/LibMigrate.sol";
 import "../storage/LibMetaTransactionsStorage.sol";
@@ -39,6 +41,7 @@ contract MetaTransactions is
     IFeature,
     IMetaTransactions,
     FixinCommon,
+    FixinReentrancyGuard,
     FixinEIP712
 {
     using LibBytesV06 for bytes;
@@ -92,6 +95,16 @@ contract MetaTransactions is
         ")"
     );
 
+    /// @dev Refunds up to `msg.value` leftover ETH at the end of the call.
+    modifier refundsAttachedEth() {
+        _;
+        uint256 remainingBalance =
+            LibSafeMathV06.min256(msg.value, address(this).balance);
+        if (remainingBalance > 0) {
+            msg.sender.transfer(remainingBalance);
+        }
+    }
+
     constructor(address zeroExAddress)
         public
         FixinCommon()
@@ -127,9 +140,11 @@ contract MetaTransactions is
         public
         payable
         override
+        nonReentrant(REENTRANCY_MTX)
+        refundsAttachedEth
         returns (bytes memory returnResult)
     {
-        return _executeMetaTransactionPrivate(
+        returnResult = _executeMetaTransactionPrivate(
             msg.sender,
             mtx,
             signature
@@ -147,6 +162,8 @@ contract MetaTransactions is
         public
         payable
         override
+        nonReentrant(REENTRANCY_MTX)
+        refundsAttachedEth
         returns (bytes[] memory returnResults)
     {
         if (mtxs.length != signatures.length) {
@@ -255,9 +272,18 @@ contract MetaTransactions is
         _validateMetaTransaction(state);
 
         // Mark the transaction executed.
-        assert(block.number > 0);
         LibMetaTransactionsStorage.getStorage()
             .mtxHashToExecutedBlockNumber[state.hash] = block.number;
+
+        // Pay the fee to the sender.
+        if (mtx.feeAmount > 0) {
+            ITokenSpender(address(this))._spendERC20Tokens(
+                mtx.feeToken,
+                mtx.signer, // From the signer.
+                sender, // To the sender.
+                mtx.feeAmount
+            );
+        }
 
         // Execute the call based on the selector.
         state.selector = mtx.callData.readBytes4(0);
@@ -267,15 +293,6 @@ contract MetaTransactions is
             LibMetaTransactionsRichErrors
                 .MetaTransactionUnsupportedFunctionError(state.hash, state.selector)
                 .rrevert();
-        }
-        // Pay the fee to the sender.
-        if (mtx.feeAmount > 0) {
-            ITokenSpender(address(this))._spendERC20Tokens(
-                mtx.feeToken,
-                mtx.signer, // From the signer.
-                sender, // To the sender.
-                mtx.feeAmount
-            );
         }
         emit MetaTransactionExecuted(
             state.hash,
@@ -367,7 +384,7 @@ contract MetaTransactions is
         // since decoding a single struct arg consumes far less stack space than
         // decoding multiple struct args.
 
-        // Where the encoding for multiple args (with the seleector ommitted)
+        // Where the encoding for multiple args (with the selector ommitted)
         // would typically look like:
         // | argument                 |  offset |
         // |--------------------------|---------|
@@ -394,7 +411,7 @@ contract MetaTransactions is
             bytes memory encodedStructArgs = new bytes(state.mtx.callData.length - 4 + 32);
             // Copy the args data from the original, after the new struct offset prefix.
             bytes memory fromCallData = state.mtx.callData;
-            assert(fromCallData.length >= 4);
+            assert(fromCallData.length >= 160);
             uint256 fromMem;
             uint256 toMem;
             assembly {

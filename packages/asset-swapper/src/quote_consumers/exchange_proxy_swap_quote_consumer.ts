@@ -84,7 +84,7 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
     ): Promise<CalldataInfo> {
         assert.isValidSwapQuote('quote', quote);
         // tslint:disable-next-line:no-object-literal-type-assertion
-        const { affiliateFee, isFromETH, isToETH } = {
+        const { refundReceiver, affiliateFee, isFromETH, isToETH } = {
             ...constants.DEFAULT_EXCHANGE_PROXY_EXTENSION_CONTRACT_OPTS,
             ...opts.extensionContractOpts,
         } as ExchangeProxyContractOpts;
@@ -116,6 +116,7 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
                     sellToken,
                     buyToken: intermediateToken,
                     side: FillQuoteTransformerSide.Sell,
+                    refundReceiver: refundReceiver || NULL_ADDRESS,
                     fillAmount: firstHopOrder.takerAssetAmount,
                     maxOrderFillAmounts: [],
                     orders: [firstHopOrder],
@@ -125,8 +126,9 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
             transforms.push({
                 deploymentNonce: this.transformerNonces.fillQuoteTransformer,
                 data: encodeFillQuoteTransformerData({
-                    sellToken: intermediateToken,
                     buyToken,
+                    sellToken: intermediateToken,
+                    refundReceiver: refundReceiver || NULL_ADDRESS,
                     side: FillQuoteTransformerSide.Sell,
                     fillAmount: MAX_UINT256,
                     maxOrderFillAmounts: [],
@@ -140,6 +142,7 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
                 data: encodeFillQuoteTransformerData({
                     sellToken,
                     buyToken,
+                    refundReceiver: refundReceiver || NULL_ADDRESS,
                     side: isBuyQuote(quote) ? FillQuoteTransformerSide.Buy : FillQuoteTransformerSide.Sell,
                     fillAmount: isBuyQuote(quote) ? quote.makerAssetFillAmount : quote.takerAssetFillAmount,
                     maxOrderFillAmounts: [],

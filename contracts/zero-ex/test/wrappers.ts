@@ -40,6 +40,7 @@ export * from '../test/generated-wrappers/lib_ownable_rich_errors';
 export * from '../test/generated-wrappers/lib_ownable_storage';
 export * from '../test/generated-wrappers/lib_proxy_rich_errors';
 export * from '../test/generated-wrappers/lib_proxy_storage';
+export * from '../test/generated-wrappers/lib_reentrancy_guard_storage';
 export * from '../test/generated-wrappers/lib_signature_rich_errors';
 export * from '../test/generated-wrappers/lib_signed_call_data';
 export * from '../test/generated-wrappers/lib_simple_function_registry_rich_errors';

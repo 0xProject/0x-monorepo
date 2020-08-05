@@ -37,6 +37,7 @@ export const fillQuoteTransformerDataEncoder = AbiEncoder.create([
             { name: 'signatures', type: 'bytes[]' },
             { name: 'maxOrderFillAmounts', type: 'uint256[]' },
             { name: 'fillAmount', type: 'uint256' },
+            { name: 'refundReceiver', type: 'address' },
         ],
     },
 ]);
@@ -60,6 +61,7 @@ export interface FillQuoteTransformerData {
     signatures: string[];
     maxOrderFillAmounts: BigNumber[];
     fillAmount: BigNumber;
+    refundReceiver: string;
 }
 
 /**

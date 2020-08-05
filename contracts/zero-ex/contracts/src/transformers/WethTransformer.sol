@@ -59,22 +59,18 @@ contract WethTransformer is
     }
 
     /// @dev Wraps and unwraps WETH.
-    /// @param data_ ABI-encoded `TransformData`, indicating which token to wrap/umwrap.
+    /// @param context Context information.
     /// @return success The success bytes (`LibERC20Transformer.TRANSFORMER_SUCCESS`).
-    function transform(
-        bytes32, // callDataHash,
-        address payable, // taker,
-        bytes calldata data_
-    )
+    function transform(TransformContext calldata context)
         external
         override
         returns (bytes4 success)
     {
-        TransformData memory data = abi.decode(data_, (TransformData));
+        TransformData memory data = abi.decode(context.data, (TransformData));
         if (!data.token.isTokenETH() && data.token != weth) {
             LibTransformERC20RichErrors.InvalidTransformDataError(
                 LibTransformERC20RichErrors.InvalidTransformDataErrorCode.INVALID_TOKENS,
-                data_
+                context.data
             ).rrevert();
         }
 

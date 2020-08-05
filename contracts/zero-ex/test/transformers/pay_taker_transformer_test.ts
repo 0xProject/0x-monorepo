@@ -78,7 +78,12 @@ blockchainTests.resets('PayTakerTransformer', env => {
         await mintHostTokensAsync(amounts[0]);
         await sendEtherAsync(host.address, amounts[1]);
         await host
-            .rawExecuteTransform(transformer.address, hexUtils.random(), taker, data)
+            .rawExecuteTransform(transformer.address, {
+                data,
+                callDataHash: hexUtils.random(),
+                taker,
+                sender: randomAddress(),
+            })
             .awaitTransactionSuccessAsync();
         expect(await getBalancesAsync(host.address)).to.deep.eq(ZERO_BALANCES);
         expect(await getBalancesAsync(taker)).to.deep.eq({
@@ -96,7 +101,12 @@ blockchainTests.resets('PayTakerTransformer', env => {
         await mintHostTokensAsync(amounts[0]);
         await sendEtherAsync(host.address, amounts[1]);
         await host
-            .rawExecuteTransform(transformer.address, hexUtils.random(), taker, data)
+            .rawExecuteTransform(transformer.address, {
+                data,
+                callDataHash: hexUtils.random(),
+                taker,
+                sender: randomAddress(),
+            })
             .awaitTransactionSuccessAsync();
         expect(await getBalancesAsync(host.address)).to.deep.eq(ZERO_BALANCES);
         expect(await getBalancesAsync(taker)).to.deep.eq({
@@ -114,7 +124,12 @@ blockchainTests.resets('PayTakerTransformer', env => {
         await mintHostTokensAsync(amounts[0]);
         await sendEtherAsync(host.address, amounts[1]);
         await host
-            .rawExecuteTransform(transformer.address, hexUtils.random(), taker, data)
+            .rawExecuteTransform(transformer.address, {
+                data,
+                callDataHash: hexUtils.random(),
+                taker,
+                sender: randomAddress(),
+            })
             .awaitTransactionSuccessAsync();
         expect(await getBalancesAsync(host.address)).to.deep.eq(ZERO_BALANCES);
         expect(await getBalancesAsync(taker)).to.deep.eq({
@@ -132,7 +147,12 @@ blockchainTests.resets('PayTakerTransformer', env => {
         await mintHostTokensAsync(amounts[0]);
         await sendEtherAsync(host.address, amounts[1]);
         await host
-            .rawExecuteTransform(transformer.address, hexUtils.random(), taker, data)
+            .rawExecuteTransform(transformer.address, {
+                data,
+                callDataHash: hexUtils.random(),
+                taker,
+                sender: randomAddress(),
+            })
             .awaitTransactionSuccessAsync();
         expect(await getBalancesAsync(host.address)).to.deep.eq({
             tokenBalance: amounts[0].minus(amounts[0].dividedToIntegerBy(2)),
