@@ -193,10 +193,12 @@ export function getPathAdjustedSize(path: Fill[], targetInput: BigNumber = POSIT
     for (const fill of path) {
         if (input.plus(fill.input).gte(targetInput)) {
             const di = targetInput.minus(input);
-            input = input.plus(di);
-            // Penalty does not get interpolated.
-            const penalty = fill.adjustedOutput.minus(fill.output);
-            output = output.plus(fill.output.times(di.div(fill.input)).plus(penalty));
+            if (di.gt(0)) {
+                input = input.plus(di);
+                // Penalty does not get interpolated.
+                const penalty = fill.adjustedOutput.minus(fill.output);
+                output = output.plus(fill.output.times(di.div(fill.input)).plus(penalty));
+            }
             break;
         } else {
             input = input.plus(fill.input);
@@ -274,25 +276,12 @@ export function collapsePath(path: Fill[]): CollapsedFill[] {
 
 export function getPathAdjustedCompleteRate(side: MarketOperation, path: Fill[], targetInput: BigNumber): BigNumber {
     const [input, output] = getPathAdjustedSize(path, targetInput);
-    if (input.eq(0) || output.eq(0) || targetInput.eq(0)) {
-        return ZERO_AMOUNT;
-    }
-    // Penalize paths that fall short of the entire input amount by a factor of
-    // input / targetInput => (i / t)
-    if (side === MarketOperation.Sell) {
-        // (o / i) * (i / t) => (o / t)
-        return output.div(targetInput);
-    }
-    // (i / o) * (i / t)
-    return input.div(output).times(input.div(targetInput));
+    return getCompleteRate(side, input, output, targetInput);
 }
 
 export function getPathAdjustedRate(side: MarketOperation, path: Fill[], targetInput: BigNumber): BigNumber {
     const [input, output] = getPathAdjustedSize(path, targetInput);
-    if (input.eq(0) || output.eq(0)) {
-        return ZERO_AMOUNT;
-    }
-    return side === MarketOperation.Sell ? output.div(input) : input.div(output);
+    return getRate(side, input, output);
 }
 
 export function getPathAdjustedSlippage(
@@ -307,4 +296,30 @@ export function getPathAdjustedSlippage(
     const totalRate = getPathAdjustedRate(side, path, inputAmount);
     const rateChange = maxRate.minus(totalRate);
     return rateChange.div(maxRate).toNumber();
+}
+
+export function getCompleteRate(
+    side: MarketOperation,
+    input: BigNumber,
+    output: BigNumber,
+    targetInput: BigNumber,
+): BigNumber {
+    if (input.eq(0) || output.eq(0) || targetInput.eq(0)) {
+        return ZERO_AMOUNT;
+    }
+    // Penalize paths that fall short of the entire input amount by a factor of
+    // input / targetInput => (i / t)
+    if (side === MarketOperation.Sell) {
+        // (o / i) * (i / t) => (o / t)
+        return output.div(targetInput);
+    }
+    // (i / o) * (i / t)
+    return input.div(output).times(input.div(targetInput));
+}
+
+export function getRate(side: MarketOperation, input: BigNumber, output: BigNumber): BigNumber {
+    if (input.eq(0) || output.eq(0)) {
+        return ZERO_AMOUNT;
+    }
+    return side === MarketOperation.Sell ? output.div(input) : input.div(output);
 }

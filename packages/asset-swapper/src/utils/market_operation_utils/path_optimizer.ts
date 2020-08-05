@@ -3,12 +3,20 @@ import { BigNumber } from '@0x/utils';
 import { MarketOperation } from '../../types';
 
 import { ZERO_AMOUNT } from './constants';
-import { getPathAdjustedRate, getPathAdjustedCompleteRate, getPathSize, arePathFlagsAllowed, isValidPath } from './fills';
+import {
+    arePathFlagsAllowed,
+    getCompleteRate,
+    getPathAdjustedCompleteRate,
+    getPathAdjustedRate,
+    getPathAdjustedSize,
+    getPathSize,
+    isValidPath,
+} from './fills';
 import { Fill } from './types';
 
-// tslint:disable: prefer-for-of custom-no-magic-numbers completed-docs
+// tslint:disable: prefer-for-of custom-no-magic-numbers completed-docs no-bitwise
 
-const RUN_LIMIT_DECAY_FACTOR = 0.75;
+const RUN_LIMIT_DECAY_FACTOR = 0.5;
 
 /**
  * Find the optimal mixture of paths that maximizes (for sells) or minimizes
@@ -24,8 +32,9 @@ export async function findOptimalPathAsync(
     const sortedPaths = paths
         .slice(0)
         .sort((a, b) =>
-            getPathAdjustedCompleteRate(side, b, targetInput)
-                .comparedTo(getPathAdjustedCompleteRate(side, a, targetInput)),
+            getPathAdjustedCompleteRate(side, b, targetInput).comparedTo(
+                getPathAdjustedCompleteRate(side, a, targetInput),
+            ),
         );
     let optimalPath = sortedPaths[0] || [];
     for (const [i, path] of sortedPaths.slice(1).entries()) {
@@ -36,16 +45,6 @@ export async function findOptimalPathAsync(
     return isPathComplete(optimalPath, targetInput) ? optimalPath : undefined;
 }
 
-// function stackPaths(
-//     side: MarketOperation,
-//     pathA: Fill[],
-//     pathB: Fill[],
-//     targetInput: BigNumber,
-//     maxSteps: number,
-// ): Fill[] {
-//
-// }
-
 function mixPaths(
     side: MarketOperation,
     pathA: Fill[],
@@ -53,12 +52,12 @@ function mixPaths(
     targetInput: BigNumber,
     maxSteps: number,
 ): Fill[] {
-    const _maxSteps = Math.max(maxSteps, 64);
+    const _maxSteps = Math.max(maxSteps, 32);
     let steps = 0;
     // We assume pathA is the better of the two initially.
     let bestPath: Fill[] = pathA;
-    let [bestPathInput, bestPathOutput] = getPathSize(pathA, targetInput);
-    let bestPathRate = getAdjustedCompleteRate(side, bestPathInput, bestPathOutput, targetInput);
+    let [bestPathInput, bestPathOutput] = getPathAdjustedSize(pathA, targetInput);
+    let bestPathRate = getCompleteRate(side, bestPathInput, bestPathOutput, targetInput);
     const _isBetterPath = (input: BigNumber, rate: BigNumber) => {
         if (bestPathInput.lt(targetInput)) {
             return input.gt(bestPathInput);
@@ -69,7 +68,7 @@ function mixPaths(
     };
     const _walk = (path: Fill[], input: BigNumber, output: BigNumber, flags: number, remainingFills: Fill[]) => {
         steps += 1;
-        const rate = getAdjustedCompleteRate(side, input, output, targetInput);
+        const rate = getCompleteRate(side, input, output, targetInput);
         if (_isBetterPath(input, rate)) {
             bestPath = path;
             bestPathInput = input;
@@ -149,26 +148,5 @@ function clipFillAdjustedOutput(fill: Fill, remainingInput: BigNumber): BigNumbe
     }
     // Penalty does not get interpolated.
     const penalty = fill.adjustedOutput.minus(fill.output);
-    return remainingInput.times(fill.rate).plus(penalty);
-}
-
-function getAdjustedCompleteRate(side: MarketOperation, input: BigNumber, output: BigNumber, targetInput: BigNumber): BigNumber {
-    if (input.eq(0) || output.eq(0) || targetInput.eq(0)) {
-        return ZERO_AMOUNT;
-    }
-    // Penalize paths that fall short of the entire input amount by a factor of
-    // input / targetInput => (i / t)
-    if (side === MarketOperation.Sell) {
-        // (o / i) * (i / t) => (o / t)
-        return output.div(targetInput);
-    }
-    // (i / o) * (i / t)
-    return input.div(output).times(input.div(targetInput));
-}
-
-function getAdjustedRate(side: MarketOperation, input: BigNumber, output: BigNumber): BigNumber {
-    if (input.eq(0) || output.eq(0)) {
-        return ZERO_AMOUNT;
-    }
-    return side === MarketOperation.Sell ? output.div(input) : input.div(output);
+    return remainingInput.times(fill.output.div(fill.input)).plus(penalty);
 }
