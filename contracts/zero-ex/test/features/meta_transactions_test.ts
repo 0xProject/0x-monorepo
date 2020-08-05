@@ -36,6 +36,10 @@ blockchainTests.resets('MetaTransactions feature', env => {
     let allowanceTarget: string;
 
     const MAX_FEE_AMOUNT = new BigNumber('1e18');
+    const TRANSFORM_ERC20_FAILING_VALUE = new BigNumber(666);
+    const TRANSFORM_ERC20_REENTER_VALUE = new BigNumber(777);
+    const TRANSFORM_ERC20_BATCH_REENTER_VALUE = new BigNumber(888);
+    const REENTRANCY_FLAG_MTX = 0x1;
 
     before(async () => {
         [owner, sender, ...signers] = await env.getAccountAddressesAsync();
@@ -263,7 +267,7 @@ blockchainTests.resets('MetaTransactions feature', env => {
         it('fails if the translated call fails', async () => {
             const args = getRandomTransformERC20Args();
             const mtx = getRandomMetaTransaction({
-                value: new BigNumber(666),
+                value: new BigNumber(TRANSFORM_ERC20_FAILING_VALUE),
                 callData: transformERC20Feature
                     .transformERC20(
                         args.inputToken,
@@ -469,6 +473,72 @@ blockchainTests.resets('MetaTransactions feature', env => {
                 ),
             );
         });
+
+        it('cannot reenter `executeMetaTransaction()`', async () => {
+            const args = getRandomTransformERC20Args();
+            const mtx = getRandomMetaTransaction({
+                callData: transformERC20Feature
+                    .transformERC20(
+                        args.inputToken,
+                        args.outputToken,
+                        args.inputTokenAmount,
+                        args.minOutputTokenAmount,
+                        args.transformations,
+                    )
+                    .getABIEncodedTransactionData(),
+                value: TRANSFORM_ERC20_REENTER_VALUE,
+            });
+            const mtxHash = getExchangeProxyMetaTransactionHash(mtx);
+            const signature = await signMetaTransactionAsync(mtx);
+            const callOpts = {
+                gasPrice: mtx.maxGasPrice,
+                value: mtx.value,
+            };
+            const tx = feature.executeMetaTransaction(mtx, signature).awaitTransactionSuccessAsync(callOpts);
+            return expect(tx).to.revertWith(
+                new ZeroExRevertErrors.MetaTransactions.MetaTransactionCallFailedError(
+                    mtxHash,
+                    undefined,
+                    new ZeroExRevertErrors.Common.IllegalReentrancyError(
+                        feature.getSelector('executeMetaTransaction'),
+                        REENTRANCY_FLAG_MTX,
+                    ).encode(),
+                ),
+            );
+        });
+
+        it('cannot reenter `batchExecuteMetaTransactions()`', async () => {
+            const args = getRandomTransformERC20Args();
+            const mtx = getRandomMetaTransaction({
+                callData: transformERC20Feature
+                    .transformERC20(
+                        args.inputToken,
+                        args.outputToken,
+                        args.inputTokenAmount,
+                        args.minOutputTokenAmount,
+                        args.transformations,
+                    )
+                    .getABIEncodedTransactionData(),
+                value: TRANSFORM_ERC20_BATCH_REENTER_VALUE,
+            });
+            const mtxHash = getExchangeProxyMetaTransactionHash(mtx);
+            const signature = await signMetaTransactionAsync(mtx);
+            const callOpts = {
+                gasPrice: mtx.maxGasPrice,
+                value: mtx.value,
+            };
+            const tx = feature.executeMetaTransaction(mtx, signature).awaitTransactionSuccessAsync(callOpts);
+            return expect(tx).to.revertWith(
+                new ZeroExRevertErrors.MetaTransactions.MetaTransactionCallFailedError(
+                    mtxHash,
+                    undefined,
+                    new ZeroExRevertErrors.Common.IllegalReentrancyError(
+                        feature.getSelector('batchExecuteMetaTransactions'),
+                        REENTRANCY_FLAG_MTX,
+                    ).encode(),
+                ),
+            );
+        });
     });
 
     describe('batchExecuteMetaTransactions()', () => {
@@ -524,6 +594,102 @@ blockchainTests.resets('MetaTransactions feature', env => {
             const tx = feature.batchExecuteMetaTransactions(mtxs, signatures).callAsync(callOpts);
             return expect(tx).to.revertWith(
                 new ZeroExRevertErrors.MetaTransactions.MetaTransactionAlreadyExecutedError(mtxHash, block),
+            );
+        });
+
+        it('fails if a meta-transaction fails', async () => {
+            const args = getRandomTransformERC20Args();
+            const mtx = getRandomMetaTransaction({
+                value: new BigNumber(TRANSFORM_ERC20_FAILING_VALUE),
+                callData: transformERC20Feature
+                    .transformERC20(
+                        args.inputToken,
+                        args.outputToken,
+                        args.inputTokenAmount,
+                        args.minOutputTokenAmount,
+                        args.transformations,
+                    )
+                    .getABIEncodedTransactionData(),
+            });
+            const mtxHash = getExchangeProxyMetaTransactionHash(mtx);
+            const signature = await signMetaTransactionAsync(mtx);
+            const callOpts = {
+                gasPrice: mtx.minGasPrice,
+                value: mtx.value,
+            };
+            const tx = feature.batchExecuteMetaTransactions([mtx], [signature]).callAsync(callOpts);
+            return expect(tx).to.revertWith(
+                new ZeroExRevertErrors.MetaTransactions.MetaTransactionCallFailedError(
+                    mtxHash,
+                    undefined,
+                    new StringRevertError('FAIL').encode(),
+                ),
+            );
+        });
+
+        it('cannot reenter `executeMetaTransaction()`', async () => {
+            const args = getRandomTransformERC20Args();
+            const mtx = getRandomMetaTransaction({
+                callData: transformERC20Feature
+                    .transformERC20(
+                        args.inputToken,
+                        args.outputToken,
+                        args.inputTokenAmount,
+                        args.minOutputTokenAmount,
+                        args.transformations,
+                    )
+                    .getABIEncodedTransactionData(),
+                value: TRANSFORM_ERC20_REENTER_VALUE,
+            });
+            const mtxHash = getExchangeProxyMetaTransactionHash(mtx);
+            const signature = await signMetaTransactionAsync(mtx);
+            const callOpts = {
+                gasPrice: mtx.maxGasPrice,
+                value: mtx.value,
+            };
+            const tx = feature.batchExecuteMetaTransactions([mtx], [signature]).awaitTransactionSuccessAsync(callOpts);
+            return expect(tx).to.revertWith(
+                new ZeroExRevertErrors.MetaTransactions.MetaTransactionCallFailedError(
+                    mtxHash,
+                    undefined,
+                    new ZeroExRevertErrors.Common.IllegalReentrancyError(
+                        feature.getSelector('executeMetaTransaction'),
+                        REENTRANCY_FLAG_MTX,
+                    ).encode(),
+                ),
+            );
+        });
+
+        it('cannot reenter `batchExecuteMetaTransactions()`', async () => {
+            const args = getRandomTransformERC20Args();
+            const mtx = getRandomMetaTransaction({
+                callData: transformERC20Feature
+                    .transformERC20(
+                        args.inputToken,
+                        args.outputToken,
+                        args.inputTokenAmount,
+                        args.minOutputTokenAmount,
+                        args.transformations,
+                    )
+                    .getABIEncodedTransactionData(),
+                value: TRANSFORM_ERC20_BATCH_REENTER_VALUE,
+            });
+            const mtxHash = getExchangeProxyMetaTransactionHash(mtx);
+            const signature = await signMetaTransactionAsync(mtx);
+            const callOpts = {
+                gasPrice: mtx.maxGasPrice,
+                value: mtx.value,
+            };
+            const tx = feature.batchExecuteMetaTransactions([mtx], [signature]).awaitTransactionSuccessAsync(callOpts);
+            return expect(tx).to.revertWith(
+                new ZeroExRevertErrors.MetaTransactions.MetaTransactionCallFailedError(
+                    mtxHash,
+                    undefined,
+                    new ZeroExRevertErrors.Common.IllegalReentrancyError(
+                        feature.getSelector('batchExecuteMetaTransactions'),
+                        REENTRANCY_FLAG_MTX,
+                    ).encode(),
+                ),
             );
         });
     });

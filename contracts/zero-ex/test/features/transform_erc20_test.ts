@@ -37,6 +37,7 @@ blockchainTests.resets('TransformERC20 feature', env => {
     const callDataSigner = ethjs.bufferToHex(ethjs.privateToAddress(ethjs.toBuffer(callDataSignerKey)));
     let owner: string;
     let taker: string;
+    let sender: string;
     let transformerDeployer: string;
     let zeroEx: ZeroExContract;
     let feature: TransformERC20Contract;
@@ -44,7 +45,7 @@ blockchainTests.resets('TransformERC20 feature', env => {
     let allowanceTarget: string;
 
     before(async () => {
-        [owner, taker, transformerDeployer] = await env.getAccountAddressesAsync();
+        [owner, taker, sender, transformerDeployer] = await env.getAccountAddressesAsync();
         zeroEx = await fullMigrateAsync(
             owner,
             env.provider,
@@ -59,12 +60,12 @@ blockchainTests.resets('TransformERC20 feature', env => {
             },
             { transformerDeployer },
         );
-        feature = new TransformERC20Contract(zeroEx.address, env.provider, env.txDefaults, abis);
+        feature = new TransformERC20Contract(zeroEx.address, env.provider, { ...env.txDefaults, from: sender }, abis);
         wallet = new FlashWalletContract(await feature.getTransformWallet().callAsync(), env.provider, env.txDefaults);
         allowanceTarget = await new ITokenSpenderContract(zeroEx.address, env.provider, env.txDefaults)
             .getAllowanceTarget()
             .callAsync();
-        await feature.setQuoteSigner(callDataSigner).awaitTransactionSuccessAsync();
+        await feature.setQuoteSigner(callDataSigner).awaitTransactionSuccessAsync({ from: owner });
     });
 
     const { MAX_UINT256, ZERO_AMOUNT } = constants;
@@ -73,7 +74,7 @@ blockchainTests.resets('TransformERC20 feature', env => {
         it('createTransformWallet() replaces the current wallet', async () => {
             const newWalletAddress = await feature.createTransformWallet().callAsync({ from: owner });
             expect(newWalletAddress).to.not.eq(wallet.address);
-            await feature.createTransformWallet().awaitTransactionSuccessAsync();
+            await feature.createTransformWallet().awaitTransactionSuccessAsync({ from: owner });
             return expect(feature.getTransformWallet().callAsync()).to.eventually.eq(newWalletAddress);
         });
 
@@ -264,8 +265,9 @@ blockchainTests.resets('TransformERC20 feature', env => {
                     receipt.logs,
                     [
                         {
-                            callDataHash: NULL_BYTES32,
+                            sender,
                             taker,
+                            callDataHash: NULL_BYTES32,
                             context: wallet.address,
                             caller: zeroEx.address,
                             data: transformation.data,
@@ -320,8 +322,9 @@ blockchainTests.resets('TransformERC20 feature', env => {
                     receipt.logs,
                     [
                         {
-                            callDataHash: NULL_BYTES32,
                             taker,
+                            sender,
+                            callDataHash: NULL_BYTES32,
                             context: wallet.address,
                             caller: zeroEx.address,
                             data: transformation.data,
@@ -379,8 +382,9 @@ blockchainTests.resets('TransformERC20 feature', env => {
                     receipt.logs,
                     [
                         {
-                            callDataHash: NULL_BYTES32,
+                            sender,
                             taker,
+                            callDataHash: NULL_BYTES32,
                             context: wallet.address,
                             caller: zeroEx.address,
                             data: transformation.data,
@@ -496,8 +500,9 @@ blockchainTests.resets('TransformERC20 feature', env => {
                     receipt.logs,
                     [
                         {
-                            callDataHash: NULL_BYTES32,
+                            sender,
                             taker,
+                            callDataHash: NULL_BYTES32,
                             context: wallet.address,
                             caller: zeroEx.address,
                             data: transformations[0].data,
@@ -505,8 +510,9 @@ blockchainTests.resets('TransformERC20 feature', env => {
                             ethBalance: callValue,
                         },
                         {
-                            callDataHash: NULL_BYTES32,
+                            sender,
                             taker,
+                            callDataHash: NULL_BYTES32,
                             context: wallet.address,
                             caller: zeroEx.address,
                             data: transformations[1].data,

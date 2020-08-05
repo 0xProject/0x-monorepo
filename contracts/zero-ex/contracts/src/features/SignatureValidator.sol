@@ -37,6 +37,13 @@ contract SignatureValidator is
     using LibBytesV06 for bytes;
     using LibRichErrorsV06 for bytes;
 
+    /// @dev Exclusive upper limit on ECDSA signatures 'R' values.
+    ///      The valid range is given by fig (282) of the yellow paper.
+    uint256 private constant ECDSA_SIGNATURE_R_LIMIT =
+        uint256(0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141);
+    /// @dev Exclusive upper limit on ECDSA signatures 'S' values.
+    ///      The valid range is given by fig (283) of the yellow paper.
+    uint256 private constant ECDSA_SIGNATURE_S_LIMIT = ECDSA_SIGNATURE_R_LIMIT / 2 + 1;
     /// @dev Name of this feature.
     string public constant override FEATURE_NAME = "SignatureValidator";
     /// @dev Version of this feature.
@@ -160,12 +167,18 @@ contract SignatureValidator is
             uint8 v = uint8(signature[0]);
             bytes32 r = signature.readBytes32(1);
             bytes32 s = signature.readBytes32(33);
-            recovered = ecrecover(
-                hash,
-                v,
-                r,
-                s
-            );
+            if (v < 27) {
+                // Handle clients that encode v as 0 or 1.
+                v += 27;
+            }
+            if (uint256(r) < ECDSA_SIGNATURE_R_LIMIT && uint256(s) < ECDSA_SIGNATURE_S_LIMIT) {
+                recovered = ecrecover(
+                    hash,
+                    v,
+                    r,
+                    s
+                );
+            }
         } else if (signatureType == SignatureType.EthSign) {
             // Signed using `eth_sign`
             if (signature.length != 66) {
@@ -179,15 +192,21 @@ contract SignatureValidator is
             uint8 v = uint8(signature[0]);
             bytes32 r = signature.readBytes32(1);
             bytes32 s = signature.readBytes32(33);
-            recovered = ecrecover(
-                keccak256(abi.encodePacked(
-                    "\x19Ethereum Signed Message:\n32",
-                    hash
-                )),
-                v,
-                r,
-                s
-            );
+            if (v < 27) {
+                // Handle clients that encode v as 0 or 1.
+                v += 27;
+            }
+            if (uint256(r) < ECDSA_SIGNATURE_R_LIMIT && uint256(s) < ECDSA_SIGNATURE_S_LIMIT) {
+                recovered = ecrecover(
+                    keccak256(abi.encodePacked(
+                        "\x19Ethereum Signed Message:\n32",
+                        hash
+                    )),
+                    v,
+                    r,
+                    s
+                );
+            }
         } else {
             // This should never happen.
             revert('SignatureValidator/ILLEGAL_CODE_PATH');

@@ -86,7 +86,7 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
     ): Promise<CalldataInfo> {
         assert.isValidSwapQuote('quote', quote);
         // tslint:disable-next-line:no-object-literal-type-assertion
-        const { affiliateFee, isFromETH, isToETH } = {
+        const { refundReceiver, affiliateFee, isFromETH, isToETH } = {
             ...constants.DEFAULT_EXCHANGE_PROXY_EXTENSION_CONTRACT_OPTS,
             ...opts.extensionContractOpts,
         } as ExchangeProxyContractOpts;
@@ -114,6 +114,7 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
             data: encodeFillQuoteTransformerData({
                 sellToken,
                 buyToken,
+                refundReceiver: refundReceiver || NULL_ADDRESS,
                 side: isBuyQuote(quote) ? FillQuoteTransformerSide.Buy : FillQuoteTransformerSide.Sell,
                 fillAmount: isBuyQuote(quote) ? quote.makerAssetFillAmount : quote.takerAssetFillAmount,
                 maxOrderFillAmounts: [],

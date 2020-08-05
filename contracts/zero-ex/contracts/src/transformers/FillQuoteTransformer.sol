@@ -74,6 +74,12 @@ contract FillQuoteTransformer is
         // For sells, this may be `uint256(-1)` to sell the entire balance of
         // `sellToken`.
         uint256 fillAmount;
+        // Who to transfer unused protocol fees to.
+        // May be a valid address or one of:
+        // `address(0)`: Stay in flash wallet.
+        // `address(1)`: Send to the taker.
+        // `address(2)`: Send to the sender (caller of `transformERC20()`).
+        address payable refundReceiver;
     }
 
     /// @dev Results of a call to `_fillOrder()`.
@@ -111,6 +117,12 @@ contract FillQuoteTransformer is
     bytes4 private constant ERC20_BRIDGE_PROXY_ID = 0xdc1600f3;
     /// @dev Maximum uint256 value.
     uint256 private constant MAX_UINT256 = uint256(-1);
+    /// @dev If `refundReceiver` is set to this address, unpsent
+    ///      protocol fees will be sent to the taker.
+    address private constant REFUND_RECEIVER_TAKER = address(1);
+    /// @dev If `refundReceiver` is set to this address, unpsent
+    ///      protocol fees will be sent to the sender.
+    address private constant REFUND_RECEIVER_SENDER = address(2);
 
     /// @dev The Exchange contract.
     IExchange public immutable exchange;
@@ -130,32 +142,28 @@ contract FillQuoteTransformer is
     /// @dev Sell this contract's entire balance of of `sellToken` in exchange
     ///      for `buyToken` by filling `orders`. Protocol fees should be attached
     ///      to this call. `buyToken` and excess ETH will be transferred back to the caller.
-    /// @param data_ ABI-encoded `TransformData`.
+    /// @param context Context information.
     /// @return success The success bytes (`LibERC20Transformer.TRANSFORMER_SUCCESS`).
-    function transform(
-        bytes32, // callDataHash,
-        address payable, // taker,
-        bytes calldata data_
-    )
+    function transform(TransformContext calldata context)
         external
         override
         freesGasTokensFromCollector
         returns (bytes4 success)
     {
-        TransformData memory data = abi.decode(data_, (TransformData));
+        TransformData memory data = abi.decode(context.data, (TransformData));
         FillState memory state;
 
         // Validate data fields.
         if (data.sellToken.isTokenETH() || data.buyToken.isTokenETH()) {
             LibTransformERC20RichErrors.InvalidTransformDataError(
                 LibTransformERC20RichErrors.InvalidTransformDataErrorCode.INVALID_TOKENS,
-                data_
+                context.data
             ).rrevert();
         }
         if (data.orders.length != data.signatures.length) {
             LibTransformERC20RichErrors.InvalidTransformDataError(
                 LibTransformERC20RichErrors.InvalidTransformDataErrorCode.INVALID_ARRAY_LENGTH,
-                data_
+                context.data
             ).rrevert();
         }
 
@@ -247,6 +255,17 @@ contract FillQuoteTransformer is
                         state.boughtAmount,
                         data.fillAmount
                     ).rrevert();
+            }
+        }
+
+        // Refund unspent protocol fees.
+        if (state.ethRemaining > 0 && data.refundReceiver != address(0)) {
+            if (data.refundReceiver == REFUND_RECEIVER_TAKER) {
+                context.taker.transfer(state.ethRemaining);
+            } else if (data.refundReceiver == REFUND_RECEIVER_SENDER) {
+                context.sender.transfer(state.ethRemaining);
+            } else {
+                data.refundReceiver.transfer(state.ethRemaining);
             }
         }
         return LibERC20Transformer.TRANSFORMER_SUCCESS;

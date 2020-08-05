@@ -12,6 +12,7 @@ import * as FillQuoteTransformer from '../test/generated-artifacts/FillQuoteTran
 import * as FixinCommon from '../test/generated-artifacts/FixinCommon.json';
 import * as FixinEIP712 from '../test/generated-artifacts/FixinEIP712.json';
 import * as FixinGasToken from '../test/generated-artifacts/FixinGasToken.json';
+import * as FixinReentrancyGuard from '../test/generated-artifacts/FixinReentrancyGuard.json';
 import * as FlashWallet from '../test/generated-artifacts/FlashWallet.json';
 import * as FullMigration from '../test/generated-artifacts/FullMigration.json';
 import * as IAllowanceTarget from '../test/generated-artifacts/IAllowanceTarget.json';
@@ -41,6 +42,7 @@ import * as LibOwnableRichErrors from '../test/generated-artifacts/LibOwnableRic
 import * as LibOwnableStorage from '../test/generated-artifacts/LibOwnableStorage.json';
 import * as LibProxyRichErrors from '../test/generated-artifacts/LibProxyRichErrors.json';
 import * as LibProxyStorage from '../test/generated-artifacts/LibProxyStorage.json';
+import * as LibReentrancyGuardStorage from '../test/generated-artifacts/LibReentrancyGuardStorage.json';
 import * as LibSignatureRichErrors from '../test/generated-artifacts/LibSignatureRichErrors.json';
 import * as LibSignedCallData from '../test/generated-artifacts/LibSignedCallData.json';
 import * as LibSimpleFunctionRegistryRichErrors from '../test/generated-artifacts/LibSimpleFunctionRegistryRichErrors.json';
@@ -120,6 +122,7 @@ export const artifacts = {
     FixinCommon: FixinCommon as ContractArtifact,
     FixinEIP712: FixinEIP712 as ContractArtifact,
     FixinGasToken: FixinGasToken as ContractArtifact,
+    FixinReentrancyGuard: FixinReentrancyGuard as ContractArtifact,
     FullMigration: FullMigration as ContractArtifact,
     InitialMigration: InitialMigration as ContractArtifact,
     LibBootstrap: LibBootstrap as ContractArtifact,
@@ -127,6 +130,7 @@ export const artifacts = {
     LibMetaTransactionsStorage: LibMetaTransactionsStorage as ContractArtifact,
     LibOwnableStorage: LibOwnableStorage as ContractArtifact,
     LibProxyStorage: LibProxyStorage as ContractArtifact,
+    LibReentrancyGuardStorage: LibReentrancyGuardStorage as ContractArtifact,
     LibSimpleFunctionRegistryStorage: LibSimpleFunctionRegistryStorage as ContractArtifact,
     LibStorage: LibStorage as ContractArtifact,
     LibTokenSpenderStorage: LibTokenSpenderStorage as ContractArtifact,

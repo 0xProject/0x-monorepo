@@ -48,6 +48,14 @@ contract TestWethTransformerHost is
             _weth.deposit{value: wethAmount}();
         }
         // Have to make this call externally because transformers aren't payable.
-        this.rawExecuteTransform(transformer, bytes32(0), msg.sender, data);
+        this.rawExecuteTransform(
+            transformer,
+            IERC20Transformer.TransformContext({
+                callDataHash: bytes32(0),
+                sender: msg.sender,
+                taker: msg.sender,
+                data: data
+            })
+        );
     }
 }

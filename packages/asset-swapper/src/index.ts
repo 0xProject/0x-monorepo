@@ -43,6 +43,7 @@ export {
     AffiliateFee,
     CalldataInfo,
     ExchangeProxyContractOpts,
+    ExchangeProxyRefundReceiver,
     ExtensionContractType,
     ForwarderExtensionContractOpts,
     GetExtensionContractTypeOpts,

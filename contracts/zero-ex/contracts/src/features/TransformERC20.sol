@@ -360,9 +360,12 @@ contract TransformERC20 is
             // Call data.
             abi.encodeWithSelector(
                 IERC20Transformer.transform.selector,
-                callDataHash,
-                taker,
-                transformation.data
+                IERC20Transformer.TransformContext({
+                    callDataHash: callDataHash,
+                    sender: msg.sender,
+                    taker: taker,
+                    data: transformation.data
+                })
             )
         );
         // Ensure the transformer returned the magic bytes.

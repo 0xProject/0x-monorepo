@@ -58,18 +58,14 @@ contract AffiliateFeeTransformer is
     {}
 
     /// @dev Transfers tokens to recipients.
-    /// @param data ABI-encoded `TokenFee[]`, indicating which tokens to transfer.
+    /// @param context Context information.
     /// @return success The success bytes (`LibERC20Transformer.TRANSFORMER_SUCCESS`).
-    function transform(
-        bytes32, // callDataHash,
-        address payable, // taker,
-        bytes calldata data
-    )
+    function transform(TransformContext calldata context)
         external
         override
         returns (bytes4 success)
     {
-        TokenFee[] memory fees = abi.decode(data, (TokenFee[]));
+        TokenFee[] memory fees = abi.decode(context.data, (TokenFee[]));
 
         // Transfer tokens to recipients.
         for (uint256 i = 0; i < fees.length; ++i) {

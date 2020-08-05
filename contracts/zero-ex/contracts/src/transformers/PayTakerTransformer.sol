@@ -56,19 +56,14 @@ contract PayTakerTransformer is
     {}
 
     /// @dev Forwards tokens to the taker.
-    /// @param taker The taker address (caller of `TransformERC20.transformERC20()`).
-    /// @param data_ ABI-encoded `TransformData`, indicating which tokens to transfer.
+    /// @param context Context information.
     /// @return success The success bytes (`LibERC20Transformer.TRANSFORMER_SUCCESS`).
-    function transform(
-        bytes32, // callDataHash,
-        address payable taker,
-        bytes calldata data_
-    )
+    function transform(TransformContext calldata context)
         external
         override
         returns (bytes4 success)
     {
-        TransformData memory data = abi.decode(data_, (TransformData));
+        TransformData memory data = abi.decode(context.data, (TransformData));
 
         // Transfer tokens directly to the taker.
         for (uint256 i = 0; i < data.tokens.length; ++i) {
@@ -79,7 +74,7 @@ contract PayTakerTransformer is
                 amount = data.tokens[i].getTokenBalanceOf(address(this));
             }
             if (amount != 0) {
-                data.tokens[i].transformerTransfer(taker, amount);
+                data.tokens[i].transformerTransfer(context.taker, amount);
             }
         }
         return LibERC20Transformer.TRANSFORMER_SUCCESS;

@@ -1,5 +1,26 @@
 [
     {
+        "version": "0.3.0",
+        "changes": [
+            {
+                "note": "Internal audit fixes",
+                "pr": 2657
+            },
+            {
+                "note": "Add refund mechanism to meta-transactions",
+                "pr": 2657
+            },
+            {
+                "note": "Pass sender address to transformers",
+                "pr": 2657
+            },
+            {
+                "note": "Refund unused protocol fees to `refundReceiver` in FQT",
+                "pr": 2657
+            }
+        ]
+    },
+    {
         "version": "0.2.0",
         "changes": [
             {
