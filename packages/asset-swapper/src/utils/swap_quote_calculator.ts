@@ -16,13 +16,7 @@ import {
 
 import { MarketOperationUtils } from './market_operation_utils';
 import { convertNativeOrderToFullyFillableOptimizedOrders } from './market_operation_utils/orders';
-import {
-    FeeSchedule,
-    FillData,
-    GetMarketOrdersOpts,
-    OptimizedMarketOrder,
-    OptimizedOrdersAndQuoteReport,
-} from './market_operation_utils/types';
+import { FeeSchedule, FillData, GetMarketOrdersOpts, OptimizedMarketOrder } from './market_operation_utils/types';
 import { isSupportedAssetDataInOrders } from './utils';
 
 import { QuoteReport } from './quote_report_generator';

@@ -2,6 +2,7 @@ import { getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
 import { constants as contractConstants, getRandomInteger, Numberish, randomAddress } from '@0x/contracts-test-utils';
 import {
     assetDataUtils,
+    decodeAffiliateFeeTransformerData,
     decodeFillQuoteTransformerData,
     decodePayTakerTransformerData,
     decodeWethTransformerData,
@@ -28,7 +29,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 
 const { NULL_ADDRESS } = constants;
-const { MAX_UINT256 } = contractConstants;
+const { MAX_UINT256, ZERO_AMOUNT } = contractConstants;
 
 // tslint:disable: custom-no-magic-numbers
 
@@ -264,6 +265,38 @@ describe('ExchangeProxySwapQuoteConsumer', () => {
             const wethTransformerData = decodeWethTransformerData(callArgs.transformations[1].data);
             expect(wethTransformerData.amount).to.bignumber.eq(MAX_UINT256);
             expect(wethTransformerData.token).to.eq(contractAddresses.etherToken);
+        });
+        it('Appends an affiliate fee transformer after the fill if a buy token affiliate fee is provided', async () => {
+            const quote = getRandomSellQuote();
+            const affiliateFee = {
+                recipient: randomAddress(),
+                buyTokenFeeAmount: getRandomAmount(),
+                sellTokenFeeAmount: ZERO_AMOUNT,
+            };
+            const callInfo = await consumer.getCalldataOrThrowAsync(quote, {
+                extensionContractOpts: { affiliateFee },
+            });
+            const callArgs = callDataEncoder.decode(callInfo.calldataHexString) as CallArgs;
+            expect(callArgs.transformations[1].deploymentNonce.toNumber()).to.eq(
+                consumer.transformerNonces.affiliateFeeTransformer,
+            );
+            const affiliateFeeTransformerData = decodeAffiliateFeeTransformerData(callArgs.transformations[1].data);
+            expect(affiliateFeeTransformerData.fees).to.deep.equal([
+                { token: MAKER_TOKEN, amount: affiliateFee.buyTokenFeeAmount, recipient: affiliateFee.recipient },
+            ]);
+        });
+        it('Throws if a sell token affiliate fee is provided', async () => {
+            const quote = getRandomSellQuote();
+            const affiliateFee = {
+                recipient: randomAddress(),
+                buyTokenFeeAmount: ZERO_AMOUNT,
+                sellTokenFeeAmount: getRandomAmount(),
+            };
+            expect(
+                consumer.getCalldataOrThrowAsync(quote, {
+                    extensionContractOpts: { affiliateFee },
+                }),
+            ).to.eventually.be.rejectedWith('Affiliate fees denominated in sell token are not yet supported');
         });
     });
 });

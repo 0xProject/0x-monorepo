@@ -5,6 +5,10 @@
             {
                 "note": "Add gitpkg.",
                 "pr": 2649
+            },
+            {
+                "note": "Fix `decodeAffiliateFeeTransformerData`",
+                "pr": 2658
             }
         ]
     },
