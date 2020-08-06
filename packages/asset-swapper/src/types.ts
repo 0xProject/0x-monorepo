@@ -124,13 +124,21 @@ export interface ForwarderExtensionContractOpts {
     feeRecipient: string;
 }
 
+export interface AffiliateFee {
+    recipient: string;
+    buyTokenFeeAmount: BigNumber;
+    sellTokenFeeAmount: BigNumber;
+}
+
 /**
  * @param isFromETH Whether the input token is ETH.
  * @param isToETH Whether the output token is ETH.
+ * @param affiliateFee Fee denominated in taker or maker asset to send to specified recipient.
  */
 export interface ExchangeProxyContractOpts {
     isFromETH: boolean;
     isToETH: boolean;
+    affiliateFee: AffiliateFee;
 }
 
 export type SwapQuote = MarketBuySwapQuote | MarketSellSwapQuote;

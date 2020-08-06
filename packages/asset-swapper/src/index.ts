@@ -40,6 +40,7 @@ export { InsufficientAssetLiquidityError } from './errors';
 export { SwapQuoteConsumer } from './quote_consumers/swap_quote_consumer';
 export { SwapQuoter } from './swap_quoter';
 export {
+    AffiliateFee,
     CalldataInfo,
     ExchangeProxyContractOpts,
     ExtensionContractType,
