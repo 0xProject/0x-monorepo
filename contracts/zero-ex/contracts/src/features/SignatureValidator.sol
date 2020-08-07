@@ -167,10 +167,6 @@ contract SignatureValidator is
             uint8 v = uint8(signature[0]);
             bytes32 r = signature.readBytes32(1);
             bytes32 s = signature.readBytes32(33);
-            if (v < 27) {
-                // Handle clients that encode v as 0 or 1.
-                v += 27;
-            }
             if (uint256(r) < ECDSA_SIGNATURE_R_LIMIT && uint256(s) < ECDSA_SIGNATURE_S_LIMIT) {
                 recovered = ecrecover(
                     hash,
@@ -192,10 +188,6 @@ contract SignatureValidator is
             uint8 v = uint8(signature[0]);
             bytes32 r = signature.readBytes32(1);
             bytes32 s = signature.readBytes32(33);
-            if (v < 27) {
-                // Handle clients that encode v as 0 or 1.
-                v += 27;
-            }
             if (uint256(r) < ECDSA_SIGNATURE_R_LIMIT && uint256(s) < ECDSA_SIGNATURE_S_LIMIT) {
                 recovered = ecrecover(
                     keccak256(abi.encodePacked(
