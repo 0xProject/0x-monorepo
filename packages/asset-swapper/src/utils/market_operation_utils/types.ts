@@ -130,10 +130,6 @@ export interface Fill<TFillData extends FillData = FillData> {
     input: BigNumber;
     // Output fill amount (maker asset amount in a sell, taker asset amount in a buy).
     output: BigNumber;
-    // The maker/taker rate.
-    rate: BigNumber;
-    // The maker/taker rate, adjusted by fees.
-    adjustedRate: BigNumber;
     // The output fill amount, ajdusted by fees.
     adjustedOutput: BigNumber;
     // Fill that must precede this one. This enforces certain fills to be contiguous.

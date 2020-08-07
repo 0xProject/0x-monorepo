@@ -58,7 +58,7 @@ function nativeOrdersToPath(
 ): Fill[] {
     const sourcePathId = hexUtils.random();
     // Create a single path from all orders.
-    let path: Fill[] = [];
+    let path: Array<Fill & { adjustedRate: BigNumber }> = [];
     for (const order of orders) {
         const makerAmount = fillableAmountsUtils.getMakerAssetAmountSwappedAfterOrderFees(order);
         const takerAmount = fillableAmountsUtils.getTakerAssetAmountSwappedAfterOrderFees(order);
@@ -67,7 +67,6 @@ function nativeOrdersToPath(
         const penalty = ethToOutputRate.times(
             fees[ERC20BridgeSource.Native] === undefined ? 0 : fees[ERC20BridgeSource.Native]!(),
         );
-        const rate = makerAmount.div(takerAmount);
         // targetInput can be less than the order size
         // whilst the penalty is constant, it affects the adjusted output
         // only up until the target has been exhausted.
@@ -86,11 +85,10 @@ function nativeOrdersToPath(
         }
         path.push({
             sourcePathId,
-            input: clippedInput,
-            output: clippedOutput,
-            rate,
             adjustedRate,
             adjustedOutput,
+            input: clippedInput,
+            output: clippedOutput,
             flags: 0,
             index: 0, // TBD
             parent: undefined, // TBD
@@ -135,15 +133,11 @@ function dexQuotesToPaths(
                     ? ethToOutputRate.times(fee)
                     : ZERO_AMOUNT;
             const adjustedOutput = side === MarketOperation.Sell ? output.minus(penalty) : output.plus(penalty);
-            const rate = side === MarketOperation.Sell ? output.div(input) : input.div(output);
-            const adjustedRate = side === MarketOperation.Sell ? adjustedOutput.div(input) : input.div(adjustedOutput);
 
             path.push({
                 sourcePathId,
                 input,
                 output,
-                rate,
-                adjustedRate,
                 adjustedOutput,
                 source,
                 fillData,
