@@ -19,7 +19,7 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "./ICurve.sol";
+import "./interfaces/ICurve.sol";
 import "./ApproximateBuys.sol";
 import "./SamplerUtils.sol";
 

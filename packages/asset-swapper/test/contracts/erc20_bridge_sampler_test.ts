@@ -37,6 +37,7 @@ blockchainTests('erc20-bridge-sampler', env => {
     const INVALID_TOKEN_PAIR_ERROR = 'ERC20BridgeSampler/INVALID_TOKEN_PAIR';
     const MAKER_TOKEN = randomAddress();
     const TAKER_TOKEN = randomAddress();
+    const INTERMEDIATE_TOKEN = randomAddress();
 
     before(async () => {
         testContract = await TestERC20BridgeSamplerContract.deployFrom0xArtifactAsync(
@@ -262,6 +263,33 @@ blockchainTests('erc20-bridge-sampler', env => {
         await testContract.enableFailTrigger().awaitTransactionSuccessAsync({ value: 1 });
     }
 
+    function expectQuotesWithinRange(
+        quotes: BigNumber[],
+        expectedQuotes: BigNumber[],
+        maxSlippage: BigNumber | number,
+    ): void {
+        quotes.forEach((_q, i) => {
+            // If we're within 1 base unit of a low decimal token
+            // then that's as good as we're going to get (and slippage is "high")
+            if (
+                expectedQuotes[i].isZero() ||
+                BigNumber.max(expectedQuotes[i], quotes[i])
+                    .minus(BigNumber.min(expectedQuotes[i], quotes[i]))
+                    .eq(1)
+            ) {
+                return;
+            }
+            const slippage = quotes[i]
+                .dividedBy(expectedQuotes[i])
+                .minus(1)
+                .decimalPlaces(4);
+            expect(slippage, `quote[${i}]: ${slippage} ${quotes[i]} ${expectedQuotes[i]}`).to.be.bignumber.gte(0);
+            expect(slippage, `quote[${i}] ${slippage} ${quotes[i]} ${expectedQuotes[i]}`).to.be.bignumber.lte(
+                new BigNumber(maxSlippage),
+            );
+        });
+    }
+
     describe('getOrderFillableTakerAssetAmounts()', () => {
         it('returns the expected amount for each order', async () => {
             const orders = createOrders(MAKER_TOKEN, TAKER_TOKEN);
@@ -385,32 +413,6 @@ blockchainTests('erc20-bridge-sampler', env => {
             const quotes = await testContract.sampleBuysFromKyberNetwork(TAKER_TOKEN, MAKER_TOKEN, []).callAsync();
             expect(quotes).to.deep.eq([]);
         });
-        const expectQuotesWithinRange = (
-            quotes: BigNumber[],
-            expectedQuotes: BigNumber[],
-            maxSlippage: BigNumber | number,
-        ) => {
-            quotes.forEach((_q, i) => {
-                // If we're within 1 base unit of a low decimal token
-                // then that's as good as we're going to get (and slippage is "high")
-                if (
-                    expectedQuotes[i].isZero() ||
-                    BigNumber.max(expectedQuotes[i], quotes[i])
-                        .minus(BigNumber.min(expectedQuotes[i], quotes[i]))
-                        .eq(1)
-                ) {
-                    return;
-                }
-                const slippage = quotes[i]
-                    .dividedBy(expectedQuotes[i])
-                    .minus(1)
-                    .decimalPlaces(4);
-                expect(slippage, `quote[${i}]: ${slippage} ${quotes[i]} ${expectedQuotes[i]}`).to.be.bignumber.gte(0);
-                expect(slippage, `quote[${i}] ${slippage} ${quotes[i]} ${expectedQuotes[i]}`).to.be.bignumber.lte(
-                    new BigNumber(maxSlippage),
-                );
-            });
-        };
 
         it('can quote token -> token', async () => {
             const sampleAmounts = getSampleAmounts(TAKER_TOKEN);
@@ -803,7 +805,7 @@ blockchainTests('erc20-bridge-sampler', env => {
         });
     });
 
-    describe('getLiquidityProviderFromRegistry', () => {
+    describe('liquidity provider', () => {
         const xAsset = randomAddress();
         const yAsset = randomAddress();
         const sampleAmounts = getSampleAmounts(yAsset);
@@ -829,42 +831,28 @@ blockchainTests('erc20-bridge-sampler', env => {
                 .awaitTransactionSuccessAsync();
         });
 
-        it('should be able to get the liquidity provider', async () => {
-            const xyLiquidityProvider = await testContract
-                .getLiquidityProviderFromRegistry(registryContract.address, xAsset, yAsset)
-                .callAsync();
-            const yxLiquidityProvider = await testContract
-                .getLiquidityProviderFromRegistry(registryContract.address, yAsset, xAsset)
-                .callAsync();
-            const unknownLiquidityProvider = await testContract
-                .getLiquidityProviderFromRegistry(registryContract.address, yAsset, randomAddress())
-                .callAsync();
-
-            expect(xyLiquidityProvider).to.eq(liquidityProvider.address);
-            expect(yxLiquidityProvider).to.eq(liquidityProvider.address);
-            expect(unknownLiquidityProvider).to.eq(constants.NULL_ADDRESS);
-        });
-
         it('should be able to query sells from the liquidity provider', async () => {
-            const result = await testContract
+            const [quotes, providerAddress] = await testContract
                 .sampleSellsFromLiquidityProviderRegistry(registryContract.address, yAsset, xAsset, sampleAmounts)
                 .callAsync();
-            result.forEach((value, idx) => {
+            quotes.forEach((value, idx) => {
                 expect(value).is.bignumber.eql(sampleAmounts[idx].minus(1));
             });
+            expect(providerAddress).to.equal(liquidityProvider.address);
         });
 
         it('should be able to query buys from the liquidity provider', async () => {
-            const result = await testContract
+            const [quotes, providerAddress] = await testContract
                 .sampleBuysFromLiquidityProviderRegistry(registryContract.address, yAsset, xAsset, sampleAmounts)
                 .callAsync();
-            result.forEach((value, idx) => {
+            quotes.forEach((value, idx) => {
                 expect(value).is.bignumber.eql(sampleAmounts[idx].plus(1));
             });
+            expect(providerAddress).to.equal(liquidityProvider.address);
         });
 
         it('should just return zeros if the liquidity provider cannot be found', async () => {
-            const result = await testContract
+            const [quotes, providerAddress] = await testContract
                 .sampleBuysFromLiquidityProviderRegistry(
                     registryContract.address,
                     yAsset,
@@ -872,18 +860,20 @@ blockchainTests('erc20-bridge-sampler', env => {
                     sampleAmounts,
                 )
                 .callAsync();
-            result.forEach(value => {
+            quotes.forEach(value => {
                 expect(value).is.bignumber.eql(constants.ZERO_AMOUNT);
             });
+            expect(providerAddress).to.equal(constants.NULL_ADDRESS);
         });
 
         it('should just return zeros if the registry does not exist', async () => {
-            const result = await testContract
+            const [quotes, providerAddress] = await testContract
                 .sampleBuysFromLiquidityProviderRegistry(randomAddress(), yAsset, xAsset, sampleAmounts)
                 .callAsync();
-            result.forEach(value => {
+            quotes.forEach(value => {
                 expect(value).is.bignumber.eql(constants.ZERO_AMOUNT);
             });
+            expect(providerAddress).to.equal(constants.NULL_ADDRESS);
         });
     });
 
@@ -1031,6 +1021,118 @@ blockchainTests('erc20-bridge-sampler', env => {
             expect(testContract.getABIDecodedReturnData('getOrderFillableTakerAssetAmounts', r[0])).to.deep.eq(
                 expected,
             );
+        });
+    });
+
+    blockchainTests.resets('TwoHopSampler', () => {
+        before(async () => {
+            await testContract
+                .createTokenExchanges([MAKER_TOKEN, TAKER_TOKEN, INTERMEDIATE_TOKEN])
+                .awaitTransactionSuccessAsync();
+        });
+
+        it('sampleTwoHopSell', async () => {
+            // tslint:disable-next-line no-unnecessary-type-assertion
+            const sellAmount = _.last(getSampleAmounts(TAKER_TOKEN))!;
+            const uniswapV2FirstHopPath = [TAKER_TOKEN, INTERMEDIATE_TOKEN];
+            const uniswapV2FirstHop = testContract
+                .sampleSellsFromUniswapV2(uniswapV2FirstHopPath, [constants.ZERO_AMOUNT])
+                .getABIEncodedTransactionData();
+
+            const uniswapV2SecondHopPath = [INTERMEDIATE_TOKEN, randomAddress(), MAKER_TOKEN];
+            const uniswapV2SecondHop = testContract
+                .sampleSellsFromUniswapV2(uniswapV2SecondHopPath, [constants.ZERO_AMOUNT])
+                .getABIEncodedTransactionData();
+
+            const eth2DaiFirstHop = testContract
+                .sampleSellsFromEth2Dai(TAKER_TOKEN, INTERMEDIATE_TOKEN, [constants.ZERO_AMOUNT])
+                .getABIEncodedTransactionData();
+            const eth2DaiSecondHop = testContract
+                .sampleSellsFromEth2Dai(INTERMEDIATE_TOKEN, MAKER_TOKEN, [constants.ZERO_AMOUNT])
+                .getABIEncodedTransactionData();
+
+            const firstHopQuotes = [
+                getDeterministicSellQuote(ETH2DAI_SALT, TAKER_TOKEN, INTERMEDIATE_TOKEN, sellAmount),
+                getDeterministicUniswapV2SellQuote(uniswapV2FirstHopPath, sellAmount),
+            ];
+            const expectedIntermediateAssetAmount = BigNumber.max(...firstHopQuotes);
+            const secondHopQuotes = [
+                getDeterministicSellQuote(
+                    ETH2DAI_SALT,
+                    INTERMEDIATE_TOKEN,
+                    MAKER_TOKEN,
+                    expectedIntermediateAssetAmount,
+                ),
+                getDeterministicUniswapV2SellQuote(uniswapV2SecondHopPath, expectedIntermediateAssetAmount),
+            ];
+            const expectedBuyAmount = BigNumber.max(...secondHopQuotes);
+
+            const [firstHop, secondHop, buyAmount] = await testContract
+                .sampleTwoHopSell(
+                    [eth2DaiFirstHop, uniswapV2FirstHop],
+                    [eth2DaiSecondHop, uniswapV2SecondHop],
+                    sellAmount,
+                )
+                .callAsync();
+            expect(firstHop.sourceIndex, 'First hop source index').to.bignumber.equal(
+                firstHopQuotes.findIndex(quote => quote.isEqualTo(expectedIntermediateAssetAmount)),
+            );
+            expect(secondHop.sourceIndex, 'Second hop source index').to.bignumber.equal(
+                secondHopQuotes.findIndex(quote => quote.isEqualTo(expectedBuyAmount)),
+            );
+            expect(buyAmount, 'Two hop buy amount').to.bignumber.equal(expectedBuyAmount);
+        });
+        it('sampleTwoHopBuy', async () => {
+            // tslint:disable-next-line no-unnecessary-type-assertion
+            const buyAmount = _.last(getSampleAmounts(MAKER_TOKEN))!;
+            const uniswapV2FirstHopPath = [TAKER_TOKEN, INTERMEDIATE_TOKEN];
+            const uniswapV2FirstHop = testContract
+                .sampleBuysFromUniswapV2(uniswapV2FirstHopPath, [constants.ZERO_AMOUNT])
+                .getABIEncodedTransactionData();
+
+            const uniswapV2SecondHopPath = [INTERMEDIATE_TOKEN, randomAddress(), MAKER_TOKEN];
+            const uniswapV2SecondHop = testContract
+                .sampleBuysFromUniswapV2(uniswapV2SecondHopPath, [constants.ZERO_AMOUNT])
+                .getABIEncodedTransactionData();
+
+            const eth2DaiFirstHop = testContract
+                .sampleBuysFromEth2Dai(TAKER_TOKEN, INTERMEDIATE_TOKEN, [constants.ZERO_AMOUNT])
+                .getABIEncodedTransactionData();
+            const eth2DaiSecondHop = testContract
+                .sampleBuysFromEth2Dai(INTERMEDIATE_TOKEN, MAKER_TOKEN, [constants.ZERO_AMOUNT])
+                .getABIEncodedTransactionData();
+
+            const secondHopQuotes = [
+                getDeterministicBuyQuote(ETH2DAI_SALT, INTERMEDIATE_TOKEN, MAKER_TOKEN, buyAmount),
+                getDeterministicUniswapV2BuyQuote(uniswapV2SecondHopPath, buyAmount),
+            ];
+            const expectedIntermediateAssetAmount = BigNumber.min(...secondHopQuotes);
+
+            const firstHopQuotes = [
+                getDeterministicBuyQuote(
+                    ETH2DAI_SALT,
+                    TAKER_TOKEN,
+                    INTERMEDIATE_TOKEN,
+                    expectedIntermediateAssetAmount,
+                ),
+                getDeterministicUniswapV2BuyQuote(uniswapV2FirstHopPath, expectedIntermediateAssetAmount),
+            ];
+            const expectedSellAmount = BigNumber.min(...firstHopQuotes);
+
+            const [firstHop, secondHop, sellAmount] = await testContract
+                .sampleTwoHopBuy(
+                    [eth2DaiFirstHop, uniswapV2FirstHop],
+                    [eth2DaiSecondHop, uniswapV2SecondHop],
+                    buyAmount,
+                )
+                .callAsync();
+            expect(firstHop.sourceIndex, 'First hop source index').to.bignumber.equal(
+                firstHopQuotes.findIndex(quote => quote.isEqualTo(expectedSellAmount)),
+            );
+            expect(secondHop.sourceIndex, 'Second hop source index').to.bignumber.equal(
+                secondHopQuotes.findIndex(quote => quote.isEqualTo(expectedIntermediateAssetAmount)),
+            );
+            expect(sellAmount, 'Two hop sell amount').to.bignumber.equal(expectedSellAmount);
         });
     });
 });

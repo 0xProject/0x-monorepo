@@ -25,7 +25,7 @@ import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-utils/contracts/src/DeploymentConstants.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
-import "./IUniswapExchangeQuotes.sol";
+import "./interfaces/IUniswapExchangeQuotes.sol";
 import "./SamplerUtils.sol";
 
 

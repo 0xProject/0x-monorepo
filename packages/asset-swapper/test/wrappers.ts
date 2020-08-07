@@ -31,5 +31,6 @@ export * from '../test/generated-wrappers/native_order_sampler';
 export * from '../test/generated-wrappers/sampler_utils';
 export * from '../test/generated-wrappers/test_erc20_bridge_sampler';
 export * from '../test/generated-wrappers/test_native_order_sampler';
+export * from '../test/generated-wrappers/two_hop_sampler';
 export * from '../test/generated-wrappers/uniswap_sampler';
 export * from '../test/generated-wrappers/uniswap_v2_sampler';

@@ -20,7 +20,7 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/DeploymentConstants.sol";
-import "./IEth2Dai.sol";
+import "./interfaces/IEth2Dai.sol";
 import "./SamplerUtils.sol";
 
 

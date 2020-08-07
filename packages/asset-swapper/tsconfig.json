@@ -36,6 +36,7 @@
         "test/generated-artifacts/SamplerUtils.json",
         "test/generated-artifacts/TestERC20BridgeSampler.json",
         "test/generated-artifacts/TestNativeOrderSampler.json",
+        "test/generated-artifacts/TwoHopSampler.json",
         "test/generated-artifacts/UniswapSampler.json",
         "test/generated-artifacts/UniswapV2Sampler.json"
     ]
