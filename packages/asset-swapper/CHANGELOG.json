@@ -33,6 +33,10 @@
             {
                 "note": "Add support for buy token affiliate fees",
                 "pr": 2658
+            },
+            {
+                "note": "Fix optimization of buy paths",
+                "pr": 2655
             }
         ]
     },
