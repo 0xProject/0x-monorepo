@@ -70,6 +70,7 @@ const DEFAULT_EXCHANGE_PROXY_EXTENSION_CONTRACT_OPTS: ExchangeProxyContractOpts 
         buyTokenFeeAmount: ZERO_AMOUNT,
         sellTokenFeeAmount: ZERO_AMOUNT,
     },
+    refundReceiver: NULL_ADDRESS,
 };
 
 const DEFAULT_FORWARDER_SWAP_QUOTE_EXECUTE_OPTS: SwapQuoteExecutionOpts = DEFAULT_FORWARDER_SWAP_QUOTE_GET_OPTS;
