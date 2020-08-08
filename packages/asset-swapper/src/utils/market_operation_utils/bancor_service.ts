@@ -34,7 +34,7 @@ export class BancorService {
     public async getQuoteAsync(
         fromToken: string,
         toToken: string,
-        amount: BigNumber = new BigNumber(1),
+        amount: BigNumber,
     ): Promise<Quote<BancorFillData>> {
         const sdk = await this.getSDKAsync();
         const blockchain = sdk._core.blockchains[BlockchainType.Ethereum] as Ethereum;

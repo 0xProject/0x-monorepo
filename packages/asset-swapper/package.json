@@ -60,6 +60,7 @@
         "@0x/base-contract": "^6.2.3",
         "@0x/contract-addresses": "^4.11.0",
         "@0x/contract-wrappers": "^13.8.0",
+        "@0x/contracts-erc20-bridge-sampler": "^1.7.0",
         "@0x/json-schemas": "^5.1.0",
         "@0x/order-utils": "^10.3.0",
         "@0x/orderbook": "^2.2.7",

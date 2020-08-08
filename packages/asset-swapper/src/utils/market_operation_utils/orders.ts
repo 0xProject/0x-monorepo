@@ -179,8 +179,7 @@ export function createOrdersFromPath(path: Fill[], opts: CreateOrderFromPathOpts
 }
 
 function getBridgeAddressFromFill(fill: CollapsedFill, opts: CreateOrderFromPathOpts): string {
-    const source = fill.source;
-    switch (source) {
+    switch (fill.source) {
         case ERC20BridgeSource.Eth2Dai:
             return opts.contractAddresses.eth2DaiBridge;
         case ERC20BridgeSource.Kyber:
