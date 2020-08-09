@@ -454,7 +454,11 @@ export class SwapQuoter {
             return [
                 ...dexQuotes,
                 nativeOrders.map((o, i) => {
-                    const scaleFactor = orderFillableAmounts[i].div(o.takerAssetAmount);
+                    // When sell order fillable amount is taker
+                    // When buy order fillable amount is maker
+                    const scaleFactor = orderFillableAmounts[i].div(
+                        side === MarketOperation.Sell ? o.takerAssetAmount : o.makerAssetAmount,
+                    );
                     return {
                         input: (side === MarketOperation.Sell ? o.takerAssetAmount : o.makerAssetAmount)
                             .times(scaleFactor)
