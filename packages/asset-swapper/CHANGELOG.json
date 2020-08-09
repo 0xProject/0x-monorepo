@@ -37,6 +37,10 @@
             {
                 "note": "Fix optimization of buy paths",
                 "pr": 2655
+            },
+            {
+                "note": "Fix depth buy scale",
+                "pr": 2659
             }
         ]
     },
