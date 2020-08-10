@@ -7,7 +7,7 @@ import 'mocha';
 
 import { constants } from '../src/constants';
 import { MarketOperation, MockedRfqtFirmQuoteResponse, MockedRfqtIndicativeQuoteResponse } from '../src/types';
-import { QuoteRequestor } from '../src/utils/quote_requestor';
+import { QuoteRequestor, quoteRequestorHttpClient } from '../src/utils/quote_requestor';
 import { rfqtMocker } from '../src/utils/rfqt_mocker';
 
 import { chaiSetup } from './utils/chai_setup';
@@ -22,7 +22,7 @@ function makeThreeMinuteExpiry(): BigNumber {
     return new BigNumber(Math.round(expiry.valueOf() / constants.ONE_SECOND_MS));
 }
 
-describe('QuoteRequestor', async () => {
+describe.only('QuoteRequestor', async () => {
     const [makerToken, takerToken, otherToken1] = tokenUtils.getDummyERC20TokenAddresses();
     const makerAssetData = assetDataUtils.encodeERC20AssetData(makerToken);
     const takerAssetData = assetDataUtils.encodeERC20AssetData(takerToken);
@@ -153,35 +153,39 @@ describe('QuoteRequestor', async () => {
                 responseCode: StatusCodes.Success,
             });
 
-            return rfqtMocker.withMockedRfqtFirmQuotes(mockedRequests, async () => {
-                const qr = new QuoteRequestor({
-                    'https://1337.0.0.1': [[makerToken, takerToken]],
-                    'https://420.0.0.1': [[makerToken, takerToken]],
-                    'https://421.0.0.1': [[makerToken, takerToken]],
-                    'https://421.1.0.1': [[makerToken, takerToken]],
-                    'https://422.0.0.1': [[makerToken, takerToken]],
-                    'https://423.0.0.1': [[makerToken, takerToken]],
-                    'https://424.0.0.1': [[makerToken, takerToken]],
-                    'https://425.0.0.1': [[makerToken, takerToken]],
-                    'https://426.0.0.1': [] /* Shouldn't ping an RFQ-T
+            return rfqtMocker.withMockedRfqtFirmQuotes(
+                mockedRequests,
+                async () => {
+                    const qr = new QuoteRequestor({
+                        'https://1337.0.0.1': [[makerToken, takerToken]],
+                        'https://420.0.0.1': [[makerToken, takerToken]],
+                        'https://421.0.0.1': [[makerToken, takerToken]],
+                        'https://421.1.0.1': [[makerToken, takerToken]],
+                        'https://422.0.0.1': [[makerToken, takerToken]],
+                        'https://423.0.0.1': [[makerToken, takerToken]],
+                        'https://424.0.0.1': [[makerToken, takerToken]],
+                        'https://425.0.0.1': [[makerToken, takerToken]],
+                        'https://426.0.0.1': [] /* Shouldn't ping an RFQ-T
                     provider when they don't support the requested asset pair. */,
-                    'https://37.0.0.1': [[makerToken, takerToken]],
-                });
-                const resp = await qr.requestRfqtFirmQuotesAsync(
-                    makerAssetData,
-                    takerAssetData,
-                    new BigNumber(10000),
-                    MarketOperation.Sell,
-                    {
-                        apiKey,
-                        takerAddress,
-                        intentOnFilling: true,
-                    },
-                );
-                expect(resp.sort()).to.eql(
-                    [{ signedOrder: successfulOrder1 }, { signedOrder: successfulOrder2 }].sort(),
-                );
-            });
+                        'https://37.0.0.1': [[makerToken, takerToken]],
+                    });
+                    const resp = await qr.requestRfqtFirmQuotesAsync(
+                        makerAssetData,
+                        takerAssetData,
+                        new BigNumber(10000),
+                        MarketOperation.Sell,
+                        {
+                            apiKey,
+                            takerAddress,
+                            intentOnFilling: true,
+                        },
+                    );
+                    expect(resp.sort()).to.eql(
+                        [{ signedOrder: successfulOrder1 }, { signedOrder: successfulOrder2 }].sort(),
+                    );
+                },
+                quoteRequestorHttpClient,
+            );
         });
     });
     describe('requestRfqtIndicativeQuotesAsync for Indicative quotes', async () => {
@@ -255,29 +259,33 @@ describe('QuoteRequestor', async () => {
                 responseCode: StatusCodes.Success,
             });
 
-            return rfqtMocker.withMockedRfqtIndicativeQuotes(mockedRequests, async () => {
-                const qr = new QuoteRequestor({
-                    'https://1337.0.0.1': [[makerToken, takerToken]],
-                    'https://420.0.0.1': [[makerToken, takerToken]],
-                    'https://421.0.0.1': [[makerToken, takerToken]],
-                    'https://422.0.0.1': [[makerToken, takerToken]],
-                    'https://423.0.0.1': [[makerToken, takerToken]],
-                    'https://424.0.0.1': [[makerToken, takerToken]],
-                    'https://37.0.0.1': [[makerToken, takerToken]],
-                });
-                const resp = await qr.requestRfqtIndicativeQuotesAsync(
-                    makerAssetData,
-                    takerAssetData,
-                    new BigNumber(10000),
-                    MarketOperation.Sell,
-                    {
-                        apiKey,
-                        takerAddress,
-                        intentOnFilling: true,
-                    },
-                );
-                expect(resp.sort()).to.eql([successfulQuote1, successfulQuote1].sort());
-            });
+            return rfqtMocker.withMockedRfqtIndicativeQuotes(
+                mockedRequests,
+                async () => {
+                    const qr = new QuoteRequestor({
+                        'https://1337.0.0.1': [[makerToken, takerToken]],
+                        'https://420.0.0.1': [[makerToken, takerToken]],
+                        'https://421.0.0.1': [[makerToken, takerToken]],
+                        'https://422.0.0.1': [[makerToken, takerToken]],
+                        'https://423.0.0.1': [[makerToken, takerToken]],
+                        'https://424.0.0.1': [[makerToken, takerToken]],
+                        'https://37.0.0.1': [[makerToken, takerToken]],
+                    });
+                    const resp = await qr.requestRfqtIndicativeQuotesAsync(
+                        makerAssetData,
+                        takerAssetData,
+                        new BigNumber(10000),
+                        MarketOperation.Sell,
+                        {
+                            apiKey,
+                            takerAddress,
+                            intentOnFilling: true,
+                        },
+                    );
+                    expect(resp.sort()).to.eql([successfulQuote1, successfulQuote1].sort());
+                },
+                quoteRequestorHttpClient,
+            );
         });
         it('should return successful RFQT indicative quote requests', async () => {
             const takerAddress = '0xd209925defc99488e3afff1174e48b4fa628302a';
@@ -309,21 +317,25 @@ describe('QuoteRequestor', async () => {
                 responseCode: StatusCodes.Success,
             });
 
-            return rfqtMocker.withMockedRfqtIndicativeQuotes(mockedRequests, async () => {
-                const qr = new QuoteRequestor({ 'https://1337.0.0.1': [[makerToken, takerToken]] });
-                const resp = await qr.requestRfqtIndicativeQuotesAsync(
-                    makerAssetData,
-                    takerAssetData,
-                    new BigNumber(10000),
-                    MarketOperation.Buy,
-                    {
-                        apiKey,
-                        takerAddress,
-                        intentOnFilling: true,
-                    },
-                );
-                expect(resp.sort()).to.eql([successfulQuote1].sort());
-            });
+            return rfqtMocker.withMockedRfqtIndicativeQuotes(
+                mockedRequests,
+                async () => {
+                    const qr = new QuoteRequestor({ 'https://1337.0.0.1': [[makerToken, takerToken]] });
+                    const resp = await qr.requestRfqtIndicativeQuotesAsync(
+                        makerAssetData,
+                        takerAssetData,
+                        new BigNumber(10000),
+                        MarketOperation.Buy,
+                        {
+                            apiKey,
+                            takerAddress,
+                            intentOnFilling: true,
+                        },
+                    );
+                    expect(resp.sort()).to.eql([successfulQuote1].sort());
+                },
+                quoteRequestorHttpClient,
+            );
         });
     });
 });

@@ -10,7 +10,7 @@ import { Agent as HttpsAgent } from 'https';
 import { constants } from '../constants';
 import { MarketOperation, RfqtMakerAssetOfferings, RfqtRequestOpts } from '../types';
 
-const httpClient: AxiosInstance = Axios.create({
+export const quoteRequestorHttpClient: AxiosInstance = Axios.create({
     httpAgent: new HttpAgent({ keepAlive: true }),
     httpsAgent: new HttpsAgent({ keepAlive: true }),
 });
@@ -337,7 +337,7 @@ export class QuoteRequestor {
                                     throw new Error(`Unexpected quote type ${quoteType}`);
                             }
                         })();
-                        const response = await httpClient.get<ResponseT>(`${url}/${quotePath}`, {
+                        const response = await quoteRequestorHttpClient.get<ResponseT>(`${url}/${quotePath}`, {
                             headers: { '0x-api-key': options.apiKey },
                             params: requestParams,
                             timeout: options.makerEndpointMaxResponseTimeMs,
