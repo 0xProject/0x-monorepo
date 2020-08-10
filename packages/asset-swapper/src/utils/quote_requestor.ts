@@ -3,7 +3,9 @@ import { assetDataUtils, orderCalculationUtils, SignedOrder } from '@0x/order-ut
 import { RFQTFirmQuote, RFQTIndicativeQuote, TakerRequest } from '@0x/quote-server';
 import { ERC20AssetData } from '@0x/types';
 import { BigNumber, logUtils } from '@0x/utils';
-import Axios, { AxiosResponse } from 'axios';
+import Axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { Agent as HttpAgent } from 'http';
+import { Agent as HttpsAgent } from 'https';
 
 import { constants } from '../constants';
 import { MarketOperation, RfqtMakerAssetOfferings, RfqtRequestOpts } from '../types';
@@ -85,6 +87,10 @@ export type LogFunction = (obj: object, msg?: string, ...args: any[]) => void;
 
 export class QuoteRequestor {
     private readonly _schemaValidator: SchemaValidator = new SchemaValidator();
+    private readonly _httpClient: AxiosInstance = Axios.create({
+        httpAgent: new HttpAgent({ keepAlive: true }),
+        httpsAgent: new HttpsAgent({ keepAlive: true }),
+    });
 
     constructor(
         private readonly _rfqtAssetOfferings: RfqtMakerAssetOfferings,
@@ -316,7 +322,7 @@ export class QuoteRequestor {
                                     throw new Error(`Unexpected quote type ${quoteType}`);
                             }
                         })();
-                        const response = await Axios.get<ResponseT>(`${url}/${quotePath}`, {
+                        const response = await this._httpClient.get<ResponseT>(`${url}/${quotePath}`, {
                             headers: { '0x-api-key': options.apiKey },
                             params: requestParams,
                             timeout: options.makerEndpointMaxResponseTimeMs,
