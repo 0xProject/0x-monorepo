@@ -1,4 +1,5 @@
 import { ContractAddresses } from '@0x/contract-addresses';
+import { ZERO_AMOUNT } from '@0x/order-utils';
 import { RFQTIndicativeQuote } from '@0x/quote-server';
 import { SignedOrder } from '@0x/types';
 import { BigNumber, NULL_ADDRESS } from '@0x/utils';
@@ -114,6 +115,17 @@ export class MarketOperationUtils {
                 this._liquidityProviderRegistry,
                 this._multiBridge,
             ),
+            // Get ETH -> taker token price.
+            await DexOrderSampler.ops.getMedianSellRateAsync(
+                difference(FEE_QUOTE_SOURCES.concat(this._optionalSources()), _opts.excludedSources),
+                takerToken,
+                this._wethAddress,
+                ONE_ETHER,
+                this._wethAddress,
+                this._sampler.balancerPoolsCache,
+                this._liquidityProviderRegistry,
+                this._multiBridge,
+            ),
             // Get sell quotes for taker -> maker.
             await DexOrderSampler.ops.getSellQuotesAsync(
                 difference(
@@ -152,7 +164,7 @@ export class MarketOperationUtils {
             .then(async r => this._sampler.executeAsync(r));
 
         const [
-            [orderFillableAmounts, liquidityProviderAddress, ethToMakerAssetRate, dexQuotes],
+            [orderFillableAmounts, liquidityProviderAddress, ethToMakerAssetRate, ethToTakerAssetRate, dexQuotes],
             rfqtIndicativeQuotes,
             [balancerQuotes],
         ] = await Promise.all([samplerPromise, rfqtPromise, balancerPromise]);
@@ -174,6 +186,7 @@ export class MarketOperationUtils {
             nativeOrders,
             orderFillableAmounts,
             ethToOutputRate: ethToMakerAssetRate,
+            ethToInputRate: ethToTakerAssetRate,
             rfqtIndicativeQuotes,
         };
     }
@@ -206,6 +219,17 @@ export class MarketOperationUtils {
                 this._liquidityProviderRegistry,
                 makerToken,
                 takerToken,
+            ),
+            // Get ETH -> maker token price.
+            await DexOrderSampler.ops.getMedianSellRateAsync(
+                difference(FEE_QUOTE_SOURCES.concat(this._optionalSources()), _opts.excludedSources),
+                makerToken,
+                this._wethAddress,
+                ONE_ETHER,
+                this._wethAddress,
+                this._sampler.balancerPoolsCache,
+                this._liquidityProviderRegistry,
+                this._multiBridge,
             ),
             // Get ETH -> taker token price.
             await DexOrderSampler.ops.getMedianSellRateAsync(
@@ -255,7 +279,7 @@ export class MarketOperationUtils {
             _opts,
         );
         const [
-            [orderFillableAmounts, liquidityProviderAddress, ethToTakerAssetRate, dexQuotes],
+            [orderFillableAmounts, liquidityProviderAddress, ethToMakerAssetRate, ethToTakerAssetRate, dexQuotes],
             rfqtIndicativeQuotes,
             [balancerQuotes],
         ] = await Promise.all([samplerPromise, rfqtPromise, balancerPromise]);
@@ -276,6 +300,7 @@ export class MarketOperationUtils {
             nativeOrders,
             orderFillableAmounts,
             ethToOutputRate: ethToTakerAssetRate,
+            ethToInputRate: ethToMakerAssetRate,
             rfqtIndicativeQuotes,
         };
     }
@@ -388,6 +413,7 @@ export class MarketOperationUtils {
         const batchOrderFillableAmounts = executeResults.splice(0, batchNativeOrders.length) as BigNumber[][];
         const batchEthToTakerAssetRate = executeResults.splice(0, batchNativeOrders.length) as BigNumber[];
         const batchDexQuotes = executeResults.splice(0, batchNativeOrders.length) as DexSample[][][];
+        const ethToInputRate = ZERO_AMOUNT;
 
         return Promise.all(
             batchNativeOrders.map(async (nativeOrders, i) => {
@@ -408,6 +434,7 @@ export class MarketOperationUtils {
                             dexQuotes,
                             inputAmount: makerAmount,
                             ethToOutputRate: ethToTakerAssetRate,
+                            ethToInputRate,
                             rfqtIndicativeQuotes: [],
                             inputToken: makerToken,
                             outputToken: takerToken,
@@ -454,6 +481,7 @@ export class MarketOperationUtils {
             rfqtIndicativeQuotes,
             dexQuotes,
             ethToOutputRate,
+            ethToInputRate,
         } = marketSideLiquidity;
         const maxFallbackSlippage = opts.maxFallbackSlippage || 0;
         // Convert native orders and dex quotes into fill paths.
@@ -467,6 +495,7 @@ export class MarketOperationUtils {
             dexQuotes,
             targetInput: inputAmount,
             ethToOutputRate,
+            ethToInputRate,
             excludedSources: opts.excludedSources,
             feeSchedule: opts.feeSchedule,
         });

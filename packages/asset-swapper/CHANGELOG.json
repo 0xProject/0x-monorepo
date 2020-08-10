@@ -41,6 +41,10 @@
             {
                 "note": "Fix depth buy scale",
                 "pr": 2659
+            },
+            {
+                "note": "Adjust fill by ethToInputRate when ethToOutputRate is 0",
+                "pr": 2660
             }
         ]
     },

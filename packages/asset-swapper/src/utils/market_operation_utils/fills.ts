@@ -17,6 +17,7 @@ export function createFillPaths(opts: {
     dexQuotes?: DexSample[][];
     targetInput?: BigNumber;
     ethToOutputRate?: BigNumber;
+    ethToInputRate?: BigNumber;
     excludedSources?: ERC20BridgeSource[];
     feeSchedule?: FeeSchedule;
 }): Fill[][] {
@@ -26,8 +27,9 @@ export function createFillPaths(opts: {
     const orders = opts.orders || [];
     const dexQuotes = opts.dexQuotes || [];
     const ethToOutputRate = opts.ethToOutputRate || ZERO_AMOUNT;
+    const ethToInputRate = opts.ethToInputRate || ZERO_AMOUNT;
     // Create native fill paths.
-    const nativePath = nativeOrdersToPath(side, orders, opts.targetInput, ethToOutputRate, feeSchedule);
+    const nativePath = nativeOrdersToPath(side, orders, opts.targetInput, ethToOutputRate, ethToInputRate, feeSchedule);
     // Create DEX fill paths.
     const dexPaths = dexQuotesToPaths(side, dexQuotes, ethToOutputRate, feeSchedule);
     return filterPaths([...dexPaths, nativePath].map(p => clipPathToInput(p, opts.targetInput)), excludedSources);
@@ -54,6 +56,7 @@ function nativeOrdersToPath(
     orders: SignedOrderWithFillableAmounts[],
     targetInput: BigNumber = POSITIVE_INF,
     ethToOutputRate: BigNumber,
+    ethToInputRate: BigNumber,
     fees: FeeSchedule,
 ): Fill[] {
     const sourcePathId = hexUtils.random();
@@ -64,9 +67,10 @@ function nativeOrdersToPath(
         const takerAmount = fillableAmountsUtils.getTakerAssetAmountSwappedAfterOrderFees(order);
         const input = side === MarketOperation.Sell ? takerAmount : makerAmount;
         const output = side === MarketOperation.Sell ? makerAmount : takerAmount;
-        const penalty = ethToOutputRate.times(
-            fees[ERC20BridgeSource.Native] === undefined ? 0 : fees[ERC20BridgeSource.Native]!(),
-        );
+        const fee = fees[ERC20BridgeSource.Native] === undefined ? 0 : fees[ERC20BridgeSource.Native]!();
+        const outputPenalty = !ethToOutputRate.isZero()
+            ? ethToOutputRate.times(fee)
+            : ethToInputRate.times(fee).times(output.dividedToIntegerBy(input));
         // targetInput can be less than the order size
         // whilst the penalty is constant, it affects the adjusted output
         // only up until the target has been exhausted.
@@ -76,7 +80,7 @@ function nativeOrdersToPath(
         // scale the clipped output inline with the input
         const clippedOutput = clippedInput.dividedBy(input).times(output);
         const adjustedOutput =
-            side === MarketOperation.Sell ? clippedOutput.minus(penalty) : clippedOutput.plus(penalty);
+            side === MarketOperation.Sell ? clippedOutput.minus(outputPenalty) : clippedOutput.plus(outputPenalty);
         const adjustedRate =
             side === MarketOperation.Sell ? adjustedOutput.div(clippedInput) : clippedInput.div(adjustedOutput);
         // Skip orders with rates that are <= 0.
