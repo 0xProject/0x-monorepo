@@ -10,6 +10,11 @@ import { Agent as HttpsAgent } from 'https';
 import { constants } from '../constants';
 import { MarketOperation, RfqtMakerAssetOfferings, RfqtRequestOpts } from '../types';
 
+const httpClient: AxiosInstance = Axios.create({
+    httpAgent: new HttpAgent({ keepAlive: true }),
+    httpsAgent: new HttpsAgent({ keepAlive: true }),
+});
+
 /**
  * Request quotes from RFQ-T providers
  */
@@ -87,10 +92,6 @@ export type LogFunction = (obj: object, msg?: string, ...args: any[]) => void;
 
 export class QuoteRequestor {
     private readonly _schemaValidator: SchemaValidator = new SchemaValidator();
-    private readonly _httpClient: AxiosInstance = Axios.create({
-        httpAgent: new HttpAgent({ keepAlive: true }),
-        httpsAgent: new HttpsAgent({ keepAlive: true }),
-    });
 
     constructor(
         private readonly _rfqtAssetOfferings: RfqtMakerAssetOfferings,
@@ -322,7 +323,7 @@ export class QuoteRequestor {
                                     throw new Error(`Unexpected quote type ${quoteType}`);
                             }
                         })();
-                        const response = await this._httpClient.get<ResponseT>(`${url}/${quotePath}`, {
+                        const response = await httpClient.get<ResponseT>(`${url}/${quotePath}`, {
                             headers: { '0x-api-key': options.apiKey },
                             params: requestParams,
                             timeout: options.makerEndpointMaxResponseTimeMs,
