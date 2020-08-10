@@ -40,6 +40,7 @@ export { InsufficientAssetLiquidityError } from './errors';
 export { SwapQuoteConsumer } from './quote_consumers/swap_quote_consumer';
 export { SwapQuoter } from './swap_quoter';
 export {
+    AffiliateFee,
     CalldataInfo,
     ExchangeProxyContractOpts,
     ExtensionContractType,
@@ -66,23 +67,37 @@ export {
     SwapQuoteRequestOpts,
     SwapQuoterError,
     SwapQuoterOpts,
+    SwapQuoterRfqtOpts,
 } from './types';
 export { affiliateFeeUtils } from './utils/affiliate_fee_utils';
 export {
     BalancerFillData,
     CollapsedFill,
     CurveFillData,
+    CurveFunctionSelectors,
     CurveInfo,
     ERC20BridgeSource,
     FeeSchedule,
     FillData,
     GetMarketOrdersRfqtOpts,
+    LiquidityProviderFillData,
+    MarketDepth,
+    MarketDepthSide,
+    MultiBridgeFillData,
     NativeCollapsedFill,
     NativeFillData,
     OptimizedMarketOrder,
     UniswapV2FillData,
-    CurveFunctionSelectors,
 } from './utils/market_operation_utils/types';
 export { ProtocolFeeUtils } from './utils/protocol_fee_utils';
+export {
+    BridgeReportSource,
+    NativeOrderbookReportSource,
+    NativeRFQTReportSource,
+    QuoteReport,
+    QuoteReportSource,
+} from './utils/quote_report_generator';
 export { QuoteRequestor } from './utils/quote_requestor';
 export { rfqtMocker } from './utils/rfqt_mocker';
+import { ERC20BridgeSource } from './utils/market_operation_utils/types';
+export type Native = ERC20BridgeSource.Native;

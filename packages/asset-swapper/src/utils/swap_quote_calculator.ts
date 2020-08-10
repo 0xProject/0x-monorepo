@@ -9,7 +9,6 @@ import {
     MarketOperation,
     MarketSellSwapQuote,
     SwapQuote,
-    SwapQuoteBase,
     SwapQuoteInfo,
     SwapQuoteOrdersBreakdown,
     SwapQuoterError,
@@ -20,6 +19,7 @@ import { convertNativeOrderToFullyFillableOptimizedOrders } from './market_opera
 import { FeeSchedule, FillData, GetMarketOrdersOpts, OptimizedMarketOrder } from './market_operation_utils/types';
 import { isSupportedAssetDataInOrders } from './utils';
 
+import { QuoteReport } from './quote_report_generator';
 import { QuoteFillResult, simulateBestCaseFill, simulateWorstCaseFill } from './quote_simulation';
 
 // TODO(dave4506) How do we want to reintroduce InsufficientAssetLiquidityError?
@@ -87,6 +87,7 @@ export class SwapQuoteCalculator {
             assetFillAmounts,
             opts,
         );
+
         const batchSwapQuotes = await Promise.all(
             batchSignedOrders.map(async (orders, i) => {
                 if (orders) {
@@ -120,7 +121,8 @@ export class SwapQuoteCalculator {
         }
         // since prunedOrders do not have fillState, we will add a buffer of fillable orders to consider that some native are orders are partially filled
 
-        let resultOrders: OptimizedMarketOrder[] = [];
+        let optimizedOrders: OptimizedMarketOrder[] | undefined;
+        let quoteReport: QuoteReport | undefined;
 
         {
             // Scale fees by gas price.
@@ -137,20 +139,24 @@ export class SwapQuoteCalculator {
 
             if (firstOrderMakerAssetData.assetProxyId === AssetProxyId.ERC721) {
                 // HACK: to conform ERC721 orders to the output of market operation utils, assumes complete fillable
-                resultOrders = prunedOrders.map(o => convertNativeOrderToFullyFillableOptimizedOrders(o));
+                optimizedOrders = prunedOrders.map(o => convertNativeOrderToFullyFillableOptimizedOrders(o));
             } else {
                 if (operation === MarketOperation.Buy) {
-                    resultOrders = await this._marketOperationUtils.getMarketBuyOrdersAsync(
+                    const buyResult = await this._marketOperationUtils.getMarketBuyOrdersAsync(
                         prunedOrders,
                         assetFillAmount,
                         _opts,
                     );
+                    optimizedOrders = buyResult.optimizedOrders;
+                    quoteReport = buyResult.quoteReport;
                 } else {
-                    resultOrders = await this._marketOperationUtils.getMarketSellOrdersAsync(
+                    const sellResult = await this._marketOperationUtils.getMarketSellOrdersAsync(
                         prunedOrders,
                         assetFillAmount,
                         _opts,
                     );
+                    optimizedOrders = sellResult.optimizedOrders;
+                    quoteReport = sellResult.quoteReport;
                 }
             }
         }
@@ -160,11 +166,12 @@ export class SwapQuoteCalculator {
         return createSwapQuote(
             makerAssetData,
             takerAssetData,
-            resultOrders,
+            optimizedOrders,
             operation,
             assetFillAmount,
             gasPrice,
             opts.gasSchedule,
+            quoteReport,
         );
     }
 }
@@ -172,15 +179,16 @@ export class SwapQuoteCalculator {
 function createSwapQuote(
     makerAssetData: string,
     takerAssetData: string,
-    resultOrders: OptimizedMarketOrder[],
+    optimizedOrders: OptimizedMarketOrder[],
     operation: MarketOperation,
     assetFillAmount: BigNumber,
     gasPrice: BigNumber,
     gasSchedule: FeeSchedule,
+    quoteReport?: QuoteReport,
 ): SwapQuote {
     const bestCaseFillResult = simulateBestCaseFill({
         gasPrice,
-        orders: resultOrders,
+        orders: optimizedOrders,
         side: operation,
         fillAmount: assetFillAmount,
         opts: { gasSchedule },
@@ -188,20 +196,21 @@ function createSwapQuote(
 
     const worstCaseFillResult = simulateWorstCaseFill({
         gasPrice,
-        orders: resultOrders,
+        orders: optimizedOrders,
         side: operation,
         fillAmount: assetFillAmount,
         opts: { gasSchedule },
     });
 
-    const quoteBase: SwapQuoteBase = {
+    const quoteBase = {
         takerAssetData,
         makerAssetData,
         gasPrice,
         bestCaseQuoteInfo: fillResultsToQuoteInfo(bestCaseFillResult),
         worstCaseQuoteInfo: fillResultsToQuoteInfo(worstCaseFillResult),
         sourceBreakdown: getSwapQuoteOrdersBreakdown(bestCaseFillResult.fillAmountBySource),
-        orders: resultOrders,
+        orders: optimizedOrders,
+        quoteReport,
     };
 
     if (operation === MarketOperation.Buy) {
@@ -209,12 +218,14 @@ function createSwapQuote(
             ...quoteBase,
             type: MarketOperation.Buy,
             makerAssetFillAmount: assetFillAmount,
+            quoteReport,
         };
     } else {
         return {
             ...quoteBase,
             type: MarketOperation.Sell,
             takerAssetFillAmount: assetFillAmount,
+            quoteReport,
         };
     }
 }

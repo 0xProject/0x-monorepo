@@ -2,6 +2,7 @@ import { ContractAddresses } from '@0x/contract-addresses';
 import { ITransformERC20Contract } from '@0x/contract-wrappers';
 import {
     assetDataUtils,
+    encodeAffiliateFeeTransformerData,
     encodeFillQuoteTransformerData,
     encodePayTakerTransformerData,
     encodeWethTransformerData,
@@ -18,6 +19,7 @@ import * as _ from 'lodash';
 import { constants } from '../constants';
 import {
     CalldataInfo,
+    ExchangeProxyContractOpts,
     MarketBuySwapQuote,
     MarketOperation,
     MarketSellSwapQuote,
@@ -41,6 +43,7 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
         wethTransformer: number;
         payTakerTransformer: number;
         fillQuoteTransformer: number;
+        affiliateFeeTransformer: number;
     };
 
     private readonly _transformFeature: ITransformERC20Contract;
@@ -70,6 +73,10 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
                 contractAddresses.transformers.fillQuoteTransformer,
                 contractAddresses.exchangeProxyTransformerDeployer,
             ),
+            affiliateFeeTransformer: findTransformerNonce(
+                contractAddresses.transformers.affiliateFeeTransformer,
+                contractAddresses.exchangeProxyTransformerDeployer,
+            ),
         };
     }
 
@@ -78,14 +85,11 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
         opts: Partial<SwapQuoteGetOutputOpts> = {},
     ): Promise<CalldataInfo> {
         assert.isValidSwapQuote('quote', quote);
-        const { isFromETH, isToETH } = {
-            ...constants.DEFAULT_FORWARDER_SWAP_QUOTE_GET_OPTS,
-            extensionContractOpts: {
-                isFromETH: false,
-                isToETH: false,
-            },
-            ...opts,
-        }.extensionContractOpts;
+        // tslint:disable-next-line:no-object-literal-type-assertion
+        const { affiliateFee, isFromETH, isToETH } = {
+            ...constants.DEFAULT_EXCHANGE_PROXY_EXTENSION_CONTRACT_OPTS,
+            ...opts.extensionContractOpts,
+        } as ExchangeProxyContractOpts;
 
         const sellToken = getTokenFromAssetData(quote.takerAssetData);
         const buyToken = getTokenFromAssetData(quote.makerAssetData);
@@ -129,6 +133,28 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
             });
         }
 
+        // This transformer pays affiliate fees.
+        const { buyTokenFeeAmount, sellTokenFeeAmount, recipient: feeRecipient } = affiliateFee;
+
+        if (buyTokenFeeAmount.isGreaterThan(0) && feeRecipient !== NULL_ADDRESS) {
+            transforms.push({
+                deploymentNonce: this.transformerNonces.affiliateFeeTransformer,
+                data: encodeAffiliateFeeTransformerData({
+                    fees: [
+                        {
+                            token: isToETH ? ETH_TOKEN_ADDRESS : buyToken,
+                            amount: buyTokenFeeAmount,
+                            recipient: feeRecipient,
+                        },
+                    ],
+                }),
+            });
+        }
+
+        if (sellTokenFeeAmount.isGreaterThan(0) && feeRecipient !== NULL_ADDRESS) {
+            throw new Error('Affiliate fees denominated in sell token are not yet supported');
+        }
+
         // The final transformer will send all funds to the taker.
         transforms.push({
             deploymentNonce: this.transformerNonces.payTakerTransformer,
@@ -138,12 +164,13 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
             }),
         });
 
+        const minBuyAmount = BigNumber.max(0, quote.worstCaseQuoteInfo.makerAssetAmount.minus(buyTokenFeeAmount));
         const calldataHexString = this._transformFeature
             .transformERC20(
                 isFromETH ? ETH_TOKEN_ADDRESS : sellToken,
                 isToETH ? ETH_TOKEN_ADDRESS : buyToken,
                 sellAmount,
-                quote.worstCaseQuoteInfo.makerAssetAmount,
+                minBuyAmount,
                 transforms,
             )
             .getABIEncodedTransactionData();

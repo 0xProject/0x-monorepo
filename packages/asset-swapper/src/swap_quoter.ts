@@ -20,13 +20,19 @@ import {
     SwapQuote,
     SwapQuoteRequestOpts,
     SwapQuoterOpts,
+    SwapQuoterRfqtOpts,
 } from './types';
 import { assert } from './utils/assert';
 import { calculateLiquidity } from './utils/calculate_liquidity';
 import { MarketOperationUtils } from './utils/market_operation_utils';
 import { createDummyOrderForSampler } from './utils/market_operation_utils/orders';
 import { DexOrderSampler } from './utils/market_operation_utils/sampler';
-import { ERC20BridgeSource } from './utils/market_operation_utils/types';
+import {
+    ERC20BridgeSource,
+    MarketDepth,
+    MarketDepthSide,
+    MarketSideLiquidity,
+} from './utils/market_operation_utils/types';
 import { orderPrunerUtils } from './utils/order_prune_utils';
 import { OrderStateUtils } from './utils/order_state_utils';
 import { ProtocolFeeUtils } from './utils/protocol_fee_utils';
@@ -46,8 +52,7 @@ export class SwapQuoter {
     private readonly _devUtilsContract: DevUtilsContract;
     private readonly _marketOperationUtils: MarketOperationUtils;
     private readonly _orderStateUtils: OrderStateUtils;
-    private readonly _quoteRequestor: QuoteRequestor;
-    private readonly _rfqtTakerApiKeyWhitelist: string[];
+    private readonly _rfqtOptions?: SwapQuoterRfqtOpts;
 
     /**
      * Instantiates a new SwapQuoter instance given existing liquidity in the form of orders and feeOrders.
@@ -168,7 +173,8 @@ export class SwapQuoter {
         this.orderbook = orderbook;
         this.expiryBufferMs = expiryBufferMs;
         this.permittedOrderFeeTypes = permittedOrderFeeTypes;
-        this._rfqtTakerApiKeyWhitelist = rfqt ? rfqt.takerApiKeyWhitelist || [] : [];
+
+        this._rfqtOptions = rfqt;
         this._contractAddresses = options.contractAddresses || getContractAddressesForChainOrThrow(chainId);
         this._devUtilsContract = new DevUtilsContract(this._contractAddresses.devUtils, provider);
         this._protocolFeeUtils = ProtocolFeeUtils.getInstance(
@@ -176,12 +182,6 @@ export class SwapQuoter {
             options.ethGasStationUrl,
         );
         this._orderStateUtils = new OrderStateUtils(this._devUtilsContract);
-        this._quoteRequestor = new QuoteRequestor(
-            rfqt ? rfqt.makerAssetOfferings || {} : {},
-            rfqt ? rfqt.warningLogger : undefined,
-            rfqt ? rfqt.infoLogger : undefined,
-            expiryBufferMs,
-        );
         // Allow the sampler bytecode to be overwritten using geths override functionality
         const samplerBytecode = _.get(ERC20BridgeSampler, 'compilerOutput.evm.deployedBytecode.object');
         const defaultCodeOverrides = samplerBytecode
@@ -399,6 +399,98 @@ export class SwapQuoter {
     }
 
     /**
+     * Returns the bids and asks liquidity for the entire market.
+     * For certain sources (like AMM's) it is recommended to provide a practical maximum takerAssetAmount.
+     * @param   makerTokenAddress The address of the maker asset
+     * @param   takerTokenAddress The address of the taker asset
+     * @param   takerAssetAmount  The amount to sell and buy for the bids and asks.
+     *
+     * @return  An object that conforms to MarketDepth that contains all of the samples and liquidity
+     *          information for the source.
+     */
+    public async getBidAskLiquidityForMakerTakerAssetPairAsync(
+        makerTokenAddress: string,
+        takerTokenAddress: string,
+        takerAssetAmount: BigNumber,
+        options: Partial<SwapQuoteRequestOpts> = {},
+    ): Promise<MarketDepth> {
+        assert.isString('makerTokenAddress', makerTokenAddress);
+        assert.isString('takerTokenAddress', takerTokenAddress);
+        const makerAssetData = assetDataUtils.encodeERC20AssetData(makerTokenAddress);
+        const takerAssetData = assetDataUtils.encodeERC20AssetData(takerTokenAddress);
+        let [sellOrders, buyOrders] =
+            options.excludedSources && options.excludedSources.includes(ERC20BridgeSource.Native)
+                ? Promise.resolve([[], []])
+                : await Promise.all([
+                      this.orderbook.getOrdersAsync(makerAssetData, takerAssetData),
+                      this.orderbook.getOrdersAsync(takerAssetData, makerAssetData),
+                  ]);
+        if (!sellOrders || sellOrders.length === 0) {
+            sellOrders = [
+                {
+                    metaData: {},
+                    order: createDummyOrderForSampler(
+                        makerAssetData,
+                        takerAssetData,
+                        this._contractAddresses.uniswapBridge,
+                    ),
+                },
+            ];
+        }
+        if (!buyOrders || buyOrders.length === 0) {
+            buyOrders = [
+                {
+                    metaData: {},
+                    order: createDummyOrderForSampler(
+                        takerAssetData,
+                        makerAssetData,
+                        this._contractAddresses.uniswapBridge,
+                    ),
+                },
+            ];
+        }
+        const getMarketDepthSide = (marketSideLiquidity: MarketSideLiquidity): MarketDepthSide => {
+            const { dexQuotes, nativeOrders, orderFillableAmounts, side } = marketSideLiquidity;
+            return [
+                ...dexQuotes,
+                nativeOrders.map((o, i) => {
+                    // When sell order fillable amount is taker
+                    // When buy order fillable amount is maker
+                    const scaleFactor = orderFillableAmounts[i].div(
+                        side === MarketOperation.Sell ? o.takerAssetAmount : o.makerAssetAmount,
+                    );
+                    return {
+                        input: (side === MarketOperation.Sell ? o.takerAssetAmount : o.makerAssetAmount)
+                            .times(scaleFactor)
+                            .integerValue(),
+                        output: (side === MarketOperation.Sell ? o.makerAssetAmount : o.takerAssetAmount)
+                            .times(scaleFactor)
+                            .integerValue(),
+                        fillData: o,
+                        source: ERC20BridgeSource.Native,
+                    };
+                }),
+            ];
+        };
+        const [bids, asks] = await Promise.all([
+            this._marketOperationUtils.getMarketBuyLiquidityAsync(
+                (buyOrders || []).map(o => o.order),
+                takerAssetAmount,
+                options,
+            ),
+            this._marketOperationUtils.getMarketSellLiquidityAsync(
+                (sellOrders || []).map(o => o.order),
+                takerAssetAmount,
+                options,
+            ),
+        ]);
+        return {
+            bids: getMarketDepthSide(bids),
+            asks: getMarketDepthSide(asks),
+        };
+    }
+
+    /**
      * Get the asset data of all assets that can be used to purchase makerAssetData in the order provider passed in at init.
      *
      * @return  An array of asset data strings that can purchase makerAssetData.
@@ -569,24 +661,34 @@ export class SwapQuoter {
 
         // get batches of orders from different sources, awaiting sources in parallel
         const orderBatchPromises: Array<Promise<SignedOrder[]>> = [];
-        orderBatchPromises.push(
-            // Don't fetch Open Orderbook orders from the DB if Native has been excluded, or if `nativeExclusivelyRFQT` has been set.
+
+        const skipOpenOrderbook =
             opts.excludedSources.includes(ERC20BridgeSource.Native) ||
-                (opts.rfqt && opts.rfqt.nativeExclusivelyRFQT === true)
-                ? Promise.resolve([])
-                : this._getSignedOrdersAsync(makerAssetData, takerAssetData),
+            (opts.rfqt && opts.rfqt.nativeExclusivelyRFQT === true);
+        if (!skipOpenOrderbook) {
+            orderBatchPromises.push(this._getSignedOrdersAsync(makerAssetData, takerAssetData)); // order book
+        }
+
+        const rfqtOptions = this._rfqtOptions;
+        const quoteRequestor = new QuoteRequestor(
+            rfqtOptions ? rfqtOptions.makerAssetOfferings || {} : {},
+            rfqtOptions ? rfqtOptions.warningLogger : undefined,
+            rfqtOptions ? rfqtOptions.infoLogger : undefined,
+            this.expiryBufferMs,
         );
+
         if (
             opts.rfqt && // This is an RFQT-enabled API request
             opts.rfqt.intentOnFilling && // The requestor is asking for a firm quote
-            !opts.excludedSources.includes(ERC20BridgeSource.Native) && // Native liquidity is not excluded
-            this._rfqtTakerApiKeyWhitelist.includes(opts.rfqt.apiKey) // A valid API key was provided
+            opts.rfqt.apiKey &&
+            this._isApiKeyWhitelisted(opts.rfqt.apiKey) && // A valid API key was provided
+            !opts.excludedSources.includes(ERC20BridgeSource.Native) // Native liquidity is not excluded
         ) {
             if (!opts.rfqt.takerAddress || opts.rfqt.takerAddress === constants.NULL_ADDRESS) {
                 throw new Error('RFQ-T requests must specify a taker address');
             }
             orderBatchPromises.push(
-                this._quoteRequestor
+                quoteRequestor
                     .requestRfqtFirmQuotesAsync(
                         makerAssetData,
                         takerAssetData,
@@ -600,7 +702,7 @@ export class SwapQuoter {
 
         const orderBatches: SignedOrder[][] = await Promise.all(orderBatchPromises);
 
-        const unsortedOrders: SignedOrder[] = orderBatches.reduce((_orders, batch) => _orders.concat(...batch));
+        const unsortedOrders: SignedOrder[] = orderBatches.reduce((_orders, batch) => _orders.concat(...batch), []);
 
         const orders = sortingUtils.sortOrders(unsortedOrders);
 
@@ -615,8 +717,8 @@ export class SwapQuoter {
 
         const calcOpts: CalculateSwapQuoteOpts = opts;
 
-        if (calcOpts.rfqt !== undefined && this._shouldEnableIndicativeRfqt(calcOpts.rfqt, marketOperation)) {
-            calcOpts.rfqt.quoteRequestor = this._quoteRequestor;
+        if (calcOpts.rfqt !== undefined) {
+            calcOpts.rfqt.quoteRequestor = quoteRequestor;
         }
 
         if (marketOperation === MarketOperation.Buy) {
@@ -637,13 +739,9 @@ export class SwapQuoter {
 
         return swapQuote;
     }
-    private _shouldEnableIndicativeRfqt(opts: CalculateSwapQuoteOpts['rfqt'], op: MarketOperation): boolean {
-        return (
-            opts !== undefined &&
-            opts.isIndicative !== undefined &&
-            opts.isIndicative &&
-            this._rfqtTakerApiKeyWhitelist.includes(opts.apiKey)
-        );
+    private _isApiKeyWhitelisted(apiKey: string): boolean {
+        const whitelistedApiKeys = this._rfqtOptions ? this._rfqtOptions.takerApiKeyWhitelist : [];
+        return whitelistedApiKeys.includes(apiKey);
     }
 }
 // tslint:disable-next-line: max-file-line-count

@@ -1,5 +1,18 @@
 [
     {
+        "version": "10.3.1",
+        "changes": [
+            {
+                "note": "Add gitpkg.",
+                "pr": 2649
+            },
+            {
+                "note": "Fix `decodeAffiliateFeeTransformerData`",
+                "pr": 2658
+            }
+        ]
+    },
+    {
         "version": "10.3.0",
         "changes": [
             {

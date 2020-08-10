@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.5.2",
+        "changes": [
+            {
+                "note": "Add Ropsten and Rinkeby addresses to `DeploymentConstants`",
+                "pr": 2656
+            }
+        ]
+    },
+    {
         "version": "4.5.1",
         "changes": [
             {

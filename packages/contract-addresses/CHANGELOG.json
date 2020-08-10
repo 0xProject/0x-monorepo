@@ -5,6 +5,18 @@
             {
                 "note": "Update `CurveBridge` address on all networks",
                 "pr": 2633
+            },
+            {
+                "note": "Redeploy `ERC20BridgeSampler` on Kovan",
+                "pr": 2644
+            },
+            {
+                "note": "Deploy `UniswapV2Bridge` on Kovan",
+                "pr": 2652
+            },
+            {
+                "note": "Redeploy previously unverified contracts on testnets",
+                "pr": 2656
             }
         ]
     },

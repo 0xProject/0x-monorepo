@@ -5,6 +5,10 @@
             {
                 "note": "Change test protocol fee to 70000.",
                 "pr": 2637
+            },
+            {
+                "note": "Refactor `migration.ts` a little",
+                "pr": 2656
             }
         ]
     },

@@ -183,5 +183,5 @@ export function encodeAffiliateFeeTransformerData(data: AffiliateFeeTransformerD
  * ABI-decode a `AffiliateFeeTransformer.TransformData` type.
  */
 export function decodeAffiliateFeeTransformerData(encoded: string): AffiliateFeeTransformerData {
-    return affiliateFeeTransformerDataEncoder.decode(encoded).data;
+    return affiliateFeeTransformerDataEncoder.decode(encoded);
 }

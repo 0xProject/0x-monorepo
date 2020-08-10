@@ -3,6 +3,10 @@
         "version": "4.7.0",
         "changes": [
             {
+                "note": "Return quoteReport from SwapQuoter functions",
+                "pr": 2627
+            },
+            {
                 "note": "Allow an empty override for sampler overrides",
                 "pr": 2637
             },
@@ -13,6 +17,34 @@
             {
                 "note": "Support more varied curves",
                 "pr": 2633
+            },
+            {
+                "note": "Make path optimization go faster",
+                "pr": 2640
+            },
+            {
+                "note": "Adds `getBidAskLiquidityForMakerTakerAssetPairAsync` to return more detailed sample information",
+                "pr": 2641
+            },
+            {
+                "note": "Fix regression where a split on the same source was collapsed into a single fill",
+                "pr": 2654
+            },
+            {
+                "note": "Add support for buy token affiliate fees",
+                "pr": 2658
+            },
+            {
+                "note": "Fix optimization of buy paths",
+                "pr": 2655
+            },
+            {
+                "note": "Fix depth buy scale",
+                "pr": 2659
+            },
+            {
+                "note": "Adjust fill by ethToInputRate when ethToOutputRate is 0",
+                "pr": 2660
             }
         ]
     },

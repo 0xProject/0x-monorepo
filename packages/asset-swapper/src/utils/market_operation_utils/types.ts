@@ -1,8 +1,11 @@
 import { ERC20BridgeSamplerContract } from '@0x/contract-wrappers';
+import { RFQTIndicativeQuote } from '@0x/quote-server';
+import { MarketOperation, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
 import { RfqtRequestOpts, SignedOrderWithFillableAmounts } from '../../types';
 import { QuoteRequestor } from '../../utils/quote_requestor';
+import { QuoteReport } from '../quote_report_generator';
 
 /**
  * Order domain keys: chainId and exchange
@@ -85,6 +88,14 @@ export interface UniswapV2FillData extends FillData {
     tokenAddressPath: string[];
 }
 
+export interface LiquidityProviderFillData extends FillData {
+    poolAddress: string;
+}
+
+export interface MultiBridgeFillData extends FillData {
+    poolAddress: string;
+}
+
 /**
  * Represents an individual DEX sample from the sampler contract.
  */
@@ -109,16 +120,16 @@ export enum FillFlags {
  * Represents a node on a fill path.
  */
 export interface Fill<TFillData extends FillData = FillData> {
+    // Unique ID of the original source path this fill belongs to.
+    // This is generated when the path is generated and is useful to distinguish
+    // paths that have the same `source` IDs but are distinct (e.g., Curves).
+    sourcePathId: string;
     // See `FillFlags`.
     flags: FillFlags;
     // Input fill amount (taker asset amount in a sell, maker asset amount in a buy).
     input: BigNumber;
     // Output fill amount (maker asset amount in a sell, taker asset amount in a buy).
     output: BigNumber;
-    // The maker/taker rate.
-    rate: BigNumber;
-    // The maker/taker rate, adjusted by fees.
-    adjustedRate: BigNumber;
     // The output fill amount, ajdusted by fees.
     adjustedOutput: BigNumber;
     // Fill that must precede this one. This enforces certain fills to be contiguous.
@@ -136,6 +147,10 @@ export interface Fill<TFillData extends FillData = FillData> {
  * Represents continguous fills on a path that have been merged together.
  */
 export interface CollapsedFill<TFillData extends FillData = FillData> {
+    // Unique ID of the original source path this fill belongs to.
+    // This is generated when the path is generated and is useful to distinguish
+    // paths that have the same `source` IDs but are distinct (e.g., Curves).
+    sourcePathId: string;
     /**
      * The source DEX.
      */
@@ -253,4 +268,29 @@ export interface BatchedOperation<TResult> {
 export interface SourceQuoteOperation<TFillData extends FillData = FillData> extends BatchedOperation<BigNumber[]> {
     source: ERC20BridgeSource;
     fillData?: TFillData;
+}
+
+export interface OptimizedOrdersAndQuoteReport {
+    optimizedOrders: OptimizedMarketOrder[];
+    quoteReport: QuoteReport;
+}
+
+export type MarketDepthSide = Array<Array<DexSample<FillData>>>;
+
+export interface MarketDepth {
+    bids: MarketDepthSide;
+    asks: MarketDepthSide;
+}
+
+export interface MarketSideLiquidity {
+    side: MarketOperation;
+    inputAmount: BigNumber;
+    inputToken: string;
+    outputToken: string;
+    dexQuotes: Array<Array<DexSample<FillData>>>;
+    nativeOrders: SignedOrder[];
+    orderFillableAmounts: BigNumber[];
+    ethToOutputRate: BigNumber;
+    ethToInputRate: BigNumber;
+    rfqtIndicativeQuotes: RFQTIndicativeQuote[];
 }

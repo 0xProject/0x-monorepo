@@ -1,6 +1,6 @@
 import { constants, expect, getRandomInteger, randomAddress } from '@0x/contracts-test-utils';
 import { assetDataUtils } from '@0x/order-utils';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, hexUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { MarketOperation } from '../src/types';
@@ -155,7 +155,7 @@ describe('quote_simulation tests', async () => {
             signature: '0x',
         };
     }
-
+    const nativeSourcePathId = hexUtils.random();
     function createOrderCollapsedFills(input: BigNumber, output: BigNumber, count: number): CollapsedFill[] {
         const inputs = subdivideAmount(input, count);
         const outputs = subdivideAmount(output, count);
@@ -163,6 +163,7 @@ describe('quote_simulation tests', async () => {
             const subFillInputs = subdivideAmount(inputs[i], count);
             const subFillOutputs = subdivideAmount(outputs[i], count);
             return {
+                sourcePathId: nativeSourcePathId,
                 source: ERC20BridgeSource.Native,
                 input: inputs[i],
                 output: outputs[i],
