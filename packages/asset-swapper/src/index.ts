@@ -101,3 +101,5 @@ export { QuoteRequestor } from './utils/quote_requestor';
 export { rfqtMocker } from './utils/rfqt_mocker';
 import { ERC20BridgeSource } from './utils/market_operation_utils/types';
 export type Native = ERC20BridgeSource.Native;
+
+export { AxiosInstance } from 'axios';
