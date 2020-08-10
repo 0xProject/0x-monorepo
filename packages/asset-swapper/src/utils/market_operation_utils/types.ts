@@ -291,5 +291,6 @@ export interface MarketSideLiquidity {
     nativeOrders: SignedOrder[];
     orderFillableAmounts: BigNumber[];
     ethToOutputRate: BigNumber;
+    ethToInputRate: BigNumber;
     rfqtIndicativeQuotes: RFQTIndicativeQuote[];
 }
