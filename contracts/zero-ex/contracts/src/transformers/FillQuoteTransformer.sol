@@ -27,21 +27,19 @@ import "@0x/contracts-utils/contracts/src/v06/LibSafeMathV06.sol";
 import "@0x/contracts-utils/contracts/src/v06/LibMathV06.sol";
 import "../errors/LibTransformERC20RichErrors.sol";
 import "../vendor/v3/IExchange.sol";
-import "../vendor/v3/IERC20Bridge.sol";
 import "./Transformer.sol";
 import "./LibERC20Transformer.sol";
 import "../fixins/FixinGasToken.sol";
 
 interface ITrade {
     function trade(
-        address toTokenAddress,
-        uint256 sellAmount,
-        bytes calldata bridgeData
+        bytes calldata makerAssetData,
+        address fromTokenAddress,
+        uint256 sellAmount
     )
         external
         returns (uint256);
 }
-
 
 /// @dev A transformer that fills an ERC20 market sell/buy quote.
 ///      This transformer shortcuts bridge orders and fills them directly
@@ -420,56 +418,22 @@ contract FillQuoteTransformer is
         // If it is a Bridge order we fill this directly
         // rather than filling via 0x Exchange
         if (order.makerAssetData.readBytes4(0) == ERC20_BRIDGE_PROXY_ID) {
-            // Calculate the amount (in maker token) we expect to receive
-            // from the bridge
-            uint256 outputTokenAmount = LibMathV06.getPartialAmountFloor(
-                availableTakerAssetFillAmount,
-                order.takerAssetAmount,
-                order.makerAssetAmount
+            (bool success, bytes memory resultData) = address(0x1111111111111111111111111111111111111111).delegatecall(
+                abi.encodeWithSelector(
+                    ITrade(address(0)).trade.selector,
+                    order.makerAssetData,
+                    address(_getTokenFromERC20AssetData(order.takerAssetData)),
+                    availableTakerAssetFillAmount
+                )
             );
-            bool success;
-            bytes memory data;
-            // If possible, fill the bridge directly by a delegate call
-            address bridgeDelegateAddress = _determineBridgeDelegateAddress(order.makerAddress);
-            if (bridgeDelegateAddress != address(0)) {
-                (success, data) = address(_implementation).delegatecall(
-                    abi.encodeWithSelector(
-                        this.fillBridgeDirect.selector,
-                        bridgeDelegateAddress,
-                        order.makerAssetData,
-                        availableTakerAssetFillAmount
-                    )
-                );
-                if (success) {
-                    results.makerTokenBoughtAmount = abi.decode(data, (uint256));
-                    results.takerTokenSoldAmount = availableTakerAssetFillAmount;
-                    // protocol fee paid remains 0
-                }
-            } else {
-                (success, data) = address(_implementation).delegatecall(
-                    abi.encodeWithSelector(
-                        this.fillBridgeOrder.selector,
-                        order.makerAddress,
-                        order.makerAssetData,
-                        order.takerAssetData,
-                        availableTakerAssetFillAmount,
-                        outputTokenAmount
-                    )
-                );
-                // Swallow failures, leaving all results as zero.
-                // TransformERC20 asserts the overall price is as expected. It is possible
-                // a subsequent fill can net out at the expected price so we do not assert
-                // the trade balance
-                if (success) {
-                    // Since we do not trust the bridge, we pull the amount bought
-                    // directly from the maker token contract
-                    results.makerTokenBoughtAmount = makerToken
-                        .balanceOf(address(this))
-                        .safeSub(state.boughtAmount);
-                    results.takerTokenSoldAmount = availableTakerAssetFillAmount;
-                    // protocol fee paid remains 0
-                }
+            if (!success) {
+                // return;
+                // TODO remove
+                assembly { revert(add(resultData, 32), mload(resultData)) }
             }
+            results.makerTokenBoughtAmount = abi.decode(resultData, (uint256));
+            results.takerTokenSoldAmount = availableTakerAssetFillAmount;
+            // protocol fee paid remains 0
         } else {
             // Emit an event if we do not have sufficient ETH to cover the protocol fee.
             if (state.ethRemaining < state.protocolFee) {
@@ -495,111 +459,6 @@ contract FillQuoteTransformer is
                 // Swallow failures, leaving all results as zero.
             }
         }
-    }
-
-    /// @dev Determines the delegate bridge address, if one exists, else address(0)
-    /// @param makerAddress the address of the maker of an order
-    function _determineBridgeDelegateAddress(
-        address makerAddress
-    )
-        private
-        returns (address)
-    {
-        if (makerAddress == 0x1796Cd592d19E3bcd744fbB025BB61A6D8cb2c09) {
-            // CurveBridge
-            return 0x1111111111111111111111111111111111111111;
-        } else if (makerAddress == 0x36691C4F426Eb8F42f150ebdE43069A31cB080AD) {
-            // Uniswap bridge
-            return 0x2222222222222222222222222222222222222222;
-        } else if (makerAddress == 0xDcD6011f4C6B80e470D9487f5871a0Cba7C93f48) {
-            // Uniswap v2
-            return 0x3333333333333333333333333333333333333333;
-        } else if (makerAddress == 0xfe01821Ca163844203220cd08E4f2B2FB43aE4E4) {
-            // Balancer
-            return 0x4444444444444444444444444444444444444444;
-        } else if (makerAddress == 0x1c29670F7a77f1052d30813A0a4f632C78A02610) {
-            // Kyber
-            return 0x5555555555555555555555555555555555555555;
-        } else if (makerAddress == 0x991C745401d5b5e469B8c3e2cb02C748f08754f1) {
-            // Eth2Dai
-            return 0x6666666666666666666666666666666666666666;
-        }
-        return address(0);
-    }
-
-    /// @dev Attempt to fill an ERC20 Bridge order directly.
-    /// @param bridgeDelegateAddress The address of the contract to delegate call.
-    /// @param makerAssetData The encoded ERC20BridgeProxy asset data.
-    /// @param inputTokenAmount How much taker asset to fill clamped to the available balance.
-    function fillBridgeDirect(
-        address bridgeDelegateAddress,
-        bytes calldata makerAssetData,
-        uint256 inputTokenAmount
-    )
-        external
-        returns (uint256 boughtAmount)
-    {
-        (
-            address tokenAddress,
-            address bridgeAddress,
-            bytes memory bridgeData
-        ) = abi.decode(
-            makerAssetData.sliceDestructive(4, makerAssetData.length),
-            (address, address, bytes)
-        );
-        (bool success, bytes memory resultData) = address(bridgeDelegateAddress).delegatecall(
-            abi.encodeWithSelector(
-                ITrade(address(0)).trade.selector,
-                tokenAddress,
-                inputTokenAmount,
-                bridgeData
-            )
-        );
-        if (!success) {
-            // return 0;
-            assembly { revert(add(resultData, 32), mload(resultData)) }
-        }
-        boughtAmount = abi.decode(resultData, (uint256));
-    }
-    /// @dev Attempt to fill an ERC20 Bridge order. If the fill reverts,
-    ///      or the amount filled was not sufficient this reverts.
-    /// @param makerAddress The address of the maker.
-    /// @param makerAssetData The encoded ERC20BridgeProxy asset data.
-    /// @param takerAssetData The encoded ERC20 asset data.
-    /// @param inputTokenAmount How much taker asset to fill clamped to the available balance.
-    /// @param outputTokenAmount How much maker asset to receive.
-    function fillBridgeOrder(
-        address makerAddress,
-        bytes calldata makerAssetData,
-        bytes calldata takerAssetData,
-        uint256 inputTokenAmount,
-        uint256 outputTokenAmount
-    )
-        external
-    {
-        // Track changes in the maker token balance.
-        (
-            address tokenAddress,
-            address bridgeAddress,
-            bytes memory bridgeData
-        ) = abi.decode(
-            makerAssetData.sliceDestructive(4, makerAssetData.length),
-            (address, address, bytes)
-        );
-        require(bridgeAddress != address(this), "INVALID_BRIDGE_ADDRESS");
-        // Transfer the tokens to the bridge to perform the work
-        _getTokenFromERC20AssetData(takerAssetData).compatTransfer(
-            bridgeAddress,
-            inputTokenAmount
-        );
-        IERC20Bridge(bridgeAddress).bridgeTransferFrom(
-            tokenAddress,
-            makerAddress,
-            address(this),
-            outputTokenAmount, // amount to transfer back from the bridge
-            bridgeData
-        );
-
     }
 
     /// @dev Extract the token from plain ERC20 asset data.

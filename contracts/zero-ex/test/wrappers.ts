@@ -5,10 +5,8 @@
  */
 export * from '../test/generated-wrappers/affiliate_fee_transformer';
 export * from '../test/generated-wrappers/allowance_target';
-export * from '../test/generated-wrappers/balancer_bridge';
 export * from '../test/generated-wrappers/bootstrap';
-export * from '../test/generated-wrappers/curve_bridge';
-export * from '../test/generated-wrappers/eth2_dai_bridge';
+export * from '../test/generated-wrappers/bridge_adapter';
 export * from '../test/generated-wrappers/fill_quote_transformer';
 export * from '../test/generated-wrappers/fixin_common';
 export * from '../test/generated-wrappers/fixin_e_i_p712';
@@ -32,7 +30,6 @@ export * from '../test/generated-wrappers/i_token_spender';
 export * from '../test/generated-wrappers/i_transform_erc20';
 export * from '../test/generated-wrappers/i_zero_ex';
 export * from '../test/generated-wrappers/initial_migration';
-export * from '../test/generated-wrappers/kyber_bridge';
 export * from '../test/generated-wrappers/lib_bootstrap';
 export * from '../test/generated-wrappers/lib_common_rich_errors';
 export * from '../test/generated-wrappers/lib_erc20_transformer';
@@ -84,7 +81,5 @@ export * from '../test/generated-wrappers/token_spender';
 export * from '../test/generated-wrappers/transform_erc20';
 export * from '../test/generated-wrappers/transformer';
 export * from '../test/generated-wrappers/transformer_deployer';
-export * from '../test/generated-wrappers/uniswap_bridge';
-export * from '../test/generated-wrappers/uniswap_v2_bridge';
 export * from '../test/generated-wrappers/weth_transformer';
 export * from '../test/generated-wrappers/zero_ex';
