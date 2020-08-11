@@ -22,7 +22,7 @@ function makeThreeMinuteExpiry(): BigNumber {
     return new BigNumber(Math.round(expiry.valueOf() / constants.ONE_SECOND_MS));
 }
 
-describe.only('QuoteRequestor', async () => {
+describe('QuoteRequestor', async () => {
     const [makerToken, takerToken, otherToken1] = tokenUtils.getDummyERC20TokenAddresses();
     const makerAssetData = assetDataUtils.encodeERC20AssetData(makerToken);
     const takerAssetData = assetDataUtils.encodeERC20AssetData(takerToken);
