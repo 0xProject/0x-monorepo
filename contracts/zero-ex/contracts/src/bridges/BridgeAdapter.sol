@@ -60,11 +60,6 @@ contract BridgeAdapter is
         address to
     );
 
-    // solhint-disable
-    /// @dev Allows this contract to receive ether.
-    receive() external payable {}
-    // solhint-enable
-
     function trade(
         bytes calldata makerAssetData,
         address fromTokenAddress,

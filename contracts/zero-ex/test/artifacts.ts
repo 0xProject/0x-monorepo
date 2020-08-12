@@ -17,6 +17,7 @@ import * as FlashWallet from '../test/generated-artifacts/FlashWallet.json';
 import * as FullMigration from '../test/generated-artifacts/FullMigration.json';
 import * as IAllowanceTarget from '../test/generated-artifacts/IAllowanceTarget.json';
 import * as IBootstrap from '../test/generated-artifacts/IBootstrap.json';
+import * as IBridgeAdapter from '../test/generated-artifacts/IBridgeAdapter.json';
 import * as IERC20Bridge from '../test/generated-artifacts/IERC20Bridge.json';
 import * as IERC20Transformer from '../test/generated-artifacts/IERC20Transformer.json';
 import * as IExchange from '../test/generated-artifacts/IExchange.json';
@@ -96,6 +97,7 @@ export const artifacts = {
     IZeroEx: IZeroEx as ContractArtifact,
     ZeroEx: ZeroEx as ContractArtifact,
     BridgeAdapter: BridgeAdapter as ContractArtifact,
+    IBridgeAdapter: IBridgeAdapter as ContractArtifact,
     MixinBalancer: MixinBalancer as ContractArtifact,
     MixinCurve: MixinCurve as ContractArtifact,
     MixinEth2Dai: MixinEth2Dai as ContractArtifact,

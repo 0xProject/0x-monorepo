@@ -36,6 +36,7 @@
         "test/generated-artifacts/FullMigration.json",
         "test/generated-artifacts/IAllowanceTarget.json",
         "test/generated-artifacts/IBootstrap.json",
+        "test/generated-artifacts/IBridgeAdapter.json",
         "test/generated-artifacts/IERC20Bridge.json",
         "test/generated-artifacts/IERC20Transformer.json",
         "test/generated-artifacts/IExchange.json",

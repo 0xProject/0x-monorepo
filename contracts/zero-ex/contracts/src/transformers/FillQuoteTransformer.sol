@@ -27,19 +27,10 @@ import "@0x/contracts-utils/contracts/src/v06/LibSafeMathV06.sol";
 import "@0x/contracts-utils/contracts/src/v06/LibMathV06.sol";
 import "../errors/LibTransformERC20RichErrors.sol";
 import "../vendor/v3/IExchange.sol";
+import "../fixins/FixinGasToken.sol";
+import "../bridges/IBridgeAdapter.sol";
 import "./Transformer.sol";
 import "./LibERC20Transformer.sol";
-import "../fixins/FixinGasToken.sol";
-
-interface ITrade {
-    function trade(
-        bytes calldata makerAssetData,
-        address fromTokenAddress,
-        uint256 sellAmount
-    )
-        external
-        returns (uint256);
-}
 
 /// @dev A transformer that fills an ERC20 market sell/buy quote.
 ///      This transformer shortcuts bridge orders and fills them directly
@@ -124,6 +115,8 @@ contract FillQuoteTransformer is
     IExchange public constant exchange = IExchange(0x61935CbDd02287B511119DDb11Aeb42F1593b7Ef);
     /// @dev The ERC20Proxy address.
     address public constant erc20Proxy = 0x95E6F48254609A6ee006F7D493c8e5fB97094ceF;
+    /// @dev The address of the direct bridge fill contract.
+    IBridgeAdapter public constant bridgeAdapter = IBridgeAdapter(0x1111111111111111111111111111111111111111);
 
     ///// @dev The Exchange contract.
     //IExchange public immutable exchange;
@@ -415,25 +408,23 @@ contract FillQuoteTransformer is
             takerAssetFillAmount.min256(order.takerAssetAmount);
         availableTakerAssetFillAmount =
             availableTakerAssetFillAmount.min256(state.takerTokenBalanceRemaining);
-        // If it is a Bridge order we fill this directly
-        // rather than filling via 0x Exchange
+
+        // If it is a Bridge order we fill this directly through the BridgeAdapter
         if (order.makerAssetData.readBytes4(0) == ERC20_BRIDGE_PROXY_ID) {
-            (bool success, bytes memory resultData) = address(0x1111111111111111111111111111111111111111).delegatecall(
+            (bool success, bytes memory resultData) = address(bridgeAdapter).delegatecall(
                 abi.encodeWithSelector(
-                    ITrade(address(0)).trade.selector,
+                    IBridgeAdapter(address(0)).trade.selector,
                     order.makerAssetData,
                     address(_getTokenFromERC20AssetData(order.takerAssetData)),
                     availableTakerAssetFillAmount
                 )
             );
-            if (!success) {
-                // return;
-                // TODO remove
-                assembly { revert(add(resultData, 32), mload(resultData)) }
+            if (success) {
+                results.makerTokenBoughtAmount = abi.decode(resultData, (uint256));
+                results.takerTokenSoldAmount = availableTakerAssetFillAmount;
+                // protocol fee paid remains 0
             }
-            results.makerTokenBoughtAmount = abi.decode(resultData, (uint256));
-            results.takerTokenSoldAmount = availableTakerAssetFillAmount;
-            // protocol fee paid remains 0
+            return results;
         } else {
             // Emit an event if we do not have sufficient ETH to cover the protocol fee.
             if (state.ethRemaining < state.protocolFee) {

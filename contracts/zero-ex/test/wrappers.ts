@@ -15,6 +15,7 @@ export * from '../test/generated-wrappers/flash_wallet';
 export * from '../test/generated-wrappers/full_migration';
 export * from '../test/generated-wrappers/i_allowance_target';
 export * from '../test/generated-wrappers/i_bootstrap';
+export * from '../test/generated-wrappers/i_bridge_adapter';
 export * from '../test/generated-wrappers/i_erc20_bridge';
 export * from '../test/generated-wrappers/i_erc20_transformer';
 export * from '../test/generated-wrappers/i_exchange';
