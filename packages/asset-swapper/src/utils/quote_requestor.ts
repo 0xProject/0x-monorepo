@@ -16,7 +16,7 @@ import { ONE_SECOND_MS } from './market_operation_utils/constants';
 const KEEP_ALIVE_TTL = 5 * 60 * ONE_SECOND_MS;
 
 export const quoteRequestorHttpClient: AxiosInstance = Axios.create({
-    httpAgent: new HttpAgent({ keepAlive: true, timeout: KEEP_ALIVE_TTL}),
+    httpAgent: new HttpAgent({ keepAlive: true, timeout: KEEP_ALIVE_TTL }),
     httpsAgent: new HttpsAgent({ keepAlive: true, timeout: KEEP_ALIVE_TTL }),
 });
 
