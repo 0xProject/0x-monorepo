@@ -10,9 +10,14 @@ import { Agent as HttpsAgent } from 'https';
 import { constants } from '../constants';
 import { MarketOperation, RfqtMakerAssetOfferings, RfqtRequestOpts } from '../types';
 
+import { ONE_SECOND_MS } from './market_operation_utils/constants';
+
+// tslint:disable-next-line: custom-no-magic-numbers
+const KEEP_ALIVE_TTL = 5 * 60 * ONE_SECOND_MS;
+
 export const quoteRequestorHttpClient: AxiosInstance = Axios.create({
-    httpAgent: new HttpAgent({ keepAlive: true }),
-    httpsAgent: new HttpsAgent({ keepAlive: true }),
+    httpAgent: new HttpAgent({ keepAlive: true, timeout: KEEP_ALIVE_TTL}),
+    httpsAgent: new HttpsAgent({ keepAlive: true, timeout: KEEP_ALIVE_TTL }),
 });
 
 /**
