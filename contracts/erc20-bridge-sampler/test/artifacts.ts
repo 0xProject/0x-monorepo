@@ -20,11 +20,13 @@ import * as IKyberNetworkProxy from '../test/generated-artifacts/IKyberNetworkPr
 import * as IKyberStorage from '../test/generated-artifacts/IKyberStorage.json';
 import * as ILiquidityProvider from '../test/generated-artifacts/ILiquidityProvider.json';
 import * as ILiquidityProviderRegistry from '../test/generated-artifacts/ILiquidityProviderRegistry.json';
+import * as IMStable from '../test/generated-artifacts/IMStable.json';
 import * as IMultiBridge from '../test/generated-artifacts/IMultiBridge.json';
 import * as IUniswapExchangeQuotes from '../test/generated-artifacts/IUniswapExchangeQuotes.json';
 import * as IUniswapV2Router01 from '../test/generated-artifacts/IUniswapV2Router01.json';
 import * as KyberSampler from '../test/generated-artifacts/KyberSampler.json';
 import * as LiquidityProviderSampler from '../test/generated-artifacts/LiquidityProviderSampler.json';
+import * as MStableSampler from '../test/generated-artifacts/MStableSampler.json';
 import * as MultiBridgeSampler from '../test/generated-artifacts/MultiBridgeSampler.json';
 import * as NativeOrderSampler from '../test/generated-artifacts/NativeOrderSampler.json';
 import * as SamplerUtils from '../test/generated-artifacts/SamplerUtils.json';
@@ -47,11 +49,13 @@ export const artifacts = {
     IKyberStorage: IKyberStorage as ContractArtifact,
     ILiquidityProvider: ILiquidityProvider as ContractArtifact,
     ILiquidityProviderRegistry: ILiquidityProviderRegistry as ContractArtifact,
+    IMStable: IMStable as ContractArtifact,
     IMultiBridge: IMultiBridge as ContractArtifact,
     IUniswapExchangeQuotes: IUniswapExchangeQuotes as ContractArtifact,
     IUniswapV2Router01: IUniswapV2Router01 as ContractArtifact,
     KyberSampler: KyberSampler as ContractArtifact,
     LiquidityProviderSampler: LiquidityProviderSampler as ContractArtifact,
+    MStableSampler: MStableSampler as ContractArtifact,
     MultiBridgeSampler: MultiBridgeSampler as ContractArtifact,
     NativeOrderSampler: NativeOrderSampler as ContractArtifact,
     SamplerUtils: SamplerUtils as ContractArtifact,

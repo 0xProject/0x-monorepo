@@ -301,6 +301,32 @@ export const samplerOperations = {
             ...samplerOperations.constant(makerFillAmounts.map(amount => computeBalancerBuyQuote(pool, amount))),
         };
     },
+    getMStableSellQuotes(makerToken: string, takerToken: string, takerFillAmounts: BigNumber[]): SourceQuoteOperation {
+        return {
+            source: ERC20BridgeSource.MStable,
+            encodeCall: contract => {
+                return contract
+                    .sampleSellsFromMStable(makerToken, takerToken, takerFillAmounts)
+                    .getABIEncodedTransactionData();
+            },
+            handleCallResultsAsync: async (contract, callResults) => {
+                return contract.getABIDecodedReturnData<BigNumber[]>('sampleSellsFromMStable', callResults);
+            },
+        };
+    },
+    getMStableBuyQuotes(makerToken: string, takerToken: string, makerFillAmounts: BigNumber[]): SourceQuoteOperation {
+        return {
+            source: ERC20BridgeSource.MStable,
+            encodeCall: contract => {
+                return contract
+                    .sampleBuysFromMStable(makerToken, takerToken, makerFillAmounts)
+                    .getABIEncodedTransactionData();
+            },
+            handleCallResultsAsync: async (contract, callResults) => {
+                return contract.getABIDecodedReturnData<BigNumber[]>('sampleBuysFromMStable', callResults);
+            },
+        };
+    },
     getMedianSellRateAsync: async (
         sources: ERC20BridgeSource[],
         makerToken: string,
@@ -456,6 +482,8 @@ export const samplerOperations = {
                                 return pools.map(pool =>
                                     samplerOperations.getBalancerSellQuotes(pool, takerFillAmounts),
                                 );
+                            case ERC20BridgeSource.MStable:
+                                return samplerOperations.getMStableSellQuotes(makerToken, takerToken, takerFillAmounts);
                             default:
                                 throw new Error(`Unsupported sell sample source: ${source}`);
                         }
@@ -553,6 +581,8 @@ export const samplerOperations = {
                                 return pools.map(pool =>
                                     samplerOperations.getBalancerBuyQuotes(pool, makerFillAmounts),
                                 );
+                            case ERC20BridgeSource.MStable:
+                                return samplerOperations.getMStableBuyQuotes(makerToken, takerToken, makerFillAmounts);
                             default:
                                 throw new Error(`Unsupported buy sample source: ${source}`);
                         }

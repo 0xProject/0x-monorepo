@@ -50,6 +50,8 @@ contract DeploymentConstants {
     address constant private GST_ADDRESS = 0x0000000000b3F879cb30FE243b4Dfee438691c04;
     /// @dev Mainnet address of the GST Collector
     address constant private GST_COLLECTOR_ADDRESS = 0x000000D3b08566BE75A6DB803C03C85C0c1c5B96;
+    /// @dev Mainnet address of the mStable mUSD contract.
+    address constant private MUSD_ADDRESS = 0xe2f2a5C287993345a840Db3B0845fbC70f5935a5;
 
     /* // Ropsten addresses ///////////////////////////////////////////////////////
     /// @dev Mainnet address of the WETH contract.
@@ -253,5 +255,15 @@ contract DeploymentConstants {
         returns (address collector)
     {
         return GST_COLLECTOR_ADDRESS;
+    }
+
+    /// @dev An overridable way to retrieve the mStable mUSD address.
+    /// @return musd The mStable mUSD address.
+    function _getMUsdAddress()
+        internal
+        view
+        returns (address musd)
+    {
+        return MUSD_ADDRESS;
     }
 }

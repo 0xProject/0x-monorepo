@@ -99,6 +99,7 @@ const NULL_ADDRESSES = {
     exchangeProxyAllowanceTarget: NULL_ADDRESS,
     exchangeProxyTransformerDeployer: NULL_ADDRESS,
     exchangeProxyFlashWallet: NULL_ADDRESS,
+    mStableBridge: NULL_ADDRESS,
     transformers: {
         wethTransformer: NULL_ADDRESS,
         payTakerTransformer: NULL_ADDRESS,

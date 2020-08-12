@@ -38,6 +38,7 @@ export enum ERC20BridgeSource {
     LiquidityProvider = 'LiquidityProvider',
     MultiBridge = 'MultiBridge',
     Balancer = 'Balancer',
+    MStable = 'mStable',
 }
 
 // tslint:disable: enum-naming

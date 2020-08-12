@@ -40,6 +40,7 @@ export interface ContractAddresses {
     exchangeProxyAllowanceTarget: string;
     exchangeProxyTransformerDeployer: string;
     exchangeProxyFlashWallet: string;
+    mStableBridge: string;
     transformers: {
         wethTransformer: string;
         payTakerTransformer: string;
