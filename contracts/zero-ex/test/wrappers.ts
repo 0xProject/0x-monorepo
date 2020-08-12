@@ -57,6 +57,7 @@ export * from '../test/generated-wrappers/mixin_eth2_dai';
 export * from '../test/generated-wrappers/mixin_kyber';
 export * from '../test/generated-wrappers/mixin_uniswap';
 export * from '../test/generated-wrappers/mixin_uniswap_v2';
+export * from '../test/generated-wrappers/mixin_zero_ex_bridge';
 export * from '../test/generated-wrappers/ownable';
 export * from '../test/generated-wrappers/pay_taker_transformer';
 export * from '../test/generated-wrappers/signature_validator';

@@ -19,39 +19,13 @@
 pragma solidity ^0.6.5;
 pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-erc20/contracts/src/v06/LibERC20TokenV06.sol";
-import "@0x/contracts-erc20/contracts/src/v06/IERC20TokenV06.sol";
-import "@0x/contracts-utils/contracts/src/v06/LibSafeMathV06.sol";
 import "./mixins/MixinBalancer.sol";
 import "./mixins/MixinCurve.sol";
 import "./mixins/MixinEth2Dai.sol";
 import "./mixins/MixinKyber.sol";
 import "./mixins/MixinUniswap.sol";
 import "./mixins/MixinUniswapV2.sol";
-
-/*
-    0x Bridge
-*/
-interface IERC20Bridge {
-
-    /// @dev Transfers `amount` of the ERC20 `tokenAddress` from `from` to `to`.
-    /// @param tokenAddress The address of the ERC20 token to transfer.
-    /// @param from Address to transfer asset from.
-    /// @param to Address to transfer asset to.
-    /// @param amount Amount of asset to transfer.
-    /// @param bridgeData Arbitrary asset data needed by the bridge contract.
-    /// @return success The magic bytes `0xdc1600f3` if successful.
-    function bridgeTransferFrom(
-        address tokenAddress,
-        address from,
-        address to,
-        uint256 amount,
-        bytes calldata bridgeData
-    )
-        external
-        returns (bytes4 success);
-}
-
+import "./mixins/MixinZeroExBridge.sol";
 
 contract BridgeAdapter is
     MixinBalancer,
@@ -59,10 +33,32 @@ contract BridgeAdapter is
     MixinEth2Dai,
     MixinKyber,
     MixinUniswap,
-    MixinUniswapV2
+    MixinUniswapV2,
+    MixinZeroExBridge
 {
-    using LibERC20TokenV06 for IERC20TokenV06;
-    using LibSafeMathV06 for uint256;
+
+    address private constant BALANCER_BRIDGE_ADDRESS = 0xfe01821Ca163844203220cd08E4f2B2FB43aE4E4;
+    address private constant CURVE_BRIDGE_ADDRESS = 0x1796Cd592d19E3bcd744fbB025BB61A6D8cb2c09;
+    address private constant ETH2DAI_BRIDGE_ADDRESS = 0x991C745401d5b5e469B8c3e2cb02C748f08754f1;
+    address private constant KYBER_BRIDGE_ADDRESS = 0x1c29670F7a77f1052d30813A0a4f632C78A02610;
+    address private constant UNISWAP_BRIDGE_ADDRESS = 0x36691C4F426Eb8F42f150ebdE43069A31cB080AD;
+    address private constant UNISWAP_V2_BRIDGE_ADDRESS = 0xDcD6011f4C6B80e470D9487f5871a0Cba7C93f48;
+
+    /// @dev Emitted when a trade occurs.
+    /// @param inputToken The token the bridge is converting from.
+    /// @param outputToken The token the bridge is converting to.
+    /// @param inputTokenAmount Amount of input token.
+    /// @param outputTokenAmount Amount of output token.
+    /// @param from The bridge address, indicating the underlying source of the fill.
+    /// @param to The `to` address, currrently `address(this)`
+    event ERC20BridgeTransfer(
+        address inputToken,
+        address outputToken,
+        uint256 inputTokenAmount,
+        uint256 outputTokenAmount,
+        address from,
+        address to
+    );
 
     // solhint-disable
     /// @dev Allows this contract to receive ether.
@@ -86,66 +82,62 @@ contract BridgeAdapter is
             (address, address, bytes)
         );
         require(bridgeAddress != address(this), "INVALID_BRIDGE_ADDRESS");
-        // toTokenAddress is stored in the makerAssetData
-        if (bridgeAddress == 0x1796Cd592d19E3bcd744fbB025BB61A6D8cb2c09) {
-            // CurveBridge
+
+        if (bridgeAddress == CURVE_BRIDGE_ADDRESS) {
             boughtAmount = _tradeCurve(
                 toTokenAddress,
                 sellAmount,
                 bridgeData
             );
-        } else if (bridgeAddress == 0x36691C4F426Eb8F42f150ebdE43069A31cB080AD) {
-            // Uniswap bridge
-            boughtAmount = _tradeUniswap(
-                toTokenAddress,
-                sellAmount,
-                bridgeData
-            );
-        } else if (bridgeAddress == 0xDcD6011f4C6B80e470D9487f5871a0Cba7C93f48) {
-            // Uniswap v2
+        } else if (bridgeAddress == UNISWAP_V2_BRIDGE_ADDRESS) {
             boughtAmount = _tradeUniswapV2(
                 toTokenAddress,
                 sellAmount,
                 bridgeData
             );
-        } else if (bridgeAddress == 0xfe01821Ca163844203220cd08E4f2B2FB43aE4E4) {
-            // Balancer
+        } else if (bridgeAddress == UNISWAP_BRIDGE_ADDRESS) {
+            boughtAmount = _tradeUniswap(
+                toTokenAddress,
+                sellAmount,
+                bridgeData
+            );
+        } else if (bridgeAddress == BALANCER_BRIDGE_ADDRESS) {
             boughtAmount = _tradeBalancer(
                 toTokenAddress,
                 sellAmount,
                 bridgeData
             );
-        } else if (bridgeAddress == 0x1c29670F7a77f1052d30813A0a4f632C78A02610) {
-            // Kyber
+        } else if (bridgeAddress == KYBER_BRIDGE_ADDRESS) {
             boughtAmount = _tradeKyber(
                 toTokenAddress,
                 sellAmount,
                 bridgeData
             );
-        } else if (bridgeAddress == 0x991C745401d5b5e469B8c3e2cb02C748f08754f1) {
-            // Eth2Dai
+        } else if (bridgeAddress == ETH2DAI_BRIDGE_ADDRESS) {
             boughtAmount = _tradeEth2Dai(
                 toTokenAddress,
                 sellAmount,
                 bridgeData
             );
         } else {
-            uint256 balanceBefore = IERC20TokenV06(toTokenAddress).compatBalanceOf(address(this));
-            // Trade the good old fashioned way
-            IERC20TokenV06(fromTokenAddress).compatTransfer(
+            boughtAmount = _tradeZeroExBridge(
                 bridgeAddress,
-                sellAmount
-            );
-            IERC20Bridge(bridgeAddress).bridgeTransferFrom(
+                fromTokenAddress,
                 toTokenAddress,
-                bridgeAddress,
-                address(this),
-                1, // amount to transfer back from the bridge
+                sellAmount,
                 bridgeData
             );
-            boughtAmount = IERC20TokenV06(toTokenAddress).compatBalanceOf(address(this)).safeSub(balanceBefore);
         }
-        // TODO event, maybe idk
+
+        emit ERC20BridgeTransfer(
+            fromTokenAddress,
+            toTokenAddress,
+            sellAmount,
+            boughtAmount,
+            bridgeAddress,
+            address(this)
+        );
+
         return boughtAmount;
     }
 }

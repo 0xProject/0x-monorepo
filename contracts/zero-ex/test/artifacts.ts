@@ -59,6 +59,7 @@ import * as MixinEth2Dai from '../test/generated-artifacts/MixinEth2Dai.json';
 import * as MixinKyber from '../test/generated-artifacts/MixinKyber.json';
 import * as MixinUniswap from '../test/generated-artifacts/MixinUniswap.json';
 import * as MixinUniswapV2 from '../test/generated-artifacts/MixinUniswapV2.json';
+import * as MixinZeroExBridge from '../test/generated-artifacts/MixinZeroExBridge.json';
 import * as Ownable from '../test/generated-artifacts/Ownable.json';
 import * as PayTakerTransformer from '../test/generated-artifacts/PayTakerTransformer.json';
 import * as SignatureValidator from '../test/generated-artifacts/SignatureValidator.json';
@@ -101,6 +102,7 @@ export const artifacts = {
     MixinKyber: MixinKyber as ContractArtifact,
     MixinUniswap: MixinUniswap as ContractArtifact,
     MixinUniswapV2: MixinUniswapV2 as ContractArtifact,
+    MixinZeroExBridge: MixinZeroExBridge as ContractArtifact,
     LibCommonRichErrors: LibCommonRichErrors as ContractArtifact,
     LibMetaTransactionsRichErrors: LibMetaTransactionsRichErrors as ContractArtifact,
     LibOwnableRichErrors: LibOwnableRichErrors as ContractArtifact,

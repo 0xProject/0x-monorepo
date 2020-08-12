@@ -78,6 +78,7 @@
         "test/generated-artifacts/MixinKyber.json",
         "test/generated-artifacts/MixinUniswap.json",
         "test/generated-artifacts/MixinUniswapV2.json",
+        "test/generated-artifacts/MixinZeroExBridge.json",
         "test/generated-artifacts/Ownable.json",
         "test/generated-artifacts/PayTakerTransformer.json",
         "test/generated-artifacts/SignatureValidator.json",
