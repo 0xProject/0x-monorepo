@@ -4,6 +4,7 @@
     "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
     "files": [
         "generated-artifacts/AffiliateFeeTransformer.json",
+        "generated-artifacts/BridgeAdapter.json",
         "generated-artifacts/FillQuoteTransformer.json",
         "generated-artifacts/FullMigration.json",
         "generated-artifacts/IAllowanceTarget.json",

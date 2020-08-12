@@ -29,6 +29,7 @@ import {
 import {
     AffiliateFeeTransformerContract,
     artifacts as exchangeProxyArtifacts,
+    BridgeAdapterContract,
     FillQuoteTransformerContract,
     fullMigrateAsync as fullMigrateExchangeProxyAsync,
     ITokenSpenderContract,
@@ -421,6 +422,12 @@ async function _migrateExchangeProxyAsync(
         .getTransformWallet()
         .callAsync();
 
+    const bridgeAdapter = await BridgeAdapterContract.deployFrom0xArtifactAsync(
+        exchangeProxyArtifacts.BridgeAdapter,
+        provider,
+        txDefaults,
+        allArtifacts,
+    );
     // Deploy transformers.
     const fillQuoteTransformer = await FillQuoteTransformerContract.deployFrom0xArtifactAsync(
         exchangeProxyArtifacts.FillQuoteTransformer,
@@ -428,6 +435,7 @@ async function _migrateExchangeProxyAsync(
         txDefaults,
         allArtifacts,
         exchange.address,
+        bridgeAdapter.address,
     );
     const payTakerTransformer = await PayTakerTransformerContract.deployFrom0xArtifactAsync(
         exchangeProxyArtifacts.PayTakerTransformer,
