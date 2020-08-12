@@ -111,27 +111,30 @@ contract FillQuoteTransformer is
     /// @dev Maximum uint256 value.
     uint256 private constant MAX_UINT256 = uint256(-1);
 
-    /// @dev The Exchange contract.
-    IExchange public constant exchange = IExchange(0x61935CbDd02287B511119DDb11Aeb42F1593b7Ef);
-    /// @dev The ERC20Proxy address.
-    address public constant erc20Proxy = 0x95E6F48254609A6ee006F7D493c8e5fB97094ceF;
-    /// @dev The address of the direct bridge fill contract.
-    IBridgeAdapter public constant bridgeAdapter = IBridgeAdapter(0x1111111111111111111111111111111111111111);
-
     ///// @dev The Exchange contract.
-    //IExchange public immutable exchange;
+    //IExchange public constant exchange = IExchange(0x61935CbDd02287B511119DDb11Aeb42F1593b7Ef);
     ///// @dev The ERC20Proxy address.
-    //address public immutable erc20Proxy;
+    //address public constant erc20Proxy = 0x95E6F48254609A6ee006F7D493c8e5fB97094ceF;
+    ///// @dev The address of the direct bridge fill contract.
+    //IBridgeAdapter public bridgeAdapter = IBridgeAdapter(0x1111111111111111111111111111111111111111);
 
-    ///// @dev Create this contract.
-    ///// @param exchange_ The Exchange V3 instance.
-    //constructor(IExchange exchange_)
-    //    public
-    //    Transformer()
-    //{
-    //    exchange = exchange_;
-    //    erc20Proxy = exchange_.getAssetProxy(ERC20_ASSET_PROXY_ID);
-    //}
+    /// @dev The Exchange contract.
+    IExchange public immutable exchange;
+    /// @dev The ERC20Proxy address.
+    address public immutable erc20Proxy;
+    /// @dev The BridgeAdapter address
+    IBridgeAdapter public bridgeAdapter;
+
+    /// @dev Create this contract.
+    /// @param exchange_ The Exchange V3 instance.
+    constructor(IExchange exchange_, IBridgeAdapter bridgeAdapter_)
+        public
+        Transformer()
+    {
+        exchange = exchange_;
+        erc20Proxy = exchange_.getAssetProxy(ERC20_ASSET_PROXY_ID);
+        bridgeAdapter = bridgeAdapter_;
+    }
 
     /// @dev Sell this contract's entire balance of of `sellToken` in exchange
     ///      for `buyToken` by filling `orders`. Protocol fees should be attached

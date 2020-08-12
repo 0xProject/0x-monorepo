@@ -20,6 +20,7 @@ import * as _ from 'lodash';
 import { artifacts } from '../artifacts';
 import { TestFillQuoteTransformerBridgeContract } from '../generated-wrappers/test_fill_quote_transformer_bridge';
 import {
+    BridgeAdapterContract,
     FillQuoteTransformerContract,
     TestFillQuoteTransformerExchangeContract,
     TestFillQuoteTransformerHostContract,
@@ -50,12 +51,19 @@ blockchainTests.resets('FillQuoteTransformer', env => {
             env.txDefaults,
             artifacts,
         );
+        const bridgeAdapter = await BridgeAdapterContract.deployFrom0xArtifactAsync(
+            artifacts.BridgeAdapter,
+            env.provider,
+            env.txDefaults,
+            artifacts,
+        );
         transformer = await FillQuoteTransformerContract.deployFrom0xArtifactAsync(
             artifacts.FillQuoteTransformer,
             env.provider,
             env.txDefaults,
             artifacts,
             exchange.address,
+            bridgeAdapter.address,
         );
         host = await TestFillQuoteTransformerHostContract.deployFrom0xArtifactAsync(
             artifacts.TestFillQuoteTransformerHost,
