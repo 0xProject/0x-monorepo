@@ -31,11 +31,6 @@ abstract contract Transformer is
     using LibRichErrorsV06 for bytes;
 
     /// @dev The address of the deployer.
-    //address public constant deployer = 0x80a36559aB9a497FB658325ED771a584eb0F13DA;
-    /// @dev The original address of this contract.
-    //address internal constant _implementation = 0xbC33Dd7a09Da8ca943517a0fB786bCf0192f8bE2;
-
-    /// @dev The address of the deployer.
     address public immutable deployer;
     /// @dev The original address of this contract.
     address internal immutable _implementation;

@@ -111,19 +111,12 @@ contract FillQuoteTransformer is
     /// @dev Maximum uint256 value.
     uint256 private constant MAX_UINT256 = uint256(-1);
 
-    ///// @dev The Exchange contract.
-    //IExchange public constant exchange = IExchange(0x61935CbDd02287B511119DDb11Aeb42F1593b7Ef);
-    ///// @dev The ERC20Proxy address.
-    //address public constant erc20Proxy = 0x95E6F48254609A6ee006F7D493c8e5fB97094ceF;
-    ///// @dev The address of the direct bridge fill contract.
-    //IBridgeAdapter public bridgeAdapter = IBridgeAdapter(0x1111111111111111111111111111111111111111);
-
     /// @dev The Exchange contract.
     IExchange public immutable exchange;
     /// @dev The ERC20Proxy address.
     address public immutable erc20Proxy;
     /// @dev The BridgeAdapter address
-    IBridgeAdapter public bridgeAdapter;
+    IBridgeAdapter public immutable bridgeAdapter;
 
     /// @dev Create this contract.
     /// @param exchange_ The Exchange V3 instance.
@@ -317,7 +310,6 @@ contract FillQuoteTransformer is
             signature,
             takerTokenFillAmount,
             state,
-            makerToken,
             takerFeeToken == takerToken
         );
     }
@@ -381,7 +373,6 @@ contract FillQuoteTransformer is
             signature,
             takerTokenFillAmount,
             state,
-            makerToken,
             takerFeeToken == takerToken
         );
     }
@@ -392,7 +383,6 @@ contract FillQuoteTransformer is
     /// @param signature The order signature.
     /// @param takerAssetFillAmount How much taker asset to fill.
     /// @param state Intermediate state variables to get around stack limits.
-    /// @param makerToken The maker token.
     /// @param isTakerFeeInTakerToken Whether the taker fee token is the same as the
     ///        taker token.
     function _fillOrder(
@@ -400,7 +390,6 @@ contract FillQuoteTransformer is
         bytes memory signature,
         uint256 takerAssetFillAmount,
         FillState memory state,
-        IERC20TokenV06 makerToken,
         bool isTakerFeeInTakerToken
     )
         private

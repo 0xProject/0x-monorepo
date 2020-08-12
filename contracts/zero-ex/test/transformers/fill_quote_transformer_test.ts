@@ -118,8 +118,9 @@ blockchainTests.resets('FillQuoteTransformer', env => {
         };
     }
 
-    function createBridgeOrder(fields: Partial<Order> = {}, bridgeData: string = encodeBridgeBehavior()): FilledOrder {
+    function createBridgeOrder(fields: Partial<Order> = {}, fillRatio: Numberish = 1.0): FilledOrder {
         const order = createOrder(fields);
+        const bridgeData = encodeBridgeBehavior(order.makerAssetAmount, fillRatio);
         return {
             ...order,
             makerAddress: bridge.address,
@@ -273,11 +274,12 @@ blockchainTests.resets('FillQuoteTransformer', env => {
         );
     }
 
-    function encodeBridgeBehavior(makerAssetMintRatio: Numberish = 1.0): string {
+    function encodeBridgeBehavior(amount: BigNumber, makerAssetMintRatio: Numberish = 1.0): string {
         return hexUtils.slice(
             bridge
                 .encodeBehaviorData({
                     makerAssetMintRatio: new BigNumber(makerAssetMintRatio).times('1e18').integerValue(),
+                    amount,
                 })
                 .getABIEncodedTransactionData(),
             4,
@@ -873,7 +875,7 @@ blockchainTests.resets('FillQuoteTransformer', env => {
         });
     });
 
-    describe('bridge orders', () => {
+    describe('bridge orders fall through', () => {
         it('can fully sell to a single bridge order quote', async () => {
             const orders = _.times(1, () => createBridgeOrder());
             const signatures = orders.map(() => NULL_BYTES);

@@ -21,8 +21,6 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/v06/errors/LibRichErrorsV06.sol";
 import "@0x/contracts-utils/contracts/src/v06/errors/LibOwnableRichErrorsV06.sol";
-import "@0x/contracts-erc20/contracts/src/v06/LibERC20TokenV06.sol";
-import "@0x/contracts-erc20/contracts/src/v06/IERC20TokenV06.sol";
 import "../errors/LibWalletRichErrors.sol";
 import "./IFlashWallet.sol";
 
@@ -31,95 +29,18 @@ import "./IFlashWallet.sol";
 contract FlashWallet is
     IFlashWallet
 {
-    using LibERC20TokenV06 for IERC20TokenV06;
     // solhint-disable no-unused-vars,indent,no-empty-blocks
     using LibRichErrorsV06 for bytes;
 
     // solhint-disable
     /// @dev Store the owner/deployer as an immutable to make this contract stateless.
-    address public override constant owner = 0xDef1C0ded9bec7F1a1670819833240f027b25EfF ;
+    address public override immutable owner;
     // solhint-enable
 
-    //constructor() public {
-    //    // The deployer is the owner.
-    //    owner = msg.sender;
-    //}
-
-    function setAllowances()
-        external
-    {
-        // ERC20Proxy DAI
-        IERC20TokenV06(0x6B175474E89094C44Da98b954EedeAC495271d0F).approveIfBelow(
-            0x95E6F48254609A6ee006F7D493c8e5fB97094ceF,
-            uint(-1)
-        );
-        // ERC20Proxy  WETH
-        IERC20TokenV06(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2).approveIfBelow(
-            0x95E6F48254609A6ee006F7D493c8e5fB97094ceF,
-            uint(-1)
-        );
-        // ERC20Proxy USDC
-        IERC20TokenV06(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48).approveIfBelow(
-            0x95E6F48254609A6ee006F7D493c8e5fB97094ceF,
-            uint(-1)
-        );
-        // UniswapV2 DAI
-        IERC20TokenV06(0x6B175474E89094C44Da98b954EedeAC495271d0F).approveIfBelow(
-            0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D,
-            uint(-1)
-        );
-        // UniswapV2 WETH
-        IERC20TokenV06(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2).approveIfBelow(
-            0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D,
-            uint(-1)
-        );
-        // UniswapV2 USDC
-        IERC20TokenV06(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48).approveIfBelow(
-            0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D,
-            uint(-1)
-        );
-        // Curve sUSD DAI
-        IERC20TokenV06(0x6B175474E89094C44Da98b954EedeAC495271d0F).approveIfBelow(
-            0xA5407eAE9Ba41422680e2e00537571bcC53efBfD,
-            uint(-1)
-        );
-        // Curve sUSD USDC
-        IERC20TokenV06(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48).approveIfBelow(
-            0xA5407eAE9Ba41422680e2e00537571bcC53efBfD,
-            uint(-1)
-        );
-        // Kyber DAI
-        IERC20TokenV06(0x6B175474E89094C44Da98b954EedeAC495271d0F).approveIfBelow(
-            0x9AAb3f75489902f3a48495025729a0AF77d4b11e,
-            uint(-1)
-        );
-        // Kyber WETH
-        IERC20TokenV06(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2).approveIfBelow(
-            0x9AAb3f75489902f3a48495025729a0AF77d4b11e,
-            uint(-1)
-        );
-        // Kyber USDC
-        IERC20TokenV06(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48).approveIfBelow(
-            0x9AAb3f75489902f3a48495025729a0AF77d4b11e,
-            uint(-1)
-        );
-        // Eth2Dai DAI
-        IERC20TokenV06(0x6B175474E89094C44Da98b954EedeAC495271d0F).approveIfBelow(
-            0x794e6e91555438aFc3ccF1c5076A74F42133d08D,
-            uint(-1)
-        );
-        // Eth2Dai WETH
-        IERC20TokenV06(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2).approveIfBelow(
-            0x794e6e91555438aFc3ccF1c5076A74F42133d08D,
-            uint(-1)
-        );
-        // Eth2Dai USDC
-        IERC20TokenV06(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48).approveIfBelow(
-            0x794e6e91555438aFc3ccF1c5076A74F42133d08D,
-            uint(-1)
-        );
+    constructor() public {
+        // The deployer is the owner.
+        owner = msg.sender;
     }
-
 
     /// @dev Allows only the (immutable) owner to call a function.
     modifier onlyOwner() virtual {
