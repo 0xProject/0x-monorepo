@@ -10,12 +10,14 @@ import { Order } from '@0x/types';
 import { BigNumber, hexUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { artifacts } from './artifacts';
+import { artifacts } from '../artifacts';
 import {
     DummyLiquidityProviderContract,
     DummyLiquidityProviderRegistryContract,
     TestERC20BridgeSamplerContract,
-} from './wrappers';
+} from '../wrappers';
+
+// tslint:disable: custom-no-magic-numbers
 
 blockchainTests('erc20-bridge-sampler', env => {
     let testContract: TestERC20BridgeSamplerContract;

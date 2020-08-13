@@ -1,10 +1,10 @@
-import { ERC20BridgeSamplerContract } from '@0x/contract-wrappers';
 import { RFQTIndicativeQuote } from '@0x/quote-server';
 import { MarketOperation, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
 import { RfqtRequestOpts, SignedOrderWithFillableAmounts } from '../../types';
 import { QuoteRequestor } from '../../utils/quote_requestor';
+import { ERC20BridgeSamplerContract } from '../../wrappers';
 import { QuoteReport } from '../quote_report_generator';
 
 /**

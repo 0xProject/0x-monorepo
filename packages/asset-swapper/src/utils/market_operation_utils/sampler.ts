@@ -1,7 +1,7 @@
-import { ERC20BridgeSamplerContract } from '@0x/contract-wrappers';
 import { BigNumber } from '@0x/utils';
 
 import { SamplerOverrides } from '../../types';
+import { ERC20BridgeSamplerContract } from '../../wrappers';
 
 import { BalancerPoolsCache } from './balancer_utils';
 import { samplerOperations } from './sampler_operations';
