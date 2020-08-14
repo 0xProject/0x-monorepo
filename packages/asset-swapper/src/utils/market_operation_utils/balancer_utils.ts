@@ -42,6 +42,12 @@ export class BalancerPoolsCache {
         return Promise.race([this._getPoolsForPairAsync(takerToken, makerToken), timeout]);
     }
 
+    public getCachedPoolAddressesForPair(takerToken: string, makerToken: string): string[] {
+        const key = JSON.stringify([takerToken, makerToken]);
+        const value = this._cache[key];
+        return value === undefined ? [] : value.pools.map(pool => pool.id);
+    }
+
     protected async _getPoolsForPairAsync(takerToken: string, makerToken: string): Promise<BalancerPool[]> {
         const key = JSON.stringify([takerToken, makerToken]);
         const value = this._cache[key];

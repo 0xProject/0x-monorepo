@@ -6,9 +6,11 @@
 import { ContractArtifact } from 'ethereum-types';
 
 import * as ApproximateBuys from '../test/generated-artifacts/ApproximateBuys.json';
+import * as BalancerSampler from '../test/generated-artifacts/BalancerSampler.json';
 import * as CurveSampler from '../test/generated-artifacts/CurveSampler.json';
 import * as ERC20BridgeSampler from '../test/generated-artifacts/ERC20BridgeSampler.json';
 import * as Eth2DaiSampler from '../test/generated-artifacts/Eth2DaiSampler.json';
+import * as IBalancer from '../test/generated-artifacts/IBalancer.json';
 import * as ICurve from '../test/generated-artifacts/ICurve.json';
 import * as IEth2Dai from '../test/generated-artifacts/IEth2Dai.json';
 import * as IKyberHintHandler from '../test/generated-artifacts/IKyberHintHandler.json';
@@ -36,9 +38,11 @@ import * as UniswapSampler from '../test/generated-artifacts/UniswapSampler.json
 import * as UniswapV2Sampler from '../test/generated-artifacts/UniswapV2Sampler.json';
 export const artifacts = {
     ApproximateBuys: ApproximateBuys as ContractArtifact,
+    BalancerSampler: BalancerSampler as ContractArtifact,
     CurveSampler: CurveSampler as ContractArtifact,
     ERC20BridgeSampler: ERC20BridgeSampler as ContractArtifact,
     Eth2DaiSampler: Eth2DaiSampler as ContractArtifact,
+    IBalancer: IBalancer as ContractArtifact,
     ICurve: ICurve as ContractArtifact,
     IEth2Dai: IEth2Dai as ContractArtifact,
     IKyberHintHandler: IKyberHintHandler as ContractArtifact,

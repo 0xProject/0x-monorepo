@@ -1,5 +1,4 @@
 import { ContractAddresses } from '@0x/contract-addresses';
-import { ZERO_AMOUNT } from '@0x/order-utils';
 import { RFQTIndicativeQuote } from '@0x/quote-server';
 import { SignedOrder } from '@0x/types';
 import { BigNumber, NULL_ADDRESS } from '@0x/utils';
@@ -147,7 +146,7 @@ export class MarketOperationUtils {
                 : this._sampler.getTwoHopSellQuotes(
                       difference(
                           SELL_SOURCES.concat(this._optionalSources()),
-                          _opts.excludedSources.concat([ERC20BridgeSource.MultiBridge]),
+                          _opts.excludedSources,
                       ),
                       makerToken,
                       takerToken,
@@ -258,7 +257,7 @@ export class MarketOperationUtils {
                 : this._sampler.getTwoHopBuyQuotes(
                       difference(
                           BUY_SOURCES.concat(this._optionalSources()),
-                          _opts.excludedSources.concat([ERC20BridgeSource.MultiBridge]),
+                          _opts.excludedSources,
                       ),
                       makerToken,
                       takerToken,
