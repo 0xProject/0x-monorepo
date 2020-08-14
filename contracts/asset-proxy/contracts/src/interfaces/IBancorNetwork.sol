@@ -18,8 +18,6 @@
 
 pragma solidity ^0.5.9;
 
-import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
-
 
 contract IContractRegistry {
     function addressOf(
@@ -30,21 +28,11 @@ contract IContractRegistry {
 
 contract IBancorNetwork {
     function convertByPath(
-        IERC20Token[] calldata _path,
+        address[] calldata _path,
         uint256 _amount,
         uint256 _minReturn,
         address _beneficiary,
         address _affiliateAccount,
         uint256 _affiliateFee
     ) external payable returns (uint256);
-
-    function rateByPath(
-        IERC20Token[] calldata _path,
-        uint256 _amount
-    ) external view returns (uint256);
-
-    function conversionPath(
-        IERC20Token _sourceToken,
-        IERC20Token _targetToken
-    ) external view returns (address[] memory);
 }

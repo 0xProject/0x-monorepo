@@ -20,6 +20,7 @@ import { getMultiBridgeIntermediateToken } from './multibridge_utils';
 import {
     AggregationError,
     BalancerFillData,
+    BancorFillData,
     CollapsedFill,
     CurveFillData,
     ERC20BridgeSource,
@@ -190,6 +191,8 @@ function getBridgeAddressFromFill(fill: CollapsedFill, opts: CreateOrderFromPath
             return opts.contractAddresses.uniswapV2Bridge;
         case ERC20BridgeSource.Curve:
             return opts.contractAddresses.curveBridge;
+        case ERC20BridgeSource.Bancor:
+            return opts.contractAddresses.bancorBridge;
         case ERC20BridgeSource.Balancer:
             return opts.contractAddresses.balancerBridge;
         case ERC20BridgeSource.LiquidityProvider:
@@ -228,6 +231,14 @@ function createBridgeOrder(fill: CollapsedFill, opts: CreateOrderFromPathOpts): 
                 makerToken,
                 bridgeAddress,
                 createBalancerBridgeData(takerToken, balancerFillData.poolAddress),
+            );
+            break;
+        case ERC20BridgeSource.Bancor:
+            const bancorFillData = (fill as CollapsedFill<BancorFillData>).fillData!; // tslint:disable-line:no-non-null-assertion
+            makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
+                makerToken,
+                bridgeAddress,
+                createBancorBridgeData(bancorFillData.path, bancorFillData.networkAddress),
             );
             break;
         case ERC20BridgeSource.UniswapV2:
@@ -333,6 +344,14 @@ function createBalancerBridgeData(takerToken: string, poolAddress: string): stri
         { name: 'poolAddress', type: 'address' },
     ]);
     return encoder.encode({ takerToken, poolAddress });
+}
+
+function createBancorBridgeData(path: string[], bancorNetworkAddress: string): string {
+    const encoder = AbiEncoder.create([
+        { name: 'path', type: 'address[]' },
+        { name: 'networkAddress', type: 'address' },
+    ]);
+    return encoder.encode({ path, bancorNetworkAddress });
 }
 
 function createCurveBridgeData(

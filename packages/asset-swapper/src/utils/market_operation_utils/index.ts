@@ -252,7 +252,7 @@ export class MarketOperationUtils {
                     BUY_SOURCES.concat(
                         this._liquidityProviderRegistry !== NULL_ADDRESS ? [ERC20BridgeSource.LiquidityProvider] : [],
                     ),
-                    _opts.excludedSources.concat(ERC20BridgeSource.Balancer),
+                    _opts.excludedSources.concat([ERC20BridgeSource.Balancer]),
                 ),
                 makerToken,
                 takerToken,

@@ -515,6 +515,7 @@ describe('DexSampler tests', () => {
         it('getSellQuotes() uses samples from Bancor', async () => {
             const expectedTakerToken = randomAddress();
             const expectedMakerToken = randomAddress();
+            const networkAddress = randomAddress();
             const expectedTakerFillAmounts = getSampleAmounts(new BigNumber(100e18), 3);
             const rate = getRandomFloat(0, 100);
             const bancorService = new MockBancorService({
@@ -522,7 +523,7 @@ describe('DexSampler tests', () => {
                     expect(fromToken).equal(expectedTakerToken);
                     expect(toToken).equal(expectedMakerToken);
                     return Promise.resolve({
-                        fillData: { path: [fromToken, toToken] },
+                        fillData: { path: [fromToken, toToken], networkAddress },
                         amount: amount.multipliedBy(rate),
                     });
                 },
@@ -551,7 +552,7 @@ describe('DexSampler tests', () => {
                     source: ERC20BridgeSource.Bancor,
                     input: a,
                     output: a.multipliedBy(rate),
-                    fillData: { path: [expectedTakerToken, expectedMakerToken] },
+                    fillData: { path: [expectedTakerToken, expectedMakerToken], networkAddress },
                 })),
             ];
             expect(quotes).to.have.lengthOf(1); //  one set per pool
@@ -670,6 +671,7 @@ describe('DexSampler tests', () => {
         it('getBuyQuotes() uses samples from Bancor', async () => {
             const expectedTakerToken = randomAddress();
             const expectedMakerToken = randomAddress();
+            const networkAddress = randomAddress();
             const expectedMakerFillAmounts = getSampleAmounts(new BigNumber(100e18), 3);
             const rate = getRandomFloat(0, 100);
             const bancorService = new MockBancorService({
@@ -677,7 +679,7 @@ describe('DexSampler tests', () => {
                     expect(fromToken).equal(expectedMakerToken);
                     expect(toToken).equal(expectedTakerToken);
                     return Promise.resolve({
-                        fillData: { path: [fromToken, toToken] },
+                        fillData: { path: [fromToken, toToken], networkAddress },
                         amount: amount.multipliedBy(rate),
                     });
                 },
@@ -705,7 +707,7 @@ describe('DexSampler tests', () => {
                     source: ERC20BridgeSource.Bancor,
                     input: a,
                     output: a.multipliedBy(rate),
-                    fillData: { path: [expectedMakerToken, expectedTakerToken] },
+                    fillData: { path: [expectedMakerToken, expectedTakerToken], networkAddress },
                 })),
             ];
             expect(quotes).to.have.lengthOf(1); //  one set per pool

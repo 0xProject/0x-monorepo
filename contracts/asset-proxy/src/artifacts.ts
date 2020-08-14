@@ -40,6 +40,7 @@ import * as MixinGasToken from '../generated-artifacts/MixinGasToken.json';
 import * as MultiAssetProxy from '../generated-artifacts/MultiAssetProxy.json';
 import * as Ownable from '../generated-artifacts/Ownable.json';
 import * as StaticCallProxy from '../generated-artifacts/StaticCallProxy.json';
+import * as TestBancorBridge from '../generated-artifacts/TestBancorBridge.json';
 import * as TestChaiBridge from '../generated-artifacts/TestChaiBridge.json';
 import * as TestDexForwarderBridge from '../generated-artifacts/TestDexForwarderBridge.json';
 import * as TestDydxBridge from '../generated-artifacts/TestDydxBridge.json';
@@ -89,6 +90,7 @@ export const artifacts = {
     IUniswapExchange: IUniswapExchange as ContractArtifact,
     IUniswapExchangeFactory: IUniswapExchangeFactory as ContractArtifact,
     IUniswapV2Router01: IUniswapV2Router01 as ContractArtifact,
+    TestBancorBridge: TestBancorBridge as ContractArtifact,
     TestChaiBridge: TestChaiBridge as ContractArtifact,
     TestDexForwarderBridge: TestDexForwarderBridge as ContractArtifact,
     TestDydxBridge: TestDydxBridge as ContractArtifact,

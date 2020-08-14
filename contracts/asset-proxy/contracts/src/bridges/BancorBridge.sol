@@ -33,14 +33,9 @@ contract BancorBridge is
     IWallet,
     DeploymentConstants
 {
-
-    IContractRegistry contractRegistry = IContractRegistry(0x52Ae12ABe5D8BD778BD5397F99cA900624CfADD4);
-    bytes32 bancorNetworkName = bytes32(uint(0x42616e636f724e6574776f726b)); // "BancorNetwork"
-
     struct TransferState {
-        uint minReturn;
-        address[] addressPath;
-        IERC20Token[] tokenPath;
+        address bancorNetworkAddress;
+        address[] path;
     }
 
     /// @dev Callback for `IERC20Bridge`. Tries to buy `amount` of
@@ -68,44 +63,39 @@ contract BancorBridge is
 
         // Decode the bridge data.
         (
-            state.addressPath,
-            state.minReturn
+            state.path,
+            state.bancorNetworkAddress
         // solhint-disable indent
-        ) = abi.decode(bridgeData, (address[], uint));
+        ) = abi.decode(bridgeData, (address[], address));
         // solhint-enable indent
 
-        require(state.addressPath.length >= 2, "BancorBridge/PATH_LENGTH_MUST_BE_AT_LEAST_TWO");
-        require(state.addressPath[state.addressPath.length - 1] == toTokenAddress, "BancorBridge/LAST_ELEMENT_OF_PATH_MUST_MATCH_OUTPUT_TOKEN");
+        require(state.path.length > 2, "BancorBridge/PATH_LENGTH_MUST_BE_GREATER_THAN_TWO");
+        require(state.path[state.path.length - 1] == toTokenAddress, "BancorBridge/LAST_ELEMENT_OF_PATH_MUST_MATCH_OUTPUT_TOKEN");
 
         // Just transfer the tokens if they're the same.
-        if (state.addressPath[0] == toTokenAddress) {
-            LibERC20Token.transfer(state.addressPath[0], to, amount);
+        if (state.path[0] == toTokenAddress) {
+            LibERC20Token.transfer(state.path[0], to, amount);
             return BRIDGE_SUCCESS;
         }
 
         // Otherwise use Bancor to convert
-        // Convert the addresses in the path to IERC20Tokens
-        for (uint i=0; i < state.addressPath.length; i++) {
-            state.tokenPath[i] = IERC20Token(state.addressPath[i]);
-        }
 
         // // Grant an allowance to the Bancor Network to spend `fromTokenAddress` token.
-        uint256 fromTokenBalance = state.tokenPath[0].balanceOf(address(this));
-        LibERC20Token.approveIfBelow(state.addressPath[0], contractRegistry.addressOf(bancorNetworkName), fromTokenBalance);
+        uint256 fromTokenBalance = IERC20Token(state.path[0]).balanceOf(address(this));
+        LibERC20Token.approveIfBelow(state.path[0], state.bancorNetworkAddress, fromTokenBalance);
 
         // Convert the tokens
-        IBancorNetwork bancorNetwork = getBancorNetworkContract();
-        uint256 boughtAmount = bancorNetwork.convertByPath(
-            state.tokenPath, // path originating with source token and terminating in destination token
+        uint256 boughtAmount = IBancorNetwork(state.bancorNetworkAddress).convertByPath(
+            state.path, // path originating with source token and terminating in destination token
             fromTokenBalance, // amount of source token to trade
             amount, // minimum amount of destination token expected to receive
             to, // beneficiary
-            address(0x0), // affiliateAccount; no fee paid
+            address(0), // affiliateAccount; no fee paid
             0 // affiliateFee; no fee paid
         );
 
         emit ERC20BridgeTransfer(
-            state.addressPath[0], // fromTokenAddress
+            state.path[0], // fromTokenAddress
             toTokenAddress,
             fromTokenBalance,
             boughtAmount,
@@ -129,7 +119,4 @@ contract BancorBridge is
         return LEGACY_WALLET_MAGIC_VALUE;
     }
     
-    function getBancorNetworkContract() public returns(IBancorNetwork){
-        return IBancorNetwork(contractRegistry.addressOf(bancorNetworkName));
-    }
 }

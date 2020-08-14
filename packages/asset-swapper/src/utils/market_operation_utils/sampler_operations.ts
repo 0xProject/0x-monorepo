@@ -304,25 +304,7 @@ export const samplerOperations = {
             },
             handleCallResultsAsync: async (_contract, _callResults) => {
                 return Promise.all(
-                    takerFillAmounts.map(amt => bancorService.getQuoteAsync(makerToken, takerToken, amt)), // tslint:disable-line:promise-function-async
-                );
-            },
-        };
-    },
-    getBancorBuyQuotes(
-        makerToken: string,
-        takerToken: string,
-        makerFillAmounts: BigNumber[],
-        bancorService: BancorService,
-    ): SourceQuoteOperation<FillData, BancorQuoteData> {
-        return {
-            source: ERC20BridgeSource.Bancor,
-            encodeCall: _contract => {
-                return '0x';
-            },
-            handleCallResultsAsync: async (_contract, _callResults) => {
-                return Promise.all(
-                    makerFillAmounts.map(amt => bancorService.getQuoteAsync(takerToken, makerToken, amt)), // tslint:disable-line:promise-function-async
+                    takerFillAmounts.map(async amt => bancorService.getQuoteAsync(takerToken, makerToken, amt)),
                 );
             },
         };
@@ -554,7 +536,7 @@ export const samplerOperations = {
                                 : (output as BigNumber), // hack; all QuoteData other than Bancor defaults to BigNumber
                         input: takerFillAmounts[j],
                         fillData:
-                            op.source === ERC20BridgeSource.Bancor ? (output as BancorQuoteData).fillData : op.fillData,
+                            op.source === ERC20BridgeSource.Bancor ? (output as BancorQuoteData).fillData : op.fillData, // Bancor has unique fillData per sample
                     }));
                 });
             },
@@ -630,17 +612,7 @@ export const samplerOperations = {
                                     samplerOperations.getBalancerBuyQuotes(pool, makerFillAmounts),
                                 );
                             case ERC20BridgeSource.Bancor:
-                                if (bancorService === undefined) {
-                                    throw new Error(
-                                        'Cannot sample liquidity from Bancor; no Bancor service instantiated.',
-                                    );
-                                }
-                                return samplerOperations.getBancorBuyQuotes(
-                                    takerToken,
-                                    makerToken,
-                                    makerFillAmounts,
-                                    bancorService,
-                                );
+                                return []; //  FIXME: Waiting for Bancor SDK to support buy quotes, but don't throw an error here
                             default:
                                 throw new Error(`Unsupported buy sample source: ${source}`);
                         }

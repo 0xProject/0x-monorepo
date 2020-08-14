@@ -98,6 +98,7 @@ export interface MultiBridgeFillData extends FillData {
 }
 export interface BancorFillData extends FillData {
     path: string[];
+    networkAddress: string;
 }
 
 export interface QuoteData {}
