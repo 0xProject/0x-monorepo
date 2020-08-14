@@ -86,7 +86,7 @@ function hasExpectedAssetData(
 }
 
 function convertIfAxiosError(error: any): Error | object /* axios' .d.ts has AxiosError.toJSON() returning object */ {
-    if (error.hasOwnProperty('isAxiosError') && error.isAxiosError && error.hasOwnProperty('toJSON')) {
+    if (error.hasOwnProperty('isAxiosError') && error.isAxiosError) {
         const { message, name, config } = error;
         const { headers, timeout, httpsAgent } = config;
         const { keepAlive, keepAliveMsecs, sockets } = httpsAgent;
