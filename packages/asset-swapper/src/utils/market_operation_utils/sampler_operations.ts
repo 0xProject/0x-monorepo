@@ -24,6 +24,7 @@ import {
     MultiHopFillData,
     SamplerContractOperation,
     SourceQuoteOperation,
+    TokenAdjacencyGraph,
     UniswapV2FillData,
 } from './types';
 
@@ -34,7 +35,7 @@ import {
  * for use with `DexOrderSampler.executeAsync()`.
  */
 export class SamplerOperations {
-    private static _constant<T>(result: T): BatchedOperation<T> {
+    public static constant<T>(result: T): BatchedOperation<T> {
         return {
             encodeCall: () => {
                 return '0x';
@@ -407,10 +408,11 @@ export class SamplerOperations {
         makerToken: string,
         takerToken: string,
         sellAmount: BigNumber,
+        tokenAdjacencyGraph: TokenAdjacencyGraph,
         wethAddress: string,
         liquidityProviderRegistryAddress?: string,
-    ): BatchedOperation<DexSample[]> {
-        const intermediateTokens = getIntermediateTokens(makerToken, takerToken, wethAddress);
+    ): BatchedOperation<Array<DexSample<MultiHopFillData>>> {
+        const intermediateTokens = getIntermediateTokens(makerToken, takerToken, tokenAdjacencyGraph, wethAddress);
         const subOps = intermediateTokens.map(intermediateToken => {
             const firstHopOps = this._getSellQuoteOperations(
                 sources,
@@ -428,24 +430,24 @@ export class SamplerOperations {
                 wethAddress,
                 liquidityProviderRegistryAddress,
             );
-            const op = new SamplerContractOperation(
+            const samplerOp = new SamplerContractOperation(
                 this._samplerContract,
                 ERC20BridgeSource.MultiHop,
                 this._samplerContract.sampleTwoHopSell,
                 [firstHopOps.map(op => op.encodeCall()), secondHopOps.map(op => op.encodeCall()), sellAmount],
-                {} as MultiHopFillData, // tslint:disable-line:no-object-literal-type-assertion
+                { intermediateToken } as MultiHopFillData, // tslint:disable-line:no-object-literal-type-assertion
                 async (callResults: string): Promise<BigNumber[]> => {
                     const [firstHop, secondHop, buyAmount] = this._samplerContract.getABIDecodedReturnData<
                         [HopInfo, HopInfo, BigNumber]
                     >('sampleTwoHopSell', callResults);
-                    op.fillData.firstHopSource = firstHopOps[firstHop.sourceIndex.toNumber()];
-                    op.fillData.secondHopSource = secondHopOps[secondHop.sourceIndex.toNumber()];
-                    await op.fillData.firstHopSource.handleCallResultsAsync(firstHop.returnData);
-                    await op.fillData.secondHopSource.handleCallResultsAsync(secondHop.returnData);
+                    samplerOp.fillData.firstHopSource = firstHopOps[firstHop.sourceIndex.toNumber()];
+                    samplerOp.fillData.secondHopSource = secondHopOps[secondHop.sourceIndex.toNumber()];
+                    await samplerOp.fillData.firstHopSource.handleCallResultsAsync(firstHop.returnData);
+                    await samplerOp.fillData.secondHopSource.handleCallResultsAsync(secondHop.returnData);
                     return Promise.resolve([buyAmount]);
                 },
             );
-            return op;
+            return samplerOp;
         });
         return {
             encodeCall: () => {
@@ -477,10 +479,11 @@ export class SamplerOperations {
         makerToken: string,
         takerToken: string,
         buyAmount: BigNumber,
+        tokenAdjacencyGraph: TokenAdjacencyGraph,
         wethAddress: string,
         liquidityProviderRegistryAddress?: string,
-    ): BatchedOperation<DexSample[]> {
-        const intermediateTokens = getIntermediateTokens(makerToken, takerToken, wethAddress);
+    ): BatchedOperation<Array<DexSample<MultiHopFillData>>> {
+        const intermediateTokens = getIntermediateTokens(makerToken, takerToken, tokenAdjacencyGraph, wethAddress);
         const subOps = intermediateTokens.map(intermediateToken => {
             const firstHopOps = this._getBuyQuoteOperations(
                 sources,
@@ -498,7 +501,7 @@ export class SamplerOperations {
                 wethAddress,
                 liquidityProviderRegistryAddress,
             );
-            const op = new SamplerContractOperation(
+            const samplerOp = new SamplerContractOperation(
                 this._samplerContract,
                 ERC20BridgeSource.MultiHop,
                 this._samplerContract.sampleTwoHopBuy,
@@ -508,14 +511,14 @@ export class SamplerOperations {
                     const [firstHop, secondHop, sellAmount] = this._samplerContract.getABIDecodedReturnData<
                         [HopInfo, HopInfo, BigNumber]
                     >('sampleTwoHopBuy', callResults);
-                    op.fillData.firstHopSource = firstHopOps[firstHop.sourceIndex.toNumber()];
-                    op.fillData.secondHopSource = secondHopOps[secondHop.sourceIndex.toNumber()];
-                    await op.fillData.firstHopSource.handleCallResultsAsync(firstHop.returnData);
-                    await op.fillData.secondHopSource.handleCallResultsAsync(secondHop.returnData);
+                    samplerOp.fillData.firstHopSource = firstHopOps[firstHop.sourceIndex.toNumber()];
+                    samplerOp.fillData.secondHopSource = secondHopOps[secondHop.sourceIndex.toNumber()];
+                    await samplerOp.fillData.firstHopSource.handleCallResultsAsync(firstHop.returnData);
+                    await samplerOp.fillData.secondHopSource.handleCallResultsAsync(secondHop.returnData);
                     return Promise.resolve([sellAmount]);
                 },
             );
-            return op;
+            return samplerOp;
         });
         return {
             encodeCall: () => {
@@ -552,7 +555,7 @@ export class SamplerOperations {
         multiBridgeAddress?: string,
     ): BatchedOperation<BigNumber> {
         if (makerToken.toLowerCase() === takerToken.toLowerCase()) {
-            return SamplerOperations._constant(new BigNumber(1));
+            return SamplerOperations.constant(new BigNumber(1));
         }
         const getSellQuotes = this.getSellQuotes(
             sources,

@@ -40,7 +40,7 @@ export type SampleSellsMBHandler = (
 ) => SampleResults;
 
 const DUMMY_PROVIDER = {
-    sendAsync: (...args: any[]): any => {
+    sendAsync: (..._args: any[]): any => {
         /* no-op */
     },
 };
@@ -73,7 +73,7 @@ export class MockSamplerContract extends ERC20BridgeSamplerContract {
     public batchCall(callDatas: string[]): ContractFunctionObj<string[]> {
         return {
             ...super.batchCall(callDatas),
-            callAsync: async (...callArgs: any[]) => callDatas.map(callData => this._callEncodedFunction(callData)),
+            callAsync: async (..._callArgs: any[]) => callDatas.map(callData => this._callEncodedFunction(callData)),
         };
     }
 
@@ -259,7 +259,7 @@ export class MockSamplerContract extends ERC20BridgeSamplerContract {
     ): ContractFunctionObj<TResult> {
         return {
             ...superFn.call(this, ...args),
-            callAsync: async (...callArgs: any[]): Promise<TResult> => {
+            callAsync: async (..._callArgs: any[]): Promise<TResult> => {
                 if (!handler) {
                     throw new Error(`${superFn.name} handler undefined`);
                 }

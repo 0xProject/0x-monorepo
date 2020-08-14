@@ -9,11 +9,20 @@ import { MarketOperation } from '../../types';
 import { QuoteRequestor } from '../quote_requestor';
 import { difference } from '../utils';
 
-import { QuoteReportGenerator } from './../quote_report_generator';
-import { BUY_SOURCES, DEFAULT_GET_MARKET_ORDERS_OPTS, FEE_QUOTE_SOURCES, ONE_ETHER, SELL_SOURCES } from './constants';
-import { createFillPaths, getPathAdjustedRate, getPathAdjustedSlippage } from './fills';
+import { generateQuoteReport } from './../quote_report_generator';
+import {
+    BUY_SOURCES,
+    DEFAULT_GET_MARKET_ORDERS_OPTS,
+    FEE_QUOTE_SOURCES,
+    ONE_ETHER,
+    POSITIVE_INF,
+    SELL_SOURCES,
+    ZERO_AMOUNT,
+} from './constants';
+import { createFillPaths, getPathAdjustedRate, getPathAdjustedSlippage, getTwoHopAdjustedRate } from './fills';
 import {
     createOrdersFromPath,
+    createOrdersFromTwoHopSample,
     createSignedOrdersFromRfqtIndicativeQuotes,
     createSignedOrdersWithFillableAmounts,
     getNativeOrderTokens,
@@ -27,9 +36,11 @@ import {
     FeeSchedule,
     GetMarketOrdersOpts,
     MarketSideLiquidity,
+    MultiHopFillData,
     OptimizedMarketOrder,
-    OptimizedOrdersAndQuoteReport,
+    OptimizerResult,
     OrderDomain,
+    TokenAdjacencyGraph,
 } from './types';
 
 /**
@@ -70,6 +81,7 @@ export class MarketOperationUtils {
         private readonly contractAddresses: ContractAddresses,
         private readonly _orderDomain: OrderDomain,
         private readonly _liquidityProviderRegistry: string = NULL_ADDRESS,
+        private readonly _tokenAdjacencyGraph: TokenAdjacencyGraph = {},
     ) {
         this._wethAddress = contractAddresses.etherToken.toLowerCase();
         this._multiBridge = contractAddresses.multiBridge.toLowerCase();
@@ -130,17 +142,20 @@ export class MarketOperationUtils {
                 this._liquidityProviderRegistry,
                 this._multiBridge,
             ),
-            this._sampler.getTwoHopSellQuotes(
-                difference(
-                    SELL_SOURCES.concat(this._optionalSources()),
-                    _opts.excludedSources.concat([ERC20BridgeSource.MultiBridge]),
-                ),
-                makerToken,
-                takerToken,
-                takerAmount,
-                this._wethAddress,
-                this._liquidityProviderRegistry,
-            ),
+            _opts.excludedSources.includes(ERC20BridgeSource.MultiHop)
+                ? DexOrderSampler.constant([])
+                : this._sampler.getTwoHopSellQuotes(
+                      difference(
+                          SELL_SOURCES.concat(this._optionalSources()),
+                          _opts.excludedSources.concat([ERC20BridgeSource.MultiBridge]),
+                      ),
+                      makerToken,
+                      takerToken,
+                      takerAmount,
+                      this._tokenAdjacencyGraph,
+                      this._wethAddress,
+                      this._liquidityProviderRegistry,
+                  ),
         );
 
         const rfqtPromise = getRfqtIndicativeQuotesAsync(
@@ -238,17 +253,20 @@ export class MarketOperationUtils {
                 this._wethAddress,
                 this._liquidityProviderRegistry,
             ),
-            this._sampler.getTwoHopBuyQuotes(
-                difference(
-                    SELL_SOURCES.concat(this._optionalSources()),
-                    _opts.excludedSources.concat([ERC20BridgeSource.MultiBridge]),
-                ),
-                makerToken,
-                takerToken,
-                makerAmount,
-                this._wethAddress,
-                this._liquidityProviderRegistry,
-            ),
+            _opts.excludedSources.includes(ERC20BridgeSource.MultiHop)
+                ? DexOrderSampler.constant([])
+                : this._sampler.getTwoHopBuyQuotes(
+                      difference(
+                          BUY_SOURCES.concat(this._optionalSources()),
+                          _opts.excludedSources.concat([ERC20BridgeSource.MultiBridge]),
+                      ),
+                      makerToken,
+                      takerToken,
+                      makerAmount,
+                      this._tokenAdjacencyGraph,
+                      this._wethAddress,
+                      this._liquidityProviderRegistry,
+                  ),
         );
 
         const balancerPromise = _opts.excludedSources.includes(ERC20BridgeSource.Balancer)
@@ -298,7 +316,7 @@ export class MarketOperationUtils {
         nativeOrders: SignedOrder[],
         takerAmount: BigNumber,
         opts?: Partial<GetMarketOrdersOpts>,
-    ): Promise<OptimizedOrdersAndQuoteReport> {
+    ): Promise<OptimizerResult> {
         const _opts = { ...DEFAULT_GET_MARKET_ORDERS_OPTS, ...opts };
         const marketSideLiquidity = await this.getMarketSellLiquidityAsync(nativeOrders, takerAmount, _opts);
         return this._generateOptimizedOrdersAsync(marketSideLiquidity, {
@@ -324,7 +342,7 @@ export class MarketOperationUtils {
         nativeOrders: SignedOrder[],
         makerAmount: BigNumber,
         opts?: Partial<GetMarketOrdersOpts>,
-    ): Promise<OptimizedOrdersAndQuoteReport> {
+    ): Promise<OptimizerResult> {
         const _opts = { ...DEFAULT_GET_MARKET_ORDERS_OPTS, ...opts };
         const marketSideLiquidity = await this.getMarketBuyLiquidityAsync(nativeOrders, makerAmount, _opts);
         return this._generateOptimizedOrdersAsync(marketSideLiquidity, {
@@ -446,7 +464,7 @@ export class MarketOperationUtils {
             shouldBatchBridgeOrders?: boolean;
             quoteRequestor?: QuoteRequestor;
         },
-    ): Promise<OptimizedOrdersAndQuoteReport> {
+    ): Promise<OptimizerResult> {
         const {
             inputToken,
             outputToken,
@@ -458,8 +476,20 @@ export class MarketOperationUtils {
             dexQuotes,
             ethToOutputRate,
             ethToInputRate,
+            twoHopQuotes,
         } = marketSideLiquidity;
         const maxFallbackSlippage = opts.maxFallbackSlippage || 0;
+
+        const orderOpts = {
+            side,
+            inputToken,
+            outputToken,
+            orderDomain: this._orderDomain,
+            contractAddresses: this.contractAddresses,
+            bridgeSlippage: opts.bridgeSlippage || 0,
+            shouldBatchBridgeOrders: !!opts.shouldBatchBridgeOrders,
+        };
+
         // Convert native orders and dex quotes into fill paths.
         const paths = createFillPaths({
             side,
@@ -475,12 +505,42 @@ export class MarketOperationUtils {
             excludedSources: opts.excludedSources,
             feeSchedule: opts.feeSchedule,
         });
+
         // Find the optimal path.
         let optimalPath = (await findOptimalPathAsync(side, paths, inputAmount, opts.runLimit)) || [];
         if (optimalPath.length === 0) {
             throw new Error(AggregationError.NoOptimalPath);
         }
-        // Generate a fallback path if native orders are in the optimal paath.
+        const optimalPathRate = getPathAdjustedRate(side, optimalPath, inputAmount);
+
+        const isBetterRate = (a: BigNumber, b: BigNumber): boolean =>
+            side === MarketOperation.Sell ? a.isGreaterThan(b) : a.isLessThan(b);
+
+        const { bestRate: bestTwoHopRate, bestQuote: bestTwoHopQuote } = twoHopQuotes
+            .map(quote => getTwoHopAdjustedRate(side, quote, inputAmount, ethToOutputRate, opts.feeSchedule))
+            .reduce(
+                (prev, curr, i) =>
+                    isBetterRate(curr, prev.bestRate) ? { bestRate: curr, bestQuote: twoHopQuotes[i] } : prev,
+                {
+                    bestRate: side === MarketOperation.Sell ? ZERO_AMOUNT : POSITIVE_INF,
+                    bestQuote: undefined as DexSample<MultiHopFillData> | undefined,
+                },
+            );
+        if (isBetterRate(bestTwoHopRate, optimalPathRate)) {
+            const twoHopOrders = createOrdersFromTwoHopSample(bestTwoHopQuote!, orderOpts);
+            const twoHopQuoteReport = generateQuoteReport(
+                side,
+                _.flatten(dexQuotes),
+                twoHopQuotes,
+                nativeOrders,
+                orderFillableAmounts,
+                bestTwoHopQuote!,
+                opts.quoteRequestor,
+            );
+            return { optimizedOrders: twoHopOrders, quoteReport: twoHopQuoteReport, isTwoHop: true };
+        }
+
+        // Generate a fallback path if native orders are in the optimal path.
         const nativeSubPath = optimalPath.filter(f => f.source === ERC20BridgeSource.Native);
         if (opts.allowFallback && nativeSubPath.length !== 0) {
             // We create a fallback path that is exclusive of Native liquidity
@@ -489,12 +549,7 @@ export class MarketOperationUtils {
             const nonNativeOptimalPath =
                 (await findOptimalPathAsync(side, nonNativePaths, inputAmount, opts.runLimit)) || [];
             // Calculate the slippage of on-chain sources compared to the most optimal path
-            const fallbackSlippage = getPathAdjustedSlippage(
-                side,
-                nonNativeOptimalPath,
-                inputAmount,
-                getPathAdjustedRate(side, optimalPath, inputAmount),
-            );
+            const fallbackSlippage = getPathAdjustedSlippage(side, nonNativeOptimalPath, inputAmount, optimalPathRate);
             if (nativeSubPath.length === optimalPath.length || fallbackSlippage <= maxFallbackSlippage) {
                 // If the last fill is Native and penultimate is not, then the intention was to partial fill
                 // In this case we drop it entirely as we can't handle a failure at the end and we don't
@@ -512,24 +567,17 @@ export class MarketOperationUtils {
                 optimalPath = [...nativeSubPath.filter(f => f !== lastNativeFillIfExists), ...nonNativeOptimalPath];
             }
         }
-        const optimizedOrders = createOrdersFromPath(optimalPath, {
-            side,
-            inputToken,
-            outputToken,
-            orderDomain: this._orderDomain,
-            contractAddresses: this.contractAddresses,
-            bridgeSlippage: opts.bridgeSlippage || 0,
-            shouldBatchBridgeOrders: !!opts.shouldBatchBridgeOrders,
-        });
-        const quoteReport = new QuoteReportGenerator(
+        const optimizedOrders = createOrdersFromPath(optimalPath, orderOpts);
+        const quoteReport = generateQuoteReport(
             side,
             _.flatten(dexQuotes),
+            twoHopQuotes,
             nativeOrders,
             orderFillableAmounts,
-            _.flatten(optimizedOrders.map(o => o.fills)),
+            _.flatten(optimizedOrders.map(order => order.fills)),
             opts.quoteRequestor,
-        ).generateReport();
-        return { optimizedOrders, quoteReport };
+        );
+        return { optimizedOrders, quoteReport, isTwoHop: false };
     }
 
     private _optionalSources(): ERC20BridgeSource[] {

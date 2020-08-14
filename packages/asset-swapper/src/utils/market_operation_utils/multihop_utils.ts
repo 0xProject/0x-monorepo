@@ -1,25 +1,36 @@
+import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
-export const TOKEN_ADJACENCY_GRAPH: { [token: string]: string[] } = {
-    // renBTC: wBTC
-    // TUSD: USDC, DAI
-    // USDT: USDC, DAI
-    // COMP: USDC
-    // LEND: USDC
-    // SNX: USDC
-};
+import { FeeSchedule, SourceInfo, TokenAdjacencyGraph } from './types';
 
-export function getIntermediateTokens(makerToken: string, takerToken: string, wethAddress: string): string[] {
+/**
+ * Given a token pair, returns the intermediate tokens to consider for two-hop routes.
+ */
+export function getIntermediateTokens(
+    makerToken: string,
+    takerToken: string,
+    tokenAdjacencyGraph: TokenAdjacencyGraph,
+    wethAddress: string,
+): string[] {
     let intermediateTokens = [];
     if (makerToken === wethAddress) {
-        intermediateTokens = _.get(TOKEN_ADJACENCY_GRAPH, takerToken, [] as string[]);
+        intermediateTokens = _.get(tokenAdjacencyGraph, takerToken, [] as string[]);
     } else if (takerToken === wethAddress) {
-        intermediateTokens = _.get(TOKEN_ADJACENCY_GRAPH, makerToken, [] as string[]);
+        intermediateTokens = _.get(tokenAdjacencyGraph, makerToken, [] as string[]);
     } else {
         intermediateTokens = _.intersection(
-            _.get(TOKEN_ADJACENCY_GRAPH, takerToken, [wethAddress]),
-            _.get(TOKEN_ADJACENCY_GRAPH, makerToken, [wethAddress]),
+            _.get(tokenAdjacencyGraph, takerToken, [wethAddress]),
+            _.get(tokenAdjacencyGraph, makerToken, [wethAddress]),
         );
     }
     return intermediateTokens;
+}
+
+/**
+ * Computes the estimated fee for a multi-hop path.
+ */
+export function getMultiHopFee(hops: SourceInfo[], fees: FeeSchedule): number {
+    return BigNumber.sum(
+        ...hops.map(hop => (fees[hop.source] === undefined ? 0 : fees[hop.source]!(hop.fillData))),
+    ).toNumber();
 }

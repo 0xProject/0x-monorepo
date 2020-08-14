@@ -100,10 +100,11 @@ export function simulateBestCaseFill(quoteInfo: QuoteFillInfo): QuoteFillResult 
         ...DEFAULT_SIMULATED_FILL_QUOTE_INFO_OPTS,
         ...quoteInfo.opts,
     };
+    const protocolFeePerFillOrder = quoteInfo.gasPrice.times(opts.protocolFeeMultiplier);
     const result = fillQuoteOrders(
         createBestCaseFillOrderCalls(quoteInfo),
         quoteInfo.fillAmount,
-        quoteInfo.gasPrice.times(opts.protocolFeeMultiplier),
+        protocolFeePerFillOrder,
         opts.gasSchedule,
     );
     return fromIntermediateQuoteFillResult(result, quoteInfo);

@@ -109,18 +109,46 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
         }
 
         // This transformer will fill the quote.
-        transforms.push({
-            deploymentNonce: this.transformerNonces.fillQuoteTransformer,
-            data: encodeFillQuoteTransformerData({
-                sellToken,
-                buyToken,
-                side: isBuyQuote(quote) ? FillQuoteTransformerSide.Buy : FillQuoteTransformerSide.Sell,
-                fillAmount: isBuyQuote(quote) ? quote.makerAssetFillAmount : quote.takerAssetFillAmount,
-                maxOrderFillAmounts: [],
-                orders: quote.orders,
-                signatures: quote.orders.map(o => o.signature),
-            }),
-        });
+        if (quote.isTwoHop) {
+            const [firstHopOrder, secondHopOrder] = quote.orders;
+            transforms.push({
+                deploymentNonce: this.transformerNonces.fillQuoteTransformer,
+                data: encodeFillQuoteTransformerData({
+                    sellToken,
+                    buyToken: getTokenFromAssetData(firstHopOrder.makerAssetData),
+                    side: FillQuoteTransformerSide.Sell,
+                    fillAmount: firstHopOrder.takerAssetAmount,
+                    maxOrderFillAmounts: [],
+                    orders: [firstHopOrder],
+                    signatures: [firstHopOrder.signature],
+                }),
+            });
+            transforms.push({
+                deploymentNonce: this.transformerNonces.fillQuoteTransformer,
+                data: encodeFillQuoteTransformerData({
+                    sellToken: getTokenFromAssetData(secondHopOrder.takerAssetData),
+                    buyToken,
+                    side: FillQuoteTransformerSide.Sell,
+                    fillAmount: MAX_UINT256,
+                    maxOrderFillAmounts: [],
+                    orders: [secondHopOrder],
+                    signatures: [secondHopOrder.signature],
+                }),
+            });
+        } else {
+            transforms.push({
+                deploymentNonce: this.transformerNonces.fillQuoteTransformer,
+                data: encodeFillQuoteTransformerData({
+                    sellToken,
+                    buyToken,
+                    side: isBuyQuote(quote) ? FillQuoteTransformerSide.Buy : FillQuoteTransformerSide.Sell,
+                    fillAmount: isBuyQuote(quote) ? quote.makerAssetFillAmount : quote.takerAssetFillAmount,
+                    maxOrderFillAmounts: [],
+                    orders: quote.orders,
+                    signatures: quote.orders.map(o => o.signature),
+                }),
+            });
+        }
 
         if (isToETH) {
             // Create a WETH unwrapper if going to ETH.
@@ -159,7 +187,9 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
         transforms.push({
             deploymentNonce: this.transformerNonces.payTakerTransformer,
             data: encodePayTakerTransformerData({
-                tokens: [sellToken, buyToken, ETH_TOKEN_ADDRESS],
+                tokens: [sellToken, buyToken, ETH_TOKEN_ADDRESS].concat(
+                    quote.isTwoHop ? getTokenFromAssetData(quote.orders[0].makerAssetData) : [],
+                ),
                 amounts: [],
             }),
         });
