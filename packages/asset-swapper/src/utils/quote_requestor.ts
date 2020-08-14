@@ -89,7 +89,9 @@ function convertIfAxiosError(error: any): Error | object /* axios' .d.ts has Axi
     if (error.hasOwnProperty('isAxiosError') && error.isAxiosError && error.hasOwnProperty('toJSON')) {
         return error.toJSON();
     } else {
-        return error;
+        return {
+            message: error.message,
+        };
     }
 }
 
