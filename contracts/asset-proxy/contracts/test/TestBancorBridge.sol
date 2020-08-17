@@ -212,7 +212,6 @@ contract TestBancorBridge is
     }
 
     /// @dev Sets the balance of this contract for an existing token.
-    ///      The wei attached will be the balance.
     function setTokenBalance(address tokenAddress, uint256 balance)
         external
     {

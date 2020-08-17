@@ -108,7 +108,10 @@ blockchainTests.resets('Bancor unit tests', env => {
                 // Transfer amount.
                 _opts.amount,
                 // ABI-encode the input token address as the bridge data. // FIXME
-                bridgeDataEncoder.encode([_opts.tokenAddressesPath, await testContract.getNetworkAddress().callAsync()]),
+                bridgeDataEncoder.encode([
+                    _opts.tokenAddressesPath,
+                    await testContract.getNetworkAddress().callAsync(),
+                ]),
             );
             const result = await bridgeTransferFromFn.callAsync();
             const receipt = await bridgeTransferFromFn.awaitTransactionSuccessAsync();
@@ -147,10 +150,7 @@ blockchainTests.resets('Bancor unit tests', env => {
             it('calls BancorNetwork.convertByPath()', async () => {
                 const { opts, result, logs } = await transferFromAsync();
                 expect(result).to.eq(AssetProxyId.ERC20Bridge, 'asset proxy id');
-                const transfers = filterLogsToArguments<ConvertByPathArgs>(
-                    logs,
-                    ContractEvents.ConvertByPathInput,
-                );
+                const transfers = filterLogsToArguments<ConvertByPathArgs>(logs, ContractEvents.ConvertByPathInput);
 
                 expect(transfers.length).to.eq(1);
                 expect(transfers[0].toTokenAddress).to.eq(
@@ -173,16 +173,6 @@ blockchainTests.resets('Bancor unit tests', env => {
                 expect(approvals[0].allowance).to.bignumber.eq(constants.MAX_UINT256);
             });
 
-            // it('sets allowance for "from" token on subsequent calls', async () => {
-            //     const { opts } = await transferFromAsync();
-            //     const { logs } = await transferFromAsync(opts);
-            //     const approvals = filterLogsToArguments<TokenApproveArgs>(logs, ContractEvents.TokenApprove);
-            //     const routerAddress = await testContract.getRouterAddress().callAsync();
-            //     expect(approvals.length).to.eq(1);
-            //     expect(approvals[0].spender).to.eq(routerAddress);
-            //     expect(approvals[0].allowance).to.bignumber.eq(constants.MAX_UINT256);
-            // });
-
             it('fails if the router fails', async () => {
                 const revertReason = 'FOOBAR';
                 const tx = transferFromAsync({
@@ -197,10 +187,7 @@ blockchainTests.resets('Bancor unit tests', env => {
                     tokenAddressesPath: Array(5).fill(constants.NULL_ADDRESS),
                 });
                 expect(result).to.eq(AssetProxyId.ERC20Bridge, 'asset proxy id');
-                const transfers = filterLogsToArguments<ConvertByPathArgs>(
-                    logs,
-                    ContractEvents.ConvertByPathInput,
-                );
+                const transfers = filterLogsToArguments<ConvertByPathArgs>(logs, ContractEvents.ConvertByPathInput);
 
                 expect(transfers.length).to.eq(1);
                 expect(transfers[0].toTokenAddress).to.eq(

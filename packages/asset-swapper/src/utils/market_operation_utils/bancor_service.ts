@@ -1,6 +1,8 @@
+import { SupportedProvider } from '@0x/dev-utils';
 import { BigNumber } from '@0x/utils';
 import { SDK } from '@bancor/sdk';
-import { Ethereum } from '@bancor/sdk/dist/blockchains/ethereum';
+import { Ethereum, getDecimals } from '@bancor/sdk/dist/blockchains/ethereum';
+import { fromWei, toWei } from '@bancor/sdk/dist/helpers';
 import { BlockchainType, Token } from '@bancor/sdk/dist/types';
 
 import { BancorQuoteData } from './types';
@@ -20,11 +22,11 @@ export class BancorService {
     public minReturnAmountBufferPercentage = 0.99;
     private _sdk?: SDK;
 
-    constructor(public ethereumNodeEndpoint: string) {}
+    constructor(public provider: SupportedProvider) {}
 
     public async getSDKAsync(): Promise<SDK> {
         if (!this._sdk) {
-            this._sdk = await SDK.create({ ethereumNodeEndpoint: this.ethereumNodeEndpoint });
+            this._sdk = await SDK.create({ ethereumNodeEndpoint: this.provider });
         }
         return this._sdk;
     }
@@ -35,13 +37,21 @@ export class BancorService {
         amount: BigNumber = new BigNumber(1),
     ): Promise<BancorQuoteData> {
         const sdk = await this.getSDKAsync();
-        const { path, rate } = await sdk.pricing.getPathAndRate(token(fromToken), token(toToken), amount.toString());
+        const blockchain = sdk._core.blockchains[BlockchainType.Ethereum] as Ethereum;
+        const sourceDecimals = await getDecimals(blockchain, fromToken);
+        const { path, rate } = await sdk.pricing.getPathAndRate(
+            token(fromToken),
+            token(toToken),
+            fromWei(amount.toString(), sourceDecimals),
+        );
+        const targetDecimals = await getDecimals(blockchain, toToken);
+        const output = toWei(rate, targetDecimals);
         return {
             fillData: {
                 path: path.map(p => p.blockchainId),
                 networkAddress: await this.getBancorNetworkAddressAsync(),
             }, // ethereum token addresses
-            amount: new BigNumber(rate).multipliedBy(this.minReturnAmountBufferPercentage),
+            amount: new BigNumber(output).multipliedBy(this.minReturnAmountBufferPercentage).dp(0),
         };
     }
 

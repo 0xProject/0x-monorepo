@@ -69,9 +69,6 @@ contract BancorBridge is
         ) = abi.decode(bridgeData, (address[], address));
         // solhint-enable indent
 
-        require(state.path.length > 2, "BancorBridge/PATH_LENGTH_MUST_BE_GREATER_THAN_TWO");
-        require(state.path[state.path.length - 1] == toTokenAddress, "BancorBridge/LAST_ELEMENT_OF_PATH_MUST_MATCH_OUTPUT_TOKEN");
-
         // Just transfer the tokens if they're the same.
         if (state.path[0] == toTokenAddress) {
             LibERC20Token.transfer(state.path[0], to, amount);
@@ -79,7 +76,9 @@ contract BancorBridge is
         }
 
         // Otherwise use Bancor to convert
-
+        require(state.path.length > 2, "BancorBridge/PATH_LENGTH_MUST_BE_GREATER_THAN_TWO");
+        require(state.path[state.path.length - 1] == toTokenAddress, "BancorBridge/LAST_ELEMENT_OF_PATH_MUST_MATCH_OUTPUT_TOKEN");
+        
         // // Grant an allowance to the Bancor Network to spend `fromTokenAddress` token.
         uint256 fromTokenBalance = IERC20Token(state.path[0]).balanceOf(address(this));
         LibERC20Token.approveIfBelow(state.path[0], state.bancorNetworkAddress, fromTokenBalance);

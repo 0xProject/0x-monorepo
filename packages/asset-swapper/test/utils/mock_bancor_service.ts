@@ -1,5 +1,6 @@
 import { BigNumber } from '@0x/utils';
 
+import { SupportedProvider } from '../../src';
 import { BancorService } from '../../src/utils/market_operation_utils/bancor_service';
 import { BancorQuoteData } from '../../src/utils/market_operation_utils/types';
 
@@ -11,8 +12,8 @@ export class MockBancorService extends BancorService {
     // Bancor recommends setting this value to 2% under the expected return amount
     public minReturnAmountBufferPercentage = 0.98;
 
-    constructor(public handlers: Partial<Handlers>) {
-        super('');
+    constructor(provider: SupportedProvider, public handlers: Partial<Handlers>) {
+        super(provider);
     }
 
     public async getQuoteAsync(fromToken: string, toToken: string, amount: BigNumber): Promise<BancorQuoteData> {

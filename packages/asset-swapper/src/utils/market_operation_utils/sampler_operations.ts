@@ -492,8 +492,8 @@ export const samplerOperations = {
                                     );
                                 }
                                 return samplerOperations.getBancorSellQuotes(
-                                    takerToken,
                                     makerToken,
+                                    takerToken,
                                     takerFillAmounts,
                                     bancorService,
                                 );
@@ -508,7 +508,7 @@ export const samplerOperations = {
         const samplerOps: Array<SourceQuoteOperation<FillData, QuoteData>> = [];
         const nonSamplerOps: Array<SourceQuoteOperation<FillData, QuoteData>> = [];
         subOps.forEach(op => {
-            if (nonSamplerSources.find(s => s === op.source) !== undefined) {
+            if (nonSamplerSources.includes(op.source)) {
                 nonSamplerOps.push(op);
             } else {
                 samplerOps.push(op);

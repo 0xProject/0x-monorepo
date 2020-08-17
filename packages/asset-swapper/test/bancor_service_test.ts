@@ -1,3 +1,4 @@
+import { web3Factory, Web3ProviderEngine } from '@0x/dev-utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 import 'mocha';
@@ -12,26 +13,22 @@ const expect = chai.expect;
 
 const ADDRESS_REGEX = /^(0x)?[0-9a-f]{40}$/i;
 const RPC_URL = `https://mainnet.infura.io/v3/${process.env.INFURA_PROJECT_ID}`;
+
+const provider: Web3ProviderEngine = web3Factory.getRpcProvider({ rpcUrl: RPC_URL });
 // tslint:disable:custom-no-magic-numbers
 
 // These tests test the bancor SDK against mainnet
-// Will be skipped if the env variable INFURA_PROJECT_ID is not set
-describe('Bancor Service', () => {
-    const bancorService = new BancorService(RPC_URL);
+// TODO (xianny): After we move asset-swapper out of the monorepo, we should add an env variable to circle CI to run this test
+describe.skip('Bancor Service', () => {
+    const bancorService = new BancorService(provider);
+    const eth = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
+    const bnt = '0x1f573d6fb3f13d689ff844b4ce37794d79a7ff1c';
     it('should retrieve the bancor network address', async () => {
-        if (!process.env.INFURA_PROJECT_ID) {
-            return;
-        }
         const networkAddress = await bancorService.getBancorNetworkAddressAsync();
         expect(networkAddress).to.match(ADDRESS_REGEX);
     });
     it('should retrieve a quote', async () => {
-        if (!process.env.INFURA_PROJECT_ID) {
-            return;
-        }
-        const eth = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
-        const bnt = '0x1f573d6fb3f13d689ff844b4ce37794d79a7ff1c';
-        const amt = new BigNumber(50);
+        const amt = new BigNumber(2);
         const quote = await bancorService.getQuoteAsync(eth, bnt, amt);
 
         // get rate from the bancor sdk
@@ -40,23 +37,21 @@ describe('Bancor Service', () => {
 
         expect(quote.fillData.networkAddress).to.match(ADDRESS_REGEX);
         expect(quote.fillData.path).to.be.an.instanceOf(Array);
-        expect(quote.fillData.path).to.have.lengthOf.above(2);
-        expect(quote.amount).to.bignumber.eq(
-            new BigNumber(expectedAmt).multipliedBy(bancorService.minReturnAmountBufferPercentage),
+        expect(quote.fillData.path).to.have.lengthOf(3);
+        expect(quote.amount.dp(0)).to.bignumber.eq(
+            new BigNumber(expectedAmt).multipliedBy(bancorService.minReturnAmountBufferPercentage).dp(0),
         );
     });
     // HACK (xianny): for exploring SDK results
-    it.skip('should retrieve multiple quotes', async () => {
-        const usdc = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';
-        const dai = '0x6b175474e89094c44da98b954eedeac495271d0f';
-        const amts = [1, 10, 100, 1000].map(a => new BigNumber(a));
-        const quotes = await Promise.all(amts.map(async amount => bancorService.getQuoteAsync(usdc, dai, amount)));
+    it('should retrieve multiple quotes', async () => {
+        const amts = [1, 10, 100, 1000].map(a => new BigNumber(a).multipliedBy(10e18));
+        const quotes = await Promise.all(amts.map(async amount => bancorService.getQuoteAsync(eth, bnt, amount)));
         quotes.map((q, i) => {
             // tslint:disable:no-console
             console.log(
-                `Input ${amts[i]}; Output: ${q.amount}; Path: ${q.fillData.path.length}\nPath: ${JSON.stringify(
-                    q.fillData.path,
-                )}`,
+                `Input ${amts[i].toExponential()}; Output: ${q.amount}; Path: ${
+                    q.fillData.path.length
+                }\nPath: ${JSON.stringify(q.fillData.path)}`,
             );
             // tslint:enable:no-console
         });
