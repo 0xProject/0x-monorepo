@@ -8,13 +8,12 @@ import { getCurveInfosForPair } from './curve_utils';
 import { getMultiBridgeIntermediateToken } from './multibridge_utils';
 import {
     BalancerFillData,
-    BancorQuoteData,
+    BancorFillData,
     BatchedOperation,
     CurveFillData,
     CurveInfo,
     DexSample,
     FillData,
-    QuoteData,
     SourceQuoteOperation,
     UniswapV2FillData,
 } from './types';
@@ -57,7 +56,9 @@ export const samplerOperations = {
                     .getABIEncodedTransactionData();
             },
             handleCallResultsAsync: async (contract, callResults) => {
-                return contract.getABIDecodedReturnData<BigNumber[]>('sampleSellsFromKyberNetwork', callResults);
+                return contract
+                    .getABIDecodedReturnData<BigNumber[]>('sampleSellsFromKyberNetwork', callResults)
+                    .map(amount => ({ amount }));
             },
         };
     },
@@ -70,7 +71,9 @@ export const samplerOperations = {
                     .getABIEncodedTransactionData();
             },
             handleCallResultsAsync: async (contract, callResults) => {
-                return contract.getABIDecodedReturnData<BigNumber[]>('sampleBuysFromKyberNetwork', callResults);
+                return contract
+                    .getABIDecodedReturnData<BigNumber[]>('sampleBuysFromKyberNetwork', callResults)
+                    .map(amount => ({ amount }));
             },
         };
     },
@@ -83,7 +86,9 @@ export const samplerOperations = {
                     .getABIEncodedTransactionData();
             },
             handleCallResultsAsync: async (contract, callResults) => {
-                return contract.getABIDecodedReturnData<BigNumber[]>('sampleSellsFromUniswap', callResults);
+                return contract
+                    .getABIDecodedReturnData<BigNumber[]>('sampleSellsFromUniswap', callResults)
+                    .map(amount => ({ amount }));
             },
         };
     },
@@ -96,7 +101,9 @@ export const samplerOperations = {
                     .getABIEncodedTransactionData();
             },
             handleCallResultsAsync: async (contract, callResults) => {
-                return contract.getABIDecodedReturnData<BigNumber[]>('sampleBuysFromUniswap', callResults);
+                return contract
+                    .getABIDecodedReturnData<BigNumber[]>('sampleBuysFromUniswap', callResults)
+                    .map(amount => ({ amount }));
             },
         };
     },
@@ -106,14 +113,18 @@ export const samplerOperations = {
     ): SourceQuoteOperation<UniswapV2FillData> {
         return {
             source: ERC20BridgeSource.UniswapV2,
-            fillData: { tokenAddressPath },
             encodeCall: contract => {
                 return contract
                     .sampleSellsFromUniswapV2(tokenAddressPath, takerFillAmounts)
                     .getABIEncodedTransactionData();
             },
             handleCallResultsAsync: async (contract, callResults) => {
-                return contract.getABIDecodedReturnData<BigNumber[]>('sampleSellsFromUniswapV2', callResults);
+                return contract
+                    .getABIDecodedReturnData<BigNumber[]>('sampleSellsFromUniswapV2', callResults)
+                    .map(amount => ({
+                        amount,
+                        fillData: { tokenAddressPath },
+                    }));
             },
         };
     },
@@ -123,14 +134,18 @@ export const samplerOperations = {
     ): SourceQuoteOperation<UniswapV2FillData> {
         return {
             source: ERC20BridgeSource.UniswapV2,
-            fillData: { tokenAddressPath },
             encodeCall: contract => {
                 return contract
                     .sampleBuysFromUniswapV2(tokenAddressPath, makerFillAmounts)
                     .getABIEncodedTransactionData();
             },
             handleCallResultsAsync: async (contract, callResults) => {
-                return contract.getABIDecodedReturnData<BigNumber[]>('sampleBuysFromUniswapV2', callResults);
+                return contract
+                    .getABIDecodedReturnData<BigNumber[]>('sampleBuysFromUniswapV2', callResults)
+                    .map(amount => ({
+                        amount,
+                        fillData: { tokenAddressPath },
+                    }));
             },
         };
     },
@@ -148,10 +163,9 @@ export const samplerOperations = {
                     .getABIEncodedTransactionData();
             },
             handleCallResultsAsync: async (contract, callResults) => {
-                return contract.getABIDecodedReturnData<BigNumber[]>(
-                    'sampleSellsFromLiquidityProviderRegistry',
-                    callResults,
-                );
+                return contract
+                    .getABIDecodedReturnData<BigNumber[]>('sampleSellsFromLiquidityProviderRegistry', callResults)
+                    .map(amount => ({ amount }));
             },
         };
     },
@@ -169,10 +183,9 @@ export const samplerOperations = {
                     .getABIEncodedTransactionData();
             },
             handleCallResultsAsync: async (contract, callResults) => {
-                return contract.getABIDecodedReturnData<BigNumber[]>(
-                    'sampleBuysFromLiquidityProviderRegistry',
-                    callResults,
-                );
+                return contract
+                    .getABIDecodedReturnData<BigNumber[]>('sampleBuysFromLiquidityProviderRegistry', callResults)
+                    .map(amount => ({ amount }));
             },
         };
     },
@@ -197,7 +210,9 @@ export const samplerOperations = {
                     .getABIEncodedTransactionData();
             },
             handleCallResultsAsync: async (contract, callResults) => {
-                return contract.getABIDecodedReturnData<BigNumber[]>('sampleSellsFromMultiBridge', callResults);
+                return contract
+                    .getABIDecodedReturnData<BigNumber[]>('sampleSellsFromMultiBridge', callResults)
+                    .map(amount => ({ amount }));
             },
         };
     },
@@ -210,7 +225,9 @@ export const samplerOperations = {
                     .getABIEncodedTransactionData();
             },
             handleCallResultsAsync: async (contract, callResults) => {
-                return contract.getABIDecodedReturnData<BigNumber[]>('sampleSellsFromEth2Dai', callResults);
+                return contract
+                    .getABIDecodedReturnData<BigNumber[]>('sampleSellsFromEth2Dai', callResults)
+                    .map(amount => ({ amount }));
             },
         };
     },
@@ -223,7 +240,9 @@ export const samplerOperations = {
                     .getABIEncodedTransactionData();
             },
             handleCallResultsAsync: async (contract, callResults) => {
-                return contract.getABIDecodedReturnData<BigNumber[]>('sampleBuysFromEth2Dai', callResults);
+                return contract
+                    .getABIDecodedReturnData<BigNumber[]>('sampleBuysFromEth2Dai', callResults)
+                    .map(amount => ({ amount }));
             },
         };
     },
@@ -235,11 +254,6 @@ export const samplerOperations = {
     ): SourceQuoteOperation<CurveFillData> {
         return {
             source: ERC20BridgeSource.Curve,
-            fillData: {
-                curve,
-                fromTokenIdx,
-                toTokenIdx,
-            },
             encodeCall: contract => {
                 return contract
                     .sampleSellsFromCurve(
@@ -255,7 +269,16 @@ export const samplerOperations = {
                     .getABIEncodedTransactionData();
             },
             handleCallResultsAsync: async (contract, callResults) => {
-                return contract.getABIDecodedReturnData<BigNumber[]>('sampleSellsFromCurve', callResults);
+                return contract
+                    .getABIDecodedReturnData<BigNumber[]>('sampleSellsFromCurve', callResults)
+                    .map(amount => ({
+                        amount,
+                        fillData: {
+                            curve,
+                            fromTokenIdx,
+                            toTokenIdx,
+                        },
+                    }));
             },
         };
     },
@@ -267,11 +290,6 @@ export const samplerOperations = {
     ): SourceQuoteOperation<CurveFillData> {
         return {
             source: ERC20BridgeSource.Curve,
-            fillData: {
-                curve,
-                fromTokenIdx,
-                toTokenIdx,
-            },
             encodeCall: contract => {
                 return contract
                     .sampleBuysFromCurve(
@@ -287,7 +305,16 @@ export const samplerOperations = {
                     .getABIEncodedTransactionData();
             },
             handleCallResultsAsync: async (contract, callResults) => {
-                return contract.getABIDecodedReturnData<BigNumber[]>('sampleBuysFromCurve', callResults);
+                return contract
+                    .getABIDecodedReturnData<BigNumber[]>('sampleBuysFromCurve', callResults)
+                    .map(amount => ({
+                        amount,
+                        fillData: {
+                            curve,
+                            fromTokenIdx,
+                            toTokenIdx,
+                        },
+                    }));
             },
         };
     },
@@ -296,7 +323,7 @@ export const samplerOperations = {
         takerToken: string,
         takerFillAmounts: BigNumber[],
         bancorService: BancorService,
-    ): SourceQuoteOperation<FillData, BancorQuoteData> {
+    ): SourceQuoteOperation<BancorFillData> {
         return {
             source: ERC20BridgeSource.Bancor,
             encodeCall: _contract => {
@@ -312,15 +339,23 @@ export const samplerOperations = {
     getBalancerSellQuotes(pool: BalancerPool, takerFillAmounts: BigNumber[]): SourceQuoteOperation<BalancerFillData> {
         return {
             source: ERC20BridgeSource.Balancer,
-            fillData: { poolAddress: pool.id },
-            ...samplerOperations.constant(takerFillAmounts.map(amount => computeBalancerSellQuote(pool, amount))),
+            ...samplerOperations.constant(
+                takerFillAmounts.map(amount => ({
+                    amount: computeBalancerSellQuote(pool, amount),
+                    fillData: { poolAddress: pool.id },
+                })),
+            ),
         };
     },
     getBalancerBuyQuotes(pool: BalancerPool, makerFillAmounts: BigNumber[]): SourceQuoteOperation<BalancerFillData> {
         return {
             source: ERC20BridgeSource.Balancer,
-            fillData: { poolAddress: pool.id },
-            ...samplerOperations.constant(makerFillAmounts.map(amount => computeBalancerBuyQuote(pool, amount))),
+            ...samplerOperations.constant(
+                makerFillAmounts.map(amount => ({
+                    amount: computeBalancerBuyQuote(pool, amount),
+                    fillData: { poolAddress: pool.id },
+                })),
+            ),
         };
     },
     getMedianSellRateAsync: async (
@@ -411,11 +446,7 @@ export const samplerOperations = {
         const subOps = _.flatten(
             await Promise.all(
                 sources.map(
-                    async (
-                        source,
-                    ): Promise<
-                        SourceQuoteOperation<FillData, QuoteData> | Array<SourceQuoteOperation<FillData, QuoteData>>
-                    > => {
+                    async (source): Promise<SourceQuoteOperation<FillData> | Array<SourceQuoteOperation<FillData>>> => {
                         switch (source) {
                             case ERC20BridgeSource.Eth2Dai:
                                 return samplerOperations.getEth2DaiSellQuotes(makerToken, takerToken, takerFillAmounts);
@@ -505,8 +536,8 @@ export const samplerOperations = {
             ),
         );
         const nonSamplerSources = [ERC20BridgeSource.Balancer, ERC20BridgeSource.Bancor];
-        const samplerOps: Array<SourceQuoteOperation<FillData, QuoteData>> = [];
-        const nonSamplerOps: Array<SourceQuoteOperation<FillData, QuoteData>> = [];
+        const samplerOps: Array<SourceQuoteOperation<FillData>> = [];
+        const nonSamplerOps: Array<SourceQuoteOperation<FillData>> = [];
         subOps.forEach(op => {
             if (nonSamplerSources.includes(op.source)) {
                 nonSamplerOps.push(op);
@@ -530,13 +561,9 @@ export const samplerOperations = {
                 return [...samplerOps, ...nonSamplerOps].map((op, i) => {
                     return samples[i].map((output, j) => ({
                         source: op.source,
-                        output:
-                            op.source === ERC20BridgeSource.Bancor
-                                ? (output as BancorQuoteData).amount
-                                : (output as BigNumber), // hack; all QuoteData other than Bancor defaults to BigNumber
+                        output: output.amount,
                         input: takerFillAmounts[j],
-                        fillData:
-                            op.source === ERC20BridgeSource.Bancor ? (output as BancorQuoteData).fillData : op.fillData, // Bancor has unique fillData per sample
+                        fillData: output.fillData,
                     }));
                 });
             },
@@ -555,11 +582,7 @@ export const samplerOperations = {
         const subOps = _.flatten(
             await Promise.all(
                 sources.map(
-                    async (
-                        source,
-                    ): Promise<
-                        SourceQuoteOperation<FillData, QuoteData> | Array<SourceQuoteOperation<FillData, QuoteData>>
-                    > => {
+                    async (source): Promise<SourceQuoteOperation<FillData> | Array<SourceQuoteOperation<FillData>>> => {
                         switch (source) {
                             case ERC20BridgeSource.Eth2Dai:
                                 return samplerOperations.getEth2DaiBuyQuotes(makerToken, takerToken, makerFillAmounts);
@@ -621,8 +644,8 @@ export const samplerOperations = {
             ),
         );
         const nonSamplerSources = [ERC20BridgeSource.Balancer, ERC20BridgeSource.Bancor];
-        const samplerOps: Array<SourceQuoteOperation<FillData, QuoteData>> = [];
-        const nonSamplerOps: Array<SourceQuoteOperation<FillData, QuoteData>> = [];
+        const samplerOps: Array<SourceQuoteOperation<FillData>> = [];
+        const nonSamplerOps: Array<SourceQuoteOperation<FillData>> = [];
         subOps.forEach(op => {
             if (nonSamplerSources.find(s => s === op.source) !== undefined) {
                 nonSamplerOps.push(op);
@@ -646,13 +669,9 @@ export const samplerOperations = {
                 return [...samplerOps, ...nonSamplerOps].map((op, i) => {
                     return samples[i].map((output, j) => ({
                         source: op.source,
-                        output:
-                            op.source === ERC20BridgeSource.Bancor
-                                ? (output as BancorQuoteData).amount
-                                : (output as BigNumber), // hack; all QuoteData other than Bancor defaults to BigNumber
+                        output: output.amount,
                         input: makerFillAmounts[j],
-                        fillData:
-                            op.source === ERC20BridgeSource.Bancor ? (output as BancorQuoteData).fillData : op.fillData,
+                        fillData: output.fillData,
                     }));
                 });
             },

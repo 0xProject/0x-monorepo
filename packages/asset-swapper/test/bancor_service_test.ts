@@ -3,7 +3,7 @@ import * as chai from 'chai';
 import * as _ from 'lodash';
 import 'mocha';
 
-import { BigNumber } from '../src';
+import { BancorFillData, BigNumber } from '../src';
 import { BancorService, token } from '../src/utils/market_operation_utils/bancor_service';
 
 import { chaiSetup } from './utils/chai_setup';
@@ -30,14 +30,15 @@ describe.skip('Bancor Service', () => {
     it('should retrieve a quote', async () => {
         const amt = new BigNumber(2);
         const quote = await bancorService.getQuoteAsync(eth, bnt, amt);
+        const fillData = quote.fillData as BancorFillData;
 
         // get rate from the bancor sdk
         const sdk = await bancorService.getSDKAsync();
-        const expectedAmt = await sdk.pricing.getRateByPath(quote.fillData.path.map(s => token(s)), amt.toString());
+        const expectedAmt = await sdk.pricing.getRateByPath(fillData.path.map(s => token(s)), amt.toString());
 
-        expect(quote.fillData.networkAddress).to.match(ADDRESS_REGEX);
-        expect(quote.fillData.path).to.be.an.instanceOf(Array);
-        expect(quote.fillData.path).to.have.lengthOf(3);
+        expect(fillData.networkAddress).to.match(ADDRESS_REGEX);
+        expect(fillData.path).to.be.an.instanceOf(Array);
+        expect(fillData.path).to.have.lengthOf(3);
         expect(quote.amount.dp(0)).to.bignumber.eq(
             new BigNumber(expectedAmt).multipliedBy(bancorService.minReturnAmountBufferPercentage).dp(0),
         );
@@ -48,10 +49,11 @@ describe.skip('Bancor Service', () => {
         const quotes = await Promise.all(amts.map(async amount => bancorService.getQuoteAsync(eth, bnt, amount)));
         quotes.map((q, i) => {
             // tslint:disable:no-console
+            const fillData = q.fillData as BancorFillData;
             console.log(
                 `Input ${amts[i].toExponential()}; Output: ${q.amount}; Path: ${
-                    q.fillData.path.length
-                }\nPath: ${JSON.stringify(q.fillData.path)}`,
+                    fillData.path.length
+                }\nPath: ${JSON.stringify(fillData.path)}`,
             );
             // tslint:enable:no-console
         });

@@ -150,7 +150,7 @@ describe('DexSampler tests', () => {
                     expectedTakerFillAmounts,
                 ),
             );
-            expect(fillableAmounts).to.deep.eq(expectedMakerFillAmounts);
+            expect(fillableAmounts.map(q => q.amount)).to.deep.eq(expectedMakerFillAmounts);
         });
 
         it('getLiquidityProviderSellQuotes()', async () => {
@@ -290,7 +290,7 @@ describe('DexSampler tests', () => {
                     expectedTakerFillAmounts,
                 ),
             );
-            expect(fillableAmounts).to.deep.eq(expectedMakerFillAmounts);
+            expect(fillableAmounts.map(q => q.amount)).to.deep.eq(expectedMakerFillAmounts);
         });
 
         it('getUniswapSellQuotes()', async () => {
@@ -314,7 +314,7 @@ describe('DexSampler tests', () => {
                     expectedTakerFillAmounts,
                 ),
             );
-            expect(fillableAmounts).to.deep.eq(expectedMakerFillAmounts);
+            expect(fillableAmounts.map(q => q.amount)).to.deep.eq(expectedMakerFillAmounts);
         });
 
         it('getUniswapV2SellQuotes()', async () => {
@@ -336,7 +336,7 @@ describe('DexSampler tests', () => {
                     expectedTakerFillAmounts,
                 ),
             );
-            expect(fillableAmounts).to.deep.eq(expectedMakerFillAmounts);
+            expect(fillableAmounts.map(q => q.amount)).to.deep.eq(expectedMakerFillAmounts);
         });
 
         it('getEth2DaiBuyQuotes()', async () => {
@@ -360,7 +360,7 @@ describe('DexSampler tests', () => {
                     expectedMakerFillAmounts,
                 ),
             );
-            expect(fillableAmounts).to.deep.eq(expectedTakerFillAmounts);
+            expect(fillableAmounts.map(q => q.amount)).to.deep.eq(expectedTakerFillAmounts);
         });
 
         it('getUniswapBuyQuotes()', async () => {
@@ -384,7 +384,7 @@ describe('DexSampler tests', () => {
                     expectedMakerFillAmounts,
                 ),
             );
-            expect(fillableAmounts).to.deep.eq(expectedTakerFillAmounts);
+            expect(fillableAmounts.map(q => q.amount)).to.deep.eq(expectedTakerFillAmounts);
         });
 
         interface RatesBySource {

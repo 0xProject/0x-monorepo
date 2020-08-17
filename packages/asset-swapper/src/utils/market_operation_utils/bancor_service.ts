@@ -5,7 +5,7 @@ import { Ethereum, getDecimals } from '@bancor/sdk/dist/blockchains/ethereum';
 import { fromWei, toWei } from '@bancor/sdk/dist/helpers';
 import { BlockchainType, Token } from '@bancor/sdk/dist/types';
 
-import { BancorQuoteData } from './types';
+import { BancorFillData, Quote } from './types';
 
 /**
  * Converts an address to a Bancor Token type
@@ -35,7 +35,7 @@ export class BancorService {
         fromToken: string,
         toToken: string,
         amount: BigNumber = new BigNumber(1),
-    ): Promise<BancorQuoteData> {
+    ): Promise<Quote<BancorFillData>> {
         const sdk = await this.getSDKAsync();
         const blockchain = sdk._core.blockchains[BlockchainType.Ethereum] as Ethereum;
         const sourceDecimals = await getDecimals(blockchain, fromToken);
@@ -47,11 +47,11 @@ export class BancorService {
         const targetDecimals = await getDecimals(blockchain, toToken);
         const output = toWei(rate, targetDecimals);
         return {
+            amount: new BigNumber(output).multipliedBy(this.minReturnAmountBufferPercentage).dp(0),
             fillData: {
                 path: path.map(p => p.blockchainId),
                 networkAddress: await this.getBancorNetworkAddressAsync(),
-            }, // ethereum token addresses
-            amount: new BigNumber(output).multipliedBy(this.minReturnAmountBufferPercentage).dp(0),
+            },
         };
     }
 

@@ -101,11 +101,9 @@ export interface BancorFillData extends FillData {
     networkAddress: string;
 }
 
-export interface QuoteData {}
-
-export interface BancorQuoteData extends QuoteData {
-    fillData: BancorFillData;
+export interface Quote<TFillData = FillData> {
     amount: BigNumber;
+    fillData?: TFillData;
 }
 
 /**
@@ -277,10 +275,9 @@ export interface BatchedOperation<TResult> {
     handleCallResultsAsync(contract: ERC20BridgeSamplerContract, callResults: string): Promise<TResult>;
 }
 
-export interface SourceQuoteOperation<TFillData extends FillData = FillData, TQuoteData extends QuoteData = BigNumber>
-    extends BatchedOperation<TQuoteData[]> {
+export interface SourceQuoteOperation<TFillData extends FillData = FillData>
+    extends BatchedOperation<Array<Quote<TFillData>>> {
     source: ERC20BridgeSource;
-    fillData?: TFillData;
 }
 
 export interface OptimizedOrdersAndQuoteReport {
