@@ -40,10 +40,6 @@ lib
 /contracts/erc20/test/generated-wrappers
 /contracts/erc20/generated-artifacts
 /contracts/erc20/test/generated-artifacts
-/packages/asset-swapper/generated-wrappers
-/packages/asset-swapper/test/generated-wrappers
-/packages/asset-swapper/generated-artifacts
-/packages/asset-swapper/test/generated-artifacts
 /contracts/erc721/generated-wrappers
 /contracts/erc721/test/generated-wrappers
 /contracts/erc721/generated-artifacts

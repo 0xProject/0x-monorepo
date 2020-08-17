@@ -25,19 +25,15 @@ import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
-import "@0x/contracts-utils/contracts/src/DeploymentConstants.sol";
-import "./IDevUtils.sol";
 
 
-contract NativeOrderSampler is
-    DeploymentConstants
-{
+contract NativeOrderSampler {
     using LibSafeMath for uint256;
     using LibBytes for bytes;
 
     /// @dev The Exchange ERC20Proxy ID.
     bytes4 private constant ERC20_ASSET_PROXY_ID = 0xf47261b0;
-    /// @dev Gas limit for DevUtils calls.
+    /// @dev Gas limit for calls to `getOrderFillableTakerAmount()`.
     uint256 constant internal DEFAULT_CALL_GAS = 200e3; // 200k
 
     /// @dev Queries the fillable taker asset amounts of native orders.
@@ -65,7 +61,7 @@ contract NativeOrderSampler is
                     .staticcall
                     .gas(DEFAULT_CALL_GAS)
                     (abi.encodeWithSelector(
-                       this.getOrderFillableAmount.selector,
+                       this.getOrderFillableTakerAmount.selector,
                        orders[i],
                        orderSignatures[i],
                        exchange
@@ -111,7 +107,9 @@ contract NativeOrderSampler is
         }
     }
 
-    function getOrderFillableAmount(
+    /// @dev Get the fillable taker amount of an order, taking into account
+    ///      order state, maker fees, and maker balances.
+    function getOrderFillableTakerAmount(
         LibOrder.Order memory order,
         bytes memory signature,
         IExchange exchange
@@ -134,15 +132,20 @@ contract NativeOrderSampler is
         if (!exchange.isValidHashSignature(orderInfo.orderHash, order.makerAddress, signature)) {
             return 0;
         }
+        address spender = exchange.getAssetProxy(ERC20_ASSET_PROXY_ID);
         IERC20Token makerToken = _getTokenFromERC20AssetData(order.makerAssetData);
-        fillableTakerAmount = order.takerAssetAmount
+        IERC20Token makerFeeToken = order.makerFee > 0
+            ? _getTokenFromERC20AssetData(order.makerFeeAssetData)
+            : IERC20Token(0);
+        uint256 remainingTakerAmount = order.takerAssetAmount
             .safeSub(orderInfo.orderTakerAssetFilledAmount);
+        fillableTakerAmount = remainingTakerAmount;
         // The total fillable maker amount is the remaining fillable maker amount
-        // PLUS maker fees, if denominated in the maker token.
+        // PLUS maker fees, if maker fees are denominated in the maker token.
         uint256 totalFillableMakerAmount = LibMath.safeGetPartialAmountFloor(
-            fillableTakerAmount,
+            remainingTakerAmount,
             order.takerAssetAmount,
-            _getTokenFromERC20AssetData(order.makerFeeAssetData) == makerToken
+            makerFeeToken == makerToken
                 ? order.makerAssetAmount.safeAdd(order.makerFee)
                 : order.makerAssetAmount
         );
@@ -150,7 +153,7 @@ contract NativeOrderSampler is
         // the maker's balance and the allowance they've granted to the ERC20Proxy.
         uint256 spendableMakerAmount = LibSafeMath.min256(
             makerToken.balanceOf(order.makerAddress),
-            makerToken.allowance(order.makerAddress, exchange.getAssetProxy(ERC20_ASSET_PROXY_ID))
+            makerToken.allowance(order.makerAddress, spender)
         );
         // Scale the fillable taker amount by the ratio of the maker's
         // spendable maker amount over the total fillable maker amount.
@@ -158,8 +161,26 @@ contract NativeOrderSampler is
             fillableTakerAmount = LibMath.getPartialAmountCeil(
                 spendableMakerAmount,
                 totalFillableMakerAmount,
-                fillableTakerAmount
+                remainingTakerAmount
             );
+        }
+        // If the maker fee is denominated in another token, constrain
+        // the fillable taker amount by how much the maker can pay of that token.
+        if (makerFeeToken != makerToken && makerFeeToken != IERC20Token(0)) {
+            uint256 spendableExtraMakerFeeAmount = LibSafeMath.min256(
+                makerFeeToken.balanceOf(order.makerAddress),
+                makerFeeToken.allowance(order.makerAddress, spender)
+            );
+            if (spendableExtraMakerFeeAmount < order.makerFee) {
+                fillableTakerAmount = LibSafeMath.min256(
+                    fillableTakerAmount,
+                    LibMath.getPartialAmountCeil(
+                        spendableExtraMakerFeeAmount,
+                        order.makerFee,
+                        remainingTakerAmount
+                    )
+                );
+            }
         }
     }
 

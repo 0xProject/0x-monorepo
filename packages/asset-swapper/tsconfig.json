@@ -15,7 +15,6 @@
         "test/generated-artifacts/ERC20BridgeSampler.json",
         "test/generated-artifacts/Eth2DaiSampler.json",
         "test/generated-artifacts/ICurve.json",
-        "test/generated-artifacts/IDevUtils.json",
         "test/generated-artifacts/IEth2Dai.json",
         "test/generated-artifacts/IKyberHintHandler.json",
         "test/generated-artifacts/IKyberNetwork.json",
@@ -34,6 +33,7 @@
         "test/generated-artifacts/NativeOrderSampler.json",
         "test/generated-artifacts/SamplerUtils.json",
         "test/generated-artifacts/TestERC20BridgeSampler.json",
+        "test/generated-artifacts/TestNativeOrderSampler.json",
         "test/generated-artifacts/UniswapSampler.json",
         "test/generated-artifacts/UniswapV2Sampler.json"
     ]
