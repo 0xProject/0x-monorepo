@@ -17,6 +17,10 @@
             {
                 "note": "Redeploy previously unverified contracts on testnets",
                 "pr": 2656
+            },
+            {
+                "note": "Add bancorBridge field",
+                "pr": 2650
             }
         ]
     },

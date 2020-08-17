@@ -9,6 +9,10 @@
             {
                 "note": "Refactor `migration.ts` a little",
                 "pr": 2656
+            },
+            {
+                "note": "Add bancorBridge to addresses",
+                "pr": 2650
             }
         ]
     },

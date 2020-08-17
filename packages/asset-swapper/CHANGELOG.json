@@ -45,6 +45,10 @@
             {
                 "note": "Adjust fill by ethToInputRate when ethToOutputRate is 0",
                 "pr": 2660
+            },
+            {
+                "note": "Add Bancor as liquidity source",
+                "pr": 2650
             }
         ]
     },

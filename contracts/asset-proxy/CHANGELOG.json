@@ -9,6 +9,10 @@
             {
                 "note": "Export DexForwarderBridgeContract",
                 "pr": 2656
+            },
+            {
+                "note": "Add BancorBridge and IBancorNetwork, ",
+                "pr": 2650
             }
         ]
     },
