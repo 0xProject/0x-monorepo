@@ -918,7 +918,7 @@ describe('MarketOperationUtils tests', () => {
                     ...DEFAULT_OPTS,
                     excludedSources,
                 });
-                expect(sourcesPolled).to.deep.eq(_.without(BUY_SOURCES, ...excludedSources));
+                expect(sourcesPolled.sort()).to.deep.eq(_.without(BUY_SOURCES, ...excludedSources).sort());
             });
 
             it('generates bridge orders with correct asset data', async () => {
