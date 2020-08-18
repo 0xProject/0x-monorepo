@@ -53,89 +53,95 @@ contract DeploymentConstants {
     /// @dev Mainnet address of the mStable mUSD contract.
     address constant private MUSD_ADDRESS = 0xe2f2a5C287993345a840Db3B0845fbC70f5935a5;
 
-    /* // Ropsten addresses ///////////////////////////////////////////////////////
-    /// @dev Mainnet address of the WETH contract.
-    address constant private WETH_ADDRESS = 0xc778417E063141139Fce010982780140Aa0cD5Ab;
-    /// @dev Mainnet address of the KyberNetworkProxy contract.
-    address constant private KYBER_NETWORK_PROXY_ADDRESS = address(0);
-    /// @dev Mainnet address of the `UniswapExchangeFactory` contract.
-    address constant private UNISWAP_EXCHANGE_FACTORY_ADDRESS = address(0);
-    /// @dev Mainnet address of the `UniswapV2Router01` contract.
-    address constant private UNISWAP_V2_ROUTER_01_ADDRESS = address(0);
-    /// @dev Mainnet address of the Eth2Dai `MatchingMarket` contract.
-    address constant private ETH2DAI_ADDRESS = address(0);
-    /// @dev Mainnet address of the `ERC20BridgeProxy` contract
-    address constant private ERC20_BRIDGE_PROXY_ADDRESS = 0xb344afeD348de15eb4a9e180205A2B0739628339;
-    ///@dev Mainnet address of the `Dai` (multi-collateral) contract
-    address constant private DAI_ADDRESS = address(0);
-    /// @dev Mainnet address of the `Chai` contract
-    address constant private CHAI_ADDRESS = address(0);
-    /// @dev Mainnet address of the 0x DevUtils contract.
-    address constant private DEV_UTILS_ADDRESS = 0xC812AF3f3fBC62F76ea4262576EC0f49dB8B7f1c;
-    /// @dev Kyber ETH pseudo-address.
-    address constant internal KYBER_ETH_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
-    /// @dev Mainnet address of the dYdX contract.
-    address constant private DYDX_ADDRESS = address(0);
-    /// @dev Mainnet address of the GST2 contract
-    address constant private GST_ADDRESS = address(0);
-    /// @dev Mainnet address of the GST Collector
-    address constant private GST_COLLECTOR_ADDRESS = address(0); */
+    // // Ropsten addresses ///////////////////////////////////////////////////////
+    // /// @dev Mainnet address of the WETH contract.
+    // address constant private WETH_ADDRESS = 0xc778417E063141139Fce010982780140Aa0cD5Ab;
+    // /// @dev Mainnet address of the KyberNetworkProxy contract.
+    // address constant private KYBER_NETWORK_PROXY_ADDRESS = 0xd719c34261e099Fdb33030ac8909d5788D3039C4;
+    // /// @dev Mainnet address of the `UniswapExchangeFactory` contract.
+    // address constant private UNISWAP_EXCHANGE_FACTORY_ADDRESS = 0x9c83dCE8CA20E9aAF9D3efc003b2ea62aBC08351;
+    // /// @dev Mainnet address of the `UniswapV2Router01` contract.
+    // address constant private UNISWAP_V2_ROUTER_01_ADDRESS = 0xf164fC0Ec4E93095b804a4795bBe1e041497b92a;
+    // /// @dev Mainnet address of the Eth2Dai `MatchingMarket` contract.
+    // address constant private ETH2DAI_ADDRESS = address(0);
+    // /// @dev Mainnet address of the `ERC20BridgeProxy` contract
+    // address constant private ERC20_BRIDGE_PROXY_ADDRESS = 0xb344afeD348de15eb4a9e180205A2B0739628339;
+    // ///@dev Mainnet address of the `Dai` (multi-collateral) contract
+    // address constant private DAI_ADDRESS = address(0);
+    // /// @dev Mainnet address of the `Chai` contract
+    // address constant private CHAI_ADDRESS = address(0);
+    // /// @dev Mainnet address of the 0x DevUtils contract.
+    // address constant private DEV_UTILS_ADDRESS = 0xC812AF3f3fBC62F76ea4262576EC0f49dB8B7f1c;
+    // /// @dev Kyber ETH pseudo-address.
+    // address constant internal KYBER_ETH_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
+    // /// @dev Mainnet address of the dYdX contract.
+    // address constant private DYDX_ADDRESS = address(0);
+    // /// @dev Mainnet address of the GST2 contract
+    // address constant private GST_ADDRESS = address(0);
+    // /// @dev Mainnet address of the GST Collector
+    // address constant private GST_COLLECTOR_ADDRESS = address(0);
+    // /// @dev Mainnet address of the mStable mUSD contract.
+    // address constant private MUSD_ADDRESS = 0x4E1000616990D83e56f4b5fC6CC8602DcfD20459;
 
-    /* // Rinkeby addresses ///////////////////////////////////////////////////////
-    /// @dev Mainnet address of the WETH contract.
-    address constant private WETH_ADDRESS = 0xc778417E063141139Fce010982780140Aa0cD5Ab;
-    /// @dev Mainnet address of the KyberNetworkProxy contract.
-    address constant private KYBER_NETWORK_PROXY_ADDRESS = address(0);
-    /// @dev Mainnet address of the `UniswapExchangeFactory` contract.
-    address constant private UNISWAP_EXCHANGE_FACTORY_ADDRESS = address(0);
-    /// @dev Mainnet address of the `UniswapV2Router01` contract.
-    address constant private UNISWAP_V2_ROUTER_01_ADDRESS = address(0);
-    /// @dev Mainnet address of the Eth2Dai `MatchingMarket` contract.
-    address constant private ETH2DAI_ADDRESS = address(0);
-    /// @dev Mainnet address of the `ERC20BridgeProxy` contract
-    address constant private ERC20_BRIDGE_PROXY_ADDRESS = 0xA2AA4bEFED748Fba27a3bE7Dfd2C4b2c6DB1F49B;
-    ///@dev Mainnet address of the `Dai` (multi-collateral) contract
-    address constant private DAI_ADDRESS = address(0);
-    /// @dev Mainnet address of the `Chai` contract
-    address constant private CHAI_ADDRESS = address(0);
-    /// @dev Mainnet address of the 0x DevUtils contract.
-    address constant private DEV_UTILS_ADDRESS = 0x46B5BC959e8A754c0256FFF73bF34A52Ad5CdfA9;
-    /// @dev Kyber ETH pseudo-address.
-    address constant internal KYBER_ETH_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
-    /// @dev Mainnet address of the dYdX contract.
-    address constant private DYDX_ADDRESS = address(0);
-    /// @dev Mainnet address of the GST2 contract
-    address constant private GST_ADDRESS = address(0);
-    /// @dev Mainnet address of the GST Collector
-    address constant private GST_COLLECTOR_ADDRESS = address(0); */
+    // // Rinkeby addresses ///////////////////////////////////////////////////////
+    // /// @dev Mainnet address of the WETH contract.
+    // address constant private WETH_ADDRESS = 0xc778417E063141139Fce010982780140Aa0cD5Ab;
+    // /// @dev Mainnet address of the KyberNetworkProxy contract.
+    // address constant private KYBER_NETWORK_PROXY_ADDRESS = 0x0d5371e5EE23dec7DF251A8957279629aa79E9C5;
+    // /// @dev Mainnet address of the `UniswapExchangeFactory` contract.
+    // address constant private UNISWAP_EXCHANGE_FACTORY_ADDRESS = 0xf5D915570BC477f9B8D6C0E980aA81757A3AaC36;
+    // /// @dev Mainnet address of the `UniswapV2Router01` contract.
+    // address constant private UNISWAP_V2_ROUTER_01_ADDRESS = 0xf164fC0Ec4E93095b804a4795bBe1e041497b92a;
+    // /// @dev Mainnet address of the Eth2Dai `MatchingMarket` contract.
+    // address constant private ETH2DAI_ADDRESS = address(0);
+    // /// @dev Mainnet address of the `ERC20BridgeProxy` contract
+    // address constant private ERC20_BRIDGE_PROXY_ADDRESS = 0xA2AA4bEFED748Fba27a3bE7Dfd2C4b2c6DB1F49B;
+    // ///@dev Mainnet address of the `Dai` (multi-collateral) contract
+    // address constant private DAI_ADDRESS = address(0);
+    // /// @dev Mainnet address of the `Chai` contract
+    // address constant private CHAI_ADDRESS = address(0);
+    // /// @dev Mainnet address of the 0x DevUtils contract.
+    // address constant private DEV_UTILS_ADDRESS = 0x46B5BC959e8A754c0256FFF73bF34A52Ad5CdfA9;
+    // /// @dev Kyber ETH pseudo-address.
+    // address constant internal KYBER_ETH_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
+    // /// @dev Mainnet address of the dYdX contract.
+    // address constant private DYDX_ADDRESS = address(0);
+    // /// @dev Mainnet address of the GST2 contract
+    // address constant private GST_ADDRESS = address(0);
+    // /// @dev Mainnet address of the GST Collector
+    // address constant private GST_COLLECTOR_ADDRESS = address(0);
+    // /// @dev Mainnet address of the mStable mUSD contract.
+    // address constant private MUSD_ADDRESS = address(0);
 
-    /* // Kovan addresses /////////////////////////////////////////////////////////
-    /// @dev Kovan address of the WETH contract.
-    address constant private WETH_ADDRESS = 0xd0A1E359811322d97991E03f863a0C30C2cF029C;
-    /// @dev Kovan address of the KyberNetworkProxy contract.
-    address constant private KYBER_NETWORK_PROXY_ADDRESS = 0x692f391bCc85cefCe8C237C01e1f636BbD70EA4D;
-    /// @dev Kovan address of the `UniswapExchangeFactory` contract.
-    address constant private UNISWAP_EXCHANGE_FACTORY_ADDRESS = 0xD3E51Ef092B2845f10401a0159B2B96e8B6c3D30;
-    /// @dev Kovan address of the `UniswapV2Router01` contract.
-    address constant private UNISWAP_V2_ROUTER_01_ADDRESS = 0xf164fC0Ec4E93095b804a4795bBe1e041497b92a;
-    /// @dev Kovan address of the Eth2Dai `MatchingMarket` contract.
-    address constant private ETH2DAI_ADDRESS = 0xe325acB9765b02b8b418199bf9650972299235F4;
-    /// @dev Kovan address of the `ERC20BridgeProxy` contract
-    address constant private ERC20_BRIDGE_PROXY_ADDRESS = 0x3577552C1Fb7A44aD76BeEB7aB53251668A21F8D;
-    /// @dev Kovan address of the `Chai` contract
-    address constant private CHAI_ADDRESS = address(0);
-    /// @dev Kovan address of the `Dai` (multi-collateral) contract
-    address constant private DAI_ADDRESS = 0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa;
-    /// @dev Kovan address of the 0x DevUtils contract.
-    address constant private DEV_UTILS_ADDRESS = 0x9402639A828BdF4E9e4103ac3B69E1a6E522eB59;
-    /// @dev Kyber ETH pseudo-address.
-    address constant internal KYBER_ETH_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
-    /// @dev Kovan address of the dYdX contract.
-    address constant private DYDX_ADDRESS = address(0);
-    /// @dev Kovan address of the GST2 contract
-    address constant private GST_ADDRESS = address(0);
-    /// @dev Kovan address of the GST Collector
-    address constant private GST_COLLECTOR_ADDRESS = address(0); */
+    // // Kovan addresses /////////////////////////////////////////////////////////
+    // /// @dev Kovan address of the WETH contract.
+    // address constant private WETH_ADDRESS = 0xd0A1E359811322d97991E03f863a0C30C2cF029C;
+    // /// @dev Kovan address of the KyberNetworkProxy contract.
+    // address constant private KYBER_NETWORK_PROXY_ADDRESS = 0x692f391bCc85cefCe8C237C01e1f636BbD70EA4D;
+    // /// @dev Kovan address of the `UniswapExchangeFactory` contract.
+    // address constant private UNISWAP_EXCHANGE_FACTORY_ADDRESS = 0xD3E51Ef092B2845f10401a0159B2B96e8B6c3D30;
+    // /// @dev Kovan address of the `UniswapV2Router01` contract.
+    // address constant private UNISWAP_V2_ROUTER_01_ADDRESS = 0xf164fC0Ec4E93095b804a4795bBe1e041497b92a;
+    // /// @dev Kovan address of the Eth2Dai `MatchingMarket` contract.
+    // address constant private ETH2DAI_ADDRESS = 0xe325acB9765b02b8b418199bf9650972299235F4;
+    // /// @dev Kovan address of the `ERC20BridgeProxy` contract
+    // address constant private ERC20_BRIDGE_PROXY_ADDRESS = 0x3577552C1Fb7A44aD76BeEB7aB53251668A21F8D;
+    // /// @dev Kovan address of the `Chai` contract
+    // address constant private CHAI_ADDRESS = address(0);
+    // /// @dev Kovan address of the `Dai` (multi-collateral) contract
+    // address constant private DAI_ADDRESS = 0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa;
+    // /// @dev Kovan address of the 0x DevUtils contract.
+    // address constant private DEV_UTILS_ADDRESS = 0x9402639A828BdF4E9e4103ac3B69E1a6E522eB59;
+    // /// @dev Kyber ETH pseudo-address.
+    // address constant internal KYBER_ETH_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
+    // /// @dev Kovan address of the dYdX contract.
+    // address constant private DYDX_ADDRESS = address(0);
+    // /// @dev Kovan address of the GST2 contract
+    // address constant private GST_ADDRESS = address(0);
+    // /// @dev Kovan address of the GST Collector
+    // address constant private GST_COLLECTOR_ADDRESS = address(0);
+    // /// @dev Mainnet address of the mStable mUSD contract.
+    // address constant private MUSD_ADDRESS = address(0);
 
     /// @dev Overridable way to get the `KyberNetworkProxy` address.
     /// @return kyberAddress The `IKyberNetworkProxy` address.
