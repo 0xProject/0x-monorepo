@@ -18,9 +18,9 @@ export function getIntermediateTokens(
     } else if (takerToken === wethAddress) {
         intermediateTokens = _.get(tokenAdjacencyGraph, makerToken, [] as string[]);
     } else {
-        intermediateTokens = _.intersection(
-            _.get(tokenAdjacencyGraph, takerToken, [wethAddress]),
-            _.get(tokenAdjacencyGraph, makerToken, [wethAddress]),
+        intermediateTokens = _.union(
+            _.intersection(_.get(tokenAdjacencyGraph, takerToken, []), _.get(tokenAdjacencyGraph, makerToken, [])),
+            [wethAddress],
         );
     }
     return intermediateTokens;

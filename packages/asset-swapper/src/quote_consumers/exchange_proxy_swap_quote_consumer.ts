@@ -233,7 +233,7 @@ function isBuyQuote(quote: SwapQuote): quote is MarketBuySwapQuote {
 
 function getTokenFromAssetData(assetData: string): string {
     const data = assetDataUtils.decodeAssetDataOrThrow(assetData);
-    if (data.assetProxyId !== AssetProxyId.ERC20) {
+    if (data.assetProxyId !== AssetProxyId.ERC20 && data.assetProxyId !== AssetProxyId.ERC20Bridge) {
         throw new Error(`Unsupported exchange proxy quote asset type: ${data.assetProxyId}`);
     }
     // tslint:disable-next-line:no-unnecessary-type-assertion

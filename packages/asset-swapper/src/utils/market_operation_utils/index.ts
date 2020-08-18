@@ -146,7 +146,7 @@ export class MarketOperationUtils {
                 : this._sampler.getTwoHopSellQuotes(
                       difference(
                           SELL_SOURCES.concat(this._optionalSources()),
-                          _opts.excludedSources,
+                          _opts.excludedSources.concat(ERC20BridgeSource.MultiBridge),
                       ),
                       makerToken,
                       takerToken,
@@ -256,7 +256,11 @@ export class MarketOperationUtils {
                 ? DexOrderSampler.constant([])
                 : this._sampler.getTwoHopBuyQuotes(
                       difference(
-                          BUY_SOURCES.concat(this._optionalSources()),
+                          BUY_SOURCES.concat(
+                              this._liquidityProviderRegistry !== NULL_ADDRESS
+                                  ? [ERC20BridgeSource.LiquidityProvider]
+                                  : [],
+                          ),
                           _opts.excludedSources,
                       ),
                       makerToken,
