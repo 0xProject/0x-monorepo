@@ -227,16 +227,16 @@
         "multiBridge": "0x0000000000000000000000000000000000000000",
         "balancerBridge": "0x0000000000000000000000000000000000000000",
         "exchangeProxyGovernor": "0x0000000000000000000000000000000000000000",
-        "exchangeProxy": "0x2ebb94cc79d7d0f1195300aaf191d118f53292a8",
-        "exchangeProxyAllowanceTarget": "0x3eab3df72fd584b50184ff7d988a0d8f9328c866",
+        "exchangeProxy": "0x5315e44798395d4a952530d131249fe00f554565",
+        "exchangeProxyAllowanceTarget": "0x8362c3ebd90041b30ec45908332e592721642637",
         "exchangeProxyTransformerDeployer": "0x5409ed021d9299bf6814279a6a1411a7e866a631",
-        "exchangeProxyFlashWallet": "0x8362c3ebd90041b30ec45908332e592721642637",
+        "exchangeProxyFlashWallet": "0xb9682a8e7920b431f1d412b8510f0077410c8faa",
         "mStableBridge": "0x0000000000000000000000000000000000000000",
         "transformers": {
-            "wethTransformer": "0x7209185959d7227fb77274e1e88151d7c4c368d3",
-            "payTakerTransformer": "0xc6b0d3c45a6b5092808196cb00df5c357d55e1d5",
-            "fillQuoteTransformer": "0xc7124963ab16c33e5bf421d4c0090116622b3074",
-            "affiliateFeeTransformer": "0x3f16ca81691dab9184cb4606c361d73c4fd2510a"
+            "wethTransformer": "0x3f16ca81691dab9184cb4606c361d73c4fd2510a",
+            "payTakerTransformer": "0x7209185959d7227fb77274e1e88151d7c4c368d3",
+            "fillQuoteTransformer": "0xc6b0d3c45a6b5092808196cb00df5c357d55e1d5",
+            "affiliateFeeTransformer": "0x99356167edba8fbdc36959e3f5d0c43d1ba9c6db"
         }
     }
 }
