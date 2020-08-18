@@ -27,8 +27,6 @@ import "../interfaces/IERC20Bridge.sol";
 import "../interfaces/IMStable.sol";
 
 
-// solhint-disable not-rely-on-time
-// solhint-disable space-after-comma
 contract MStableBridge is
     IERC20Bridge,
     IWallet,

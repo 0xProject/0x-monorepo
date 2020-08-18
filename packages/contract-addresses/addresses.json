@@ -39,7 +39,7 @@
         "exchangeProxyAllowanceTarget": "0xf740b67da229f2f10bcbd38a7979992fcc71b8eb",
         "exchangeProxyTransformerDeployer": "0x80a36559ab9a497fb658325ed771a584eb0f13da",
         "exchangeProxyFlashWallet": "0x22f9dcf4647084d6c31b2765f6910cd85c178c18",
-        "mStableBridge": "0x0000000000000000000000000000000000000000",
+        "mStableBridge": "0x2bf04fcea05f0989a14d9afa37aa376baca6b2b3",
         "transformers": {
             "wethTransformer": "0x7bab5f7299e1ca123bb44eb71e6c89be7e558cc8",
             "payTakerTransformer": "0xe8c07a119452b55eee2f999478aab97f3656d841",
