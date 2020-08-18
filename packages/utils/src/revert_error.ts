@@ -14,6 +14,7 @@ type ArgTypes =
     | BigNumber
     | number
     | boolean
+    | RevertError
     | BigNumber[]
     | string[]
     | number[]
@@ -122,6 +123,19 @@ export abstract class RevertError extends Error {
         const instance = new type();
         try {
             const values = decoder(_bytes);
+            _.transform(
+                values,
+                (result, value, key) => {
+                    const { type: argType } = instance._getArgumentByName(key);
+                    if (argType === 'bytes') {
+                        try {
+                            const nestedRevert = RevertError.decode(value as string, coerce);
+                            result[key] = nestedRevert.toString();
+                        } catch (err) {} // tslint:disable-line:no-empty
+                    }
+                },
+                values,
+            );
             _.assign(instance, { values });
             instance.message = instance.toString();
             return instance;
