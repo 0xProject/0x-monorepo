@@ -19,6 +19,10 @@
                 "pr": 2656
             },
             {
+                "note": "Deploy FQT",
+                "pr": 2667
+            },
+            {
                 "note": "Deploy `MStableBridge` on Mainnet",
                 "pr": 2662
             }

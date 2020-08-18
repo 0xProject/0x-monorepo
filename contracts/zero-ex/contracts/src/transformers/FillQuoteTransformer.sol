@@ -27,17 +27,14 @@ import "@0x/contracts-utils/contracts/src/v06/LibSafeMathV06.sol";
 import "@0x/contracts-utils/contracts/src/v06/LibMathV06.sol";
 import "../errors/LibTransformERC20RichErrors.sol";
 import "../vendor/v3/IExchange.sol";
-import "../vendor/v3/IERC20Bridge.sol";
+import "../bridges/IBridgeAdapter.sol";
 import "./Transformer.sol";
 import "./LibERC20Transformer.sol";
-import "../fixins/FixinGasToken.sol";
-
 
 /// @dev A transformer that fills an ERC20 market sell/buy quote.
 ///      This transformer shortcuts bridge orders and fills them directly
 contract FillQuoteTransformer is
-    Transformer,
-    FixinGasToken
+    Transformer
 {
     using LibERC20TokenV06 for IERC20TokenV06;
     using LibERC20Transformer for IERC20TokenV06;
@@ -116,15 +113,18 @@ contract FillQuoteTransformer is
     IExchange public immutable exchange;
     /// @dev The ERC20Proxy address.
     address public immutable erc20Proxy;
+    /// @dev The BridgeAdapter address
+    IBridgeAdapter public immutable bridgeAdapter;
 
     /// @dev Create this contract.
     /// @param exchange_ The Exchange V3 instance.
-    constructor(IExchange exchange_)
+    constructor(IExchange exchange_, IBridgeAdapter bridgeAdapter_)
         public
         Transformer()
     {
         exchange = exchange_;
         erc20Proxy = exchange_.getAssetProxy(ERC20_ASSET_PROXY_ID);
+        bridgeAdapter = bridgeAdapter_;
     }
 
     /// @dev Sell this contract's entire balance of of `sellToken` in exchange
@@ -139,7 +139,6 @@ contract FillQuoteTransformer is
     )
         external
         override
-        freesGasTokensFromCollector
         returns (bytes4 success)
     {
         TransformData memory data = abi.decode(data_, (TransformData));
@@ -308,7 +307,6 @@ contract FillQuoteTransformer is
             signature,
             takerTokenFillAmount,
             state,
-            makerToken,
             takerFeeToken == takerToken
         );
     }
@@ -372,7 +370,6 @@ contract FillQuoteTransformer is
             signature,
             takerTokenFillAmount,
             state,
-            makerToken,
             takerFeeToken == takerToken
         );
     }
@@ -383,7 +380,6 @@ contract FillQuoteTransformer is
     /// @param signature The order signature.
     /// @param takerAssetFillAmount How much taker asset to fill.
     /// @param state Intermediate state variables to get around stack limits.
-    /// @param makerToken The maker token.
     /// @param isTakerFeeInTakerToken Whether the taker fee token is the same as the
     ///        taker token.
     function _fillOrder(
@@ -391,7 +387,6 @@ contract FillQuoteTransformer is
         bytes memory signature,
         uint256 takerAssetFillAmount,
         FillState memory state,
-        IERC20TokenV06 makerToken,
         bool isTakerFeeInTakerToken
     )
         private
@@ -402,37 +397,23 @@ contract FillQuoteTransformer is
             takerAssetFillAmount.min256(order.takerAssetAmount);
         availableTakerAssetFillAmount =
             availableTakerAssetFillAmount.min256(state.takerTokenBalanceRemaining);
-        // If it is a Bridge order we fill this directly
-        // rather than filling via 0x Exchange
+
+        // If it is a Bridge order we fill this directly through the BridgeAdapter
         if (order.makerAssetData.readBytes4(0) == ERC20_BRIDGE_PROXY_ID) {
-            // Calculate the amount (in maker token) we expect to receive
-            // from the bridge
-            uint256 outputTokenAmount = LibMathV06.getPartialAmountFloor(
-                availableTakerAssetFillAmount,
-                order.takerAssetAmount,
-                order.makerAssetAmount
-            );
-            (bool success, bytes memory data) = address(_implementation).delegatecall(
+            (bool success, bytes memory resultData) = address(bridgeAdapter).delegatecall(
                 abi.encodeWithSelector(
-                    this.fillBridgeOrder.selector,
-                    order.makerAddress,
+                    IBridgeAdapter.trade.selector,
                     order.makerAssetData,
-                    order.takerAssetData,
-                    availableTakerAssetFillAmount,
-                    outputTokenAmount
+                    address(_getTokenFromERC20AssetData(order.takerAssetData)),
+                    availableTakerAssetFillAmount
                 )
             );
-            // Swallow failures, leaving all results as zero.
-            // TransformERC20 asserts the overall price is as expected. It is possible
-            // a subsequent fill can net out at the expected price so we do not assert
-            // the trade balance
             if (success) {
-                results.makerTokenBoughtAmount = makerToken
-                    .balanceOf(address(this))
-                    .safeSub(state.boughtAmount);
+                results.makerTokenBoughtAmount = abi.decode(resultData, (uint256));
                 results.takerTokenSoldAmount = availableTakerAssetFillAmount;
                 // protocol fee paid remains 0
             }
+            return results;
         } else {
             // Emit an event if we do not have sufficient ETH to cover the protocol fee.
             if (state.ethRemaining < state.protocolFee) {
@@ -458,46 +439,6 @@ contract FillQuoteTransformer is
                 // Swallow failures, leaving all results as zero.
             }
         }
-    }
-
-    /// @dev Attempt to fill an ERC20 Bridge order. If the fill reverts,
-    ///      or the amount filled was not sufficient this reverts.
-    /// @param makerAddress The address of the maker.
-    /// @param makerAssetData The encoded ERC20BridgeProxy asset data.
-    /// @param takerAssetData The encoded ERC20 asset data.
-    /// @param inputTokenAmount How much taker asset to fill clamped to the available balance.
-    /// @param outputTokenAmount How much maker asset to receive.
-    function fillBridgeOrder(
-        address makerAddress,
-        bytes calldata makerAssetData,
-        bytes calldata takerAssetData,
-        uint256 inputTokenAmount,
-        uint256 outputTokenAmount
-    )
-        external
-    {
-        // Track changes in the maker token balance.
-        (
-            address tokenAddress,
-            address bridgeAddress,
-            bytes memory bridgeData
-        ) = abi.decode(
-            makerAssetData.sliceDestructive(4, makerAssetData.length),
-            (address, address, bytes)
-        );
-        require(bridgeAddress != address(this), "INVALID_BRIDGE_ADDRESS");
-        // Transfer the tokens to the bridge to perform the work
-        _getTokenFromERC20AssetData(takerAssetData).compatTransfer(
-            bridgeAddress,
-            inputTokenAmount
-        );
-        IERC20Bridge(bridgeAddress).bridgeTransferFrom(
-            tokenAddress,
-            makerAddress,
-            address(this),
-            outputTokenAmount, // amount to transfer back from the bridge
-            bridgeData
-        );
     }
 
     /// @dev Extract the token from plain ERC20 asset data.
