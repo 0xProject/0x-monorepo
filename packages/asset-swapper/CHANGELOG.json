@@ -45,6 +45,14 @@
             {
                 "note": "Adjust fill by ethToInputRate when ethToOutputRate is 0",
                 "pr": 2660
+            },
+            {
+                "note": "Added `mStable`",
+                "pr": 2662
+            },
+            {
+                "note": "Merge `erc20-bridge-sampler` into this package",
+                "pr": 2664
             }
         ]
     },

@@ -196,6 +196,8 @@ function getBridgeAddressFromFill(fill: CollapsedFill, opts: CreateOrderFromPath
             return (fill.fillData as LiquidityProviderFillData).poolAddress;
         case ERC20BridgeSource.MultiBridge:
             return (fill.fillData as MultiBridgeFillData).poolAddress;
+        case ERC20BridgeSource.MStable:
+            return opts.contractAddresses.mStableBridge;
         default:
             break;
     }

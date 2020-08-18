@@ -24,20 +24,22 @@ import "./Eth2DaiSampler.sol";
 import "./KyberSampler.sol";
 import "./LiquidityProviderSampler.sol";
 import "./MultiBridgeSampler.sol";
+import "./MStableSampler.sol";
 import "./NativeOrderSampler.sol";
 import "./UniswapSampler.sol";
 import "./UniswapV2Sampler.sol";
 
 
 contract ERC20BridgeSampler is
-    Eth2DaiSampler,
-    UniswapSampler,
-    KyberSampler,
     CurveSampler,
+    Eth2DaiSampler,
+    KyberSampler,
     LiquidityProviderSampler,
-    UniswapV2Sampler,
+    MStableSampler,
     MultiBridgeSampler,
-    NativeOrderSampler
+    NativeOrderSampler,
+    UniswapSampler,
+    UniswapV2Sampler
 {
     /// @dev Call multiple public functions on this contract in a single transaction.
     /// @param callDatas ABI-encoded call data for each function call.

@@ -9,6 +9,10 @@
             {
                 "note": "Export DexForwarderBridgeContract",
                 "pr": 2656
+            },
+            {
+                "note": "Added `MStableBridge`",
+                "pr": 2662
             }
         ]
     },

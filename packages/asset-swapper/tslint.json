@@ -1,3 +1,9 @@
 {
-    "extends": ["@0x/tslint-config"]
+    "extends": ["@0x/tslint-config"],
+    "rules": {
+        "max-file-line-count": false
+    },
+    "linterOptions": {
+        "exclude": ["src/artifacts.ts", "test/artifacts.ts"]
+    }
 }
