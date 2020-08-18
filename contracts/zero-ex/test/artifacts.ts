@@ -53,6 +53,7 @@ import * as LibTransformERC20RichErrors from '../test/generated-artifacts/LibTra
 import * as LibTransformERC20Storage from '../test/generated-artifacts/LibTransformERC20Storage.json';
 import * as LibWalletRichErrors from '../test/generated-artifacts/LibWalletRichErrors.json';
 import * as MetaTransactions from '../test/generated-artifacts/MetaTransactions.json';
+import * as MixinAdapterAddresses from '../test/generated-artifacts/MixinAdapterAddresses.json';
 import * as MixinBalancer from '../test/generated-artifacts/MixinBalancer.json';
 import * as MixinCurve from '../test/generated-artifacts/MixinCurve.json';
 import * as MixinKyber from '../test/generated-artifacts/MixinKyber.json';
@@ -98,6 +99,7 @@ export const artifacts = {
     ZeroEx: ZeroEx as ContractArtifact,
     BridgeAdapter: BridgeAdapter as ContractArtifact,
     IBridgeAdapter: IBridgeAdapter as ContractArtifact,
+    MixinAdapterAddresses: MixinAdapterAddresses as ContractArtifact,
     MixinBalancer: MixinBalancer as ContractArtifact,
     MixinCurve: MixinCurve as ContractArtifact,
     MixinKyber: MixinKyber as ContractArtifact,

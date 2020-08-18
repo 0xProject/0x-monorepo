@@ -51,6 +51,7 @@ export * from '../test/generated-wrappers/lib_transform_erc20_rich_errors';
 export * from '../test/generated-wrappers/lib_transform_erc20_storage';
 export * from '../test/generated-wrappers/lib_wallet_rich_errors';
 export * from '../test/generated-wrappers/meta_transactions';
+export * from '../test/generated-wrappers/mixin_adapter_addresses';
 export * from '../test/generated-wrappers/mixin_balancer';
 export * from '../test/generated-wrappers/mixin_curve';
 export * from '../test/generated-wrappers/mixin_kyber';

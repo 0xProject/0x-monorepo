@@ -17,9 +17,11 @@
 */
 
 pragma solidity ^0.6.5;
+pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-erc20/contracts/src/v06/LibERC20TokenV06.sol";
 import "@0x/contracts-erc20/contracts/src/v06/IERC20TokenV06.sol";
+import "./MixinAdapterAddresses.sol";
 
 interface IOasis {
 
@@ -39,17 +41,19 @@ interface IOasis {
         returns (uint256 fillAmount);
 }
 
-contract MixinOasis {
+contract MixinOasis is
+    MixinAdapterAddresses
+{
 
     using LibERC20TokenV06 for IERC20TokenV06;
 
     /// @dev Mainnet address of the Oasis `MatchingMarket` contract.
     IOasis private immutable OASIS;
 
-    constructor(address oasis)
+    constructor(AdapterAddresses memory addresses)
         public
     {
-        OASIS = IOasis(oasis);
+        OASIS = IOasis(addresses.oasis);
     }
 
     function _tradeOasis(

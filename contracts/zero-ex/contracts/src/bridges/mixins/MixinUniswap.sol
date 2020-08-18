@@ -22,10 +22,8 @@ pragma experimental ABIEncoderV2;
 import "@0x/contracts-erc20/contracts/src/v06/LibERC20TokenV06.sol";
 import "@0x/contracts-erc20/contracts/src/v06/IERC20TokenV06.sol";
 import "@0x/contracts-erc20/contracts/src/v06/IEtherTokenV06.sol";
+import "./MixinAdapterAddresses.sol";
 
-/*
-    Uniswap
-*/
 interface IUniswapExchangeFactory {
 
     /// @dev Get the exchange for a token.
@@ -104,7 +102,9 @@ interface IUniswapExchange {
         returns (uint256 tokensBought);
 }
 
-contract MixinUniswap {
+contract MixinUniswap is
+    MixinAdapterAddresses
+{
 
     using LibERC20TokenV06 for IERC20TokenV06;
 
@@ -113,11 +113,11 @@ contract MixinUniswap {
     /// @dev Mainnet address of the `UniswapExchangeFactory` contract.
     IUniswapExchangeFactory private immutable UNISWAP_EXCHANGE_FACTORY;
 
-    constructor(address weth, address exchangeFactory)
+    constructor(AdapterAddresses memory addresses)
         public
     {
-        WETH = IEtherTokenV06(weth);
-        UNISWAP_EXCHANGE_FACTORY = IUniswapExchangeFactory(exchangeFactory);
+        WETH = IEtherTokenV06(addresses.weth);
+        UNISWAP_EXCHANGE_FACTORY = IUniswapExchangeFactory(addresses.uniswapExchangeFactory);
     }
 
     function _tradeUniswap(

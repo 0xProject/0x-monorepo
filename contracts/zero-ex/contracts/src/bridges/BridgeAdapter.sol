@@ -19,6 +19,7 @@
 pragma solidity ^0.6.5;
 pragma experimental ABIEncoderV2;
 
+import "./mixins/MixinAdapterAddresses.sol";
 import "./mixins/MixinBalancer.sol";
 import "./mixins/MixinCurve.sol";
 import "./mixins/MixinKyber.sol";
@@ -29,6 +30,7 @@ import "./mixins/MixinUniswapV2.sol";
 import "./mixins/MixinZeroExBridge.sol";
 
 contract BridgeAdapter is
+    MixinAdapterAddresses,
     MixinBalancer,
     MixinCurve,
     MixinKyber,
@@ -38,24 +40,6 @@ contract BridgeAdapter is
     MixinUniswapV2,
     MixinZeroExBridge
 {
-    struct AdapterAddresses {
-        // Bridges
-        address balancerBridge;
-        address curveBridge;
-        address kyberBridge;
-        address mStableBridge;
-        address oasisBridge;
-        address uniswapBridge;
-        address uniswapV2Bridge;
-        // Exchanges
-        address kyberNetworkProxy;
-        address oasis;
-        address uniswapV2Router;
-        address uniswapExchangeFactory;
-        address mStable;
-        // Other
-        address weth;
-    }
 
     address private immutable BALANCER_BRIDGE_ADDRESS;
     address private immutable CURVE_BRIDGE_ADDRESS;
@@ -85,11 +69,11 @@ contract BridgeAdapter is
         public
         MixinBalancer()
         MixinCurve()
-        MixinKyber(addresses.weth, addresses.kyberNetworkProxy)
-        MixinMStable(addresses.mStable)
-        MixinOasis(addresses.oasis)
-        MixinUniswap(addresses.weth, addresses.uniswapExchangeFactory)
-        MixinUniswapV2(addresses.uniswapV2Router)
+        MixinKyber(addresses)
+        MixinMStable(addresses)
+        MixinOasis(addresses)
+        MixinUniswap(addresses)
+        MixinUniswapV2(addresses)
         MixinZeroExBridge()
     {
         BALANCER_BRIDGE_ADDRESS = addresses.balancerBridge;

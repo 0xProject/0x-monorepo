@@ -22,10 +22,8 @@ pragma experimental ABIEncoderV2;
 import "@0x/contracts-erc20/contracts/src/v06/LibERC20TokenV06.sol";
 import "@0x/contracts-erc20/contracts/src/v06/IERC20TokenV06.sol";
 import "@0x/contracts-erc20/contracts/src/v06/IEtherTokenV06.sol";
+import "./MixinAdapterAddresses.sol";
 
-/*
-    Kyber
-*/
 interface IKyberNetworkProxy {
 
     /// @dev Sells `sellTokenAddress` tokens for `buyTokenAddress` tokens.
@@ -52,7 +50,9 @@ interface IKyberNetworkProxy {
         returns(uint256 boughtAmount);
 }
 
-contract MixinKyber {
+contract MixinKyber is
+    MixinAdapterAddresses
+{
 
     using LibERC20TokenV06 for IERC20TokenV06;
 
@@ -63,11 +63,11 @@ contract MixinKyber {
     /// @dev Mainnet address of the KyberNetworkProxy contract.
     IKyberNetworkProxy private immutable KYBER_NETWORK_PROXY;
 
-    constructor(address weth, address kyberNetworkProxy)
+    constructor(AdapterAddresses memory addresses)
         public
     {
-        WETH = IEtherTokenV06(weth);
-        KYBER_NETWORK_PROXY = IKyberNetworkProxy(kyberNetworkProxy);
+        WETH = IEtherTokenV06(addresses.weth);
+        KYBER_NETWORK_PROXY = IKyberNetworkProxy(addresses.kyberNetworkProxy);
     }
 
     function _tradeKyber(
