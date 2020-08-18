@@ -17,36 +17,37 @@
 */
 
 pragma solidity ^0.6.5;
+pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-erc20/contracts/src/v06/LibERC20TokenV06.sol";
 import "@0x/contracts-erc20/contracts/src/v06/IERC20TokenV06.sol";
 
-interface IEth2Dai {
+interface IMStable {
 
-    /// @dev Sell `sellAmount` of `fromToken` token and receive `toToken` token.
-    /// @param fromToken The token being sold.
-    /// @param sellAmount The amount of `fromToken` token being sold.
-    /// @param toToken The token being bought.
-    /// @param minFillAmount Minimum amount of `toToken` token to buy.
-    /// @return fillAmount Amount of `toToken` bought.
-    function sellAllAmount(
-        address fromToken,
-        uint256 sellAmount,
-        address toToken,
-        uint256 minFillAmount
+    function swap(
+        address _input,
+        address _output,
+        uint256 _quantity,
+        address _recipient
     )
         external
-        returns (uint256 fillAmount);
+        returns (uint256 output);
 }
 
-contract MixinEth2Dai {
+contract MixinMStable {
 
     using LibERC20TokenV06 for IERC20TokenV06;
 
-    /// @dev Mainnet address of the Eth2Dai `MatchingMarket` contract.
-    IEth2Dai constant private ETH2DAI = IEth2Dai(0x794e6e91555438aFc3ccF1c5076A74F42133d08D);
+    /// @dev Mainnet address of the mStable mUSD contract.
+    IMStable private immutable MSTABLE;
 
-    function _tradeEth2Dai(
+    constructor(address mStable)
+        public
+    {
+        MSTABLE = IMStable(mStable);
+    }
+
+    function _tradeMStable(
         address toTokenAddress,
         uint256 sellAmount,
         bytes memory bridgeData
@@ -57,17 +58,13 @@ contract MixinEth2Dai {
         // Decode the bridge data to get the `fromTokenAddress`.
         (address fromTokenAddress) = abi.decode(bridgeData, (address));
         // Grant an allowance to the exchange to spend `fromTokenAddress` token.
-        IERC20TokenV06(fromTokenAddress).approveIfBelow(
-            address(ETH2DAI),
-            sellAmount
-        );
-        // Try to sell all of this contract's `fromTokenAddress` token balance.
-        boughtAmount = ETH2DAI.sellAllAmount(
+        IERC20TokenV06(fromTokenAddress).approveIfBelow(address(MSTABLE), sellAmount);
+
+        boughtAmount = MSTABLE.swap(
             fromTokenAddress,
-            sellAmount,
             toTokenAddress,
-            1
+            sellAmount,
+            address(this)
         );
-        return boughtAmount;
     }
 }

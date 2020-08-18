@@ -56,12 +56,19 @@ contract MixinKyber {
 
     using LibERC20TokenV06 for IERC20TokenV06;
 
-    /// @dev Mainnet address of the WETH contract.
-    IEtherTokenV06 constant private WETH = IEtherTokenV06(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
-    /// @dev Mainnet address of the KyberNetworkProxy contract.
-    IKyberNetworkProxy constant private KYBER_NETWORK_PROXY = IKyberNetworkProxy(0x9AAb3f75489902f3a48495025729a0AF77d4b11e);
     /// @dev Address indicating the trade is using ETH
-    address constant private KYBER_ETH_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
+    address private immutable KYBER_ETH_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
+    /// @dev Mainnet address of the WETH contract.
+    IEtherTokenV06 private immutable WETH;
+    /// @dev Mainnet address of the KyberNetworkProxy contract.
+    IKyberNetworkProxy private immutable KYBER_NETWORK_PROXY;
+
+    constructor(address weth, address kyberNetworkProxy)
+        public
+    {
+        WETH = IEtherTokenV06(weth);
+        KYBER_NETWORK_PROXY = IKyberNetworkProxy(kyberNetworkProxy);
+    }
 
     function _tradeKyber(
         address toTokenAddress,
@@ -103,8 +110,7 @@ contract MixinKyber {
             address(uint160(address(this))),
             // Buy as much as possible.
             uint256(-1),
-            // Compute the minimum conversion rate, which is expressed in units with
-            // 18 decimal places.
+            // Lowest minimum conversion rate
             1,
             // No affiliate address.
             address(0)

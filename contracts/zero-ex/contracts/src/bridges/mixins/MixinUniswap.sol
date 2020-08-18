@@ -68,6 +68,7 @@ interface IUniswapExchange {
 
     /// @dev Buys at least `minTokensBought` tokens with the exchange token
     ///      and transfer them to `recipient`.
+    /// @param tokensSold Amount of tokens to sell.
     /// @param minTokensBought The minimum number of tokens to buy.
     /// @param minEthBought The minimum amount of intermediate ETH to buy.
     /// @param deadline Time when this order expires.
@@ -84,6 +85,23 @@ interface IUniswapExchange {
     )
         external
         returns (uint256 tokensBought);
+
+    /// @dev Buys at least `minTokensBought` tokens with the exchange token.
+    /// @param tokensSold Amount of tokens to sell.
+    /// @param minTokensBought The minimum number of tokens to buy.
+    /// @param minEthBought The minimum amount of intermediate ETH to buy.
+    /// @param deadline Time when this order expires.
+    /// @param toTokenAddress The token being bought.
+    /// @return tokensBought Amount of tokens bought.
+    function tokenToTokenSwapInput(
+        uint256 tokensSold,
+        uint256 minTokensBought,
+        uint256 minEthBought,
+        uint256 deadline,
+        address toTokenAddress
+    )
+        external
+        returns (uint256 tokensBought);
 }
 
 contract MixinUniswap {
@@ -91,9 +109,16 @@ contract MixinUniswap {
     using LibERC20TokenV06 for IERC20TokenV06;
 
     /// @dev Mainnet address of the WETH contract.
-    IEtherTokenV06 constant private WETH = IEtherTokenV06(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
+    IEtherTokenV06 private immutable WETH;
     /// @dev Mainnet address of the `UniswapExchangeFactory` contract.
-    IUniswapExchangeFactory constant private UNISWAP_EXCHANGE_FACTORY = IUniswapExchangeFactory(0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95);
+    IUniswapExchangeFactory private immutable UNISWAP_EXCHANGE_FACTORY;
+
+    constructor(address weth, address exchangeFactory)
+        public
+    {
+        WETH = IEtherTokenV06(weth);
+        UNISWAP_EXCHANGE_FACTORY = IUniswapExchangeFactory(exchangeFactory);
+    }
 
     function _tradeUniswap(
         address toTokenAddress,
@@ -152,17 +177,15 @@ contract MixinUniswap {
                 sellAmount
             );
             // Buy as much `toTokenAddress` token with `fromTokenAddress` token
-            boughtAmount = exchange.tokenToTokenTransferInput(
+            boughtAmount = exchange.tokenToTokenSwapInput(
                 // Sell all tokens we hold.
                 sellAmount,
                 // Minimum buy amount.
                 1,
-                // Must buy at least 1 intermediate ETH.
+                // Must buy at least 1 intermediate wei of ETH.
                 1,
                 // Expires after this block.
                 block.timestamp,
-                // Recipient is `this`.
-                address(this),
                 // Convert to `toTokenAddress`.
                 toTokenAddress
             );

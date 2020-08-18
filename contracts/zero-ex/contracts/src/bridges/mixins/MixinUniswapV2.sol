@@ -51,7 +51,13 @@ contract MixinUniswapV2 {
     using LibERC20TokenV06 for IERC20TokenV06;
 
     /// @dev Mainnet address of the `UniswapV2Router02` contract.
-    IUniswapV2Router02 constant private UNISWAP_V2_ROUTER = IUniswapV2Router02(0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D);
+    IUniswapV2Router02 private immutable UNISWAP_V2_ROUTER;
+
+    constructor(address uniswapV2Router)
+        public
+    {
+        UNISWAP_V2_ROUTER = IUniswapV2Router02(uniswapV2Router);
+    }
 
     function _tradeUniswapV2(
         address toTokenAddress,

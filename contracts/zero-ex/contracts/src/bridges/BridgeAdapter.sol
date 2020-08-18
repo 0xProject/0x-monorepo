@@ -21,8 +21,9 @@ pragma experimental ABIEncoderV2;
 
 import "./mixins/MixinBalancer.sol";
 import "./mixins/MixinCurve.sol";
-import "./mixins/MixinEth2Dai.sol";
 import "./mixins/MixinKyber.sol";
+import "./mixins/MixinMStable.sol";
+import "./mixins/MixinOasis.sol";
 import "./mixins/MixinUniswap.sol";
 import "./mixins/MixinUniswapV2.sol";
 import "./mixins/MixinZeroExBridge.sol";
@@ -30,19 +31,39 @@ import "./mixins/MixinZeroExBridge.sol";
 contract BridgeAdapter is
     MixinBalancer,
     MixinCurve,
-    MixinEth2Dai,
     MixinKyber,
+    MixinMStable,
+    MixinOasis,
     MixinUniswap,
     MixinUniswapV2,
     MixinZeroExBridge
 {
+    struct AdapterAddresses {
+        // Bridges
+        address balancerBridge;
+        address curveBridge;
+        address kyberBridge;
+        address mStableBridge;
+        address oasisBridge;
+        address uniswapBridge;
+        address uniswapV2Bridge;
+        // Exchanges
+        address kyberNetworkProxy;
+        address oasis;
+        address uniswapV2Router;
+        address uniswapExchangeFactory;
+        address mStable;
+        // Other
+        address weth;
+    }
 
-    address private constant BALANCER_BRIDGE_ADDRESS = 0xfe01821Ca163844203220cd08E4f2B2FB43aE4E4;
-    address private constant CURVE_BRIDGE_ADDRESS = 0x1796Cd592d19E3bcd744fbB025BB61A6D8cb2c09;
-    address private constant ETH2DAI_BRIDGE_ADDRESS = 0x991C745401d5b5e469B8c3e2cb02C748f08754f1;
-    address private constant KYBER_BRIDGE_ADDRESS = 0x1c29670F7a77f1052d30813A0a4f632C78A02610;
-    address private constant UNISWAP_BRIDGE_ADDRESS = 0x36691C4F426Eb8F42f150ebdE43069A31cB080AD;
-    address private constant UNISWAP_V2_BRIDGE_ADDRESS = 0xDcD6011f4C6B80e470D9487f5871a0Cba7C93f48;
+    address private immutable BALANCER_BRIDGE_ADDRESS;
+    address private immutable CURVE_BRIDGE_ADDRESS;
+    address private immutable KYBER_BRIDGE_ADDRESS;
+    address private immutable MSTABLE_BRIDGE_ADDRESS;
+    address private immutable OASIS_BRIDGE_ADDRESS;
+    address private immutable UNISWAP_BRIDGE_ADDRESS;
+    address private immutable UNISWAP_V2_BRIDGE_ADDRESS;
 
     /// @dev Emitted when a trade occurs.
     /// @param inputToken The token the bridge is converting from.
@@ -59,6 +80,26 @@ contract BridgeAdapter is
         address from,
         address to
     );
+
+    constructor(AdapterAddresses memory addresses)
+        public
+        MixinBalancer()
+        MixinCurve()
+        MixinKyber(addresses.weth, addresses.kyberNetworkProxy)
+        MixinMStable(addresses.mStable)
+        MixinOasis(addresses.oasis)
+        MixinUniswap(addresses.weth, addresses.uniswapExchangeFactory)
+        MixinUniswapV2(addresses.uniswapV2Router)
+        MixinZeroExBridge()
+    {
+        BALANCER_BRIDGE_ADDRESS = addresses.balancerBridge;
+        CURVE_BRIDGE_ADDRESS = addresses.curveBridge;
+        KYBER_BRIDGE_ADDRESS = addresses.kyberBridge;
+        MSTABLE_BRIDGE_ADDRESS = addresses.mStableBridge;
+        OASIS_BRIDGE_ADDRESS = addresses.oasisBridge;
+        UNISWAP_BRIDGE_ADDRESS = addresses.uniswapBridge;
+        UNISWAP_V2_BRIDGE_ADDRESS = addresses.uniswapV2Bridge;
+    }
 
     function trade(
         bytes calldata makerAssetData,
@@ -108,8 +149,14 @@ contract BridgeAdapter is
                 sellAmount,
                 bridgeData
             );
-        } else if (bridgeAddress == ETH2DAI_BRIDGE_ADDRESS) {
-            boughtAmount = _tradeEth2Dai(
+        } else if (bridgeAddress == MSTABLE_BRIDGE_ADDRESS) {
+            boughtAmount = _tradeMStable(
+                toTokenAddress,
+                sellAmount,
+                bridgeData
+            );
+        } else if (bridgeAddress == OASIS_BRIDGE_ADDRESS) {
+            boughtAmount = _tradeOasis(
                 toTokenAddress,
                 sellAmount,
                 bridgeData

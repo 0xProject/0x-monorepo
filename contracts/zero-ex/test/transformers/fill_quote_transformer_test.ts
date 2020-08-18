@@ -56,6 +56,21 @@ blockchainTests.resets('FillQuoteTransformer', env => {
             env.provider,
             env.txDefaults,
             artifacts,
+            {
+                balancerBridge: NULL_ADDRESS,
+                curveBridge: NULL_ADDRESS,
+                kyberBridge: NULL_ADDRESS,
+                mStableBridge: NULL_ADDRESS,
+                oasisBridge: NULL_ADDRESS,
+                uniswapBridge: NULL_ADDRESS,
+                uniswapV2Bridge: NULL_ADDRESS,
+                kyberNetworkProxy: NULL_ADDRESS,
+                oasis: NULL_ADDRESS,
+                uniswapV2Router: NULL_ADDRESS,
+                uniswapExchangeFactory: NULL_ADDRESS,
+                mStable: NULL_ADDRESS,
+                weth: NULL_ADDRESS,
+            },
         );
         transformer = await FillQuoteTransformerContract.deployFrom0xArtifactAsync(
             artifacts.FillQuoteTransformer,

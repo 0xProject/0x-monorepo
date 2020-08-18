@@ -27,7 +27,6 @@ import "@0x/contracts-utils/contracts/src/v06/LibSafeMathV06.sol";
 import "@0x/contracts-utils/contracts/src/v06/LibMathV06.sol";
 import "../errors/LibTransformERC20RichErrors.sol";
 import "../vendor/v3/IExchange.sol";
-import "../fixins/FixinGasToken.sol";
 import "../bridges/IBridgeAdapter.sol";
 import "./Transformer.sol";
 import "./LibERC20Transformer.sol";
@@ -35,8 +34,7 @@ import "./LibERC20Transformer.sol";
 /// @dev A transformer that fills an ERC20 market sell/buy quote.
 ///      This transformer shortcuts bridge orders and fills them directly
 contract FillQuoteTransformer is
-    Transformer,
-    FixinGasToken
+    Transformer
 {
     using LibERC20TokenV06 for IERC20TokenV06;
     using LibERC20Transformer for IERC20TokenV06;
@@ -141,7 +139,6 @@ contract FillQuoteTransformer is
     )
         external
         override
-        freesGasTokensFromCollector
         returns (bytes4 success)
     {
         TransformData memory data = abi.decode(data_, (TransformData));
@@ -405,7 +402,7 @@ contract FillQuoteTransformer is
         if (order.makerAssetData.readBytes4(0) == ERC20_BRIDGE_PROXY_ID) {
             (bool success, bytes memory resultData) = address(bridgeAdapter).delegatecall(
                 abi.encodeWithSelector(
-                    IBridgeAdapter(address(0)).trade.selector,
+                    IBridgeAdapter.trade.selector,
                     order.makerAssetData,
                     address(_getTokenFromERC20AssetData(order.takerAssetData)),
                     availableTakerAssetFillAmount
