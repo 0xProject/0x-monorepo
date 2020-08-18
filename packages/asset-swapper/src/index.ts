@@ -15,6 +15,7 @@ export {
 export { RFQTFirmQuote, RFQTIndicativeQuote } from '@0x/quote-server';
 export { APIOrder, Asset, AssetPairsItem, SignedOrder } from '@0x/types';
 export { BigNumber } from '@0x/utils';
+export { AxiosInstance } from 'axios';
 export {
     BlockParam,
     BlockParamLiteral,
@@ -36,6 +37,7 @@ export {
     Web3JsV3Provider,
     ZeroExProvider,
 } from 'ethereum-types';
+export { artifacts } from './artifacts';
 export { InsufficientAssetLiquidityError } from './errors';
 export { SwapQuoteConsumer } from './quote_consumers/swap_quote_consumer';
 export { SwapQuoter } from './swap_quoter';
@@ -99,7 +101,6 @@ export {
 } from './utils/quote_report_generator';
 export { QuoteRequestor } from './utils/quote_requestor';
 export { rfqtMocker } from './utils/rfqt_mocker';
+export { ERC20BridgeSamplerContract } from './wrappers';
 import { ERC20BridgeSource } from './utils/market_operation_utils/types';
 export type Native = ERC20BridgeSource.Native;
-
-export { AxiosInstance } from 'axios';

@@ -233,10 +233,10 @@
         "exchangeProxyFlashWallet": "0x8362c3ebd90041b30ec45908332e592721642637",
         "mStableBridge": "0x0000000000000000000000000000000000000000",
         "transformers": {
-            "wethTransformer": "0x7209185959d7227fb77274e1e88151d7c4c368d3",
-            "payTakerTransformer": "0xc6b0d3c45a6b5092808196cb00df5c357d55e1d5",
-            "fillQuoteTransformer": "0xc7124963ab16c33e5bf421d4c0090116622b3074",
-            "affiliateFeeTransformer": "0x3f16ca81691dab9184cb4606c361d73c4fd2510a"
+            "wethTransformer": "0x3f16ca81691dab9184cb4606c361d73c4fd2510a",
+            "payTakerTransformer": "0x7209185959d7227fb77274e1e88151d7c4c368d3",
+            "fillQuoteTransformer": "0xc6b0d3c45a6b5092808196cb00df5c357d55e1d5",
+            "affiliateFeeTransformer": "0x99356167edba8fbdc36959e3f5d0c43d1ba9c6db"
         }
     }
 }
