@@ -9,7 +9,7 @@ import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { LibMathRevertErrors } from '@0x/contracts-exchange-libs';
 import { blockchainTests, constants, describe, expect, toBaseUnitAmount } from '@0x/contracts-test-utils';
 import { SignedOrder } from '@0x/order-utils';
-import { BigNumber, RevertError } from '@0x/utils';
+import { BigNumber, decodeThrownErrorAsRevertError, StringRevertError } from '@0x/utils';
 import { DecodedLogArgs, LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -276,9 +276,9 @@ blockchainTests.resets('Exchange fills dydx orders', env => {
             try {
                 await txPromise.catch();
             } catch (e) {
-                assetProxyError = RevertError.decode(e.values.errorData);
+                assetProxyError = decodeThrownErrorAsRevertError(e).values.errorData;
             }
-            expect(assetProxyError).to.deep.equal(expectedAssetProxyError);
+            expect(assetProxyError).to.deep.equal(new StringRevertError(expectedAssetProxyError.toString()));
         });
     });
 });

@@ -286,11 +286,11 @@ describe('AssetProxyDispatcher', () => {
             });
             const encodedAssetData = encodeERC20AssetData(erc20TokenA.address);
             const amount = new BigNumber(1);
-            const nestedError = new StringRevertError(RevertReason.TransferFailed).encode();
+            const nestedError = new StringRevertError(RevertReason.TransferFailed);
             const expectedError = new ExchangeRevertErrors.AssetProxyTransferError(
                 orderHash,
                 encodedAssetData,
-                nestedError,
+                nestedError.toString(),
             );
             const tx = assetProxyDispatcher
                 .dispatchTransferFrom(orderHash, encodedAssetData, makerAddress, takerAddress, amount)
@@ -309,11 +309,11 @@ describe('AssetProxyDispatcher', () => {
                 from: makerAddress,
             });
             const transferIndexAsBytes32 = '0x0000000000000000000000000000000000000000000000000000000000000001';
-            const nestedError = new StringRevertError(RevertReason.TransferFailed).encode();
+            const nestedError = new StringRevertError(RevertReason.TransferFailed);
             const expectedError = new ExchangeRevertErrors.AssetProxyTransferError(
                 transferIndexAsBytes32,
                 assetDataB,
-                nestedError,
+                nestedError.toString(),
             );
             const tx = assetProxyDispatcher
                 .simulateDispatchTransferFromCalls(
