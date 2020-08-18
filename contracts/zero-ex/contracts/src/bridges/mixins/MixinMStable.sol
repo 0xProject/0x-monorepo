@@ -38,7 +38,6 @@ interface IMStable {
 
 contract MixinMStable is
     MixinAdapterAddresses
-
 {
 
     using LibERC20TokenV06 for IERC20TokenV06;
