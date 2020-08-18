@@ -101,7 +101,10 @@ contract BridgeAdapter is
             makerAssetData[4:],
             (address, address, bytes)
         );
-        require(bridgeAddress != address(this), "INVALID_BRIDGE_ADDRESS");
+        require(
+            bridgeAddress != address(this) && bridgeAddress != address(0),
+            "BridgeAdapter/INVALID_BRIDGE_ADDRESS"
+        );
 
         if (bridgeAddress == CURVE_BRIDGE_ADDRESS) {
             boughtAmount = _tradeCurve(
