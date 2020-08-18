@@ -134,6 +134,9 @@ contract NativeOrderSampler {
         }
         address spender = exchange.getAssetProxy(ERC20_ASSET_PROXY_ID);
         IERC20Token makerToken = _getTokenFromERC20AssetData(order.makerAssetData);
+        if (makerToken == IERC20Token(0)) {
+            return 0;
+        }
         IERC20Token makerFeeToken = order.makerFee > 0
             ? _getTokenFromERC20AssetData(order.makerFeeAssetData)
             : IERC20Token(0);
@@ -195,7 +198,7 @@ contract NativeOrderSampler {
         if (assetData.length != 36 ||
             assetData.readBytes4(0) != ERC20_ASSET_PROXY_ID)
         {
-            revert('NativeOrderSampler/UNSUPPORTED_ASSET_DATA');
+            return IERC20Token(address(0));
         }
         return IERC20Token(assetData.readAddress(16));
     }
