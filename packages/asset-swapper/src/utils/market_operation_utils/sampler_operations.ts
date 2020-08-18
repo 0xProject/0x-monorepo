@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 import { BigNumber, ERC20BridgeSource, SignedOrder } from '../..';
 
 import { BalancerPool, BalancerPoolsCache, computeBalancerBuyQuote, computeBalancerSellQuote } from './balancer_utils';
+import { NULL_BYTES } from './constants';
 import { getCurveInfosForPair } from './curve_utils';
 import { getMultiBridgeIntermediateToken } from './multibridge_utils';
 import {
@@ -376,7 +377,7 @@ export const samplerOperations = {
     constant<T>(result: T): BatchedOperation<T> {
         return {
             encodeCall: _contract => {
-                return '0x';
+                return NULL_BYTES;
             },
             handleCallResultsAsync: async (_contract, _callResults) => {
                 return result;
@@ -495,17 +496,27 @@ export const samplerOperations = {
         const nonSamplerOps = subOps.filter(op => op.source === ERC20BridgeSource.Balancer);
         return {
             encodeCall: contract => {
+                // All operations are NOOPs
+                if (samplerOps.length === 0) {
+                    return NULL_BYTES;
+                }
                 const subCalls = samplerOps.map(op => op.encodeCall(contract));
                 return contract.batchCall(subCalls).getABIEncodedTransactionData();
             },
             handleCallResultsAsync: async (contract, callResults) => {
-                const rawSubCallResults = contract.getABIDecodedReturnData<string[]>('batchCall', callResults);
-                let samples = await Promise.all(
-                    samplerOps.map(async (op, i) => op.handleCallResultsAsync(contract, rawSubCallResults[i])),
-                );
-                samples = samples.concat(
-                    await Promise.all(nonSamplerOps.map(async op => op.handleCallResultsAsync(contract, ''))),
-                );
+                let samples: BigNumber[][];
+                // If all operations were NOOPs then just call the handle result callback
+                if (callResults === NULL_BYTES && samplerOps.length === 0) {
+                    samples = await Promise.all(nonSamplerOps.map(async op => op.handleCallResultsAsync(contract, '')));
+                } else {
+                    const rawSubCallResults = contract.getABIDecodedReturnData<string[]>('batchCall', callResults);
+                    samples = await Promise.all(
+                        samplerOps.map(async (op, i) => op.handleCallResultsAsync(contract, rawSubCallResults[i])),
+                    );
+                    samples = samples.concat(
+                        await Promise.all(nonSamplerOps.map(async op => op.handleCallResultsAsync(contract, ''))),
+                    );
+                }
                 return [...samplerOps, ...nonSamplerOps].map((op, i) => {
                     return samples[i].map((output, j) => ({
                         source: op.source,
@@ -594,17 +605,26 @@ export const samplerOperations = {
         const nonSamplerOps = subOps.filter(op => op.source === ERC20BridgeSource.Balancer);
         return {
             encodeCall: contract => {
+                // All operations are NOOPs
+                if (samplerOps.length === 0) {
+                    return NULL_BYTES;
+                }
                 const subCalls = samplerOps.map(op => op.encodeCall(contract));
                 return contract.batchCall(subCalls).getABIEncodedTransactionData();
             },
             handleCallResultsAsync: async (contract, callResults) => {
-                const rawSubCallResults = contract.getABIDecodedReturnData<string[]>('batchCall', callResults);
-                let samples = await Promise.all(
-                    samplerOps.map(async (op, i) => op.handleCallResultsAsync(contract, rawSubCallResults[i])),
-                );
-                samples = samples.concat(
-                    await Promise.all(nonSamplerOps.map(async op => op.handleCallResultsAsync(contract, ''))),
-                );
+                let samples: BigNumber[][];
+                if (callResults === NULL_BYTES && samplerOps.length === 0) {
+                    samples = await Promise.all(nonSamplerOps.map(async op => op.handleCallResultsAsync(contract, '')));
+                } else {
+                    const rawSubCallResults = contract.getABIDecodedReturnData<string[]>('batchCall', callResults);
+                    samples = await Promise.all(
+                        samplerOps.map(async (op, i) => op.handleCallResultsAsync(contract, rawSubCallResults[i])),
+                    );
+                    samples = samples.concat(
+                        await Promise.all(nonSamplerOps.map(async op => op.handleCallResultsAsync(contract, ''))),
+                    );
+                }
                 return [...samplerOps, ...nonSamplerOps].map((op, i) => {
                     return samples[i].map((output, j) => ({
                         source: op.source,
