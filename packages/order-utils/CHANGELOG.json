@@ -13,6 +13,10 @@
             {
                 "note": "Add `refundReceiver` field to `FillQuoteTransformer.TransformData`.",
                 "pr": 2657
+            },
+            {
+                "note": "Add `findTransformerNonce()` and `getTransformerAddress()` functions.",
+                "pr": 2657
             }
         ]
     },
