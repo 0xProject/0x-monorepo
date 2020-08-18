@@ -20,11 +20,11 @@ import {
  * for use with `DexOrderSampler.executeAsync()`.
  */
 export const samplerOperations = {
-    getOrderFillableTakerAmounts(orders: SignedOrder[], devUtilsAddress: string): BatchedOperation<BigNumber[]> {
+    getOrderFillableTakerAmounts(orders: SignedOrder[], exchangeAddress: string): BatchedOperation<BigNumber[]> {
         return {
             encodeCall: contract => {
                 return contract
-                    .getOrderFillableTakerAssetAmounts(orders, orders.map(o => o.signature), devUtilsAddress)
+                    .getOrderFillableTakerAssetAmounts(orders, orders.map(o => o.signature), exchangeAddress)
                     .getABIEncodedTransactionData();
             },
             handleCallResultsAsync: async (contract, callResults) => {
@@ -32,11 +32,11 @@ export const samplerOperations = {
             },
         };
     },
-    getOrderFillableMakerAmounts(orders: SignedOrder[], devUtilsAddress: string): BatchedOperation<BigNumber[]> {
+    getOrderFillableMakerAmounts(orders: SignedOrder[], exchangeAddress: string): BatchedOperation<BigNumber[]> {
         return {
             encodeCall: contract => {
                 return contract
-                    .getOrderFillableMakerAssetAmounts(orders, orders.map(o => o.signature), devUtilsAddress)
+                    .getOrderFillableMakerAssetAmounts(orders, orders.map(o => o.signature), exchangeAddress)
                     .getABIEncodedTransactionData();
             },
             handleCallResultsAsync: async (contract, callResults) => {

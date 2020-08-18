@@ -16,7 +16,6 @@ import {
 import { artifacts as devUtilsArtifacts, DevUtilsContract } from '@0x/contracts-dev-utils';
 import { artifacts as erc1155Artifacts } from '@0x/contracts-erc1155';
 import { artifacts as erc20Artifacts, DummyERC20TokenContract, WETH9Contract } from '@0x/contracts-erc20';
-import { artifacts as erc20BridgeSamplerArtifacts } from '@0x/contracts-erc20-bridge-sampler';
 import { artifacts as erc721Artifacts, DummyERC721TokenContract } from '@0x/contracts-erc721';
 import { artifacts as exchangeArtifacts, ExchangeContract } from '@0x/contracts-exchange';
 import { artifacts as forwarderArtifacts, ForwarderContract } from '@0x/contracts-exchange-forwarder';
@@ -54,7 +53,6 @@ const allArtifacts = {
     ...exchangeArtifacts,
     ...forwarderArtifacts,
     ...stakingArtifacts,
-    ...erc20BridgeSamplerArtifacts,
     ...exchangeProxyArtifacts,
 };
 

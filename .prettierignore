@@ -40,10 +40,6 @@ lib
 /contracts/erc20/test/generated-wrappers
 /contracts/erc20/generated-artifacts
 /contracts/erc20/test/generated-artifacts
-/contracts/erc20-bridge-sampler/generated-wrappers
-/contracts/erc20-bridge-sampler/test/generated-wrappers
-/contracts/erc20-bridge-sampler/generated-artifacts
-/contracts/erc20-bridge-sampler/test/generated-artifacts
 /contracts/erc721/generated-wrappers
 /contracts/erc721/test/generated-wrappers
 /contracts/erc721/generated-artifacts
@@ -85,6 +81,10 @@ lib
 /packages/json-schemas/schemas
 /python-packages/json_schemas/src/zero_ex/json_schemas/schemas
 /packages/sra-spec/public/
+/packages/asset-swapper/generated-wrappers
+/packages/asset-swapper/test/generated-wrappers
+/packages/asset-swapper/generated-artifacts
+/packages/asset-swapper/test/generated-artifacts
 package.json
 scripts/postpublish_utils.js
 packages/sol-coverage/test/fixtures/artifacts

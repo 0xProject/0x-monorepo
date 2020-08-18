@@ -1,9 +1,13 @@
-import { artifacts, ERC20BridgeSamplerContract } from '@0x/contracts-erc20-bridge-sampler';
 import { blockchainTests, describe, expect, toBaseUnitAmount, Web3ProviderEngine } from '@0x/contracts-test-utils';
 import { RPCSubprovider } from '@0x/subproviders';
 import { BigNumber, providerUtils } from '@0x/utils';
 
+import { artifacts } from '../artifacts';
+import { ERC20BridgeSamplerContract } from '../wrappers';
+
 export const VB = '0x6cc5f688a315f3dc28a7781717a9a798a59fda7b';
+
+// tslint:disable: custom-no-magic-numbers
 
 blockchainTests.skip('Mainnet Sampler Tests', env => {
     let testContract: ERC20BridgeSamplerContract;

@@ -23,7 +23,6 @@ import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "../src/ERC20BridgeSampler.sol";
 import "../src/IEth2Dai.sol";
-import "../src/IDevUtils.sol";
 import "../src/IKyberNetworkProxy.sol";
 import "../src/IUniswapV2Router01.sol";
 
@@ -477,33 +476,17 @@ contract TestERC20BridgeSampler is
         uniswap.createTokenExchanges(tokenAddresses);
     }
 
-    // `IDevUtils.getOrderRelevantState()`, overridden to return deterministic
-    // states.
-    function getOrderRelevantState(
+    // Overridden to return deterministic states.
+    function getOrderFillableTakerAmount(
         LibOrder.Order memory order,
-        bytes memory
+        bytes memory,
+        IExchange
     )
         public
-        pure
-        returns (
-            LibOrder.OrderInfo memory orderInfo,
-            uint256 fillableTakerAssetAmount,
-            bool isValidSignature
-        )
+        view
+        returns (uint256 fillableTakerAmount)
     {
-        // The order hash is just the hash of the salt.
-        bytes32 orderHash = keccak256(abi.encode(order.salt));
-        // Everything else is derived from the hash.
-        orderInfo.orderHash = orderHash;
-        if (uint256(orderHash) % 100 > 90) {
-            orderInfo.orderStatus = LibOrder.OrderStatus.FULLY_FILLED;
-        } else {
-            orderInfo.orderStatus = LibOrder.OrderStatus.FILLABLE;
-        }
-        orderInfo.orderTakerAssetFilledAmount = uint256(orderHash) % order.takerAssetAmount;
-        fillableTakerAssetAmount =
-            order.takerAssetAmount - orderInfo.orderTakerAssetFilledAmount;
-        isValidSignature = uint256(orderHash) % 2 == 1;
+        return uint256(keccak256(abi.encode(order.salt))) % order.takerAssetAmount;
     }
 
     // Overriden to return deterministic decimals.
