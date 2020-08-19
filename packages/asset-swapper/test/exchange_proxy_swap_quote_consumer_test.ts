@@ -8,6 +8,7 @@ import {
     decodeWethTransformerData,
     ETH_TOKEN_ADDRESS,
     FillQuoteTransformerSide,
+    getTransformerAddress,
 } from '@0x/order-utils';
 import { Order } from '@0x/types';
 import { AbiEncoder, BigNumber, hexUtils } from '@0x/utils';
@@ -16,10 +17,7 @@ import * as _ from 'lodash';
 import 'mocha';
 
 import { constants } from '../src/constants';
-import {
-    ExchangeProxySwapQuoteConsumer,
-    getTransformerAddress,
-} from '../src/quote_consumers/exchange_proxy_swap_quote_consumer';
+import { ExchangeProxySwapQuoteConsumer } from '../src/quote_consumers/exchange_proxy_swap_quote_consumer';
 import { MarketBuySwapQuote, MarketOperation, MarketSellSwapQuote } from '../src/types';
 import { OptimizedMarketOrder } from '../src/utils/market_operation_utils/types';
 
