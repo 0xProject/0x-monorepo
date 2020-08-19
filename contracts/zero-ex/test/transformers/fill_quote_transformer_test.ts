@@ -20,6 +20,7 @@ import * as _ from 'lodash';
 import { artifacts } from '../artifacts';
 import { TestFillQuoteTransformerBridgeContract } from '../generated-wrappers/test_fill_quote_transformer_bridge';
 import {
+    BridgeAdapterContract,
     FillQuoteTransformerContract,
     TestFillQuoteTransformerExchangeContract,
     TestFillQuoteTransformerHostContract,
@@ -50,12 +51,34 @@ blockchainTests.resets('FillQuoteTransformer', env => {
             env.txDefaults,
             artifacts,
         );
+        const bridgeAdapter = await BridgeAdapterContract.deployFrom0xArtifactAsync(
+            artifacts.BridgeAdapter,
+            env.provider,
+            env.txDefaults,
+            artifacts,
+            {
+                balancerBridge: NULL_ADDRESS,
+                curveBridge: NULL_ADDRESS,
+                kyberBridge: NULL_ADDRESS,
+                mStableBridge: NULL_ADDRESS,
+                oasisBridge: NULL_ADDRESS,
+                uniswapBridge: NULL_ADDRESS,
+                uniswapV2Bridge: NULL_ADDRESS,
+                kyberNetworkProxy: NULL_ADDRESS,
+                oasis: NULL_ADDRESS,
+                uniswapV2Router: NULL_ADDRESS,
+                uniswapExchangeFactory: NULL_ADDRESS,
+                mStable: NULL_ADDRESS,
+                weth: NULL_ADDRESS,
+            },
+        );
         transformer = await FillQuoteTransformerContract.deployFrom0xArtifactAsync(
             artifacts.FillQuoteTransformer,
             env.provider,
             env.txDefaults,
             artifacts,
             exchange.address,
+            bridgeAdapter.address,
         );
         host = await TestFillQuoteTransformerHostContract.deployFrom0xArtifactAsync(
             artifacts.TestFillQuoteTransformerHost,
@@ -110,8 +133,9 @@ blockchainTests.resets('FillQuoteTransformer', env => {
         };
     }
 
-    function createBridgeOrder(fields: Partial<Order> = {}, bridgeData: string = encodeBridgeBehavior()): FilledOrder {
+    function createBridgeOrder(fields: Partial<Order> = {}, fillRatio: Numberish = 1.0): FilledOrder {
         const order = createOrder(fields);
+        const bridgeData = encodeBridgeBehavior(order.makerAssetAmount, fillRatio);
         return {
             ...order,
             makerAddress: bridge.address,
@@ -265,11 +289,12 @@ blockchainTests.resets('FillQuoteTransformer', env => {
         );
     }
 
-    function encodeBridgeBehavior(makerAssetMintRatio: Numberish = 1.0): string {
+    function encodeBridgeBehavior(amount: BigNumber, makerAssetMintRatio: Numberish = 1.0): string {
         return hexUtils.slice(
             bridge
                 .encodeBehaviorData({
                     makerAssetMintRatio: new BigNumber(makerAssetMintRatio).times('1e18').integerValue(),
+                    amount,
                 })
                 .getABIEncodedTransactionData(),
             4,
@@ -865,7 +890,7 @@ blockchainTests.resets('FillQuoteTransformer', env => {
         });
     });
 
-    describe('bridge orders', () => {
+    describe('bridge orders fall through', () => {
         it('can fully sell to a single bridge order quote', async () => {
             const orders = _.times(1, () => createBridgeOrder());
             const signatures = orders.map(() => NULL_BYTES);

@@ -1,7 +1,7 @@
-import { ERC20BridgeSamplerContract } from '@0x/contract-wrappers';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, NULL_BYTES } from '@0x/utils';
 
 import { SamplerOverrides } from '../../types';
+import { ERC20BridgeSamplerContract } from '../../wrappers';
 
 import { BalancerPoolsCache } from './balancer_utils';
 import { samplerOperations } from './sampler_operations';
@@ -144,18 +144,23 @@ export class DexOrderSampler {
         const { overrides, block } = this._samplerOverrides
             ? this._samplerOverrides
             : { overrides: undefined, block: undefined };
+
+        // All operations are NOOPs
+        if (callDatas.every(cd => cd === NULL_BYTES)) {
+            return Promise.all(
+                callDatas.map(async (_callData, i) => ops[i].handleCallResultsAsync(this._samplerContract, NULL_BYTES)),
+            );
+        }
         // Execute all non-empty calldatas.
         const rawCallResults = await this._samplerContract
-            .batchCall(callDatas.filter(cd => cd !== '0x'))
+            .batchCall(callDatas.filter(cd => cd !== NULL_BYTES))
             .callAsync({ overrides }, block);
         // Return the parsed results.
         let rawCallResultsIdx = 0;
         return Promise.all(
             callDatas.map(async (callData, i) => {
-                if (callData !== '0x') {
-                    return ops[i].handleCallResultsAsync(this._samplerContract, rawCallResults[rawCallResultsIdx++]);
-                }
-                return ops[i].handleCallResultsAsync(this._samplerContract, '0x');
+                const result = callData !== NULL_BYTES ? rawCallResults[rawCallResultsIdx++] : NULL_BYTES;
+                return ops[i].handleCallResultsAsync(this._samplerContract, result);
             }),
         );
     }

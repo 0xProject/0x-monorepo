@@ -13,21 +13,57 @@ export {
     SRAWebsocketOrderProviderOpts,
 } from '@0x/orderbook';
 export { RFQTFirmQuote, RFQTIndicativeQuote } from '@0x/quote-server';
-export { APIOrder, Asset, AssetPairsItem, SignedOrder } from '@0x/types';
-export { BigNumber } from '@0x/utils';
 export {
+    APIOrder,
+    Asset,
+    AssetPairsItem,
+    DecodedLogEvent,
+    EventCallback,
+    IndexedFilterValues,
+    SignedOrder,
+} from '@0x/types';
+export { BigNumber } from '@0x/utils';
+export { AxiosInstance } from 'axios';
+export {
+    AbiDefinition,
     BlockParam,
     BlockParamLiteral,
+    CompilerOpts,
+    CompilerSettings,
+    CompilerSettingsMetadata,
+    ConstructorAbi,
+    ConstructorStateMutability,
+    ContractAbi,
+    ContractArtifact,
+    ContractChainData,
+    ContractChains,
+    ContractEventArg,
     DataItem,
+    DecodedLogArgs,
+    DevdocOutput,
     EIP1193Event,
     EIP1193Provider,
+    EventAbi,
     EventParameter,
+    EvmBytecodeOutput,
+    EvmBytecodeOutputLinkReferences,
+    EvmOutput,
+    FallbackAbi,
+    FunctionAbi,
     GanacheProvider,
     GethCallOverrides,
     JSONRPCErrorCallback,
     JSONRPCRequestPayload,
     JSONRPCResponseError,
     JSONRPCResponsePayload,
+    LogWithDecodedArgs,
+    MethodAbi,
+    OptimizerSettings,
+    OutputField,
+    ParamDescription,
+    RevertErrorAbi,
+    StandardContractOutput,
+    StateMutability,
     SupportedProvider,
     TupleDataItem,
     Web3JsProvider,
@@ -36,6 +72,7 @@ export {
     Web3JsV3Provider,
     ZeroExProvider,
 } from 'ethereum-types';
+export { artifacts } from './artifacts';
 export { InsufficientAssetLiquidityError } from './errors';
 export { SwapQuoteConsumer } from './quote_consumers/swap_quote_consumer';
 export { SwapQuoter } from './swap_quoter';
@@ -99,7 +136,6 @@ export {
 } from './utils/quote_report_generator';
 export { QuoteRequestor } from './utils/quote_requestor';
 export { rfqtMocker } from './utils/rfqt_mocker';
+export { ERC20BridgeSamplerContract } from './wrappers';
 import { ERC20BridgeSource } from './utils/market_operation_utils/types';
 export type Native = ERC20BridgeSource.Native;
-
-export { AxiosInstance } from 'axios';

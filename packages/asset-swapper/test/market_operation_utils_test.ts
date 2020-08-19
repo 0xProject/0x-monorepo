@@ -31,11 +31,6 @@ const TAKER_ASSET_DATA = assetDataUtils.encodeERC20AssetData(TAKER_TOKEN);
 describe('MarketOperationUtils tests', () => {
     const CHAIN_ID = 1;
     const contractAddresses = { ...getContractAddressesForChainOrThrow(CHAIN_ID), multiBridge: NULL_ADDRESS };
-    const ETH2DAI_BRIDGE_ADDRESS = contractAddresses.eth2DaiBridge;
-    const KYBER_BRIDGE_ADDRESS = contractAddresses.kyberBridge;
-    const UNISWAP_BRIDGE_ADDRESS = contractAddresses.uniswapBridge;
-    const UNISWAP_V2_BRIDGE_ADDRESS = contractAddresses.uniswapV2Bridge;
-    const CURVE_BRIDGE_ADDRESS = contractAddresses.curveBridge;
     let originalSamplerOperations: any;
 
     before(() => {
@@ -79,16 +74,18 @@ describe('MarketOperationUtils tests', () => {
         }
         const { bridgeAddress } = bridgeData;
         switch (bridgeAddress) {
-            case KYBER_BRIDGE_ADDRESS.toLowerCase():
+            case contractAddresses.kyberBridge.toLowerCase():
                 return ERC20BridgeSource.Kyber;
-            case ETH2DAI_BRIDGE_ADDRESS.toLowerCase():
+            case contractAddresses.eth2DaiBridge.toLowerCase():
                 return ERC20BridgeSource.Eth2Dai;
-            case UNISWAP_BRIDGE_ADDRESS.toLowerCase():
+            case contractAddresses.uniswapBridge.toLowerCase():
                 return ERC20BridgeSource.Uniswap;
-            case UNISWAP_V2_BRIDGE_ADDRESS.toLowerCase():
+            case contractAddresses.uniswapV2Bridge.toLowerCase():
                 return ERC20BridgeSource.UniswapV2;
-            case CURVE_BRIDGE_ADDRESS.toLowerCase():
+            case contractAddresses.curveBridge.toLowerCase():
                 return ERC20BridgeSource.Curve;
+            case contractAddresses.mStableBridge.toLowerCase():
+                return ERC20BridgeSource.MStable;
             default:
                 break;
         }
@@ -294,6 +291,7 @@ describe('MarketOperationUtils tests', () => {
         [ERC20BridgeSource.Curve]: _.times(NUM_SAMPLES, () => 0),
         [ERC20BridgeSource.LiquidityProvider]: _.times(NUM_SAMPLES, () => 0),
         [ERC20BridgeSource.MultiBridge]: _.times(NUM_SAMPLES, () => 0),
+        [ERC20BridgeSource.MStable]: _.times(NUM_SAMPLES, () => 0),
     };
 
     interface FillDataBySource {
@@ -425,7 +423,12 @@ describe('MarketOperationUtils tests', () => {
                 sampleDistributionBase: 1,
                 bridgeSlippage: 0,
                 maxFallbackSlippage: 100,
-                excludedSources: [ERC20BridgeSource.UniswapV2, ERC20BridgeSource.Curve, ERC20BridgeSource.Balancer],
+                excludedSources: [
+                    ERC20BridgeSource.UniswapV2,
+                    ERC20BridgeSource.Curve,
+                    ERC20BridgeSource.Balancer,
+                    ERC20BridgeSource.MStable,
+                ],
                 allowFallback: false,
                 shouldBatchBridgeOrders: false,
             };
@@ -462,7 +465,7 @@ describe('MarketOperationUtils tests', () => {
                     ...DEFAULT_OPTS,
                     excludedSources: [],
                 });
-                expect(sourcesPolled.sort()).to.deep.eq(SELL_SOURCES.slice().sort());
+                expect(sourcesPolled.sort()).to.deep.equals(SELL_SOURCES.slice().sort());
             });
 
             it('polls the liquidity provider when the registry is provided in the arguments', async () => {
@@ -484,7 +487,7 @@ describe('MarketOperationUtils tests', () => {
                     ...DEFAULT_OPTS,
                     excludedSources: [],
                 });
-                expect(args.sources.sort()).to.deep.eq(
+                expect(args.sources.sort()).to.deep.equals(
                     SELL_SOURCES.concat([ERC20BridgeSource.LiquidityProvider]).sort(),
                 );
                 expect(args.liquidityProviderAddress).to.eql(registryAddress);
@@ -503,7 +506,7 @@ describe('MarketOperationUtils tests', () => {
                     ...DEFAULT_OPTS,
                     excludedSources,
                 });
-                expect(sourcesPolled.sort()).to.deep.eq(_.without(SELL_SOURCES, ...excludedSources).sort());
+                expect(sourcesPolled.sort()).to.deep.equals(_.without(SELL_SOURCES, ...excludedSources).sort());
             });
 
             it('generates bridge orders with correct asset data', async () => {
@@ -836,6 +839,7 @@ describe('MarketOperationUtils tests', () => {
                     ERC20BridgeSource.UniswapV2,
                     ERC20BridgeSource.Curve,
                     ERC20BridgeSource.Balancer,
+                    ERC20BridgeSource.MStable,
                 ],
                 allowFallback: false,
                 shouldBatchBridgeOrders: false,
@@ -873,7 +877,7 @@ describe('MarketOperationUtils tests', () => {
                     ...DEFAULT_OPTS,
                     excludedSources: [],
                 });
-                expect(sourcesPolled).to.deep.eq(BUY_SOURCES);
+                expect(sourcesPolled.sort()).to.deep.equals(BUY_SOURCES.sort());
             });
 
             it('polls the liquidity provider when the registry is provided in the arguments', async () => {
@@ -914,7 +918,7 @@ describe('MarketOperationUtils tests', () => {
                     ...DEFAULT_OPTS,
                     excludedSources,
                 });
-                expect(sourcesPolled).to.deep.eq(_.without(BUY_SOURCES, ...excludedSources));
+                expect(sourcesPolled.sort()).to.deep.eq(_.without(BUY_SOURCES, ...excludedSources).sort());
             });
 
             it('generates bridge orders with correct asset data', async () => {

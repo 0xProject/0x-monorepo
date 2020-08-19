@@ -6,6 +6,7 @@
 import { ContractArtifact } from 'ethereum-types';
 
 import * as AffiliateFeeTransformer from '../generated-artifacts/AffiliateFeeTransformer.json';
+import * as BridgeAdapter from '../generated-artifacts/BridgeAdapter.json';
 import * as FillQuoteTransformer from '../generated-artifacts/FillQuoteTransformer.json';
 import * as FullMigration from '../generated-artifacts/FullMigration.json';
 import * as IAllowanceTarget from '../generated-artifacts/IAllowanceTarget.json';
@@ -48,4 +49,5 @@ export const artifacts = {
     AffiliateFeeTransformer: AffiliateFeeTransformer as ContractArtifact,
     SignatureValidator: SignatureValidator as ContractArtifact,
     MetaTransactions: MetaTransactions as ContractArtifact,
+    BridgeAdapter: BridgeAdapter as ContractArtifact,
 };

@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 import { BigNumber, ERC20BridgeSource, SignedOrder } from '../..';
 
 import { BalancerPool, BalancerPoolsCache, computeBalancerBuyQuote, computeBalancerSellQuote } from './balancer_utils';
+import { NULL_BYTES, ZERO_AMOUNT } from './constants';
 import { getCurveInfosForPair } from './curve_utils';
 import { getMultiBridgeIntermediateToken } from './multibridge_utils';
 import {
@@ -20,11 +21,11 @@ import {
  * for use with `DexOrderSampler.executeAsync()`.
  */
 export const samplerOperations = {
-    getOrderFillableTakerAmounts(orders: SignedOrder[], devUtilsAddress: string): BatchedOperation<BigNumber[]> {
+    getOrderFillableTakerAmounts(orders: SignedOrder[], exchangeAddress: string): BatchedOperation<BigNumber[]> {
         return {
             encodeCall: contract => {
                 return contract
-                    .getOrderFillableTakerAssetAmounts(orders, orders.map(o => o.signature), devUtilsAddress)
+                    .getOrderFillableTakerAssetAmounts(orders, orders.map(o => o.signature), exchangeAddress)
                     .getABIEncodedTransactionData();
             },
             handleCallResultsAsync: async (contract, callResults) => {
@@ -32,11 +33,11 @@ export const samplerOperations = {
             },
         };
     },
-    getOrderFillableMakerAmounts(orders: SignedOrder[], devUtilsAddress: string): BatchedOperation<BigNumber[]> {
+    getOrderFillableMakerAmounts(orders: SignedOrder[], exchangeAddress: string): BatchedOperation<BigNumber[]> {
         return {
             encodeCall: contract => {
                 return contract
-                    .getOrderFillableMakerAssetAmounts(orders, orders.map(o => o.signature), devUtilsAddress)
+                    .getOrderFillableMakerAssetAmounts(orders, orders.map(o => o.signature), exchangeAddress)
                     .getABIEncodedTransactionData();
             },
             handleCallResultsAsync: async (contract, callResults) => {
@@ -301,6 +302,32 @@ export const samplerOperations = {
             ...samplerOperations.constant(makerFillAmounts.map(amount => computeBalancerBuyQuote(pool, amount))),
         };
     },
+    getMStableSellQuotes(makerToken: string, takerToken: string, takerFillAmounts: BigNumber[]): SourceQuoteOperation {
+        return {
+            source: ERC20BridgeSource.MStable,
+            encodeCall: contract => {
+                return contract
+                    .sampleSellsFromMStable(makerToken, takerToken, takerFillAmounts)
+                    .getABIEncodedTransactionData();
+            },
+            handleCallResultsAsync: async (contract, callResults) => {
+                return contract.getABIDecodedReturnData<BigNumber[]>('sampleSellsFromMStable', callResults);
+            },
+        };
+    },
+    getMStableBuyQuotes(makerToken: string, takerToken: string, makerFillAmounts: BigNumber[]): SourceQuoteOperation {
+        return {
+            source: ERC20BridgeSource.MStable,
+            encodeCall: contract => {
+                return contract
+                    .sampleBuysFromMStable(makerToken, takerToken, makerFillAmounts)
+                    .getABIEncodedTransactionData();
+            },
+            handleCallResultsAsync: async (contract, callResults) => {
+                return contract.getABIDecodedReturnData<BigNumber[]>('sampleBuysFromMStable', callResults);
+            },
+        };
+    },
     getMedianSellRateAsync: async (
         sources: ERC20BridgeSource[],
         makerToken: string,
@@ -326,21 +353,29 @@ export const samplerOperations = {
         );
         return {
             encodeCall: contract => {
+                const encodedCall = getSellQuotes.encodeCall(contract);
+                // All soures were excluded
+                if (encodedCall === NULL_BYTES) {
+                    return NULL_BYTES;
+                }
                 const subCalls = [getSellQuotes.encodeCall(contract)];
                 return contract.batchCall(subCalls).getABIEncodedTransactionData();
             },
             handleCallResultsAsync: async (contract, callResults) => {
+                if (callResults === NULL_BYTES) {
+                    return ZERO_AMOUNT;
+                }
                 const rawSubCallResults = contract.getABIDecodedReturnData<string[]>('batchCall', callResults);
                 const samples = await getSellQuotes.handleCallResultsAsync(contract, rawSubCallResults[0]);
                 if (samples.length === 0) {
-                    return new BigNumber(0);
+                    return ZERO_AMOUNT;
                 }
                 const flatSortedSamples = samples
                     .reduce((acc, v) => acc.concat(...v))
                     .filter(v => !v.output.isZero())
                     .sort((a, b) => a.output.comparedTo(b.output));
                 if (flatSortedSamples.length === 0) {
-                    return new BigNumber(0);
+                    return ZERO_AMOUNT;
                 }
                 const medianSample = flatSortedSamples[Math.floor(flatSortedSamples.length / 2)];
                 return medianSample.output.div(medianSample.input);
@@ -350,7 +385,7 @@ export const samplerOperations = {
     constant<T>(result: T): BatchedOperation<T> {
         return {
             encodeCall: _contract => {
-                return '0x';
+                return NULL_BYTES;
             },
             handleCallResultsAsync: async (_contract, _callResults) => {
                 return result;
@@ -456,6 +491,8 @@ export const samplerOperations = {
                                 return pools.map(pool =>
                                     samplerOperations.getBalancerSellQuotes(pool, takerFillAmounts),
                                 );
+                            case ERC20BridgeSource.MStable:
+                                return samplerOperations.getMStableSellQuotes(makerToken, takerToken, takerFillAmounts);
                             default:
                                 throw new Error(`Unsupported sell sample source: ${source}`);
                         }
@@ -467,17 +504,27 @@ export const samplerOperations = {
         const nonSamplerOps = subOps.filter(op => op.source === ERC20BridgeSource.Balancer);
         return {
             encodeCall: contract => {
+                // All operations are NOOPs
+                if (samplerOps.length === 0) {
+                    return NULL_BYTES;
+                }
                 const subCalls = samplerOps.map(op => op.encodeCall(contract));
                 return contract.batchCall(subCalls).getABIEncodedTransactionData();
             },
             handleCallResultsAsync: async (contract, callResults) => {
-                const rawSubCallResults = contract.getABIDecodedReturnData<string[]>('batchCall', callResults);
-                let samples = await Promise.all(
-                    samplerOps.map(async (op, i) => op.handleCallResultsAsync(contract, rawSubCallResults[i])),
-                );
-                samples = samples.concat(
-                    await Promise.all(nonSamplerOps.map(async op => op.handleCallResultsAsync(contract, ''))),
-                );
+                let samples: BigNumber[][];
+                // If all operations were NOOPs then just call the handle result callback
+                if (callResults === NULL_BYTES && samplerOps.length === 0) {
+                    samples = await Promise.all(nonSamplerOps.map(async op => op.handleCallResultsAsync(contract, '')));
+                } else {
+                    const rawSubCallResults = contract.getABIDecodedReturnData<string[]>('batchCall', callResults);
+                    samples = await Promise.all(
+                        samplerOps.map(async (op, i) => op.handleCallResultsAsync(contract, rawSubCallResults[i])),
+                    );
+                    samples = samples.concat(
+                        await Promise.all(nonSamplerOps.map(async op => op.handleCallResultsAsync(contract, ''))),
+                    );
+                }
                 return [...samplerOps, ...nonSamplerOps].map((op, i) => {
                     return samples[i].map((output, j) => ({
                         source: op.source,
@@ -553,6 +600,8 @@ export const samplerOperations = {
                                 return pools.map(pool =>
                                     samplerOperations.getBalancerBuyQuotes(pool, makerFillAmounts),
                                 );
+                            case ERC20BridgeSource.MStable:
+                                return samplerOperations.getMStableBuyQuotes(makerToken, takerToken, makerFillAmounts);
                             default:
                                 throw new Error(`Unsupported buy sample source: ${source}`);
                         }
@@ -564,17 +613,26 @@ export const samplerOperations = {
         const nonSamplerOps = subOps.filter(op => op.source === ERC20BridgeSource.Balancer);
         return {
             encodeCall: contract => {
+                // All operations are NOOPs
+                if (samplerOps.length === 0) {
+                    return NULL_BYTES;
+                }
                 const subCalls = samplerOps.map(op => op.encodeCall(contract));
                 return contract.batchCall(subCalls).getABIEncodedTransactionData();
             },
             handleCallResultsAsync: async (contract, callResults) => {
-                const rawSubCallResults = contract.getABIDecodedReturnData<string[]>('batchCall', callResults);
-                let samples = await Promise.all(
-                    samplerOps.map(async (op, i) => op.handleCallResultsAsync(contract, rawSubCallResults[i])),
-                );
-                samples = samples.concat(
-                    await Promise.all(nonSamplerOps.map(async op => op.handleCallResultsAsync(contract, ''))),
-                );
+                let samples: BigNumber[][];
+                if (callResults === NULL_BYTES && samplerOps.length === 0) {
+                    samples = await Promise.all(nonSamplerOps.map(async op => op.handleCallResultsAsync(contract, '')));
+                } else {
+                    const rawSubCallResults = contract.getABIDecodedReturnData<string[]>('batchCall', callResults);
+                    samples = await Promise.all(
+                        samplerOps.map(async (op, i) => op.handleCallResultsAsync(contract, rawSubCallResults[i])),
+                    );
+                    samples = samples.concat(
+                        await Promise.all(nonSamplerOps.map(async op => op.handleCallResultsAsync(contract, ''))),
+                    );
+                }
                 return [...samplerOps, ...nonSamplerOps].map((op, i) => {
                     return samples[i].map((output, j) => ({
                         source: op.source,

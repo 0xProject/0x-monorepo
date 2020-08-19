@@ -24,20 +24,22 @@ import "./Eth2DaiSampler.sol";
 import "./KyberSampler.sol";
 import "./LiquidityProviderSampler.sol";
 import "./MultiBridgeSampler.sol";
+import "./MStableSampler.sol";
 import "./NativeOrderSampler.sol";
 import "./UniswapSampler.sol";
 import "./UniswapV2Sampler.sol";
 
 
 contract ERC20BridgeSampler is
-    Eth2DaiSampler,
-    UniswapSampler,
-    KyberSampler,
     CurveSampler,
+    Eth2DaiSampler,
+    KyberSampler,
     LiquidityProviderSampler,
-    UniswapV2Sampler,
+    MStableSampler,
     MultiBridgeSampler,
-    NativeOrderSampler
+    NativeOrderSampler,
+    UniswapSampler,
+    UniswapV2Sampler
 {
     /// @dev Call multiple public functions on this contract in a single transaction.
     /// @param callDatas ABI-encoded call data for each function call.
@@ -49,6 +51,9 @@ contract ERC20BridgeSampler is
     {
         callResults = new bytes[](callDatas.length);
         for (uint256 i = 0; i != callDatas.length; ++i) {
+            if (callDatas[i].length == 0) {
+                continue;
+            }
             (bool didSucceed, bytes memory resultData) = address(this).staticcall(callDatas[i]);
             if (!didSucceed) {
                 assembly { revert(add(resultData, 0x20), mload(resultData)) }
