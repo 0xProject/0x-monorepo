@@ -127,6 +127,9 @@ contract LiquidityProviderSampler is
         view
         returns (address providerAddress)
     {
+        if (registryAddress == address(0)) {
+            return address(0);
+        }
         bytes memory callData = abi.encodeWithSelector(
             ILiquidityProviderRegistry(0).getLiquidityProviderForMarket.selector,
             takerToken,

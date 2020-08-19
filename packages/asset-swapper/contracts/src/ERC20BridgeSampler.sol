@@ -51,6 +51,9 @@ contract ERC20BridgeSampler is
     {
         callResults = new bytes[](callDatas.length);
         for (uint256 i = 0; i != callDatas.length; ++i) {
+            if (callDatas[i].length == 0) {
+                continue;
+            }
             (bool didSucceed, bytes memory resultData) = address(this).staticcall(callDatas[i]);
             if (!didSucceed) {
                 assembly { revert(add(resultData, 0x20), mload(resultData)) }

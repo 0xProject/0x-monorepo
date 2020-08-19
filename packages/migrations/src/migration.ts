@@ -1,4 +1,3 @@
-import { artifacts as assetSwapperArtifacts, ERC20BridgeSamplerContract } from '@0x/asset-swapper';
 import { ContractAddresses, getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
 import {
     artifacts as assetProxyArtifacts,
@@ -54,8 +53,8 @@ const allArtifacts = {
     ...exchangeArtifacts,
     ...forwarderArtifacts,
     ...stakingArtifacts,
-    ...assetSwapperArtifacts,
     ...exchangeProxyArtifacts,
+    ...assetProxyArtifacts,
 };
 
 const { NULL_ADDRESS } = constants;
@@ -293,26 +292,20 @@ export async function runMigrationsAsync(
         etherToken.address,
     );
 
-    const erc20BridgeSampler = await ERC20BridgeSamplerContract.deployFrom0xArtifactAsync(
-        assetSwapperArtifacts.ERC20BridgeSampler,
+    // JAM
+    // tslint:disable-next-line:no-unused-variable
+    const jamToken = await DummyERC20TokenContract.deployFrom0xArtifactAsync(
+        erc20Artifacts.DummyERC20Token,
         provider,
         txDefaults,
         allArtifacts,
+        'JAM Token',
+        'JAM',
+        new BigNumber(18),
+        new BigNumber(1000000000000000000000000000),
     );
 
     // Exchange Proxy //////////////////////////////////////////////////////////
-
-    const exchangeProxy = await fullMigrateExchangeProxyAsync(txDefaults.from, provider, txDefaults);
-    const exchangeProxyAllowanceTargetAddress = await new ITokenSpenderContract(
-        exchangeProxy.address,
-        provider,
-        txDefaults,
-    )
-        .getAllowanceTarget()
-        .callAsync();
-    const exchangeProxyFlashWalletAddress = await new ITransformERC20Contract(exchangeProxy.address, provider)
-        .getTransformWallet()
-        .callAsync();
 
     const bridgeAdapter = await BridgeAdapterContract.deployFrom0xArtifactAsync(
         exchangeProxyArtifacts.BridgeAdapter,
@@ -335,6 +328,18 @@ export async function runMigrationsAsync(
             weth: etherToken.address,
         },
     );
+
+    const exchangeProxy = await fullMigrateExchangeProxyAsync(txDefaults.from, provider, txDefaults);
+    const exchangeProxyAllowanceTargetAddress = await new ITokenSpenderContract(
+        exchangeProxy.address,
+        provider,
+        txDefaults,
+    )
+        .getAllowanceTarget()
+        .callAsync();
+    const exchangeProxyFlashWalletAddress = await new ITransformERC20Contract(exchangeProxy.address, provider)
+        .getTransformWallet()
+        .callAsync();
 
     // Deploy transformers.
     const fillQuoteTransformer = await FillQuoteTransformerContract.deployFrom0xArtifactAsync(
@@ -388,7 +393,7 @@ export async function runMigrationsAsync(
         uniswapBridge: NULL_ADDRESS,
         eth2DaiBridge: NULL_ADDRESS,
         kyberBridge: NULL_ADDRESS,
-        erc20BridgeSampler: erc20BridgeSampler.address,
+        erc20BridgeSampler: NULL_ADDRESS,
         chaiBridge: NULL_ADDRESS,
         dydxBridge: NULL_ADDRESS,
         curveBridge: NULL_ADDRESS,
