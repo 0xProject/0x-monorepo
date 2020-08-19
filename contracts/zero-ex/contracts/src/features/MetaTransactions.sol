@@ -271,7 +271,9 @@ contract MetaTransactions is
 
         _validateMetaTransaction(state);
 
-        // Mark the transaction executed.
+        // Mark the transaction executed by storing the block at which it was executed.
+        // Currently the block number just indicates that the mtx was executed and
+        // serves no other purpose from within this contract.
         LibMetaTransactionsStorage.getStorage()
             .mtxHashToExecutedBlockNumber[state.hash] = block.number;
 

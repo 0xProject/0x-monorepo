@@ -49,10 +49,6 @@ contract SignatureValidator is
     /// @dev Version of this feature.
     uint256 public immutable override FEATURE_VERSION = _encodeVersion(1, 0, 0);
 
-    constructor() public FixinCommon() {
-        // solhint-disable-next-line no-empty-blocks
-    }
-
     /// @dev Initialize and register this feature.
     ///      Should be delegatecalled by `Migrate.migrate()`.
     /// @return success `LibMigrate.SUCCESS` on success.

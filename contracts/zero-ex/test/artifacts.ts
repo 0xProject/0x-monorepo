@@ -53,6 +53,7 @@ import * as LibTokenSpenderStorage from '../test/generated-artifacts/LibTokenSpe
 import * as LibTransformERC20RichErrors from '../test/generated-artifacts/LibTransformERC20RichErrors.json';
 import * as LibTransformERC20Storage from '../test/generated-artifacts/LibTransformERC20Storage.json';
 import * as LibWalletRichErrors from '../test/generated-artifacts/LibWalletRichErrors.json';
+import * as LogMetadataTransformer from '../test/generated-artifacts/LogMetadataTransformer.json';
 import * as MetaTransactions from '../test/generated-artifacts/MetaTransactions.json';
 import * as Ownable from '../test/generated-artifacts/Ownable.json';
 import * as PayTakerTransformer from '../test/generated-artifacts/PayTakerTransformer.json';
@@ -139,6 +140,7 @@ export const artifacts = {
     FillQuoteTransformer: FillQuoteTransformer as ContractArtifact,
     IERC20Transformer: IERC20Transformer as ContractArtifact,
     LibERC20Transformer: LibERC20Transformer as ContractArtifact,
+    LogMetadataTransformer: LogMetadataTransformer as ContractArtifact,
     PayTakerTransformer: PayTakerTransformer as ContractArtifact,
     Transformer: Transformer as ContractArtifact,
     WethTransformer: WethTransformer as ContractArtifact,

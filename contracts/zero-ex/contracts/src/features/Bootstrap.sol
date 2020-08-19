@@ -77,6 +77,7 @@ contract Bootstrap is
     /// @dev Self-destructs this contract.
     ///      Can only be called by the deployer.
     function die() external {
+        assert(address(this) == _implementation);
         if (msg.sender != _deployer) {
             LibProxyRichErrors.InvalidDieCallerError(msg.sender, _deployer).rrevert();
         }

@@ -48,10 +48,6 @@ contract TokenSpender is
 
     using LibRichErrorsV06 for bytes;
 
-    constructor() public FixinCommon() {
-        // solhint-disable-next-line no-empty-blocks
-    }
-
     /// @dev Initialize and register this feature. Should be delegatecalled
     ///      into during a `Migrate.migrate()`.
     /// @param allowanceTarget An `allowanceTarget` instance, configured to have

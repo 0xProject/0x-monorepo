@@ -44,10 +44,6 @@ contract Ownable is
 
     using LibRichErrorsV06 for bytes;
 
-    constructor() public FixinCommon() {
-        // solhint-disable-next-line no-empty-blocks
-    }
-
     /// @dev Initializes this feature. The intial owner will be set to this (ZeroEx)
     ///      to allow the bootstrappers to call `extend()`. Ownership should be
     ///      transferred to the real owner by the bootstrapper after

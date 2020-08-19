@@ -51,6 +51,7 @@ export * from '../test/generated-wrappers/lib_token_spender_storage';
 export * from '../test/generated-wrappers/lib_transform_erc20_rich_errors';
 export * from '../test/generated-wrappers/lib_transform_erc20_storage';
 export * from '../test/generated-wrappers/lib_wallet_rich_errors';
+export * from '../test/generated-wrappers/log_metadata_transformer';
 export * from '../test/generated-wrappers/meta_transactions';
 export * from '../test/generated-wrappers/ownable';
 export * from '../test/generated-wrappers/pay_taker_transformer';

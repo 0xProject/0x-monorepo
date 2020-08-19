@@ -9,6 +9,7 @@ export {
     ITokenSpenderContract,
     ITransformERC20Contract,
     IZeroExContract,
+    LogMetadataTransformerContract,
     PayTakerTransformerContract,
     WethTransformerContract,
     ZeroExContract,
