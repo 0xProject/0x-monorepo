@@ -558,7 +558,7 @@ blockchainTests.resets('Exchange core', () => {
             const expectedError = new ExchangeRevertErrors.AssetProxyTransferError(
                 orderHashHex,
                 signedOrder.makerAssetData,
-                new StringRevertError(RevertReason.TransferFailed).encode(),
+                new StringRevertError(RevertReason.TransferFailed).toString(),
             );
             const tx = exchange
                 .fillOrder(signedOrder, takerAssetFillAmount, signedOrder.signature)
@@ -587,7 +587,7 @@ blockchainTests.resets('Exchange core', () => {
             const expectedError = new ExchangeRevertErrors.AssetProxyTransferError(
                 orderHashHex,
                 signedOrder.takerAssetData,
-                new StringRevertError(RevertReason.TransferFailed).encode(),
+                new StringRevertError(RevertReason.TransferFailed).toString(),
             );
             const tx = exchange
                 .fillOrder(signedOrder, takerAssetFillAmount, signedOrder.signature)
@@ -616,7 +616,7 @@ blockchainTests.resets('Exchange core', () => {
             const expectedError = new ExchangeRevertErrors.AssetProxyTransferError(
                 orderHashHex,
                 signedOrder.makerAssetData,
-                new StringRevertError(RevertReason.InvalidAmount).encode(),
+                new StringRevertError(RevertReason.InvalidAmount).toString(),
             );
             const tx = exchange
                 .fillOrder(signedOrder, takerAssetFillAmount, signedOrder.signature)
@@ -645,7 +645,7 @@ blockchainTests.resets('Exchange core', () => {
             const expectedError = new ExchangeRevertErrors.AssetProxyTransferError(
                 orderHashHex,
                 signedOrder.takerAssetData,
-                new StringRevertError(RevertReason.InvalidAmount).encode(),
+                new StringRevertError(RevertReason.InvalidAmount).toString(),
             );
             const tx = exchange
                 .fillOrder(signedOrder, takerAssetFillAmount, signedOrder.signature)
@@ -980,7 +980,7 @@ blockchainTests.resets('Exchange core', () => {
             const expectedError = new ExchangeRevertErrors.AssetProxyTransferError(
                 orderHashHex,
                 assetData,
-                new StringRevertError(RevertReason.TargetNotEven).encode(),
+                new StringRevertError(RevertReason.TargetNotEven).toString(),
             );
             const tx = exchange
                 .fillOrder(signedOrder, signedOrder.takerAssetAmount, signedOrder.signature)
@@ -1015,7 +1015,7 @@ blockchainTests.resets('Exchange core', () => {
             const expectedError = new ExchangeRevertErrors.AssetProxyTransferError(
                 orderHashHex,
                 assetData,
-                new StringRevertError(RevertReason.TargetNotEven).encode(),
+                new StringRevertError(RevertReason.TargetNotEven).toString(),
             );
             const tx = exchange
                 .fillOrder(signedOrder, signedOrder.takerAssetAmount, signedOrder.signature)

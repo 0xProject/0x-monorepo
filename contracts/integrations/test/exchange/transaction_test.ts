@@ -280,7 +280,7 @@ blockchainTests.resets('Transaction integration tests', env => {
                     const noReentrancyError = new ExchangeRevertErrors.TransactionInvalidContextError(
                         transactionHashHex,
                         transaction.signerAddress,
-                    ).encode();
+                    ).toString();
                     const expectedError = new ExchangeRevertErrors.TransactionExecutionError(
                         recursiveTransactionHashHex,
                         noReentrancyError,
@@ -330,7 +330,7 @@ blockchainTests.resets('Transaction integration tests', env => {
                             orderHashUtils.getOrderHashHex(order),
                             order.makerAddress,
                             order.signature,
-                        ).encode();
+                        ).toString();
                         const expectedError = new ExchangeRevertErrors.TransactionExecutionError(
                             transactionHashHex,
                             nestedError,
@@ -353,7 +353,7 @@ blockchainTests.resets('Transaction integration tests', env => {
                     ExchangeRevertErrors.ExchangeContextErrorCodes.InvalidMaker,
                     orderHashUtils.getOrderHashHex(order),
                     takers[0].address,
-                ).encode();
+                ).toString();
                 const expectedError = new ExchangeRevertErrors.TransactionExecutionError(
                     transactionHashHex,
                     nestedError,
@@ -403,7 +403,7 @@ blockchainTests.resets('Transaction integration tests', env => {
                     ExchangeRevertErrors.ExchangeContextErrorCodes.InvalidMaker,
                     orderHashUtils.getOrderHashHex(orders[0]),
                     takers[0].address,
-                ).encode();
+                ).toString();
                 const expectedError = new ExchangeRevertErrors.TransactionExecutionError(
                     transactionHashHex,
                     nestedError,
@@ -771,7 +771,7 @@ blockchainTests.resets('Transaction integration tests', env => {
             const nestedError = new ExchangeRevertErrors.OrderStatusError(
                 orderHashUtils.getOrderHashHex(order),
                 OrderStatus.Cancelled,
-            ).encode();
+            ).toString();
             const expectedError = new ExchangeRevertErrors.TransactionExecutionError(
                 transactionHashUtils.getTransactionHashHex(transaction2),
                 nestedError,
