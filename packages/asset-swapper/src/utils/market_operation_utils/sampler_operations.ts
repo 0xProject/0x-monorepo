@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import { BigNumber, ERC20BridgeSource, SignedOrder } from '../..';
 
 import { BalancerPool, BalancerPoolsCache, computeBalancerBuyQuote, computeBalancerSellQuote } from './balancer_utils';
-import { NULL_BYTES } from './constants';
+import { NULL_BYTES, ZERO_AMOUNT } from './constants';
 import { getCurveInfosForPair } from './curve_utils';
 import { getMultiBridgeIntermediateToken } from './multibridge_utils';
 import {
@@ -353,21 +353,29 @@ export const samplerOperations = {
         );
         return {
             encodeCall: contract => {
+                const encodedCall = getSellQuotes.encodeCall(contract);
+                // All soures were excluded
+                if (encodedCall === NULL_BYTES) {
+                    return NULL_BYTES;
+                }
                 const subCalls = [getSellQuotes.encodeCall(contract)];
                 return contract.batchCall(subCalls).getABIEncodedTransactionData();
             },
             handleCallResultsAsync: async (contract, callResults) => {
+                if (callResults === NULL_BYTES) {
+                    return ZERO_AMOUNT;
+                }
                 const rawSubCallResults = contract.getABIDecodedReturnData<string[]>('batchCall', callResults);
                 const samples = await getSellQuotes.handleCallResultsAsync(contract, rawSubCallResults[0]);
                 if (samples.length === 0) {
-                    return new BigNumber(0);
+                    return ZERO_AMOUNT;
                 }
                 const flatSortedSamples = samples
                     .reduce((acc, v) => acc.concat(...v))
                     .filter(v => !v.output.isZero())
                     .sort((a, b) => a.output.comparedTo(b.output));
                 if (flatSortedSamples.length === 0) {
-                    return new BigNumber(0);
+                    return ZERO_AMOUNT;
                 }
                 const medianSample = flatSortedSamples[Math.floor(flatSortedSamples.length / 2)];
                 return medianSample.output.div(medianSample.input);
