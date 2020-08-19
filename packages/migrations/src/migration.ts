@@ -1,5 +1,7 @@
-import { artifacts as assetSwapperArtifacts, ERC20BridgeSamplerContract } from '@0x/asset-swapper';
+// import { artifacts as assetSwapperArtifacts, ERC20BridgeSamplerContract } from '@0x/asset-swapper';
 import { ContractAddresses, getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
+import { ERC20BridgeSampler } from '@0x/contract-artifacts';
+import { IERC20BridgeSamplerContract } from '@0x/contract-wrappers';
 import {
     artifacts as assetProxyArtifacts,
     ERC1155ProxyContract,
@@ -54,8 +56,8 @@ const allArtifacts = {
     ...exchangeArtifacts,
     ...forwarderArtifacts,
     ...stakingArtifacts,
-    ...assetSwapperArtifacts,
     ...exchangeProxyArtifacts,
+    ERC20BridgeSampler,
 };
 
 const { NULL_ADDRESS } = constants;
@@ -293,8 +295,8 @@ export async function runMigrationsAsync(
         etherToken.address,
     );
 
-    const erc20BridgeSampler = await ERC20BridgeSamplerContract.deployFrom0xArtifactAsync(
-        assetSwapperArtifacts.ERC20BridgeSampler,
+    const erc20BridgeSampler = await IERC20BridgeSamplerContract.deployFrom0xArtifactAsync(
+        ERC20BridgeSampler,
         provider,
         txDefaults,
         allArtifacts,

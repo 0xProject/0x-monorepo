@@ -68,9 +68,9 @@
     },
     "dependencies": {
         "@0x/base-contract": "^6.2.3",
-        "@0x/asset-swapper": "^4.6.0",
         "@0x/contract-addresses": "^4.11.0",
         "@0x/contract-wrappers": "^13.8.0",
+        "@0x/contract-artifacts": "^3.7.1",
         "@0x/contracts-asset-proxy": "^3.4.0",
         "@0x/contracts-coordinator": "^3.1.7",
         "@0x/contracts-dev-utils": "^1.3.5",

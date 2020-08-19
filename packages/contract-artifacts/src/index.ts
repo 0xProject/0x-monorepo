@@ -8,6 +8,7 @@ import * as DummyERC721Token from '../artifacts/DummyERC721Token.json';
 import * as ERC1155Mintable from '../artifacts/ERC1155Mintable.json';
 import * as ERC1155Proxy from '../artifacts/ERC1155Proxy.json';
 import * as ERC20BridgeProxy from '../artifacts/ERC20BridgeProxy.json';
+import * as ERC20BridgeSampler from '../artifacts/ERC20BridgeSampler.json';
 import * as ERC20Proxy from '../artifacts/ERC20Proxy.json';
 import * as ERC20Token from '../artifacts/ERC20Token.json';
 import * as ERC721Proxy from '../artifacts/ERC721Proxy.json';
@@ -37,6 +38,7 @@ export {
     ERC1155Mintable,
     ERC1155Proxy,
     ERC20BridgeProxy,
+    ERC20BridgeSampler,
     ERC20Proxy,
     ERC20Token,
     ERC721Proxy,
