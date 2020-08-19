@@ -17,6 +17,10 @@
             {
                 "note": "Add `findTransformerNonce()` and `getTransformerAddress()` functions.",
                 "pr": 2657
+            },
+            {
+                "note": "Fix EP signature utils schema assertion.",
+                "pr": 2657
             }
         ]
     },
