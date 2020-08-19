@@ -1,7 +1,4 @@
-// import { artifacts as assetSwapperArtifacts, ERC20BridgeSamplerContract } from '@0x/asset-swapper';
 import { ContractAddresses, getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
-import { ERC20BridgeSampler } from '@0x/contract-artifacts';
-import { IERC20BridgeSamplerContract } from '@0x/contract-wrappers';
 import {
     artifacts as assetProxyArtifacts,
     ERC1155ProxyContract,
@@ -57,7 +54,7 @@ const allArtifacts = {
     ...forwarderArtifacts,
     ...stakingArtifacts,
     ...exchangeProxyArtifacts,
-    ERC20BridgeSampler,
+    ...assetProxyArtifacts,
 };
 
 const { NULL_ADDRESS } = constants;
@@ -295,11 +292,17 @@ export async function runMigrationsAsync(
         etherToken.address,
     );
 
-    const erc20BridgeSampler = await IERC20BridgeSamplerContract.deployFrom0xArtifactAsync(
-        ERC20BridgeSampler,
+    // JAM
+    // tslint:disable-next-line:no-unused-variable
+    const jamToken = await DummyERC20TokenContract.deployFrom0xArtifactAsync(
+        erc20Artifacts.DummyERC20Token,
         provider,
         txDefaults,
         allArtifacts,
+        'JAM Token',
+        'JAM',
+        new BigNumber(18),
+        new BigNumber(1000000000000000000000000000),
     );
 
     // Exchange Proxy //////////////////////////////////////////////////////////
@@ -390,7 +393,7 @@ export async function runMigrationsAsync(
         uniswapBridge: NULL_ADDRESS,
         eth2DaiBridge: NULL_ADDRESS,
         kyberBridge: NULL_ADDRESS,
-        erc20BridgeSampler: erc20BridgeSampler.address,
+        erc20BridgeSampler: NULL_ADDRESS,
         chaiBridge: NULL_ADDRESS,
         dydxBridge: NULL_ADDRESS,
         curveBridge: NULL_ADDRESS,

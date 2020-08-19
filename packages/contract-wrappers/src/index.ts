@@ -113,7 +113,6 @@ export {
     ForwarderOwnershipTransferredEventArgs,
 } from './generated-wrappers/forwarder';
 export { IAssetDataContract } from './generated-wrappers/i_asset_data'; // used for synchronously encoding and decoding asset data
-export { IERC20BridgeSamplerContract } from './generated-wrappers/i_erc20_bridge_sampler';
 export {
     ITransformERC20Contract,
     ITransformERC20EventArgs,

@@ -13,12 +13,21 @@ export {
     SRAWebsocketOrderProviderOpts,
 } from '@0x/orderbook';
 export { RFQTFirmQuote, RFQTIndicativeQuote } from '@0x/quote-server';
-export { APIOrder, Asset, AssetPairsItem, SignedOrder } from '@0x/types';
+export {
+    APIOrder,
+    Asset,
+    AssetPairsItem,
+    EventCallback,
+    IndexedFilterValues,
+    SignedOrder,
+    SimpleContractArtifact,
+} from '@0x/types';
 export { BigNumber } from '@0x/utils';
 export { AxiosInstance } from 'axios';
 export {
     BlockParam,
     BlockParamLiteral,
+    ContractArtifact,
     DataItem,
     EIP1193Event,
     EIP1193Provider,
@@ -37,6 +46,8 @@ export {
     Web3JsV3Provider,
     ZeroExProvider,
 } from 'ethereum-types';
+export { ERC20BridgeSamplerContract } from '../generated-wrappers/erc20_bridge_sampler';
+export { artifacts } from './artifacts';
 export { InsufficientAssetLiquidityError } from './errors';
 export { SwapQuoteConsumer } from './quote_consumers/swap_quote_consumer';
 export { SwapQuoter } from './swap_quoter';
