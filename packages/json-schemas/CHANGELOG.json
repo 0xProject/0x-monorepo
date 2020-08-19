@@ -1,5 +1,14 @@
 [
     {
+        "version": "5.2.0",
+        "changes": [
+            {
+                "note": "Add `exchangeProxyMetaTransactionSchema`",
+                "pr": 2657
+            }
+        ]
+    },
+    {
         "version": "5.1.0",
         "changes": [
             {
