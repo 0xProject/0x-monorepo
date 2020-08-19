@@ -17,27 +17,53 @@ export {
     APIOrder,
     Asset,
     AssetPairsItem,
+    DecodedLogEvent,
     EventCallback,
     IndexedFilterValues,
     SignedOrder,
-    SimpleContractArtifact,
 } from '@0x/types';
 export { BigNumber } from '@0x/utils';
 export { AxiosInstance } from 'axios';
 export {
+    AbiDefinition,
     BlockParam,
     BlockParamLiteral,
+    CompilerOpts,
+    CompilerSettings,
+    CompilerSettingsMetadata,
+    ConstructorAbi,
+    ConstructorStateMutability,
+    ContractAbi,
     ContractArtifact,
+    ContractChainData,
+    ContractChains,
+    ContractEventArg,
     DataItem,
+    DecodedLogArgs,
+    DevdocOutput,
     EIP1193Event,
     EIP1193Provider,
+    EventAbi,
     EventParameter,
+    EvmBytecodeOutput,
+    EvmBytecodeOutputLinkReferences,
+    EvmOutput,
+    FallbackAbi,
+    FunctionAbi,
     GanacheProvider,
     GethCallOverrides,
     JSONRPCErrorCallback,
     JSONRPCRequestPayload,
     JSONRPCResponseError,
     JSONRPCResponsePayload,
+    LogWithDecodedArgs,
+    MethodAbi,
+    OptimizerSettings,
+    OutputField,
+    ParamDescription,
+    RevertErrorAbi,
+    StandardContractOutput,
+    StateMutability,
     SupportedProvider,
     TupleDataItem,
     Web3JsProvider,
@@ -46,8 +72,8 @@ export {
     Web3JsV3Provider,
     ZeroExProvider,
 } from 'ethereum-types';
-export { ERC20BridgeSamplerContract } from '../generated-wrappers/erc20_bridge_sampler';
 export { artifacts } from './artifacts';
+export { ERC20BridgeSamplerContract } from './contracts';
 export { InsufficientAssetLiquidityError } from './errors';
 export { SwapQuoteConsumer } from './quote_consumers/swap_quote_consumer';
 export { SwapQuoter } from './swap_quoter';

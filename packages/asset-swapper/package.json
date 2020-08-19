@@ -87,7 +87,7 @@
         "@0x/contracts-utils": "^4.5.1",
         "@0x/dev-utils": "^3.3.0",
         "@0x/mesh-rpc-client": "^7.0.4-beta-0xv3",
-        "@0x/migrations": "6.4.0",
+        "@0x/migrations": "^6.4.0",
         "@0x/sol-compiler": "^4.1.1",
         "@0x/subproviders": "^6.1.1",
         "@0x/ts-doc-gen": "^0.0.22",
