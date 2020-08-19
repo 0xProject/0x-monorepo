@@ -68,6 +68,7 @@
     },
     "dependencies": {
         "@0x/base-contract": "^6.2.3",
+        "@0x/asset-swapper": "^4.6.0",
         "@0x/contract-addresses": "^4.11.0",
         "@0x/contract-wrappers": "^13.8.0",
         "@0x/contracts-asset-proxy": "^3.4.0",
