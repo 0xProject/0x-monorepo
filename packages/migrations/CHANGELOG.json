@@ -9,6 +9,10 @@
             {
                 "note": "Refactor `migration.ts` a little",
                 "pr": 2656
+            },
+            {
+                "note": "Update EP migration.",
+                "pr": "TODO"
             }
         ]
     },
