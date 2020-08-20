@@ -1,16 +1,13 @@
 import { ContractAddresses } from '@0x/contract-addresses';
 import { ITransformERC20Contract } from '@0x/contract-wrappers';
 import {
-    assetDataUtils,
     encodeAffiliateFeeTransformerData,
     encodeFillQuoteTransformerData,
     encodePayTakerTransformerData,
     encodeWethTransformerData,
-    ERC20AssetData,
     ETH_TOKEN_ADDRESS,
     FillQuoteTransformerSide,
 } from '@0x/order-utils';
-import { AssetProxyId } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from '@0x/web3-wrapper';
 import * as ethjs from 'ethereumjs-util';
@@ -30,6 +27,7 @@ import {
     SwapQuoteGetOutputOpts,
 } from '../types';
 import { assert } from '../utils/assert';
+import { getTokenFromAssetData } from '../utils/utils';
 
 // tslint:disable-next-line:custom-no-magic-numbers
 const MAX_UINT256 = new BigNumber(2).pow(256).minus(1);
@@ -229,15 +227,6 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
 
 function isBuyQuote(quote: SwapQuote): quote is MarketBuySwapQuote {
     return quote.type === MarketOperation.Buy;
-}
-
-function getTokenFromAssetData(assetData: string): string {
-    const data = assetDataUtils.decodeAssetDataOrThrow(assetData);
-    if (data.assetProxyId !== AssetProxyId.ERC20 && data.assetProxyId !== AssetProxyId.ERC20Bridge) {
-        throw new Error(`Unsupported exchange proxy quote asset type: ${data.assetProxyId}`);
-    }
-    // tslint:disable-next-line:no-unnecessary-type-assertion
-    return (data as ERC20AssetData).tokenAddress;
 }
 
 /**

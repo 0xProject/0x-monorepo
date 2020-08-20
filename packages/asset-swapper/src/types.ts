@@ -215,6 +215,7 @@ export type SwapQuoteOrdersBreakdown = Partial<
     { [key in Exclude<ERC20BridgeSource, typeof ERC20BridgeSource.MultiHop>]: BigNumber } & {
         [ERC20BridgeSource.MultiHop]: {
             proportion: BigNumber;
+            intermediateToken: string;
             hops: ERC20BridgeSource[];
         };
     }

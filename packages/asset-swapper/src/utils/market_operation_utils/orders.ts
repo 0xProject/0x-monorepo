@@ -8,6 +8,7 @@ import { MarketOperation, SignedOrderWithFillableAmounts } from '../../types';
 
 import {
     ERC20_PROXY_ID,
+    MAX_UINT256,
     NULL_ADDRESS,
     NULL_BYTES,
     ONE_HOUR_IN_SECONDS,
@@ -198,7 +199,7 @@ export function createOrdersFromTwoHopSample(
     const secondHopFill: CollapsedFill = {
         sourcePathId: '',
         source: secondHopSource.source,
-        input: ZERO_AMOUNT,
+        input: MAX_UINT256,
         output: sample.output,
         subFills: [],
         fillData: secondHopSource.fillData,

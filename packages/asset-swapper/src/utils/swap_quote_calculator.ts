@@ -25,7 +25,7 @@ import {
     GetMarketOrdersOpts,
     OptimizedMarketOrder,
 } from './market_operation_utils/types';
-import { isSupportedAssetDataInOrders } from './utils';
+import { getTokenFromAssetData, isSupportedAssetDataInOrders } from './utils';
 
 import { QuoteReport } from './quote_report_generator';
 import { QuoteFillResult, simulateBestCaseFill, simulateWorstCaseFill } from './quote_simulation';
@@ -289,6 +289,7 @@ function createTwoHopSwapQuote(
         sourceBreakdown: {
             [ERC20BridgeSource.MultiHop]: {
                 proportion: new BigNumber(1),
+                intermediateToken: getTokenFromAssetData(secondHopOrder.takerAssetData),
                 hops: [firstHopFill.source, secondHopFill.source],
             },
         },

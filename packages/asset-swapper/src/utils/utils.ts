@@ -113,3 +113,12 @@ export function isERC20EquivalentAssetData(assetData: AssetData): assetData is E
 export function difference<T>(a: T[], b: T[]): T[] {
     return a.filter(x => b.indexOf(x) === -1);
 }
+
+export function getTokenFromAssetData(assetData: string): string {
+    const data = assetDataUtils.decodeAssetDataOrThrow(assetData);
+    if (data.assetProxyId !== AssetProxyId.ERC20 && data.assetProxyId !== AssetProxyId.ERC20Bridge) {
+        throw new Error(`Unsupported exchange proxy quote asset type: ${data.assetProxyId}`);
+    }
+    // tslint:disable-next-line:no-unnecessary-type-assertion
+    return (data as ERC20AssetData).tokenAddress;
+}
