@@ -37,6 +37,10 @@
             {
                 "note": "Add `refundReceiver` to `ExchangeProxySwapQuoteConsumer` options.",
                 "pr": 2657
+            },
+            {
+                "note": "Use `IZeroExContract` in EP swap quote consumer.",
+                "pr": "TODO"
             }
         ]
     },
