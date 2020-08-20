@@ -8,6 +8,8 @@ import { ContractArtifact } from 'ethereum-types';
 import * as ApproximateBuys from '../test/generated-artifacts/ApproximateBuys.json';
 import * as BalancerSampler from '../test/generated-artifacts/BalancerSampler.json';
 import * as CurveSampler from '../test/generated-artifacts/CurveSampler.json';
+import * as DummyLiquidityProvider from '../test/generated-artifacts/DummyLiquidityProvider.json';
+import * as DummyLiquidityProviderRegistry from '../test/generated-artifacts/DummyLiquidityProviderRegistry.json';
 import * as ERC20BridgeSampler from '../test/generated-artifacts/ERC20BridgeSampler.json';
 import * as Eth2DaiSampler from '../test/generated-artifacts/Eth2DaiSampler.json';
 import * as IBalancer from '../test/generated-artifacts/IBalancer.json';
@@ -42,6 +44,17 @@ export const artifacts = {
     CurveSampler: CurveSampler as ContractArtifact,
     ERC20BridgeSampler: ERC20BridgeSampler as ContractArtifact,
     Eth2DaiSampler: Eth2DaiSampler as ContractArtifact,
+    IMooniswap: IMooniswap as ContractArtifact,
+    KyberSampler: KyberSampler as ContractArtifact,
+    LiquidityProviderSampler: LiquidityProviderSampler as ContractArtifact,
+    MStableSampler: MStableSampler as ContractArtifact,
+    MooniswapSampler: MooniswapSampler as ContractArtifact,
+    MultiBridgeSampler: MultiBridgeSampler as ContractArtifact,
+    NativeOrderSampler: NativeOrderSampler as ContractArtifact,
+    SamplerUtils: SamplerUtils as ContractArtifact,
+    TwoHopSampler: TwoHopSampler as ContractArtifact,
+    UniswapSampler: UniswapSampler as ContractArtifact,
+    UniswapV2Sampler: UniswapV2Sampler as ContractArtifact,
     IBalancer: IBalancer as ContractArtifact,
     ICurve: ICurve as ContractArtifact,
     IEth2Dai: IEth2Dai as ContractArtifact,
@@ -52,20 +65,11 @@ export const artifacts = {
     ILiquidityProvider: ILiquidityProvider as ContractArtifact,
     ILiquidityProviderRegistry: ILiquidityProviderRegistry as ContractArtifact,
     IMStable: IMStable as ContractArtifact,
-    IMooniswap: IMooniswap as ContractArtifact,
     IMultiBridge: IMultiBridge as ContractArtifact,
     IUniswapExchangeQuotes: IUniswapExchangeQuotes as ContractArtifact,
     IUniswapV2Router01: IUniswapV2Router01 as ContractArtifact,
-    KyberSampler: KyberSampler as ContractArtifact,
-    LiquidityProviderSampler: LiquidityProviderSampler as ContractArtifact,
-    MStableSampler: MStableSampler as ContractArtifact,
-    MooniswapSampler: MooniswapSampler as ContractArtifact,
-    MultiBridgeSampler: MultiBridgeSampler as ContractArtifact,
-    NativeOrderSampler: NativeOrderSampler as ContractArtifact,
-    SamplerUtils: SamplerUtils as ContractArtifact,
-    UniswapSampler: UniswapSampler as ContractArtifact,
-    UniswapV2Sampler: UniswapV2Sampler as ContractArtifact,
+    DummyLiquidityProvider: DummyLiquidityProvider as ContractArtifact,
+    DummyLiquidityProviderRegistry: DummyLiquidityProviderRegistry as ContractArtifact,
     TestERC20BridgeSampler: TestERC20BridgeSampler as ContractArtifact,
     TestNativeOrderSampler: TestNativeOrderSampler as ContractArtifact,
-    TwoHopSampler: TwoHopSampler as ContractArtifact,
 };
