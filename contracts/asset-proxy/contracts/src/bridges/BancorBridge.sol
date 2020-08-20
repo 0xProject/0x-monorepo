@@ -46,7 +46,7 @@ contract BancorBridge is
     /// @param from The maker (this contract).
     /// @param to The recipient of the bought tokens.
     /// @param amount Minimum amount of `toTokenAddress` tokens to buy.
-    /// @param bridgeData The abi-encoded conversion path addresses
+    /// @param bridgeData The abi-encoded conversion path addresses and Bancor network address
     /// @return success The magic bytes if successful.
     function bridgeTransferFrom(
         address toTokenAddress,
@@ -69,6 +69,7 @@ contract BancorBridge is
         ) = abi.decode(bridgeData, (address[], address));
         // solhint-enable indent
 
+        require(state.path.length > 0, "BancorBridge/PATH_MUST_EXIST");
         // Just transfer the tokens if they're the same.
         if (state.path[0] == toTokenAddress) {
             LibERC20Token.transfer(state.path[0], to, amount);

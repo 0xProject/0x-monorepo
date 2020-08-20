@@ -107,7 +107,7 @@ blockchainTests.resets('Bancor unit tests', env => {
                 _opts.toAddress,
                 // Transfer amount.
                 _opts.amount,
-                // ABI-encode the input token address as the bridge data. // FIXME
+                // ABI-encode the input token address as the bridge data.
                 bridgeDataEncoder.encode([
                     _opts.tokenAddressesPath,
                     await testContract.getNetworkAddress().callAsync(),
