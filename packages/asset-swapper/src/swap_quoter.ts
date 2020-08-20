@@ -202,9 +202,8 @@ export class SwapQuoter {
                 gas: samplerGasLimit,
             },
         );
-        const bancorService = options.ethereumRpcUrl ? new BancorService(provider) : undefined;
         this._marketOperationUtils = new MarketOperationUtils(
-            new DexOrderSampler(samplerContract, samplerOverrides, bancorService),
+            new DexOrderSampler(samplerContract, samplerOverrides, new BancorService(provider)),
             this._contractAddresses,
             {
                 chainId,

@@ -14,6 +14,7 @@ export const SELL_SOURCES = [
     ERC20BridgeSource.Kyber,
     ERC20BridgeSource.Curve,
     ERC20BridgeSource.Balancer,
+    ERC20BridgeSource.Bancor,
     ERC20BridgeSource.MStable,
 ];
 

@@ -348,12 +348,12 @@ function createBalancerBridgeData(takerToken: string, poolAddress: string): stri
     return encoder.encode({ takerToken, poolAddress });
 }
 
-function createBancorBridgeData(path: string[], bancorNetworkAddress: string): string {
+function createBancorBridgeData(path: string[], networkAddress: string): string {
     const encoder = AbiEncoder.create([
         { name: 'path', type: 'address[]' },
         { name: 'networkAddress', type: 'address' },
     ]);
-    return encoder.encode({ path, bancorNetworkAddress });
+    return encoder.encode({ path, networkAddress });
 }
 
 function createCurveBridgeData(
