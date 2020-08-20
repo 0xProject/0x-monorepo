@@ -22,12 +22,12 @@ pragma experimental ABIEncoderV2;
 import "@0x/contracts-utils/contracts/src/v06/errors/LibRichErrorsV06.sol";
 import "../migrations/LibBootstrap.sol";
 import "../storage/LibProxyStorage.sol";
-import "./IBootstrap.sol";
+import "./IBootstrapFeature.sol";
 
 
 /// @dev Detachable `bootstrap()` feature.
-contract Bootstrap is
-    IBootstrap
+contract BootstrapFeature is
+    IBootstrapFeature
 {
     // solhint-disable state-visibility,indent
     /// @dev The ZeroEx contract.
@@ -69,7 +69,7 @@ contract Bootstrap is
         // Deregister.
         LibProxyStorage.getStorage().impls[this.bootstrap.selector] = address(0);
         // Self-destruct.
-        Bootstrap(_implementation).die();
+        BootstrapFeature(_implementation).die();
         // Call the bootstrapper.
         LibBootstrap.delegatecallBootstrapFunction(target, callData);
     }

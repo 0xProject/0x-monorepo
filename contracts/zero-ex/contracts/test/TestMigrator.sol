@@ -20,7 +20,7 @@ pragma solidity ^0.6.5;
 pragma experimental ABIEncoderV2;
 
 import "../src/migrations/LibMigrate.sol";
-import "../src/features/IOwnable.sol";
+import "../src/features/IOwnableFeature.sol";
 
 
 contract TestMigrator {
@@ -32,7 +32,7 @@ contract TestMigrator {
     function succeedingMigrate() external returns (bytes4 success) {
         emit TestMigrateCalled(
             msg.data,
-            IOwnable(address(this)).owner()
+            IOwnableFeature(address(this)).owner()
         );
         return LibMigrate.MIGRATE_SUCCESS;
     }
@@ -40,7 +40,7 @@ contract TestMigrator {
     function failingMigrate() external returns (bytes4 success) {
         emit TestMigrateCalled(
             msg.data,
-            IOwnable(address(this)).owner()
+            IOwnableFeature(address(this)).owner()
         );
         return 0xdeadbeef;
     }

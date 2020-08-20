@@ -19,10 +19,10 @@
 pragma solidity ^0.6.5;
 pragma experimental ABIEncoderV2;
 
-import "../src/features/TokenSpender.sol";
+import "../src/features/TokenSpenderFeature.sol";
 
 contract TestTokenSpender is
-    TokenSpender
+    TokenSpenderFeature
 {
     modifier onlySelf() override {
         _;

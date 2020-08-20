@@ -21,7 +21,7 @@ pragma experimental ABIEncoderV2;
 
 
 /// @dev Basic registry management features.
-interface ISimpleFunctionRegistry {
+interface ISimpleFunctionRegistryFeature {
 
     /// @dev A function implementation was updated via `extend()` or `rollback()`.
     /// @param selector The function selector.

@@ -24,14 +24,14 @@ import "@0x/contracts-utils/contracts/src/v06/LibBytesV06.sol";
 import "../errors/LibSignatureRichErrors.sol";
 import "../fixins/FixinCommon.sol";
 import "../migrations/LibMigrate.sol";
-import "./ISignatureValidator.sol";
+import "./ISignatureValidatorFeature.sol";
 import "./IFeature.sol";
 
 
 /// @dev Feature for validating signatures.
-contract SignatureValidator is
+contract SignatureValidatorFeature is
     IFeature,
-    ISignatureValidator,
+    ISignatureValidatorFeature,
     FixinCommon
 {
     using LibBytesV06 for bytes;

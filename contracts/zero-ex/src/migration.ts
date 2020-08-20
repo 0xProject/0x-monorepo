@@ -6,12 +6,13 @@ import { artifacts } from './artifacts';
 import {
     FullMigrationContract,
     InitialMigrationContract,
-    MetaTransactionsContract,
-    OwnableContract,
-    SignatureValidatorContract,
-    SimpleFunctionRegistryContract,
-    TokenSpenderContract,
-    TransformERC20Contract,
+    IZeroExContract,
+    MetaTransactionsFeatureContract,
+    OwnableFeatureContract,
+    SignatureValidatorFeatureContract,
+    SimpleFunctionRegistryFeatureContract,
+    TokenSpenderFeatureContract,
+    TransformERC20FeatureContract,
     ZeroExContract,
 } from './wrappers';
 
@@ -36,15 +37,15 @@ export async function deployBootstrapFeaturesAsync(
     return {
         registry:
             features.registry ||
-            (await SimpleFunctionRegistryContract.deployFrom0xArtifactAsync(
-                artifacts.SimpleFunctionRegistry,
+            (await SimpleFunctionRegistryFeatureContract.deployFrom0xArtifactAsync(
+                artifacts.SimpleFunctionRegistryFeature,
                 provider,
                 txDefaults,
                 artifacts,
             )).address,
         ownable:
             features.ownable ||
-            (await OwnableContract.deployFrom0xArtifactAsync(artifacts.Ownable, provider, txDefaults, artifacts))
+            (await OwnableFeatureContract.deployFrom0xArtifactAsync(artifacts.OwnableFeature, provider, txDefaults, artifacts))
                 .address,
     };
 }
@@ -107,32 +108,32 @@ export async function deployFullFeaturesAsync(
         ...(await deployBootstrapFeaturesAsync(provider, txDefaults)),
         tokenSpender:
             features.tokenSpender ||
-            (await TokenSpenderContract.deployFrom0xArtifactAsync(
-                artifacts.TokenSpender,
+            (await TokenSpenderFeatureContract.deployFrom0xArtifactAsync(
+                artifacts.TokenSpenderFeature,
                 provider,
                 txDefaults,
                 artifacts,
             )).address,
         transformERC20:
             features.transformERC20 ||
-            (await TransformERC20Contract.deployFrom0xArtifactAsync(
-                artifacts.TransformERC20,
+            (await TransformERC20FeatureContract.deployFrom0xArtifactAsync(
+                artifacts.TransformERC20Feature,
                 provider,
                 txDefaults,
                 artifacts,
             )).address,
         signatureValidator:
             features.signatureValidator ||
-            (await SignatureValidatorContract.deployFrom0xArtifactAsync(
-                artifacts.SignatureValidator,
+            (await SignatureValidatorFeatureContract.deployFrom0xArtifactAsync(
+                artifacts.SignatureValidatorFeature,
                 provider,
                 txDefaults,
                 artifacts,
             )).address,
         metaTransactions:
             features.metaTransactions ||
-            (await MetaTransactionsContract.deployFrom0xArtifactAsync(
-                artifacts.MetaTransactions,
+            (await MetaTransactionsFeatureContract.deployFrom0xArtifactAsync(
+                artifacts.MetaTransactionsFeature,
                 provider,
                 txDefaults,
                 artifacts,
@@ -150,7 +151,7 @@ export async function fullMigrateAsync(
     txDefaults: Partial<TxData>,
     features: Partial<FullFeatures> = {},
     opts: Partial<FullMigrationOpts> = {},
-): Promise<ZeroExContract> {
+): Promise<IZeroExContract> {
     const migrator = await FullMigrationContract.deployFrom0xArtifactAsync(
         artifacts.FullMigration,
         provider,
@@ -171,5 +172,5 @@ export async function fullMigrateAsync(
         ...opts,
     };
     await migrator.initializeZeroEx(owner, zeroEx.address, _features, _opts).awaitTransactionSuccessAsync();
-    return zeroEx;
+    return new IZeroExContract(zeroEx.address, provider, txDefaults);
 }

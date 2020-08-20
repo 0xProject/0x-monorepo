@@ -5,8 +5,8 @@ import { ZeroExContract } from '../../src/wrappers';
 import { artifacts } from '../artifacts';
 import { initialMigrateAsync } from '../utils/migration';
 import {
-    ISimpleFunctionRegistryContract,
-    ISimpleFunctionRegistryEvents,
+    ISimpleFunctionRegistryFeatureContract,
+    ISimpleFunctionRegistryFeatureEvents,
     ITestSimpleFunctionRegistryFeatureContract,
     TestSimpleFunctionRegistryFeatureImpl1Contract,
     TestSimpleFunctionRegistryFeatureImpl2Contract,
@@ -17,7 +17,7 @@ blockchainTests.resets('SimpleFunctionRegistry feature', env => {
     const notOwner = randomAddress();
     let owner: string;
     let zeroEx: ZeroExContract;
-    let registry: ISimpleFunctionRegistryContract;
+    let registry: ISimpleFunctionRegistryFeatureContract;
     let testFnSelector: string;
     let testFeature: ITestSimpleFunctionRegistryFeatureContract;
     let testFeatureImpl1: TestSimpleFunctionRegistryFeatureImpl1Contract;
@@ -26,7 +26,7 @@ blockchainTests.resets('SimpleFunctionRegistry feature', env => {
     before(async () => {
         [owner] = await env.getAccountAddressesAsync();
         zeroEx = await initialMigrateAsync(owner, env.provider, env.txDefaults);
-        registry = new ISimpleFunctionRegistryContract(zeroEx.address, env.provider, {
+        registry = new ISimpleFunctionRegistryFeatureContract(zeroEx.address, env.provider, {
             ...env.txDefaults,
             from: owner,
         });
@@ -75,7 +75,7 @@ blockchainTests.resets('SimpleFunctionRegistry feature', env => {
         verifyEventsFromLogs(
             logs,
             [{ selector: testFnSelector, oldImpl: NULL_ADDRESS, newImpl: testFeatureImpl1.address }],
-            ISimpleFunctionRegistryEvents.ProxyFunctionUpdated,
+            ISimpleFunctionRegistryFeatureEvents.ProxyFunctionUpdated,
         );
         const r = await testFeature.testFn().callAsync();
         expect(r).to.bignumber.eq(1337);
@@ -117,7 +117,7 @@ blockchainTests.resets('SimpleFunctionRegistry feature', env => {
         verifyEventsFromLogs(
             logs,
             [{ selector: testFnSelector, oldImpl: testFeatureImpl2.address, newImpl: NULL_ADDRESS }],
-            ISimpleFunctionRegistryEvents.ProxyFunctionUpdated,
+            ISimpleFunctionRegistryFeatureEvents.ProxyFunctionUpdated,
         );
         const rollbackLength = await registry.getRollbackLength(testFnSelector).callAsync();
         expect(rollbackLength).to.bignumber.eq(0);

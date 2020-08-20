@@ -26,13 +26,13 @@ import "../storage/LibSimpleFunctionRegistryStorage.sol";
 import "../errors/LibSimpleFunctionRegistryRichErrors.sol";
 import "../migrations/LibBootstrap.sol";
 import "./IFeature.sol";
-import "./ISimpleFunctionRegistry.sol";
+import "./ISimpleFunctionRegistryFeature.sol";
 
 
 /// @dev Basic registry management features.
-contract SimpleFunctionRegistry is
+contract SimpleFunctionRegistryFeature is
     IFeature,
-    ISimpleFunctionRegistry,
+    ISimpleFunctionRegistryFeature,
     FixinCommon
 {
     /// @dev Name of this feature.

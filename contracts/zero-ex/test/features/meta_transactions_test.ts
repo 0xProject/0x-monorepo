@@ -12,12 +12,12 @@ import { BigNumber, hexUtils, StringRevertError, ZeroExRevertErrors } from '@0x/
 import * as _ from 'lodash';
 
 import { generateCallDataSignature, signCallData } from '../../src/signed_call_data';
-import { MetaTransactionsContract, ZeroExContract } from '../../src/wrappers';
+import { IZeroExContract, MetaTransactionsFeatureContract } from '../../src/wrappers';
 import { artifacts } from '../artifacts';
 import { abis } from '../utils/abis';
 import { fullMigrateAsync } from '../utils/migration';
 import {
-    ITokenSpenderContract,
+    ITokenSpenderFeatureContract,
     TestMetaTransactionsTransformERC20FeatureContract,
     TestMetaTransactionsTransformERC20FeatureEvents,
     TestMintableERC20TokenContract,
@@ -29,8 +29,8 @@ blockchainTests.resets('MetaTransactions feature', env => {
     let owner: string;
     let sender: string;
     let signers: string[];
-    let zeroEx: ZeroExContract;
-    let feature: MetaTransactionsContract;
+    let zeroEx: IZeroExContract;
+    let feature: MetaTransactionsFeatureContract;
     let feeToken: TestMintableERC20TokenContract;
     let transformERC20Feature: TestMetaTransactionsTransformERC20FeatureContract;
     let allowanceTarget: string;
@@ -52,14 +52,14 @@ blockchainTests.resets('MetaTransactions feature', env => {
         zeroEx = await fullMigrateAsync(owner, env.provider, env.txDefaults, {
             transformERC20: transformERC20Feature.address,
         });
-        feature = new MetaTransactionsContract(zeroEx.address, env.provider, { ...env.txDefaults, from: sender }, abis);
+        feature = new MetaTransactionsFeatureContract(zeroEx.address, env.provider, { ...env.txDefaults, from: sender }, abis);
         feeToken = await TestMintableERC20TokenContract.deployFrom0xArtifactAsync(
             artifacts.TestMintableERC20Token,
             env.provider,
             env.txDefaults,
             {},
         );
-        allowanceTarget = await new ITokenSpenderContract(zeroEx.address, env.provider, env.txDefaults)
+        allowanceTarget = await new ITokenSpenderFeatureContract(zeroEx.address, env.provider, env.txDefaults)
             .getAllowanceTarget()
             .callAsync();
         // Fund signers with fee tokens.

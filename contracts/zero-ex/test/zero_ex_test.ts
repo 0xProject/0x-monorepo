@@ -7,8 +7,8 @@ import { artifacts } from './artifacts';
 import { initialMigrateAsync } from './utils/migration';
 import {
     IFeatureContract,
-    IOwnableContract,
-    ISimpleFunctionRegistryContract,
+    IOwnableFeatureContract,
+    ISimpleFunctionRegistryFeatureContract,
     TestZeroExFeatureContract,
     TestZeroExFeatureEvents,
 } from './wrappers';
@@ -16,15 +16,15 @@ import {
 blockchainTests.resets('ZeroEx contract', env => {
     let owner: string;
     let zeroEx: ZeroExContract;
-    let ownable: IOwnableContract;
-    let registry: ISimpleFunctionRegistryContract;
+    let ownable: IOwnableFeatureContract;
+    let registry: ISimpleFunctionRegistryFeatureContract;
     let testFeature: TestZeroExFeatureContract;
 
     before(async () => {
         [owner] = await env.getAccountAddressesAsync();
         zeroEx = await initialMigrateAsync(owner, env.provider, env.txDefaults);
-        ownable = new IOwnableContract(zeroEx.address, env.provider, env.txDefaults);
-        registry = new ISimpleFunctionRegistryContract(zeroEx.address, env.provider, env.txDefaults);
+        ownable = new IOwnableFeatureContract(zeroEx.address, env.provider, env.txDefaults);
+        registry = new ISimpleFunctionRegistryFeatureContract(zeroEx.address, env.provider, env.txDefaults);
         testFeature = new TestZeroExFeatureContract(zeroEx.address, env.provider, env.txDefaults);
         // Register test features.
         const testFeatureImpl = await TestZeroExFeatureContract.deployFrom0xArtifactAsync(

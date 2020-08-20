@@ -21,7 +21,7 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/v06/LibBytesV06.sol";
 import "./migrations/LibBootstrap.sol";
-import "./features/Bootstrap.sol";
+import "./features/BootstrapFeature.sol";
 import "./storage/LibProxyStorage.sol";
 import "./errors/LibProxyRichErrors.sol";
 
@@ -32,14 +32,14 @@ contract ZeroEx {
     // solhint-disable separate-by-one-line-in-contract,indent,var-name-mixedcase
     using LibBytesV06 for bytes;
 
-    /// @dev Construct this contract and register the `Bootstrap` feature.
+    /// @dev Construct this contract and register the `BootstrapFeature` feature.
     ///      After constructing this contract, `bootstrap()` should be called
     ///      by `bootstrap()` to seed the initial feature set.
     /// @param bootstrapper Who can call `bootstrap()`.
     constructor(address bootstrapper) public {
         // Temporarily create and register the bootstrap feature.
         // It will deregister itself after `bootstrap()` has been called.
-        Bootstrap bootstrap = new Bootstrap(bootstrapper);
+        BootstrapFeature bootstrap = new BootstrapFeature(bootstrapper);
         LibProxyStorage.getStorage().impls[bootstrap.bootstrap.selector] =
             address(bootstrap);
     }

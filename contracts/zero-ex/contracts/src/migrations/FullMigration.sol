@@ -20,11 +20,11 @@ pragma solidity ^0.6.5;
 pragma experimental ABIEncoderV2;
 
 import "../ZeroEx.sol";
-import "../features/IOwnable.sol";
-import "../features/TokenSpender.sol";
-import "../features/TransformERC20.sol";
-import "../features/SignatureValidator.sol";
-import "../features/MetaTransactions.sol";
+import "../features/IOwnableFeature.sol";
+import "../features/TokenSpenderFeature.sol";
+import "../features/TransformERC20Feature.sol";
+import "../features/SignatureValidatorFeature.sol";
+import "../features/MetaTransactionsFeature.sol";
 import "../external/AllowanceTarget.sol";
 import "./InitialMigration.sol";
 
@@ -36,12 +36,12 @@ contract FullMigration {
 
     /// @dev Features to add the the proxy contract.
     struct Features {
-        SimpleFunctionRegistry registry;
-        Ownable ownable;
-        TokenSpender tokenSpender;
-        TransformERC20 transformERC20;
-        SignatureValidator signatureValidator;
-        MetaTransactions metaTransactions;
+        SimpleFunctionRegistryFeature registry;
+        OwnableFeature ownable;
+        TokenSpenderFeature tokenSpender;
+        TransformERC20Feature transformERC20;
+        SignatureValidatorFeature signatureValidator;
+        MetaTransactionsFeature metaTransactions;
     }
 
     /// @dev Parameters needed to initialize features.
@@ -109,7 +109,7 @@ contract FullMigration {
         _addFeatures(zeroEx, owner, features, migrateOpts);
 
         // Transfer ownership to the real owner.
-        IOwnable(address(zeroEx)).transferOwnership(owner);
+        IOwnableFeature(address(zeroEx)).transferOwnership(owner);
 
         // Self-destruct.
         this.die(owner);
@@ -142,8 +142,8 @@ contract FullMigration {
     )
         private
     {
-        IOwnable ownable = IOwnable(address(zeroEx));
-        // TokenSpender
+        IOwnableFeature ownable = IOwnableFeature(address(zeroEx));
+        // TokenSpenderFeature
         {
             // Create the allowance target.
             AllowanceTarget allowanceTarget = new AllowanceTarget();
@@ -155,42 +155,42 @@ contract FullMigration {
             ownable.migrate(
                 address(features.tokenSpender),
                 abi.encodeWithSelector(
-                    TokenSpender.migrate.selector,
+                    TokenSpenderFeature.migrate.selector,
                     allowanceTarget
                 ),
                 address(this)
             );
         }
-        // TransformERC20
+        // TransformERC20Feature
         {
             // Register the feature.
             ownable.migrate(
                 address(features.transformERC20),
                 abi.encodeWithSelector(
-                    TransformERC20.migrate.selector,
+                    TransformERC20Feature.migrate.selector,
                     migrateOpts.transformerDeployer
                 ),
                 address(this)
             );
         }
-        // SignatureValidator
+        // SignatureValidatorFeature
         {
             // Register the feature.
             ownable.migrate(
                 address(features.signatureValidator),
                 abi.encodeWithSelector(
-                    SignatureValidator.migrate.selector
+                    SignatureValidatorFeature.migrate.selector
                 ),
                 address(this)
             );
         }
-        // MetaTransactions
+        // MetaTransactionsFeature
         {
             // Register the feature.
             ownable.migrate(
                 address(features.metaTransactions),
                 abi.encodeWithSelector(
-                    MetaTransactions.migrate.selector
+                    MetaTransactionsFeature.migrate.selector
                 ),
                 address(this)
             );

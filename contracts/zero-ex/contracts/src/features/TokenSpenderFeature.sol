@@ -28,15 +28,14 @@ import "../fixins/FixinCommon.sol";
 import "../migrations/LibMigrate.sol";
 import "../external/IAllowanceTarget.sol";
 import "../storage/LibTokenSpenderStorage.sol";
-import "./ITokenSpender.sol";
+import "./ITokenSpenderFeature.sol";
 import "./IFeature.sol";
-import "./ISimpleFunctionRegistry.sol";
 
 
 /// @dev Feature that allows spending token allowances.
-contract TokenSpender is
+contract TokenSpenderFeature is
     IFeature,
-    ITokenSpender,
+    ITokenSpenderFeature,
     FixinCommon
 {
     // solhint-disable

@@ -19,12 +19,12 @@
 pragma solidity ^0.6.5;
 pragma experimental ABIEncoderV2;
 
-import "../src/features/TransformERC20.sol";
-import "../src/features/IMetaTransactions.sol";
+import "../src/features/TransformERC20Feature.sol";
+import "../src/features/IMetaTransactionsFeature.sol";
 
 
 contract TestMetaTransactionsTransformERC20Feature is
-    TransformERC20
+    TransformERC20Feature
 {
     event TransformERC20Called(
         address sender,
@@ -51,8 +51,8 @@ contract TestMetaTransactionsTransformERC20Feature is
 
         if (msg.value == 777) {
             // Try to reenter `executeMetaTransaction()`
-            IMetaTransactions(address(this)).executeMetaTransaction(
-                IMetaTransactions.MetaTransactionData({
+            IMetaTransactionsFeature(address(this)).executeMetaTransaction(
+                IMetaTransactionsFeature.MetaTransactionData({
                     signer: address(0),
                     sender: address(0),
                     minGasPrice: 0,
@@ -70,10 +70,10 @@ contract TestMetaTransactionsTransformERC20Feature is
 
         if (msg.value == 888) {
             // Try to reenter `batchExecuteMetaTransactions()`
-            IMetaTransactions.MetaTransactionData[] memory mtxs =
-                new IMetaTransactions.MetaTransactionData[](1);
+            IMetaTransactionsFeature.MetaTransactionData[] memory mtxs =
+                new IMetaTransactionsFeature.MetaTransactionData[](1);
             bytes[] memory signatures = new bytes[](1);
-            mtxs[0] = IMetaTransactions.MetaTransactionData({
+            mtxs[0] = IMetaTransactionsFeature.MetaTransactionData({
                 signer: address(0),
                 sender: address(0),
                 minGasPrice: 0,
@@ -86,7 +86,7 @@ contract TestMetaTransactionsTransformERC20Feature is
                 feeAmount: 0
             });
             signatures[0] = "";
-            IMetaTransactions(address(this)).batchExecuteMetaTransactions(
+            IMetaTransactionsFeature(address(this)).batchExecuteMetaTransactions(
                 mtxs,
                 signatures
             );
