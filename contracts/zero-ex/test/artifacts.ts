@@ -8,14 +8,15 @@ import { ContractArtifact } from 'ethereum-types';
 import * as AffiliateFeeTransformer from '../test/generated-artifacts/AffiliateFeeTransformer.json';
 import * as AllowanceTarget from '../test/generated-artifacts/AllowanceTarget.json';
 import * as Bootstrap from '../test/generated-artifacts/Bootstrap.json';
+import * as BridgeAdapter from '../test/generated-artifacts/BridgeAdapter.json';
 import * as FillQuoteTransformer from '../test/generated-artifacts/FillQuoteTransformer.json';
 import * as FixinCommon from '../test/generated-artifacts/FixinCommon.json';
 import * as FixinEIP712 from '../test/generated-artifacts/FixinEIP712.json';
-import * as FixinGasToken from '../test/generated-artifacts/FixinGasToken.json';
 import * as FlashWallet from '../test/generated-artifacts/FlashWallet.json';
 import * as FullMigration from '../test/generated-artifacts/FullMigration.json';
 import * as IAllowanceTarget from '../test/generated-artifacts/IAllowanceTarget.json';
 import * as IBootstrap from '../test/generated-artifacts/IBootstrap.json';
+import * as IBridgeAdapter from '../test/generated-artifacts/IBridgeAdapter.json';
 import * as IERC20Bridge from '../test/generated-artifacts/IERC20Bridge.json';
 import * as IERC20Transformer from '../test/generated-artifacts/IERC20Transformer.json';
 import * as IExchange from '../test/generated-artifacts/IExchange.json';
@@ -52,6 +53,15 @@ import * as LibTransformERC20RichErrors from '../test/generated-artifacts/LibTra
 import * as LibTransformERC20Storage from '../test/generated-artifacts/LibTransformERC20Storage.json';
 import * as LibWalletRichErrors from '../test/generated-artifacts/LibWalletRichErrors.json';
 import * as MetaTransactions from '../test/generated-artifacts/MetaTransactions.json';
+import * as MixinAdapterAddresses from '../test/generated-artifacts/MixinAdapterAddresses.json';
+import * as MixinBalancer from '../test/generated-artifacts/MixinBalancer.json';
+import * as MixinCurve from '../test/generated-artifacts/MixinCurve.json';
+import * as MixinKyber from '../test/generated-artifacts/MixinKyber.json';
+import * as MixinMStable from '../test/generated-artifacts/MixinMStable.json';
+import * as MixinOasis from '../test/generated-artifacts/MixinOasis.json';
+import * as MixinUniswap from '../test/generated-artifacts/MixinUniswap.json';
+import * as MixinUniswapV2 from '../test/generated-artifacts/MixinUniswapV2.json';
+import * as MixinZeroExBridge from '../test/generated-artifacts/MixinZeroExBridge.json';
 import * as Ownable from '../test/generated-artifacts/Ownable.json';
 import * as PayTakerTransformer from '../test/generated-artifacts/PayTakerTransformer.json';
 import * as SignatureValidator from '../test/generated-artifacts/SignatureValidator.json';
@@ -87,6 +97,17 @@ import * as ZeroEx from '../test/generated-artifacts/ZeroEx.json';
 export const artifacts = {
     IZeroEx: IZeroEx as ContractArtifact,
     ZeroEx: ZeroEx as ContractArtifact,
+    BridgeAdapter: BridgeAdapter as ContractArtifact,
+    IBridgeAdapter: IBridgeAdapter as ContractArtifact,
+    MixinAdapterAddresses: MixinAdapterAddresses as ContractArtifact,
+    MixinBalancer: MixinBalancer as ContractArtifact,
+    MixinCurve: MixinCurve as ContractArtifact,
+    MixinKyber: MixinKyber as ContractArtifact,
+    MixinMStable: MixinMStable as ContractArtifact,
+    MixinOasis: MixinOasis as ContractArtifact,
+    MixinUniswap: MixinUniswap as ContractArtifact,
+    MixinUniswapV2: MixinUniswapV2 as ContractArtifact,
+    MixinZeroExBridge: MixinZeroExBridge as ContractArtifact,
     LibCommonRichErrors: LibCommonRichErrors as ContractArtifact,
     LibMetaTransactionsRichErrors: LibMetaTransactionsRichErrors as ContractArtifact,
     LibOwnableRichErrors: LibOwnableRichErrors as ContractArtifact,
@@ -119,7 +140,6 @@ export const artifacts = {
     LibSignedCallData: LibSignedCallData as ContractArtifact,
     FixinCommon: FixinCommon as ContractArtifact,
     FixinEIP712: FixinEIP712 as ContractArtifact,
-    FixinGasToken: FixinGasToken as ContractArtifact,
     FullMigration: FullMigration as ContractArtifact,
     InitialMigration: InitialMigration as ContractArtifact,
     LibBootstrap: LibBootstrap as ContractArtifact,

@@ -1,8 +1,9 @@
 import { ContractFunctionObj } from '@0x/base-contract';
-import { ERC20BridgeSamplerContract } from '@0x/contract-wrappers';
 import { constants } from '@0x/contracts-test-utils';
 import { Order } from '@0x/types';
 import { BigNumber, hexUtils } from '@0x/utils';
+
+import { ERC20BridgeSamplerContract } from '../../src/wrappers';
 
 export type GetOrderFillableAssetAmountResult = BigNumber[];
 export type GetOrderFillableAssetAmountHandler = (
@@ -58,6 +59,8 @@ interface Handlers {
     sampleBuysFromUniswapV2: SampleBuysMultihopHandler;
     sampleBuysFromLiquidityProviderRegistry: SampleSellsLPHandler;
 }
+
+// tslint:disable: no-unbound-method
 
 export class MockSamplerContract extends ERC20BridgeSamplerContract {
     private readonly _handlers: Partial<Handlers> = {};

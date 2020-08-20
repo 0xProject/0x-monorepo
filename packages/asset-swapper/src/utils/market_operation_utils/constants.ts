@@ -14,6 +14,7 @@ export const SELL_SOURCES = [
     ERC20BridgeSource.Kyber,
     ERC20BridgeSource.Curve,
     ERC20BridgeSource.Balancer,
+    ERC20BridgeSource.MStable,
 ];
 
 /**
@@ -26,6 +27,7 @@ export const BUY_SOURCES = [
     ERC20BridgeSource.Kyber,
     ERC20BridgeSource.Curve,
     ERC20BridgeSource.Balancer,
+    ERC20BridgeSource.MStable,
 ];
 
 export const DEFAULT_GET_MARKET_ORDERS_OPTS: GetMarketOrdersOpts = {

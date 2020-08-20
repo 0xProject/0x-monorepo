@@ -39,7 +39,14 @@ class FixedSizeArrayRevertError extends RevertError {
     }
 }
 
+class ParentRevertError extends RevertError {
+    public constructor(nestedError?: string) {
+        super('ParentRevertError', 'ParentRevertError(bytes nestedError)', { nestedError });
+    }
+}
+
 RevertError.registerType(CustomRevertError);
+RevertError.registerType(ParentRevertError);
 
 describe('RevertError', () => {
     describe('equality', () => {
@@ -158,6 +165,12 @@ describe('RevertError', () => {
             const _encoded = encoded.substr(0, encoded.length - 1);
             const decode = () => RevertError.decode(_encoded);
             expect(decode).to.throw();
+        });
+        it('should decode a nested revert error', () => {
+            const nested = new StringRevertError(message);
+            const parent = new ParentRevertError(nested.encode());
+            const decoded = RevertError.decode(parent.encode());
+            expect(decoded.toString()).to.equal(new ParentRevertError(nested.toString()).toString());
         });
     });
     describe('getThrownErrorRevertErrorBytes', () => {

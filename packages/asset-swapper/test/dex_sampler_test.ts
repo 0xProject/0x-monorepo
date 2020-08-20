@@ -34,7 +34,7 @@ describe('DexSampler tests', () => {
     const TAKER_ASSET_DATA = assetDataUtils.encodeERC20AssetData(TAKER_TOKEN);
 
     const wethAddress = getContractAddressesForChainOrThrow(CHAIN_ID).etherToken;
-    const devUtilsAddress = getContractAddressesForChainOrThrow(CHAIN_ID).devUtils;
+    const exchangeAddress = getContractAddressesForChainOrThrow(CHAIN_ID).exchange;
 
     describe('getSampleAmounts()', () => {
         const FILL_AMOUNT = getRandomInteger(1, 1e18);
@@ -108,7 +108,7 @@ describe('DexSampler tests', () => {
             });
             const dexOrderSampler = new DexOrderSampler(sampler);
             const [fillableAmounts] = await dexOrderSampler.executeAsync(
-                DexOrderSampler.ops.getOrderFillableMakerAmounts(ORDERS, devUtilsAddress),
+                DexOrderSampler.ops.getOrderFillableMakerAmounts(ORDERS, exchangeAddress),
             );
             expect(fillableAmounts).to.deep.eq(expectedFillableAmounts);
         });
@@ -124,7 +124,7 @@ describe('DexSampler tests', () => {
             });
             const dexOrderSampler = new DexOrderSampler(sampler);
             const [fillableAmounts] = await dexOrderSampler.executeAsync(
-                DexOrderSampler.ops.getOrderFillableTakerAmounts(ORDERS, devUtilsAddress),
+                DexOrderSampler.ops.getOrderFillableTakerAmounts(ORDERS, exchangeAddress),
             );
             expect(fillableAmounts).to.deep.eq(expectedFillableAmounts);
         });
@@ -689,8 +689,8 @@ describe('DexSampler tests', () => {
             });
             const dexOrderSampler = new DexOrderSampler(sampler);
             const [fillableMakerAmounts, fillableTakerAmounts] = await dexOrderSampler.executeAsync(
-                DexOrderSampler.ops.getOrderFillableMakerAmounts(ORDERS, devUtilsAddress),
-                DexOrderSampler.ops.getOrderFillableTakerAmounts(ORDERS, devUtilsAddress),
+                DexOrderSampler.ops.getOrderFillableMakerAmounts(ORDERS, exchangeAddress),
+                DexOrderSampler.ops.getOrderFillableTakerAmounts(ORDERS, exchangeAddress),
             );
             expect(fillableMakerAmounts).to.deep.eq(expectedFillableMakerAmounts);
             expect(fillableTakerAmounts).to.deep.eq(expectedFillableTakerAmounts);

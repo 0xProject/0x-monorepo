@@ -19,8 +19,16 @@
                 "pr": 2656
             },
             {
-                "note": "Add bancorBridge field",
+                "note": "Deploy `BancorBridge` on Mainnet",
                 "pr": 2650
+            },
+            {
+                "note": "Deploy FQT",
+                "pr": 2667
+            },
+            {
+                "note": "Deploy `MStableBridge` on Mainnet",
+                "pr": 2662
             }
         ]
     },
