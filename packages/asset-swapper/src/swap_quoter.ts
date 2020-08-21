@@ -25,6 +25,7 @@ import {
 import { assert } from './utils/assert';
 import { calculateLiquidity } from './utils/calculate_liquidity';
 import { MarketOperationUtils } from './utils/market_operation_utils';
+import { BancorService } from './utils/market_operation_utils/bancor_service';
 import { createDummyOrderForSampler } from './utils/market_operation_utils/orders';
 import { DexOrderSampler } from './utils/market_operation_utils/sampler';
 import {
@@ -202,7 +203,7 @@ export class SwapQuoter {
             },
         );
         this._marketOperationUtils = new MarketOperationUtils(
-            new DexOrderSampler(samplerContract, samplerOverrides),
+            new DexOrderSampler(samplerContract, samplerOverrides, new BancorService(provider)),
             this._contractAddresses,
             {
                 chainId,

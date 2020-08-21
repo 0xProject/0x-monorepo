@@ -19,6 +19,10 @@
                 "pr": 2656
             },
             {
+                "note": "Deploy `BancorBridge` on Mainnet",
+                "pr": 2650
+            },
+            {
                 "note": "Deploy FQT",
                 "pr": 2667
             },

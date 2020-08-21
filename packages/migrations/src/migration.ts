@@ -405,6 +405,7 @@ export async function runMigrationsAsync(
         dexForwarderBridge: NULL_ADDRESS,
         multiBridge: NULL_ADDRESS,
         balancerBridge: NULL_ADDRESS,
+        bancorBridge: NULL_ADDRESS,
         exchangeProxyGovernor: NULL_ADDRESS,
         mStableBridge: NULL_ADDRESS,
         exchangeProxy: exchangeProxy.address,

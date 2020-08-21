@@ -6,6 +6,7 @@
 import { ContractArtifact } from 'ethereum-types';
 
 import * as BalancerBridge from '../test/generated-artifacts/BalancerBridge.json';
+import * as BancorBridge from '../test/generated-artifacts/BancorBridge.json';
 import * as ChaiBridge from '../test/generated-artifacts/ChaiBridge.json';
 import * as CurveBridge from '../test/generated-artifacts/CurveBridge.json';
 import * as DexForwarderBridge from '../test/generated-artifacts/DexForwarderBridge.json';
@@ -20,6 +21,7 @@ import * as IAssetProxy from '../test/generated-artifacts/IAssetProxy.json';
 import * as IAssetProxyDispatcher from '../test/generated-artifacts/IAssetProxyDispatcher.json';
 import * as IAuthorizable from '../test/generated-artifacts/IAuthorizable.json';
 import * as IBalancerPool from '../test/generated-artifacts/IBalancerPool.json';
+import * as IBancorNetwork from '../test/generated-artifacts/IBancorNetwork.json';
 import * as IChai from '../test/generated-artifacts/IChai.json';
 import * as ICurve from '../test/generated-artifacts/ICurve.json';
 import * as IDydx from '../test/generated-artifacts/IDydx.json';
@@ -40,6 +42,7 @@ import * as MStableBridge from '../test/generated-artifacts/MStableBridge.json';
 import * as MultiAssetProxy from '../test/generated-artifacts/MultiAssetProxy.json';
 import * as Ownable from '../test/generated-artifacts/Ownable.json';
 import * as StaticCallProxy from '../test/generated-artifacts/StaticCallProxy.json';
+import * as TestBancorBridge from '../test/generated-artifacts/TestBancorBridge.json';
 import * as TestChaiBridge from '../test/generated-artifacts/TestChaiBridge.json';
 import * as TestDexForwarderBridge from '../test/generated-artifacts/TestDexForwarderBridge.json';
 import * as TestDydxBridge from '../test/generated-artifacts/TestDydxBridge.json';
@@ -62,6 +65,7 @@ export const artifacts = {
     MultiAssetProxy: MultiAssetProxy as ContractArtifact,
     StaticCallProxy: StaticCallProxy as ContractArtifact,
     BalancerBridge: BalancerBridge as ContractArtifact,
+    BancorBridge: BancorBridge as ContractArtifact,
     ChaiBridge: ChaiBridge as ContractArtifact,
     CurveBridge: CurveBridge as ContractArtifact,
     DexForwarderBridge: DexForwarderBridge as ContractArtifact,
@@ -77,6 +81,7 @@ export const artifacts = {
     IAssetProxyDispatcher: IAssetProxyDispatcher as ContractArtifact,
     IAuthorizable: IAuthorizable as ContractArtifact,
     IBalancerPool: IBalancerPool as ContractArtifact,
+    IBancorNetwork: IBancorNetwork as ContractArtifact,
     IChai: IChai as ContractArtifact,
     ICurve: ICurve as ContractArtifact,
     IDydx: IDydx as ContractArtifact,
@@ -89,6 +94,7 @@ export const artifacts = {
     IUniswapExchange: IUniswapExchange as ContractArtifact,
     IUniswapExchangeFactory: IUniswapExchangeFactory as ContractArtifact,
     IUniswapV2Router01: IUniswapV2Router01 as ContractArtifact,
+    TestBancorBridge: TestBancorBridge as ContractArtifact,
     TestChaiBridge: TestChaiBridge as ContractArtifact,
     TestDexForwarderBridge: TestDexForwarderBridge as ContractArtifact,
     TestDydxBridge: TestDydxBridge as ContractArtifact,

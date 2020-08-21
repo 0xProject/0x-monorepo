@@ -256,6 +256,7 @@ export function collapsePath(path: Fill[]): CollapsedFill[] {
             if (prevFill.sourcePathId === fill.sourcePathId) {
                 prevFill.input = prevFill.input.plus(fill.input);
                 prevFill.output = prevFill.output.plus(fill.output);
+                prevFill.fillData = fill.fillData;
                 prevFill.subFills.push(fill);
                 continue;
             }

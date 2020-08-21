@@ -47,6 +47,10 @@
                 "pr": 2660
             },
             {
+                "note": "Add Bancor as liquidity source",
+                "pr": 2650
+            },
+            {
                 "note": "Added `mStable`",
                 "pr": 2662
             },

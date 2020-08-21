@@ -114,6 +114,7 @@ export class MarketOperationUtils {
                 this._sampler.balancerPoolsCache,
                 this._liquidityProviderRegistry,
                 this._multiBridge,
+                this._sampler.bancorService,
             ),
             // Get ETH -> taker token price.
             await DexOrderSampler.ops.getMedianSellRateAsync(
@@ -139,6 +140,7 @@ export class MarketOperationUtils {
                 this._sampler.balancerPoolsCache,
                 this._liquidityProviderRegistry,
                 this._multiBridge,
+                this._sampler.bancorService,
             ),
         );
 
@@ -160,6 +162,7 @@ export class MarketOperationUtils {
                 this._sampler.balancerPoolsCache,
                 this._liquidityProviderRegistry,
                 this._multiBridge,
+                this._sampler.bancorService,
             )
             .then(async r => this._sampler.executeAsync(r));
 
@@ -241,6 +244,7 @@ export class MarketOperationUtils {
                 this._sampler.balancerPoolsCache,
                 this._liquidityProviderRegistry,
                 this._multiBridge,
+                this._sampler.bancorService,
             ),
             // Get buy quotes for taker -> maker.
             await DexOrderSampler.ops.getBuyQuotesAsync(
@@ -248,7 +252,7 @@ export class MarketOperationUtils {
                     BUY_SOURCES.concat(
                         this._liquidityProviderRegistry !== NULL_ADDRESS ? [ERC20BridgeSource.LiquidityProvider] : [],
                     ),
-                    _opts.excludedSources.concat(ERC20BridgeSource.Balancer),
+                    _opts.excludedSources.concat([ERC20BridgeSource.Balancer]),
                 ),
                 makerToken,
                 takerToken,
@@ -256,6 +260,7 @@ export class MarketOperationUtils {
                 this._wethAddress,
                 this._sampler.balancerPoolsCache,
                 this._liquidityProviderRegistry,
+                this._sampler.bancorService,
             ),
         );
 
@@ -268,6 +273,7 @@ export class MarketOperationUtils {
                 this._wethAddress,
                 this._sampler.balancerPoolsCache,
                 this._liquidityProviderRegistry,
+                this._sampler.bancorService,
             ),
         );
 

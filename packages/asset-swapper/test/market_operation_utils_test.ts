@@ -288,6 +288,7 @@ describe('MarketOperationUtils tests', () => {
         [ERC20BridgeSource.Uniswap]: createDecreasingRates(NUM_SAMPLES),
         [ERC20BridgeSource.UniswapV2]: _.times(NUM_SAMPLES, () => 0),
         [ERC20BridgeSource.Balancer]: _.times(NUM_SAMPLES, () => 0),
+        [ERC20BridgeSource.Bancor]: _.times(NUM_SAMPLES, () => 0),
         [ERC20BridgeSource.Curve]: _.times(NUM_SAMPLES, () => 0),
         [ERC20BridgeSource.LiquidityProvider]: _.times(NUM_SAMPLES, () => 0),
         [ERC20BridgeSource.MultiBridge]: _.times(NUM_SAMPLES, () => 0),
@@ -301,6 +302,7 @@ describe('MarketOperationUtils tests', () => {
     const DEFAULT_FILL_DATA: FillDataBySource = {
         [ERC20BridgeSource.UniswapV2]: { tokenAddressPath: [] },
         [ERC20BridgeSource.Balancer]: { poolAddress: randomAddress() },
+        [ERC20BridgeSource.Bancor]: { path: [], networkAddress: randomAddress() },
         [ERC20BridgeSource.Curve]: {
             curve: {
                 poolAddress: randomAddress(),

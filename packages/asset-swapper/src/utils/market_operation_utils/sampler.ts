@@ -4,6 +4,7 @@ import { SamplerOverrides } from '../../types';
 import { ERC20BridgeSamplerContract } from '../../wrappers';
 
 import { BalancerPoolsCache } from './balancer_utils';
+import { BancorService } from './bancor_service';
 import { samplerOperations } from './sampler_operations';
 import { BatchedOperation } from './types';
 
@@ -39,6 +40,7 @@ export class DexOrderSampler {
     constructor(
         private readonly _samplerContract: ERC20BridgeSamplerContract,
         private readonly _samplerOverrides?: SamplerOverrides,
+        public bancorService?: BancorService,
         public balancerPoolsCache: BalancerPoolsCache = new BalancerPoolsCache(),
     ) {}
 
