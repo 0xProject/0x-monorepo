@@ -61,44 +61,13 @@ contract Eth2DaiSampler is
             uint256 buyAmount = 0;
             if (didSucceed) {
                 buyAmount = abi.decode(resultData, (uint256));
-            } else{
+            }
+            // Exit early if the amount is too high for the source to serve
+            if (buyAmount == 0) {
                 break;
             }
             makerTokenAmounts[i] = buyAmount;
         }
-    }
-
-    /// @dev Sample sell quotes from Eth2Dai/Oasis using a hop to an intermediate token.
-    ///      I.e WBTC/DAI via ETH or WBTC/ETH via DAI
-    /// @param takerToken Address of the taker token (what to sell).
-    /// @param makerToken Address of the maker token (what to buy).
-    /// @param intermediateToken Address of the token to hop to.
-    /// @param takerTokenAmounts Taker token sell amount for each sample.
-    /// @return makerTokenAmounts Maker amounts bought at each taker token
-    ///         amount.
-    function sampleSellsFromEth2DaiHop(
-        address takerToken,
-        address makerToken,
-        address intermediateToken,
-        uint256[] memory takerTokenAmounts
-    )
-        public
-        view
-        returns (uint256[] memory makerTokenAmounts)
-    {
-        if (makerToken == intermediateToken || takerToken == intermediateToken) {
-            return makerTokenAmounts;
-        }
-        uint256[] memory intermediateAmounts = sampleSellsFromEth2Dai(
-            takerToken,
-            intermediateToken,
-            takerTokenAmounts
-        );
-        makerTokenAmounts = sampleSellsFromEth2Dai(
-            intermediateToken,
-            makerToken,
-            intermediateAmounts
-        );
     }
 
     /// @dev Sample buy quotes from Eth2Dai/Oasis.
@@ -131,7 +100,9 @@ contract Eth2DaiSampler is
             uint256 sellAmount = 0;
             if (didSucceed) {
                 sellAmount = abi.decode(resultData, (uint256));
-            } else {
+            }
+            // Exit early if the amount is too high for the source to serve
+            if (sellAmount == 0) {
                 break;
             }
             takerTokenAmounts[i] = sellAmount;
