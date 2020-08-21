@@ -69,10 +69,12 @@ contract MultiBridgeSampler {
             uint256 buyAmount = 0;
             if (didSucceed) {
                 buyAmount = abi.decode(resultData, (uint256));
-            } else {
-                // Exit early if the amount is too high for the liquidity provider to serve
+            }
+            // Exit early if the amount is too high for the source to serve
+            if (buyAmount == 0) {
                 break;
             }
+
             makerTokenAmounts[i] = buyAmount;
         }
     }

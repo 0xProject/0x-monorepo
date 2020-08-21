@@ -47,12 +47,7 @@ export const DEFAULT_GET_MARKET_ORDERS_OPTS: GetMarketOrdersOpts = {
 /**
  * Sources to poll for ETH fee price estimates.
  */
-export const FEE_QUOTE_SOURCES = [
-    ERC20BridgeSource.Uniswap,
-    ERC20BridgeSource.UniswapV2,
-    ERC20BridgeSource.Eth2Dai,
-    ERC20BridgeSource.Kyber,
-];
+export const FEE_QUOTE_SOURCES = [ERC20BridgeSource.Uniswap, ERC20BridgeSource.UniswapV2];
 
 /**
  * Mainnet Curve configuration

@@ -70,7 +70,9 @@ contract CurveSampler is
             uint256 buyAmount = 0;
             if (didSucceed) {
                 buyAmount = abi.decode(resultData, (uint256));
-            } else {
+            }
+            // Exit early if the amount is too high for the source to serve
+            if (buyAmount == 0) {
                 break;
             }
             makerTokenAmounts[i] = buyAmount;
@@ -119,7 +121,9 @@ contract CurveSampler is
             uint256 sellAmount = 0;
             if (didSucceed) {
                 sellAmount = abi.decode(resultData, (uint256));
-            } else {
+            }
+            // Exit early if the amount is too high for the source to serve
+            if (sellAmount == 0) {
                 break;
             }
             takerTokenAmounts[i] = sellAmount;
