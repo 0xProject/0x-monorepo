@@ -307,6 +307,21 @@ jobs:
                   command: |
                       cd python-packages/order_utils
                       tox
+    test-mythx:
+        working_directory: ~/repo
+        docker:
+            - image: nikolaik/python-nodejs:python3.7-nodejs8
+        steps:
+            - checkout
+            - restore_cache:
+                  keys:
+                      - repo-{{ .Environment.CIRCLE_SHA1 }}
+            - run:
+                name: Install MythX CLI
+                command: pip install mythx-cli
+            - run:
+                name: Analyze with MythX
+                command: mythx analyze
     static-tests-python:
         working_directory: ~/repo
         docker:
@@ -456,3 +471,7 @@ workflows:
                       - build
             # skip python tox run for now, as we don't yet have multiple test environments to support.
             # - test-rest-python
+
+            - test-mythx:
+                requires:
+                    - build

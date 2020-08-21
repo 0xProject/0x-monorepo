@@ -1,0 +1,29 @@
+# Run me by typing `mythx analyze` in the directory of the yml file! :)
+
+ci: true
+confirm: true
+analyze:
+    mode: quick
+    async: false
+    create-group: true
+    solc: 0.6.5
+    remappings:
+        - "@0x=node_modules/@0x"
+    targets:
+        - "./contracts/zero-ex/contracts/src/external/AllowanceTarget.sol:AllowanceTarget"
+        - "./contracts/zero-ex/contracts/src/external/FlashWallet.sol:FlashWallet"
+        - "./contracts/zero-ex/contracts/src/external/TransformerDeployer.sol:TransformerDeployer"
+        - "./contracts/zero-ex/contracts/src/features/Bootstrap.sol:Bootstrap"
+        - "./contracts/zero-ex/contracts/src/features/MetaTransactions.sol:MetaTransactions"
+        - "./contracts/zero-ex/contracts/src/features/Ownable.sol:Ownable"
+        - "./contracts/zero-ex/contracts/src/features/SignatureValidator.sol:SignatureValidator"
+        - "./contracts/zero-ex/contracts/src/features/SimpleFunctionRegistry.sol:SimpleFunctionRegistry"
+        - "./contracts/zero-ex/contracts/src/features/TokenSpender.sol:TokenSpender"
+        - "./contracts/zero-ex/contracts/src/features/TransformERC20.sol:TransformERC20"
+        - "./contracts/zero-ex/contracts/src/migrations/FullMigration.sol:FullMigration"
+        - "./contracts/zero-ex/contracts/src/migrations/InitialMigration.sol:InitialMigration"
+        - "./contracts/zero-ex/contracts/src/transformers/AffiliateFeeTransformer.sol:AffiliateFeeTransformer"
+        - "./contracts/zero-ex/contracts/src/transformers/FillQuoteTransformer.sol:FillQuoteTransformer"
+        - "./contracts/zero-ex/contracts/src/transformers/PayTakerTransformer.sol:PayTakerTransformer"
+        - "./contracts/zero-ex/contracts/src/transformers/WethTransformer.sol:WethTransformer"
+        - "./contracts/zero-ex/contracts/src/ZeroEx.sol:ZeroEx"
