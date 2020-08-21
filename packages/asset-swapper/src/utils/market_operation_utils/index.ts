@@ -6,6 +6,7 @@ import { BigNumber, NULL_ADDRESS } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { MarketOperation } from '../../types';
+import { Profiler } from '../profiler';
 import { QuoteRequestor } from '../quote_requestor';
 import { difference } from '../utils';
 
@@ -47,18 +48,23 @@ export async function getRfqtIndicativeQuotesAsync(
     assetFillAmount: BigNumber,
     opts: Partial<GetMarketOrdersOpts>,
 ): Promise<RFQTIndicativeQuote[]> {
-    const hasExcludedNativeLiquidity = opts.excludedSources && opts.excludedSources.includes(ERC20BridgeSource.Native);
-    if (!hasExcludedNativeLiquidity && opts.rfqt && opts.rfqt.isIndicative === true && opts.rfqt.quoteRequestor) {
-        return opts.rfqt.quoteRequestor.requestRfqtIndicativeQuotesAsync(
-            makerAssetData,
-            takerAssetData,
-            assetFillAmount,
-            marketOperation,
-            opts.rfqt,
-        );
-    } else {
-        return Promise.resolve<RFQTIndicativeQuote[]>([]);
-    }
+    return Profiler.timeAsync(
+        'getRfqtIndicativeQuotesAsync()',
+        async () => {
+            const hasExcludedNativeLiquidity = opts.excludedSources && opts.excludedSources.includes(ERC20BridgeSource.Native);
+            if (!hasExcludedNativeLiquidity && opts.rfqt && opts.rfqt.isIndicative === true && opts.rfqt.quoteRequestor) {
+                return opts.rfqt.quoteRequestor.requestRfqtIndicativeQuotesAsync(
+                    makerAssetData,
+                    takerAssetData,
+                    assetFillAmount,
+                    marketOperation,
+                    opts.rfqt,
+                );
+            } else {
+                return Promise.resolve<RFQTIndicativeQuote[]>([]);
+            }
+        },
+    );
 }
 
 export class MarketOperationUtils {

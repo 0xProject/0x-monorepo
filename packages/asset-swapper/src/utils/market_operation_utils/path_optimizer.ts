@@ -1,6 +1,7 @@
 import { BigNumber } from '@0x/utils';
 
 import { MarketOperation } from '../../types';
+import { Profiler } from '../profiler';
 
 import { ZERO_AMOUNT } from './constants';
 import {
@@ -28,22 +29,27 @@ export async function findOptimalPathAsync(
     targetInput: BigNumber,
     runLimit: number = 2 ** 8,
 ): Promise<Fill[] | undefined> {
-    // Sort paths by descending adjusted completed rate.
-    const sortedPaths = paths
-        .slice(0)
-        .sort((a, b) =>
-            getPathAdjustedCompleteRate(side, b, targetInput).comparedTo(
-                getPathAdjustedCompleteRate(side, a, targetInput),
-            ),
-        );
-    let optimalPath = sortedPaths[0] || [];
-    for (const [i, path] of sortedPaths.slice(1).entries()) {
-        optimalPath = mixPaths(side, optimalPath, path, targetInput, runLimit * RUN_LIMIT_DECAY_FACTOR ** i);
-        // Yield to event loop.
-        await Promise.resolve();
-    }
-    return isPathComplete(optimalPath, targetInput) ? optimalPath : undefined;
-}
+    return Profiler.timeAsync(
+        'findOptimalPathAsync()',
+        async () => {
+          // Sort paths by descending adjusted completed rate.
+            const sortedPaths = paths
+                .slice(0)
+                .sort((a, b) =>
+                    getPathAdjustedCompleteRate(side, b, targetInput).comparedTo(
+                        getPathAdjustedCompleteRate(side, a, targetInput),
+                    ),
+                );
+            let optimalPath = sortedPaths[0] || [];
+            for (const [i, path] of sortedPaths.slice(1).entries()) {
+                optimalPath = mixPaths(side, optimalPath, path, targetInput, runLimit * RUN_LIMIT_DECAY_FACTOR ** i);
+                // Yield to event loop.
+                await Promise.resolve();
+            }
+            return isPathComplete(optimalPath, targetInput) ? optimalPath : undefined;
+        },
+    );
+  }
 
 function mixPaths(
     side: MarketOperation,

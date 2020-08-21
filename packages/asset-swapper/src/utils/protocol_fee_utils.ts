@@ -4,6 +4,8 @@ import * as heartbeats from 'heartbeats';
 import { constants } from '../constants';
 import { SwapQuoterError } from '../types';
 
+import { Profiler } from './profiler';
+
 const MAX_ERROR_COUNT = 5;
 
 export class ProtocolFeeUtils {
@@ -29,14 +31,19 @@ export class ProtocolFeeUtils {
     }
 
     public async getGasPriceEstimationOrThrowAsync(shouldHardRefresh?: boolean): Promise<BigNumber> {
-        if (this._gasPriceEstimation.eq(constants.ZERO_AMOUNT)) {
-            return this._getGasPriceFromGasStationOrThrowAsync();
-        }
-        if (shouldHardRefresh) {
-            return this._getGasPriceFromGasStationOrThrowAsync();
-        } else {
-            return this._gasPriceEstimation;
-        }
+        return Profiler.timeAsync(
+            'ProtocolFeeUtils.getGasPriceEstimationOrThrowAsync()',
+            async () => {
+                if (this._gasPriceEstimation.eq(constants.ZERO_AMOUNT)) {
+                    return this._getGasPriceFromGasStationOrThrowAsync();
+                }
+                if (shouldHardRefresh) {
+                    return this._getGasPriceFromGasStationOrThrowAsync();
+                } else {
+                    return this._gasPriceEstimation;
+                }
+            },
+        );
     }
 
     /**

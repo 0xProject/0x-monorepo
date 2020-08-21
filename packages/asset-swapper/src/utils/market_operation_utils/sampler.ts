@@ -2,6 +2,7 @@ import { BigNumber, NULL_BYTES } from '@0x/utils';
 
 import { SamplerOverrides } from '../../types';
 import { ERC20BridgeSamplerContract } from '../../wrappers';
+import { Profiler } from '../profiler';
 
 import { BalancerPoolsCache } from './balancer_utils';
 import { samplerOperations } from './sampler_operations';
@@ -152,9 +153,12 @@ export class DexOrderSampler {
             );
         }
         // Execute all non-empty calldatas.
-        const rawCallResults = await this._samplerContract
-            .batchCall(callDatas.filter(cd => cd !== NULL_BYTES))
-            .callAsync({ overrides }, block);
+        const rawCallResults = await Profiler.timeAsync(
+            'Sampler.batchCall()',
+            async () => this._samplerContract
+                .batchCall(callDatas.filter(cd => cd !== NULL_BYTES))
+                .callAsync({ overrides }, block),
+        );
         // Return the parsed results.
         let rawCallResultsIdx = 0;
         return Promise.all(

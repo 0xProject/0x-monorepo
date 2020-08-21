@@ -2,6 +2,8 @@ import { BigNumber } from '@0x/utils';
 import { bmath, getPoolsWithTokens, parsePoolData } from '@balancer-labs/sor';
 import { Decimal } from 'decimal.js';
 
+import { Profiler } from '../profiler';
+
 export interface BalancerPool {
     id: string;
     balanceIn: BigNumber;
@@ -38,8 +40,13 @@ export class BalancerPoolsCache {
         makerToken: string,
         timeoutMs: number = DEFAULT_TIMEOUT_MS,
     ): Promise<BalancerPool[]> {
-        const timeout = new Promise<BalancerPool[]>(resolve => setTimeout(resolve, timeoutMs, []));
-        return Promise.race([this._getPoolsForPairAsync(takerToken, makerToken), timeout]);
+        return Profiler.timeAsync(
+            'BalancerPoolsCache.getPoolsForPairAsync()',
+            async () => {
+                const timeout = new Promise<BalancerPool[]>(resolve => setTimeout(resolve, timeoutMs, []));
+                return Promise.race([this._getPoolsForPairAsync(takerToken, makerToken), timeout]);
+            },
+        );
     }
 
     protected async _getPoolsForPairAsync(takerToken: string, makerToken: string): Promise<BalancerPool[]> {
