@@ -191,16 +191,16 @@ export function createOrdersFromTwoHopSample(
     const firstHopFill: CollapsedFill = {
         sourcePathId: '',
         source: firstHopSource.source,
-        input: sample.input,
-        output: ZERO_AMOUNT,
+        input: opts.side === MarketOperation.Sell ? sample.input : ZERO_AMOUNT,
+        output: opts.side === MarketOperation.Sell ? ZERO_AMOUNT : sample.output,
         subFills: [],
         fillData: firstHopSource.fillData,
     };
     const secondHopFill: CollapsedFill = {
         sourcePathId: '',
         source: secondHopSource.source,
-        input: MAX_UINT256,
-        output: sample.output,
+        input: opts.side === MarketOperation.Sell ? MAX_UINT256 : sample.input,
+        output: opts.side === MarketOperation.Sell ? sample.output : MAX_UINT256,
         subFills: [],
         fillData: secondHopSource.fillData,
     };
@@ -430,7 +430,7 @@ function getSlippedBridgeAssetAmounts(fill: CollapsedFill, opts: CreateOrderFrom
         // Taker asset amount.
         opts.side === MarketOperation.Sell
             ? fill.input
-            : fill.output.times(opts.bridgeSlippage + 1).integerValue(BigNumber.ROUND_UP),
+            : BigNumber.min(fill.output.times(opts.bridgeSlippage + 1).integerValue(BigNumber.ROUND_UP), MAX_UINT256),
     ];
 }
 

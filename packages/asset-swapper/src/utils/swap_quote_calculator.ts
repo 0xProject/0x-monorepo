@@ -271,9 +271,9 @@ function createTwoHopSwapQuote(
         makerAssetData,
         gasPrice,
         bestCaseQuoteInfo: {
-            makerAssetAmount: secondHopFill.output,
-            takerAssetAmount: firstHopFill.input,
-            totalTakerAssetAmount: firstHopFill.input,
+            makerAssetAmount: operation === MarketOperation.Sell ? secondHopFill.output : secondHopFill.input,
+            takerAssetAmount: operation === MarketOperation.Sell ? firstHopFill.input : firstHopFill.output,
+            totalTakerAssetAmount: operation === MarketOperation.Sell ? firstHopFill.input : firstHopFill.output,
             feeTakerAssetAmount: constants.ZERO_AMOUNT,
             protocolFeeInWeiAmount: constants.ZERO_AMOUNT,
             gas,

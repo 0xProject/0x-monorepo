@@ -6,7 +6,7 @@ import { ERC20BridgeSamplerContract } from '../../wrappers';
 
 import { BalancerPoolsCache, computeBalancerBuyQuote, computeBalancerSellQuote } from './balancer_utils';
 import { BancorService } from './bancor_service';
-import { NULL_BYTES, ZERO_AMOUNT } from './constants';
+import { MAX_UINT256, NULL_BYTES, ZERO_AMOUNT } from './constants';
 import { getCurveInfosForPair } from './curve_utils';
 import { getMultiBridgeIntermediateToken } from './multibridge_utils';
 import { getIntermediateTokens } from './multihop_utils';
@@ -470,6 +470,9 @@ export class SamplerOperations {
                     const [firstHop, secondHop, buyAmount] = this._samplerContract.getABIDecodedReturnData<
                         [HopInfo, HopInfo, BigNumber]
                     >('sampleTwoHopSell', callResults);
+                    if (buyAmount.isZero()) {
+                        return Promise.resolve([buyAmount]);
+                    }
                     samplerOp.fillData.firstHopSource = firstHopOps[firstHop.sourceIndex.toNumber()];
                     samplerOp.fillData.secondHopSource = secondHopOps[secondHop.sourceIndex.toNumber()];
                     await samplerOp.fillData.firstHopSource.handleCallResultsAsync(firstHop.returnData);
@@ -536,11 +539,14 @@ export class SamplerOperations {
                 ERC20BridgeSource.MultiHop,
                 this._samplerContract.sampleTwoHopBuy,
                 [firstHopOps.map(op => op.encodeCall()), secondHopOps.map(op => op.encodeCall()), buyAmount],
-                {} as MultiHopFillData, // tslint:disable-line:no-object-literal-type-assertion
+                { intermediateToken } as MultiHopFillData, // tslint:disable-line:no-object-literal-type-assertion
                 async (callResults: string): Promise<BigNumber[]> => {
                     const [firstHop, secondHop, sellAmount] = this._samplerContract.getABIDecodedReturnData<
                         [HopInfo, HopInfo, BigNumber]
                     >('sampleTwoHopBuy', callResults);
+                    if (sellAmount.isEqualTo(MAX_UINT256)) {
+                        return Promise.resolve([sellAmount]);
+                    }
                     samplerOp.fillData.firstHopSource = firstHopOps[firstHop.sourceIndex.toNumber()];
                     samplerOp.fillData.secondHopSource = secondHopOps[secondHop.sourceIndex.toNumber()];
                     await samplerOp.fillData.firstHopSource.handleCallResultsAsync(firstHop.returnData);

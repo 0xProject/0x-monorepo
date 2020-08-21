@@ -14,7 +14,6 @@ import {
     DEFAULT_GET_MARKET_ORDERS_OPTS,
     FEE_QUOTE_SOURCES,
     ONE_ETHER,
-    POSITIVE_INF,
     SELL_SOURCES,
     ZERO_AMOUNT,
 } from './constants';
@@ -516,20 +515,17 @@ export class MarketOperationUtils {
         }
         const optimalPathRate = getPathAdjustedRate(side, optimalPath, inputAmount);
 
-        const isBetterRate = (a: BigNumber, b: BigNumber): boolean =>
-            side === MarketOperation.Sell ? a.isGreaterThan(b) : a.isLessThan(b);
-
         const { bestRate: bestTwoHopRate, bestQuote: bestTwoHopQuote } = twoHopQuotes
             .map(quote => getTwoHopAdjustedRate(side, quote, inputAmount, ethToOutputRate, opts.feeSchedule))
             .reduce(
                 (prev, curr, i) =>
-                    isBetterRate(curr, prev.bestRate) ? { bestRate: curr, bestQuote: twoHopQuotes[i] } : prev,
+                    curr.isGreaterThan(prev.bestRate) ? { bestRate: curr, bestQuote: twoHopQuotes[i] } : prev,
                 {
-                    bestRate: side === MarketOperation.Sell ? ZERO_AMOUNT : POSITIVE_INF,
+                    bestRate: ZERO_AMOUNT,
                     bestQuote: undefined as DexSample<MultiHopFillData> | undefined,
                 },
             );
-        if (isBetterRate(bestTwoHopRate, optimalPathRate)) {
+        if (bestTwoHopRate.isGreaterThan(optimalPathRate)) {
             const twoHopOrders = createOrdersFromTwoHopSample(bestTwoHopQuote!, orderOpts);
             const twoHopQuoteReport = generateQuoteReport(
                 side,
