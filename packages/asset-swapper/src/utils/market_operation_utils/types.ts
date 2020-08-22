@@ -288,23 +288,42 @@ export interface SourceQuoteOperation<TFillData extends FillData = FillData>
     readonly source: ERC20BridgeSource;
 }
 
+interface SamplerContractCall<TParams extends any[], TReturn, TFillData extends FillData = FillData> {
+    contract: ERC20BridgeSamplerContract;
+    function: (...params: TParams) => ContractFunctionObj<TReturn>;
+    params: any[];
+    callback?: (callResults: string, fillData: TFillData) => Promise<BigNumber[]>;
+}
+
 export class SamplerContractOperation<TParams extends any[], TReturn, TFillData extends FillData = FillData>
     implements SourceQuoteOperation<TFillData> {
-    constructor(
-        private readonly _samplerContract: ERC20BridgeSamplerContract,
-        public readonly source: ERC20BridgeSource,
-        private readonly _samplerFunction: (...params: TParams) => ContractFunctionObj<TReturn>,
-        private readonly _params: any[],
-        public fillData: TFillData = {} as TFillData, // tslint:disable-line:no-object-literal-type-assertion
-        public handleCallResultsAsync: (callResults: string) => Promise<BigNumber[]> = async (callResults: string) => {
-            return _samplerContract.getABIDecodedReturnData<BigNumber[]>(_samplerFunction.name, callResults);
-        },
-    ) {}
+    public readonly source: ERC20BridgeSource;
+    public fillData: TFillData;
+    private readonly _samplerContract: ERC20BridgeSamplerContract;
+    private readonly _samplerFunction: (...params: TParams) => ContractFunctionObj<TReturn>;
+    private readonly _params: any[];
+    private readonly _callback?: (callResults: string, fillData: TFillData) => Promise<BigNumber[]>;
+
+    constructor(opts: SourceInfo<TFillData> & SamplerContractCall<TParams, TReturn, TFillData>) {
+        this.source = opts.source;
+        this.fillData = opts.fillData || ({} as TFillData); // tslint:disable-line:no-object-literal-type-assertion
+        this._samplerContract = opts.contract;
+        this._samplerFunction = opts.function;
+        this._params = opts.params;
+        this._callback = opts.callback;
+    }
 
     public encodeCall(): string {
         return this._samplerFunction
             .bind(this._samplerContract)(...(this._params as TParams))
             .getABIEncodedTransactionData();
+    }
+    public async handleCallResultsAsync(callResults: string): Promise<BigNumber[]> {
+        if (this._callback !== undefined) {
+            return this._callback(callResults, this.fillData);
+        } else {
+            return this._samplerContract.getABIDecodedReturnData<BigNumber[]>(this._samplerFunction.name, callResults);
+        }
     }
 }
 

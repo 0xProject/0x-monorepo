@@ -17,6 +17,7 @@ import * as TypeMoq from 'typemoq';
 
 import { MarketOperation, QuoteRequestor, RfqtRequestOpts, SignedOrderWithFillableAmounts } from '../src';
 import { getRfqtIndicativeQuotesAsync, MarketOperationUtils } from '../src/utils/market_operation_utils/';
+import { BalancerPoolsCache } from '../src/utils/market_operation_utils/balancer_utils';
 import { BUY_SOURCES, POSITIVE_INF, SELL_SOURCES, ZERO_AMOUNT } from '../src/utils/market_operation_utils/constants';
 import { createFillPaths } from '../src/utils/market_operation_utils/fills';
 import { DexOrderSampler } from '../src/utils/market_operation_utils/sampler';
@@ -311,6 +312,7 @@ describe('MarketOperationUtils tests', () => {
         async executeBatchAsync(ops: any[]): Promise<any[]> {
             return ops;
         },
+        balancerPoolsCache: new BalancerPoolsCache(),
     } as any) as DexOrderSampler;
 
     function replaceSamplerOps(ops: Partial<typeof DEFAULT_OPS> = {}): void {

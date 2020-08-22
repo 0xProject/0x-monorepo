@@ -16,7 +16,6 @@ import {
 } from '../types';
 
 import { MarketOperationUtils } from './market_operation_utils';
-import { getMultiHopFee } from './market_operation_utils/multihop_utils';
 import { convertNativeOrderToFullyFillableOptimizedOrders } from './market_operation_utils/orders';
 import {
     ERC20BridgeSource,
@@ -264,7 +263,12 @@ function createTwoHopSwapQuote(
     const [firstHopOrder, secondHopOrder] = optimizedOrders;
     const [firstHopFill] = firstHopOrder.fills;
     const [secondHopFill] = secondHopOrder.fills;
-    const gas = getMultiHopFee([firstHopFill, secondHopFill], gasSchedule);
+    const gas = new BigNumber(
+        gasSchedule[ERC20BridgeSource.MultiHop]!({
+            firstHopSource: _.pick(firstHopFill, 'source', 'fillData'),
+            secondHopSource: _.pick(secondHopFill, 'source', 'fillData'),
+        }),
+    ).toNumber();
 
     const quoteBase = {
         takerAssetData,

@@ -17,7 +17,8 @@ import {
     SELL_SOURCES,
     ZERO_AMOUNT,
 } from './constants';
-import { createFillPaths, getPathAdjustedRate, getPathAdjustedSlippage, getTwoHopAdjustedRate } from './fills';
+import { createFillPaths, getPathAdjustedRate, getPathAdjustedSlippage } from './fills';
+import { getBestTwoHopQuote } from './multihop_utils';
 import {
     createOrdersFromPath,
     createOrdersFromTwoHopSample,
@@ -34,12 +35,13 @@ import {
     FeeSchedule,
     GetMarketOrdersOpts,
     MarketSideLiquidity,
-    MultiHopFillData,
     OptimizedMarketOrder,
     OptimizerResult,
     OrderDomain,
     TokenAdjacencyGraph,
 } from './types';
+
+// tslint:disable:boolean-naming
 
 /**
  * Returns a indicative quotes or an empty array if RFQT is not enabled or requested
@@ -103,6 +105,12 @@ export class MarketOperationUtils {
         const _opts = { ...DEFAULT_GET_MARKET_ORDERS_OPTS, ...opts };
         const [makerToken, takerToken] = getNativeOrderTokens(nativeOrders[0]);
         const sampleAmounts = getSampleAmounts(takerAmount, _opts.numSamples, _opts.sampleDistributionBase);
+
+        const {
+            onChain: sampleBalancerOnChain,
+            offChain: sampleBalancerOffChain,
+        } = this._sampler.balancerPoolsCache.howToSampleBalancer(takerToken, makerToken, _opts.excludedSources);
+
         // Call the sampler contract.
         const samplerPromise = this._sampler.executeAsync(
             // Get native order fillable amounts.
@@ -131,7 +139,7 @@ export class MarketOperationUtils {
             this._sampler.getSellQuotes(
                 difference(
                     SELL_SOURCES.concat(this._optionalSources()),
-                    _opts.excludedSources.concat(ERC20BridgeSource.Balancer),
+                    _opts.excludedSources.concat(sampleBalancerOnChain ? [] : ERC20BridgeSource.Balancer),
                 ),
                 makerToken,
                 takerToken,
@@ -164,27 +172,27 @@ export class MarketOperationUtils {
             _opts,
         );
 
-        const balancerPromise = _opts.excludedSources.includes(ERC20BridgeSource.Balancer)
-            ? Promise.resolve([])
-            : this._sampler.getBalancerSellQuotesAsync(makerToken, takerToken, sampleAmounts);
+        const offChainBalancerPromise = sampleBalancerOffChain
+            ? this._sampler.getBalancerSellQuotesAsync(makerToken, takerToken, sampleAmounts)
+            : Promise.resolve([]);
 
-        const bancorPromise = _opts.excludedSources.includes(ERC20BridgeSource.Bancor)
+        const offChainBancorPromise = _opts.excludedSources.includes(ERC20BridgeSource.Bancor)
             ? Promise.resolve([])
             : this._sampler.getBancorSellQuotesAsync(makerToken, takerToken, sampleAmounts);
 
         const [
             [orderFillableAmounts, ethToMakerAssetRate, ethToTakerAssetRate, dexQuotes, twoHopQuotes],
             rfqtIndicativeQuotes,
-            balancerQuotes,
-            bancorQuotes,
-        ] = await Promise.all([samplerPromise, rfqtPromise, balancerPromise, bancorPromise]);
+            offChainBalancerQuotes,
+            offChainBancorQuotes,
+        ] = await Promise.all([samplerPromise, rfqtPromise, offChainBalancerPromise, offChainBancorPromise]);
 
         return {
             side: MarketOperation.Sell,
             inputAmount: takerAmount,
             inputToken: takerToken,
             outputToken: makerToken,
-            dexQuotes: dexQuotes.concat(...balancerQuotes, bancorQuotes),
+            dexQuotes: dexQuotes.concat(...offChainBalancerQuotes, offChainBancorQuotes),
             nativeOrders,
             orderFillableAmounts,
             ethToOutputRate: ethToMakerAssetRate,
@@ -212,6 +220,11 @@ export class MarketOperationUtils {
         const _opts = { ...DEFAULT_GET_MARKET_ORDERS_OPTS, ...opts };
         const [makerToken, takerToken] = getNativeOrderTokens(nativeOrders[0]);
         const sampleAmounts = getSampleAmounts(makerAmount, _opts.numSamples, _opts.sampleDistributionBase);
+
+        const {
+            onChain: sampleBalancerOnChain,
+            offChain: sampleBalancerOffChain,
+        } = this._sampler.balancerPoolsCache.howToSampleBalancer(takerToken, makerToken, _opts.excludedSources);
 
         // Call the sampler contract.
         const samplerPromise = this._sampler.executeAsync(
@@ -243,7 +256,7 @@ export class MarketOperationUtils {
                     BUY_SOURCES.concat(
                         this._liquidityProviderRegistry !== NULL_ADDRESS ? [ERC20BridgeSource.LiquidityProvider] : [],
                     ),
-                    _opts.excludedSources.concat([ERC20BridgeSource.Balancer]),
+                    _opts.excludedSources.concat(sampleBalancerOnChain ? [] : ERC20BridgeSource.Balancer),
                 ),
                 makerToken,
                 takerToken,
@@ -271,9 +284,9 @@ export class MarketOperationUtils {
                   ),
         );
 
-        const balancerPromise = _opts.excludedSources.includes(ERC20BridgeSource.Balancer)
-            ? Promise.resolve([])
-            : this._sampler.getBalancerBuyQuotesAsync(makerToken, takerToken, sampleAmounts);
+        const offChainBalancerPromise = sampleBalancerOffChain
+            ? this._sampler.getBalancerBuyQuotesAsync(makerToken, takerToken, sampleAmounts)
+            : Promise.resolve([]);
 
         const rfqtPromise = getRfqtIndicativeQuotesAsync(
             nativeOrders[0].makerAssetData,
@@ -285,8 +298,8 @@ export class MarketOperationUtils {
         const [
             [orderFillableAmounts, ethToMakerAssetRate, ethToTakerAssetRate, dexQuotes, twoHopQuotes],
             rfqtIndicativeQuotes,
-            balancerQuotes,
-        ] = await Promise.all([samplerPromise, rfqtPromise, balancerPromise]);
+            offChainBalancerQuotes,
+        ] = await Promise.all([samplerPromise, rfqtPromise, offChainBalancerPromise]);
         // Attach the MultiBridge address to the sample fillData
         (dexQuotes.find(quotes => quotes[0] && quotes[0].source === ERC20BridgeSource.MultiBridge) || []).forEach(
             q => (q.fillData = { poolAddress: this._multiBridge }),
@@ -296,7 +309,7 @@ export class MarketOperationUtils {
             inputAmount: makerAmount,
             inputToken: makerToken,
             outputToken: takerToken,
-            dexQuotes: dexQuotes.concat(balancerQuotes),
+            dexQuotes: dexQuotes.concat(offChainBalancerQuotes),
             nativeOrders,
             orderFillableAmounts,
             ethToOutputRate: ethToTakerAssetRate,
@@ -515,16 +528,10 @@ export class MarketOperationUtils {
         }
         const optimalPathRate = getPathAdjustedRate(side, optimalPath, inputAmount);
 
-        const { bestRate: bestTwoHopRate, bestQuote: bestTwoHopQuote } = twoHopQuotes
-            .map(quote => getTwoHopAdjustedRate(side, quote, inputAmount, ethToOutputRate, opts.feeSchedule))
-            .reduce(
-                (prev, curr, i) =>
-                    curr.isGreaterThan(prev.bestRate) ? { bestRate: curr, bestQuote: twoHopQuotes[i] } : prev,
-                {
-                    bestRate: ZERO_AMOUNT,
-                    bestQuote: undefined as DexSample<MultiHopFillData> | undefined,
-                },
-            );
+        const { rate: bestTwoHopRate, quote: bestTwoHopQuote } = getBestTwoHopQuote(
+            marketSideLiquidity,
+            opts.feeSchedule,
+        );
         if (bestTwoHopRate.isGreaterThan(optimalPathRate)) {
             const twoHopOrders = createOrdersFromTwoHopSample(bestTwoHopQuote!, orderOpts);
             const twoHopQuoteReport = generateQuoteReport(

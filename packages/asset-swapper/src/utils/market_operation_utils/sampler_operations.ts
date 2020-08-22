@@ -28,7 +28,7 @@ import {
     UniswapV2FillData,
 } from './types';
 
-// tslint:disable:no-inferred-empty-object-type
+// tslint:disable:no-inferred-empty-object-type no-unbound-method
 
 /**
  * Composable operations that can be batched in a single transaction,
@@ -53,21 +53,21 @@ export class SamplerOperations {
     ) {}
 
     public getOrderFillableTakerAmounts(orders: SignedOrder[], exchangeAddress: string): BatchedOperation<BigNumber[]> {
-        return new SamplerContractOperation(
-            this._samplerContract,
-            ERC20BridgeSource.Native,
-            this._samplerContract.getOrderFillableTakerAssetAmounts,
-            [orders, orders.map(o => o.signature), exchangeAddress],
-        );
+        return new SamplerContractOperation({
+            source: ERC20BridgeSource.Native,
+            contract: this._samplerContract,
+            function: this._samplerContract.getOrderFillableTakerAssetAmounts,
+            params: [orders, orders.map(o => o.signature), exchangeAddress],
+        });
     }
 
     public getOrderFillableMakerAmounts(orders: SignedOrder[], exchangeAddress: string): BatchedOperation<BigNumber[]> {
-        return new SamplerContractOperation(
-            this._samplerContract,
-            ERC20BridgeSource.Native,
-            this._samplerContract.getOrderFillableMakerAssetAmounts,
-            [orders, orders.map(o => o.signature), exchangeAddress],
-        );
+        return new SamplerContractOperation({
+            source: ERC20BridgeSource.Native,
+            contract: this._samplerContract,
+            function: this._samplerContract.getOrderFillableMakerAssetAmounts,
+            params: [orders, orders.map(o => o.signature), exchangeAddress],
+        });
     }
 
     public getKyberSellQuotes(
@@ -75,12 +75,12 @@ export class SamplerOperations {
         takerToken: string,
         takerFillAmounts: BigNumber[],
     ): SourceQuoteOperation {
-        return new SamplerContractOperation(
-            this._samplerContract,
-            ERC20BridgeSource.Kyber,
-            this._samplerContract.sampleSellsFromKyberNetwork,
-            [takerToken, makerToken, takerFillAmounts],
-        );
+        return new SamplerContractOperation({
+            source: ERC20BridgeSource.Kyber,
+            contract: this._samplerContract,
+            function: this._samplerContract.sampleSellsFromKyberNetwork,
+            params: [takerToken, makerToken, takerFillAmounts],
+        });
     }
 
     public getKyberBuyQuotes(
@@ -88,12 +88,12 @@ export class SamplerOperations {
         takerToken: string,
         makerFillAmounts: BigNumber[],
     ): SourceQuoteOperation {
-        return new SamplerContractOperation(
-            this._samplerContract,
-            ERC20BridgeSource.Kyber,
-            this._samplerContract.sampleBuysFromKyberNetwork,
-            [takerToken, makerToken, makerFillAmounts],
-        );
+        return new SamplerContractOperation({
+            source: ERC20BridgeSource.Kyber,
+            contract: this._samplerContract,
+            function: this._samplerContract.sampleBuysFromKyberNetwork,
+            params: [takerToken, makerToken, makerFillAmounts],
+        });
     }
 
     public getUniswapSellQuotes(
@@ -101,12 +101,12 @@ export class SamplerOperations {
         takerToken: string,
         takerFillAmounts: BigNumber[],
     ): SourceQuoteOperation {
-        return new SamplerContractOperation(
-            this._samplerContract,
-            ERC20BridgeSource.Uniswap,
-            this._samplerContract.sampleSellsFromUniswap,
-            [takerToken, makerToken, takerFillAmounts],
-        );
+        return new SamplerContractOperation({
+            source: ERC20BridgeSource.Uniswap,
+            contract: this._samplerContract,
+            function: this._samplerContract.sampleSellsFromUniswap,
+            params: [takerToken, makerToken, takerFillAmounts],
+        });
     }
 
     public getUniswapBuyQuotes(
@@ -114,38 +114,38 @@ export class SamplerOperations {
         takerToken: string,
         makerFillAmounts: BigNumber[],
     ): SourceQuoteOperation {
-        return new SamplerContractOperation(
-            this._samplerContract,
-            ERC20BridgeSource.Uniswap,
-            this._samplerContract.sampleBuysFromUniswap,
-            [takerToken, makerToken, makerFillAmounts],
-        );
+        return new SamplerContractOperation({
+            source: ERC20BridgeSource.Uniswap,
+            contract: this._samplerContract,
+            function: this._samplerContract.sampleBuysFromUniswap,
+            params: [takerToken, makerToken, makerFillAmounts],
+        });
     }
 
     public getUniswapV2SellQuotes(
         tokenAddressPath: string[],
         takerFillAmounts: BigNumber[],
     ): SourceQuoteOperation<UniswapV2FillData> {
-        return new SamplerContractOperation(
-            this._samplerContract,
-            ERC20BridgeSource.UniswapV2,
-            this._samplerContract.sampleSellsFromUniswapV2,
-            [tokenAddressPath, takerFillAmounts],
-            { tokenAddressPath },
-        );
+        return new SamplerContractOperation({
+            source: ERC20BridgeSource.UniswapV2,
+            fillData: { tokenAddressPath },
+            contract: this._samplerContract,
+            function: this._samplerContract.sampleSellsFromUniswapV2,
+            params: [tokenAddressPath, takerFillAmounts],
+        });
     }
 
     public getUniswapV2BuyQuotes(
         tokenAddressPath: string[],
         makerFillAmounts: BigNumber[],
     ): SourceQuoteOperation<UniswapV2FillData> {
-        return new SamplerContractOperation(
-            this._samplerContract,
-            ERC20BridgeSource.UniswapV2,
-            this._samplerContract.sampleBuysFromUniswapV2,
-            [tokenAddressPath, makerFillAmounts],
-            { tokenAddressPath },
-        );
+        return new SamplerContractOperation({
+            source: ERC20BridgeSource.UniswapV2,
+            fillData: { tokenAddressPath },
+            contract: this._samplerContract,
+            function: this._samplerContract.sampleBuysFromUniswapV2,
+            params: [tokenAddressPath, makerFillAmounts],
+        });
     }
 
     public getLiquidityProviderSellQuotes(
@@ -154,22 +154,21 @@ export class SamplerOperations {
         takerToken: string,
         takerFillAmounts: BigNumber[],
     ): SourceQuoteOperation<LiquidityProviderFillData> {
-        const op = new SamplerContractOperation(
-            this._samplerContract,
-            ERC20BridgeSource.LiquidityProvider,
-            this._samplerContract.sampleSellsFromLiquidityProviderRegistry,
-            [registryAddress, takerToken, makerToken, takerFillAmounts],
-            {} as LiquidityProviderFillData, // tslint:disable-line:no-object-literal-type-assertion
-            async (callResults: string): Promise<BigNumber[]> => {
+        return new SamplerContractOperation({
+            source: ERC20BridgeSource.LiquidityProvider,
+            fillData: {} as LiquidityProviderFillData, // tslint:disable-line:no-object-literal-type-assertion
+            contract: this._samplerContract,
+            function: this._samplerContract.sampleSellsFromLiquidityProviderRegistry,
+            params: [registryAddress, takerToken, makerToken, takerFillAmounts],
+            callback: async (callResults: string, fillData: LiquidityProviderFillData): Promise<BigNumber[]> => {
                 const [samples, poolAddress] = this._samplerContract.getABIDecodedReturnData<[BigNumber[], string]>(
                     'sampleSellsFromLiquidityProviderRegistry',
                     callResults,
                 );
-                op.fillData.poolAddress = poolAddress;
+                fillData.poolAddress = poolAddress;
                 return Promise.resolve(samples);
             },
-        );
-        return op;
+        });
     }
 
     public getLiquidityProviderBuyQuotes(
@@ -178,22 +177,21 @@ export class SamplerOperations {
         takerToken: string,
         makerFillAmounts: BigNumber[],
     ): SourceQuoteOperation<LiquidityProviderFillData> {
-        const op = new SamplerContractOperation(
-            this._samplerContract,
-            ERC20BridgeSource.LiquidityProvider,
-            this._samplerContract.sampleBuysFromLiquidityProviderRegistry,
-            [registryAddress, takerToken, makerToken, makerFillAmounts],
-            {} as LiquidityProviderFillData, // tslint:disable-line:no-object-literal-type-assertion
-            async (callResults: string): Promise<BigNumber[]> => {
+        return new SamplerContractOperation({
+            source: ERC20BridgeSource.LiquidityProvider,
+            fillData: {} as LiquidityProviderFillData, // tslint:disable-line:no-object-literal-type-assertion
+            contract: this._samplerContract,
+            function: this._samplerContract.sampleBuysFromLiquidityProviderRegistry,
+            params: [registryAddress, takerToken, makerToken, makerFillAmounts],
+            callback: async (callResults: string, fillData: LiquidityProviderFillData): Promise<BigNumber[]> => {
                 const [samples, poolAddress] = this._samplerContract.getABIDecodedReturnData<[BigNumber[], string]>(
                     'sampleBuysFromLiquidityProviderRegistry',
                     callResults,
                 );
-                op.fillData.poolAddress = poolAddress;
+                fillData.poolAddress = poolAddress;
                 return Promise.resolve(samples);
             },
-        );
-        return op;
+        });
     }
 
     public getMultiBridgeSellQuotes(
@@ -203,13 +201,13 @@ export class SamplerOperations {
         takerToken: string,
         takerFillAmounts: BigNumber[],
     ): SourceQuoteOperation<MultiBridgeFillData> {
-        return new SamplerContractOperation(
-            this._samplerContract,
-            ERC20BridgeSource.MultiBridge,
-            this._samplerContract.sampleSellsFromMultiBridge,
-            [multiBridgeAddress, takerToken, intermediateToken, makerToken, takerFillAmounts],
-            { poolAddress: multiBridgeAddress },
-        );
+        return new SamplerContractOperation({
+            source: ERC20BridgeSource.MultiBridge,
+            fillData: { poolAddress: multiBridgeAddress },
+            contract: this._samplerContract,
+            function: this._samplerContract.sampleSellsFromMultiBridge,
+            params: [multiBridgeAddress, takerToken, intermediateToken, makerToken, takerFillAmounts],
+        });
     }
 
     public getEth2DaiSellQuotes(
@@ -217,12 +215,12 @@ export class SamplerOperations {
         takerToken: string,
         takerFillAmounts: BigNumber[],
     ): SourceQuoteOperation {
-        return new SamplerContractOperation(
-            this._samplerContract,
-            ERC20BridgeSource.Eth2Dai,
-            this._samplerContract.sampleSellsFromEth2Dai,
-            [takerToken, makerToken, takerFillAmounts],
-        );
+        return new SamplerContractOperation({
+            source: ERC20BridgeSource.Eth2Dai,
+            contract: this._samplerContract,
+            function: this._samplerContract.sampleSellsFromEth2Dai,
+            params: [takerToken, makerToken, takerFillAmounts],
+        });
     }
 
     public getEth2DaiBuyQuotes(
@@ -230,12 +228,12 @@ export class SamplerOperations {
         takerToken: string,
         makerFillAmounts: BigNumber[],
     ): SourceQuoteOperation {
-        return new SamplerContractOperation(
-            this._samplerContract,
-            ERC20BridgeSource.Eth2Dai,
-            this._samplerContract.sampleBuysFromEth2Dai,
-            [takerToken, makerToken, makerFillAmounts],
-        );
+        return new SamplerContractOperation({
+            source: ERC20BridgeSource.Eth2Dai,
+            contract: this._samplerContract,
+            function: this._samplerContract.sampleBuysFromEth2Dai,
+            params: [takerToken, makerToken, makerFillAmounts],
+        });
     }
 
     public getCurveSellQuotes(
@@ -244,11 +242,16 @@ export class SamplerOperations {
         toTokenIdx: number,
         takerFillAmounts: BigNumber[],
     ): SourceQuoteOperation<CurveFillData> {
-        return new SamplerContractOperation(
-            this._samplerContract,
-            ERC20BridgeSource.Curve,
-            this._samplerContract.sampleSellsFromCurve,
-            [
+        return new SamplerContractOperation({
+            source: ERC20BridgeSource.Curve,
+            fillData: {
+                curve,
+                fromTokenIdx,
+                toTokenIdx,
+            },
+            contract: this._samplerContract,
+            function: this._samplerContract.sampleSellsFromCurve,
+            params: [
                 {
                     poolAddress: curve.poolAddress,
                     sellQuoteFunctionSelector: curve.sellQuoteFunctionSelector,
@@ -258,12 +261,7 @@ export class SamplerOperations {
                 new BigNumber(toTokenIdx),
                 takerFillAmounts,
             ],
-            {
-                curve,
-                fromTokenIdx,
-                toTokenIdx,
-            },
-        );
+        });
     }
 
     public getCurveBuyQuotes(
@@ -272,11 +270,16 @@ export class SamplerOperations {
         toTokenIdx: number,
         makerFillAmounts: BigNumber[],
     ): SourceQuoteOperation<CurveFillData> {
-        return new SamplerContractOperation(
-            this._samplerContract,
-            ERC20BridgeSource.Curve,
-            this._samplerContract.sampleBuysFromCurve,
-            [
+        return new SamplerContractOperation({
+            source: ERC20BridgeSource.Curve,
+            fillData: {
+                curve,
+                fromTokenIdx,
+                toTokenIdx,
+            },
+            contract: this._samplerContract,
+            function: this._samplerContract.sampleBuysFromCurve,
+            params: [
                 {
                     poolAddress: curve.poolAddress,
                     sellQuoteFunctionSelector: curve.sellQuoteFunctionSelector,
@@ -286,12 +289,7 @@ export class SamplerOperations {
                 new BigNumber(toTokenIdx),
                 makerFillAmounts,
             ],
-            {
-                curve,
-                fromTokenIdx,
-                toTokenIdx,
-            },
-        );
+        });
     }
 
     public getBalancerSellQuotes(
@@ -300,13 +298,13 @@ export class SamplerOperations {
         takerToken: string,
         takerFillAmounts: BigNumber[],
     ): SourceQuoteOperation<BalancerFillData> {
-        return new SamplerContractOperation(
-            this._samplerContract,
-            ERC20BridgeSource.Balancer,
-            this._samplerContract.sampleSellsFromBalancer,
-            [poolAddress, takerToken, makerToken, takerFillAmounts],
-            { poolAddress },
-        );
+        return new SamplerContractOperation({
+            source: ERC20BridgeSource.Balancer,
+            fillData: { poolAddress },
+            contract: this._samplerContract,
+            function: this._samplerContract.sampleSellsFromBalancer,
+            params: [poolAddress, takerToken, makerToken, takerFillAmounts],
+        });
     }
 
     public getBalancerBuyQuotes(
@@ -315,13 +313,13 @@ export class SamplerOperations {
         takerToken: string,
         makerFillAmounts: BigNumber[],
     ): SourceQuoteOperation<BalancerFillData> {
-        return new SamplerContractOperation(
-            this._samplerContract,
-            ERC20BridgeSource.Balancer,
-            this._samplerContract.sampleBuysFromBalancer,
-            [poolAddress, takerToken, makerToken, makerFillAmounts],
-            { poolAddress },
-        );
+        return new SamplerContractOperation({
+            source: ERC20BridgeSource.Balancer,
+            fillData: { poolAddress },
+            contract: this._samplerContract,
+            function: this._samplerContract.sampleBuysFromBalancer,
+            params: [poolAddress, takerToken, makerToken, makerFillAmounts],
+        });
     }
 
     public async getBalancerSellQuotesAsync(
@@ -361,12 +359,12 @@ export class SamplerOperations {
         takerToken: string,
         takerFillAmounts: BigNumber[],
     ): SourceQuoteOperation {
-        return new SamplerContractOperation(
-            this._samplerContract,
-            ERC20BridgeSource.MStable,
-            this._samplerContract.sampleSellsFromMStable,
-            [takerToken, makerToken, takerFillAmounts],
-        );
+        return new SamplerContractOperation({
+            source: ERC20BridgeSource.MStable,
+            contract: this._samplerContract,
+            function: this._samplerContract.sampleSellsFromMStable,
+            params: [takerToken, makerToken, takerFillAmounts],
+        });
     }
 
     public getMStableBuyQuotes(
@@ -374,12 +372,12 @@ export class SamplerOperations {
         takerToken: string,
         makerFillAmounts: BigNumber[],
     ): SourceQuoteOperation {
-        return new SamplerContractOperation(
-            this._samplerContract,
-            ERC20BridgeSource.MStable,
-            this._samplerContract.sampleBuysFromMStable,
-            [takerToken, makerToken, makerFillAmounts],
-        );
+        return new SamplerContractOperation({
+            source: ERC20BridgeSource.MStable,
+            contract: this._samplerContract,
+            function: this._samplerContract.sampleBuysFromMStable,
+            params: [takerToken, makerToken, makerFillAmounts],
+        });
     }
 
     public async getBancorSellQuotesAsync(
@@ -460,27 +458,26 @@ export class SamplerOperations {
                 wethAddress,
                 liquidityProviderRegistryAddress,
             );
-            const samplerOp = new SamplerContractOperation(
-                this._samplerContract,
-                ERC20BridgeSource.MultiHop,
-                this._samplerContract.sampleTwoHopSell,
-                [firstHopOps.map(op => op.encodeCall()), secondHopOps.map(op => op.encodeCall()), sellAmount],
-                { intermediateToken } as MultiHopFillData, // tslint:disable-line:no-object-literal-type-assertion
-                async (callResults: string): Promise<BigNumber[]> => {
+            return new SamplerContractOperation({
+                contract: this._samplerContract,
+                source: ERC20BridgeSource.MultiHop,
+                function: this._samplerContract.sampleTwoHopSell,
+                params: [firstHopOps.map(op => op.encodeCall()), secondHopOps.map(op => op.encodeCall()), sellAmount],
+                fillData: { intermediateToken } as MultiHopFillData, // tslint:disable-line:no-object-literal-type-assertion
+                callback: async (callResults: string, fillData: MultiHopFillData): Promise<BigNumber[]> => {
                     const [firstHop, secondHop, buyAmount] = this._samplerContract.getABIDecodedReturnData<
                         [HopInfo, HopInfo, BigNumber]
                     >('sampleTwoHopSell', callResults);
                     if (buyAmount.isZero()) {
                         return Promise.resolve([buyAmount]);
                     }
-                    samplerOp.fillData.firstHopSource = firstHopOps[firstHop.sourceIndex.toNumber()];
-                    samplerOp.fillData.secondHopSource = secondHopOps[secondHop.sourceIndex.toNumber()];
-                    await samplerOp.fillData.firstHopSource.handleCallResultsAsync(firstHop.returnData);
-                    await samplerOp.fillData.secondHopSource.handleCallResultsAsync(secondHop.returnData);
+                    fillData.firstHopSource = firstHopOps[firstHop.sourceIndex.toNumber()];
+                    fillData.secondHopSource = secondHopOps[secondHop.sourceIndex.toNumber()];
+                    await fillData.firstHopSource.handleCallResultsAsync(firstHop.returnData);
+                    await fillData.secondHopSource.handleCallResultsAsync(secondHop.returnData);
                     return Promise.resolve([buyAmount]);
                 },
-            );
-            return samplerOp;
+            });
         });
         return {
             encodeCall: () => {
@@ -534,27 +531,26 @@ export class SamplerOperations {
                 wethAddress,
                 liquidityProviderRegistryAddress,
             );
-            const samplerOp = new SamplerContractOperation(
-                this._samplerContract,
-                ERC20BridgeSource.MultiHop,
-                this._samplerContract.sampleTwoHopBuy,
-                [firstHopOps.map(op => op.encodeCall()), secondHopOps.map(op => op.encodeCall()), buyAmount],
-                { intermediateToken } as MultiHopFillData, // tslint:disable-line:no-object-literal-type-assertion
-                async (callResults: string): Promise<BigNumber[]> => {
+            return new SamplerContractOperation({
+                contract: this._samplerContract,
+                source: ERC20BridgeSource.MultiHop,
+                function: this._samplerContract.sampleTwoHopBuy,
+                params: [firstHopOps.map(op => op.encodeCall()), secondHopOps.map(op => op.encodeCall()), buyAmount],
+                fillData: { intermediateToken } as MultiHopFillData, // tslint:disable-line:no-object-literal-type-assertion
+                callback: async (callResults: string, fillData: MultiHopFillData): Promise<BigNumber[]> => {
                     const [firstHop, secondHop, sellAmount] = this._samplerContract.getABIDecodedReturnData<
                         [HopInfo, HopInfo, BigNumber]
                     >('sampleTwoHopBuy', callResults);
                     if (sellAmount.isEqualTo(MAX_UINT256)) {
                         return Promise.resolve([sellAmount]);
                     }
-                    samplerOp.fillData.firstHopSource = firstHopOps[firstHop.sourceIndex.toNumber()];
-                    samplerOp.fillData.secondHopSource = secondHopOps[secondHop.sourceIndex.toNumber()];
-                    await samplerOp.fillData.firstHopSource.handleCallResultsAsync(firstHop.returnData);
-                    await samplerOp.fillData.secondHopSource.handleCallResultsAsync(secondHop.returnData);
+                    fillData.firstHopSource = firstHopOps[firstHop.sourceIndex.toNumber()];
+                    fillData.secondHopSource = secondHopOps[secondHop.sourceIndex.toNumber()];
+                    await fillData.firstHopSource.handleCallResultsAsync(firstHop.returnData);
+                    await fillData.secondHopSource.handleCallResultsAsync(secondHop.returnData);
                     return Promise.resolve([sellAmount]);
                 },
-            );
-            return samplerOp;
+            });
         });
         return {
             encodeCall: () => {
@@ -791,7 +787,7 @@ export class SamplerOperations {
                             return this.getMooniswapSellQuotes(makerToken, takerToken, takerFillAmounts);
                         case ERC20BridgeSource.Balancer:
                             return this.balancerPoolsCache
-                                .getCachedPoolAddressesForPair(takerToken, makerToken)
+                                .getCachedPoolAddressesForPair(takerToken, makerToken)!
                                 .map(poolAddress =>
                                     this.getBalancerSellQuotes(poolAddress, makerToken, takerToken, takerFillAmounts),
                                 );
@@ -856,7 +852,7 @@ export class SamplerOperations {
                             return this.getMooniswapBuyQuotes(makerToken, takerToken, makerFillAmounts);
                         case ERC20BridgeSource.Balancer:
                             return this.balancerPoolsCache
-                                .getCachedPoolAddressesForPair(takerToken, makerToken)
+                                .getCachedPoolAddressesForPair(takerToken, makerToken)!
                                 .map(poolAddress =>
                                     this.getBalancerBuyQuotes(poolAddress, makerToken, takerToken, makerFillAmounts),
                                 );
