@@ -122,14 +122,17 @@ export {
     MarketDepth,
     MarketDepthSide,
     MultiBridgeFillData,
+    MultiHopFillData,
     NativeCollapsedFill,
     NativeFillData,
     OptimizedMarketOrder,
+    TokenAdjacencyGraph,
     UniswapV2FillData,
 } from './utils/market_operation_utils/types';
 export { ProtocolFeeUtils } from './utils/protocol_fee_utils';
 export {
     BridgeReportSource,
+    MultiHopReportSource,
     NativeOrderbookReportSource,
     NativeRFQTReportSource,
     QuoteReport,

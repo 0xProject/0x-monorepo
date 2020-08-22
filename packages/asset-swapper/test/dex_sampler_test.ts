@@ -146,7 +146,7 @@ describe('DexSampler tests', () => {
             const [fillableAmounts] = await dexOrderSampler.executeAsync(
                 dexOrderSampler.getKyberSellQuotes(expectedMakerToken, expectedTakerToken, expectedTakerFillAmounts),
             );
-            expect(fillableAmounts.map(q => q.amount)).to.deep.eq(expectedMakerFillAmounts);
+            expect(fillableAmounts).to.deep.eq(expectedMakerFillAmounts);
         });
 
         it('getLiquidityProviderSellQuotes()', async () => {
@@ -281,7 +281,7 @@ describe('DexSampler tests', () => {
             const [fillableAmounts] = await dexOrderSampler.executeAsync(
                 dexOrderSampler.getEth2DaiSellQuotes(expectedMakerToken, expectedTakerToken, expectedTakerFillAmounts),
             );
-            expect(fillableAmounts.map(q => q.amount)).to.deep.eq(expectedMakerFillAmounts);
+            expect(fillableAmounts).to.deep.eq(expectedMakerFillAmounts);
         });
 
         it('getUniswapSellQuotes()', async () => {
@@ -301,7 +301,7 @@ describe('DexSampler tests', () => {
             const [fillableAmounts] = await dexOrderSampler.executeAsync(
                 dexOrderSampler.getUniswapSellQuotes(expectedMakerToken, expectedTakerToken, expectedTakerFillAmounts),
             );
-            expect(fillableAmounts.map(q => q.amount)).to.deep.eq(expectedMakerFillAmounts);
+            expect(fillableAmounts).to.deep.eq(expectedMakerFillAmounts);
         });
 
         it('getUniswapV2SellQuotes()', async () => {
@@ -323,7 +323,7 @@ describe('DexSampler tests', () => {
                     expectedTakerFillAmounts,
                 ),
             );
-            expect(fillableAmounts.map(q => q.amount)).to.deep.eq(expectedMakerFillAmounts);
+            expect(fillableAmounts).to.deep.eq(expectedMakerFillAmounts);
         });
 
         it('getEth2DaiBuyQuotes()', async () => {
@@ -343,7 +343,7 @@ describe('DexSampler tests', () => {
             const [fillableAmounts] = await dexOrderSampler.executeAsync(
                 dexOrderSampler.getEth2DaiBuyQuotes(expectedMakerToken, expectedTakerToken, expectedMakerFillAmounts),
             );
-            expect(fillableAmounts.map(q => q.amount)).to.deep.eq(expectedTakerFillAmounts);
+            expect(fillableAmounts).to.deep.eq(expectedTakerFillAmounts);
         });
 
         it('getUniswapBuyQuotes()', async () => {
@@ -363,7 +363,7 @@ describe('DexSampler tests', () => {
             const [fillableAmounts] = await dexOrderSampler.executeAsync(
                 dexOrderSampler.getUniswapBuyQuotes(expectedMakerToken, expectedTakerToken, expectedMakerFillAmounts),
             );
-            expect(fillableAmounts.map(q => q.amount)).to.deep.eq(expectedTakerFillAmounts);
+            expect(fillableAmounts).to.deep.eq(expectedTakerFillAmounts);
         });
 
         interface RatesBySource {
@@ -508,28 +508,17 @@ describe('DexSampler tests', () => {
                 bancorService,
                 undefined, // balancer cache
             );
-            const [quotes] = await dexOrderSampler.executeAsync(
-                await DexOrderSampler.ops.getSellQuotesAsync(
-                    [ERC20BridgeSource.Bancor],
-                    expectedMakerToken,
-                    expectedTakerToken,
-                    expectedTakerFillAmounts,
-                    wethAddress,
-                    undefined, // balancer pools cache
-                    undefined, // liquidity provider registry address
-                    undefined, // multibridge address
-                    bancorService,
-                ),
+            const quotes = await dexOrderSampler.getBancorSellQuotesAsync(
+                expectedMakerToken,
+                expectedTakerToken,
+                expectedTakerFillAmounts,
             );
-            const expectedQuotes = [
-                expectedTakerFillAmounts.map(a => ({
-                    source: ERC20BridgeSource.Bancor,
-                    input: a,
-                    output: a.multipliedBy(rate),
-                    fillData: { path: [expectedTakerToken, expectedMakerToken], networkAddress },
-                })),
-            ];
-            expect(quotes).to.have.lengthOf(1); //  one set per pool
+            const expectedQuotes = expectedTakerFillAmounts.map(a => ({
+                source: ERC20BridgeSource.Bancor,
+                input: a,
+                output: a.multipliedBy(rate),
+                fillData: { path: [expectedTakerToken, expectedMakerToken], networkAddress },
+            }));
             expect(quotes).to.deep.eq(expectedQuotes);
         });
         it('getBuyQuotes()', async () => {

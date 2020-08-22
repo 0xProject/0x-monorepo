@@ -21,12 +21,10 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/DeploymentConstants.sol";
 import "./interfaces/IUniswapV2Router01.sol";
-import "./SamplerUtils.sol";
 
 
 contract UniswapV2Sampler is
-    DeploymentConstants,
-    SamplerUtils
+    DeploymentConstants
 {
     /// @dev Gas limit for UniswapV2 calls.
     uint256 constant private UNISWAPV2_CALL_GAS = 150e3; // 150k

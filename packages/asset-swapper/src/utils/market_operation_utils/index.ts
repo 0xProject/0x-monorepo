@@ -192,7 +192,7 @@ export class MarketOperationUtils {
             inputAmount: takerAmount,
             inputToken: takerToken,
             outputToken: makerToken,
-            dexQuotes: dexQuotes.concat(...offChainBalancerQuotes, offChainBancorQuotes),
+            dexQuotes: dexQuotes.concat([...offChainBalancerQuotes, offChainBancorQuotes]),
             nativeOrders,
             orderFillableAmounts,
             ethToOutputRate: ethToMakerAssetRate,

@@ -301,6 +301,13 @@ describe('MarketOperationUtils tests', () => {
                 DEFAULT_FILL_DATA[ERC20BridgeSource.Balancer],
             ),
         ],
+        getBancorSellQuotesAsync: (_makerToken: string, _takerToken: string, takerFillAmounts: BigNumber[]) =>
+            createSamplesFromRates(
+                ERC20BridgeSource.Bancor,
+                takerFillAmounts,
+                createDecreasingRates(takerFillAmounts.length),
+                DEFAULT_FILL_DATA[ERC20BridgeSource.Bancor],
+            ),
         getTwoHopSellQuotes: (..._params: any[]) => [],
         getTwoHopBuyQuotes: (..._params: any[]) => [],
     };
@@ -406,6 +413,7 @@ describe('MarketOperationUtils tests', () => {
                     ERC20BridgeSource.Balancer,
                     ERC20BridgeSource.MStable,
                     ERC20BridgeSource.Mooniswap,
+                    ERC20BridgeSource.Bancor,
                 ],
                 allowFallback: false,
                 shouldBatchBridgeOrders: false,
@@ -769,7 +777,12 @@ describe('MarketOperationUtils tests', () => {
                         }),
                     ],
                     Web3Wrapper.toBaseUnitAmount(10, 18),
-                    { excludedSources: SELL_SOURCES, numSamples: 4, bridgeSlippage: 0, shouldBatchBridgeOrders: false },
+                    {
+                        excludedSources: SELL_SOURCES.concat(ERC20BridgeSource.Bancor),
+                        numSamples: 4,
+                        bridgeSlippage: 0,
+                        shouldBatchBridgeOrders: false,
+                    },
                 );
                 const result = ordersAndReport.optimizedOrders;
                 expect(result.length).to.eql(1);

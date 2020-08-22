@@ -390,17 +390,26 @@ export class SamplerOperations {
         }
         return Promise.all(
             takerFillAmounts.map(async amount => {
-                const { amount: output, fillData } = await this.bancorService!.getQuoteAsync(
-                    takerToken,
-                    makerToken,
-                    amount,
-                );
-                return {
-                    source: ERC20BridgeSource.Bancor,
-                    output,
-                    input: amount,
-                    fillData,
-                };
+                try {
+                    const { amount: output, fillData } = await this.bancorService!.getQuoteAsync(
+                        takerToken,
+                        makerToken,
+                        amount,
+                    );
+                    return {
+                        source: ERC20BridgeSource.Bancor,
+                        output,
+                        input: amount,
+                        fillData,
+                    };
+                } catch (e) {
+                    return {
+                        source: ERC20BridgeSource.Bancor,
+                        output: ZERO_AMOUNT,
+                        input: amount,
+                        fillData: { path: [], networkAddress: '' },
+                    };
+                }
             }),
         );
     }
@@ -410,12 +419,12 @@ export class SamplerOperations {
         takerToken: string,
         takerFillAmounts: BigNumber[],
     ): SourceQuoteOperation {
-        return new SamplerContractOperation(
-            this._samplerContract,
-            ERC20BridgeSource.Mooniswap,
-            this._samplerContract.sampleSellsFromMooniswap,
-            [takerToken, makerToken, takerFillAmounts],
-        );
+        return new SamplerContractOperation({
+            source: ERC20BridgeSource.Mooniswap,
+            contract: this._samplerContract,
+            function: this._samplerContract.sampleSellsFromMooniswap,
+            params: [takerToken, makerToken, takerFillAmounts],
+        });
     }
 
     public getMooniswapBuyQuotes(
@@ -423,12 +432,12 @@ export class SamplerOperations {
         takerToken: string,
         makerFillAmounts: BigNumber[],
     ): SourceQuoteOperation {
-        return new SamplerContractOperation(
-            this._samplerContract,
-            ERC20BridgeSource.Mooniswap,
-            this._samplerContract.sampleBuysFromMooniswap,
-            [takerToken, makerToken, makerFillAmounts],
-        );
+        return new SamplerContractOperation({
+            source: ERC20BridgeSource.Mooniswap,
+            contract: this._samplerContract,
+            function: this._samplerContract.sampleBuysFromMooniswap,
+            params: [takerToken, makerToken, makerFillAmounts],
+        });
     }
 
     public getTwoHopSellQuotes(
@@ -666,7 +675,7 @@ export class SamplerOperations {
                 return subOps.map((op, i) => {
                     return samples[i].map((output, j) => ({
                         source: op.source,
-                        output: output,
+                        output,
                         input: takerFillAmounts[j],
                         fillData: op.fillData,
                     }));
@@ -707,7 +716,7 @@ export class SamplerOperations {
                 return subOps.map((op, i) => {
                     return samples[i].map((output, j) => ({
                         source: op.source,
-                        output: output,
+                        output,
                         input: makerFillAmounts[j],
                         fillData: op.fillData,
                     }));

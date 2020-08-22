@@ -9,6 +9,7 @@
     "types": "lib/src/index.d.ts",
     "scripts": {
         "build": "yarn pre_build && tsc -b",
+        "build:ts": "tsc -b",
         "watch": "tsc -w -p tsconfig.json",
         "watch:contracts": "sol-compiler -w",
         "build:ci": "yarn build",
