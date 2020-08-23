@@ -225,7 +225,7 @@ export class MarketOperationUtils {
             ),
             // Get ETH -> maker token price.
             await DexOrderSampler.ops.getMedianSellRateAsync(
-                difference(FEE_QUOTE_SOURCES.concat(this._optionalSources()), _opts.excludedSources),
+                FEE_QUOTE_SOURCES,
                 makerToken,
                 this._wethAddress,
                 ONE_ETHER,
@@ -236,7 +236,7 @@ export class MarketOperationUtils {
             ),
             // Get ETH -> taker token price.
             await DexOrderSampler.ops.getMedianSellRateAsync(
-                difference(FEE_QUOTE_SOURCES.concat(this._optionalSources()), _opts.excludedSources),
+                FEE_QUOTE_SOURCES,
                 takerToken,
                 this._wethAddress,
                 ONE_ETHER,

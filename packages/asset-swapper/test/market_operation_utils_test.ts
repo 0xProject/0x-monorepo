@@ -86,6 +86,8 @@ describe('MarketOperationUtils tests', () => {
                 return ERC20BridgeSource.Curve;
             case contractAddresses.mStableBridge.toLowerCase():
                 return ERC20BridgeSource.MStable;
+            case contractAddresses.mooniswapBridge.toLowerCase():
+                return ERC20BridgeSource.Mooniswap;
             default:
                 break;
         }
@@ -293,6 +295,7 @@ describe('MarketOperationUtils tests', () => {
         [ERC20BridgeSource.LiquidityProvider]: _.times(NUM_SAMPLES, () => 0),
         [ERC20BridgeSource.MultiBridge]: _.times(NUM_SAMPLES, () => 0),
         [ERC20BridgeSource.MStable]: _.times(NUM_SAMPLES, () => 0),
+        [ERC20BridgeSource.Mooniswap]: _.times(NUM_SAMPLES, () => 0),
     };
 
     interface FillDataBySource {
@@ -430,6 +433,7 @@ describe('MarketOperationUtils tests', () => {
                     ERC20BridgeSource.Curve,
                     ERC20BridgeSource.Balancer,
                     ERC20BridgeSource.MStable,
+                    ERC20BridgeSource.Mooniswap,
                 ],
                 allowFallback: false,
                 shouldBatchBridgeOrders: false,
@@ -842,6 +846,7 @@ describe('MarketOperationUtils tests', () => {
                     ERC20BridgeSource.Curve,
                     ERC20BridgeSource.Balancer,
                     ERC20BridgeSource.MStable,
+                    ERC20BridgeSource.Mooniswap,
                 ],
                 allowFallback: false,
                 shouldBatchBridgeOrders: false,

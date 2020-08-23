@@ -23,7 +23,6 @@ import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IEtherToken.sol";
 import "@0x/contracts-erc20/contracts/src/LibERC20Token.sol";
 import "@0x/contracts-exchange-libs/contracts/src/IWallet.sol";
-import "@0x/contracts-utils/contracts/src/LibAddressArray.sol";
 import "@0x/contracts-utils/contracts/src/DeploymentConstants.sol";
 import "../interfaces/IERC20Bridge.sol";
 import "../interfaces/IMooniswap.sol";
@@ -106,7 +105,7 @@ contract MooniswapBridge is
             state.fromTokenAddress,
             state.toTokenAddress,
             state.fromTokenBalance,
-            0,
+            amount,
             address(0)
         );
         // Deposit to WETH

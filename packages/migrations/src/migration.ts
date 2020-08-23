@@ -408,6 +408,7 @@ export async function runMigrationsAsync(
         bancorBridge: NULL_ADDRESS,
         exchangeProxyGovernor: NULL_ADDRESS,
         mStableBridge: NULL_ADDRESS,
+        mooniswapBridge: NULL_ADDRESS,
         exchangeProxy: exchangeProxy.address,
         exchangeProxyAllowanceTarget: exchangeProxyAllowanceTargetAddress,
         exchangeProxyTransformerDeployer: txDefaults.from,
