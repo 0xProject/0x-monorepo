@@ -202,7 +202,7 @@ function getBridgeAddressFromFill(fill: CollapsedFill, opts: CreateOrderFromPath
         case ERC20BridgeSource.MStable:
             return opts.contractAddresses.mStableBridge;
         case ERC20BridgeSource.Mooniswap:
-            return '0xbeef111111111111111111111111111111111111';
+            return opts.contractAddresses.mooniswapBridge;
         default:
             break;
     }
