@@ -1,0 +1,59 @@
+{
+    "name": "@0x/eslint-config",
+    "version": "4.1.0",
+    "engines": {
+        "node": ">=6.12"
+    },
+    "description": "Lint rules related to 0xProject for TSLint",
+    "main": "eslint.json",
+    "scripts": {
+        "build": "tsc -b",
+        "build:ci": "yarn build",
+        "test": "mocha ./lib/test/*.spec.js",
+        "clean": "shx rm -rf lib",
+        "lint": "eslint --format stylish ."
+    },
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/0xProject/0x-monorepo.git"
+    },
+    "keywords": [
+        "eslint",
+        "config",
+        "0xProject",
+        "typescript",
+        "ts"
+    ],
+    "author": {
+        "name": "Kim Persson",
+        "email": "kim@0xproject.com"
+    },
+    "license": "Apache-2.0",
+    "bugs": {
+        "url": "https://github.com/0xProject/0x-monorepo/issues"
+    },
+    "homepage": "https://github.com/0xProject/0x-monorepo/packages/eslint-config/README.md",
+    "devDependencies": {
+        "@types/lodash": "4.14.104",
+        "make-promises-safe": "^1.1.0",
+        "shx": "^0.2.2",
+        "typescript": "3.0.1"
+    },
+    "dependencies": {
+        "@typescript-eslint/eslint-plugin": "^3.9.1",
+        "@typescript-eslint/eslint-plugin-tslint": "^3.9.1",
+        "@typescript-eslint/parser": "^3.9.1",
+        "eslint": "^7.7.0",
+        "eslint-plugin-react": "^7.20.6",
+        "lodash": "^4.17.11",
+        "prettier": "^2.0.5",
+        "prettier-eslint": "^11.0.0",
+        "tslint": "^6.1.3",
+        "tslint-eslint-rules": "5.4.0",
+        "tslint-react": "^3.2.0",
+        "tsutils": "3.0.0"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}

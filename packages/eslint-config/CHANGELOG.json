@@ -1,0 +1,11 @@
+[
+    {
+        "version": "0.1.0",
+        "changes": [
+            {
+                "note": "Migrate @0x/tslint-config to eslint"
+            }
+        ],
+        "timestamp": 1598213894
+    }
+]
