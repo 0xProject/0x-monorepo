@@ -25,6 +25,7 @@ import "./KyberSampler.sol";
 import "./LiquidityProviderSampler.sol";
 import "./MultiBridgeSampler.sol";
 import "./MStableSampler.sol";
+import "./MooniswapSampler.sol";
 import "./NativeOrderSampler.sol";
 import "./UniswapSampler.sol";
 import "./UniswapV2Sampler.sol";
@@ -36,6 +37,7 @@ contract ERC20BridgeSampler is
     KyberSampler,
     LiquidityProviderSampler,
     MStableSampler,
+    MooniswapSampler,
     MultiBridgeSampler,
     NativeOrderSampler,
     UniswapSampler,

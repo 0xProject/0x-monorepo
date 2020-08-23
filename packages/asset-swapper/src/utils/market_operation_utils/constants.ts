@@ -16,6 +16,7 @@ export const SELL_SOURCES = [
     ERC20BridgeSource.Balancer,
     // ERC20BridgeSource.Bancor, // FIXME: Disabled until Bancor SDK supports batch requests
     ERC20BridgeSource.MStable,
+    ERC20BridgeSource.Mooniswap,
 ];
 
 /**
@@ -30,6 +31,7 @@ export const BUY_SOURCES = [
     ERC20BridgeSource.Balancer,
     // ERC20BridgeSource.Bancor, // FIXME: Disabled until Bancor SDK supports buy quotes
     ERC20BridgeSource.MStable,
+    ERC20BridgeSource.Mooniswap,
 ];
 
 export const DEFAULT_GET_MARKET_ORDERS_OPTS: GetMarketOrdersOpts = {
