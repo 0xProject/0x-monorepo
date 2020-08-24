@@ -41,6 +41,7 @@ export enum ERC20BridgeSource {
     Bancor = 'Bancor',
     MStable = 'mStable',
     Mooniswap = 'Mooniswap',
+    Dodo = 'DODO',
 }
 
 // tslint:disable: enum-naming

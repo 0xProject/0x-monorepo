@@ -29,10 +29,12 @@ import "./MooniswapSampler.sol";
 import "./NativeOrderSampler.sol";
 import "./UniswapSampler.sol";
 import "./UniswapV2Sampler.sol";
+import "./DODOSampler.sol";
 
 
 contract ERC20BridgeSampler is
     CurveSampler,
+    DODOSampler,
     Eth2DaiSampler,
     KyberSampler,
     LiquidityProviderSampler,

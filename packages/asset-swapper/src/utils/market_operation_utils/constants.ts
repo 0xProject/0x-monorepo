@@ -17,6 +17,7 @@ export const SELL_SOURCES = [
     // ERC20BridgeSource.Bancor, // FIXME: Disabled until Bancor SDK supports batch requests
     ERC20BridgeSource.MStable,
     ERC20BridgeSource.Mooniswap,
+    ERC20BridgeSource.Dodo,
 ];
 
 /**

@@ -54,6 +54,8 @@ contract DeploymentConstants {
     address constant private MUSD_ADDRESS = 0xe2f2a5C287993345a840Db3B0845fbC70f5935a5;
     /// @dev Mainnet address of the Mooniswap Registry contract
     address constant private MOONISWAP_REGISTRY = 0x71CD6666064C3A1354a3B4dca5fA1E2D3ee7D303;
+    /// @dev Mainnet address of the DODO Zoo contract
+    address constant private DODO_ZOO_REGISTRY = 0x3A97247DF274a17C59A3bd12735ea3FcDFb49950;
 
     // // Ropsten addresses ///////////////////////////////////////////////////////
     // /// @dev Mainnet address of the WETH contract.
@@ -84,6 +86,10 @@ contract DeploymentConstants {
     // address constant private GST_COLLECTOR_ADDRESS = address(0);
     // /// @dev Mainnet address of the mStable mUSD contract.
     // address constant private MUSD_ADDRESS = 0x4E1000616990D83e56f4b5fC6CC8602DcfD20459;
+    // /// @dev Mainnet address of the Mooniswap Registry contract
+    // address constant private MOONISWAP_REGISTRY = address(0);
+    // /// @dev Mainnet address of the DODO Zoo contract
+    // address constant private DODO_ZOO_REGISTRY = address(0);
 
     // // Rinkeby addresses ///////////////////////////////////////////////////////
     // /// @dev Mainnet address of the WETH contract.
@@ -114,6 +120,10 @@ contract DeploymentConstants {
     // address constant private GST_COLLECTOR_ADDRESS = address(0);
     // /// @dev Mainnet address of the mStable mUSD contract.
     // address constant private MUSD_ADDRESS = address(0);
+    // /// @dev Mainnet address of the Mooniswap Registry contract
+    // address constant private MOONISWAP_REGISTRY = address(0);
+    // /// @dev Mainnet address of the DODO Zoo contract
+    // address constant private DODO_ZOO_REGISTRY = address(0);
 
     // // Kovan addresses /////////////////////////////////////////////////////////
     // /// @dev Kovan address of the WETH contract.
@@ -144,6 +154,10 @@ contract DeploymentConstants {
     // address constant private GST_COLLECTOR_ADDRESS = address(0);
     // /// @dev Mainnet address of the mStable mUSD contract.
     // address constant private MUSD_ADDRESS = address(0);
+    // /// @dev Mainnet address of the Mooniswap Registry contract
+    // address constant private MOONISWAP_REGISTRY = address(0);
+    // /// @dev Mainnet address of the DODO Zoo contract
+    // address constant private DODO_ZOO_REGISTRY = 0x92230e929a2226b29ed3441ae5524886347c60c8;
 
     /// @dev Overridable way to get the `KyberNetworkProxy` address.
     /// @return kyberAddress The `IKyberNetworkProxy` address.
@@ -283,5 +297,15 @@ contract DeploymentConstants {
         returns (address registry)
     {
         return MOONISWAP_REGISTRY;
+    }
+
+    /// @dev An overridable way to retrieve the DODO Zoo registry address.
+    /// @return musd The DODO Zoo address.
+    function _getDODOZooAddress()
+        internal
+        view
+        returns (address registry)
+    {
+        return DODO_ZOO_REGISTRY;
     }
 }

@@ -7,11 +7,13 @@ import { ContractArtifact } from 'ethereum-types';
 
 import * as ApproximateBuys from '../test/generated-artifacts/ApproximateBuys.json';
 import * as CurveSampler from '../test/generated-artifacts/CurveSampler.json';
+import * as DODOSampler from '../test/generated-artifacts/DODOSampler.json';
 import * as DummyLiquidityProvider from '../test/generated-artifacts/DummyLiquidityProvider.json';
 import * as DummyLiquidityProviderRegistry from '../test/generated-artifacts/DummyLiquidityProviderRegistry.json';
 import * as ERC20BridgeSampler from '../test/generated-artifacts/ERC20BridgeSampler.json';
 import * as Eth2DaiSampler from '../test/generated-artifacts/Eth2DaiSampler.json';
 import * as ICurve from '../test/generated-artifacts/ICurve.json';
+import * as IDODO from '../test/generated-artifacts/IDODO.json';
 import * as IEth2Dai from '../test/generated-artifacts/IEth2Dai.json';
 import * as IKyberHintHandler from '../test/generated-artifacts/IKyberHintHandler.json';
 import * as IKyberNetwork from '../test/generated-artifacts/IKyberNetwork.json';
@@ -38,11 +40,13 @@ import * as UniswapV2Sampler from '../test/generated-artifacts/UniswapV2Sampler.
 export const artifacts = {
     ApproximateBuys: ApproximateBuys as ContractArtifact,
     CurveSampler: CurveSampler as ContractArtifact,
+    DODOSampler: DODOSampler as ContractArtifact,
     DummyLiquidityProvider: DummyLiquidityProvider as ContractArtifact,
     DummyLiquidityProviderRegistry: DummyLiquidityProviderRegistry as ContractArtifact,
     ERC20BridgeSampler: ERC20BridgeSampler as ContractArtifact,
     Eth2DaiSampler: Eth2DaiSampler as ContractArtifact,
     ICurve: ICurve as ContractArtifact,
+    IDODO: IDODO as ContractArtifact,
     IEth2Dai: IEth2Dai as ContractArtifact,
     IKyberHintHandler: IKyberHintHandler as ContractArtifact,
     IKyberNetwork: IKyberNetwork as ContractArtifact,

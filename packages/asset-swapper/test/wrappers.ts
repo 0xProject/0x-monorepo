@@ -5,6 +5,7 @@
  */
 export * from '../test/generated-wrappers/approximate_buys';
 export * from '../test/generated-wrappers/curve_sampler';
+export * from '../test/generated-wrappers/d_o_d_o_sampler';
 export * from '../test/generated-wrappers/dummy_liquidity_provider';
 export * from '../test/generated-wrappers/dummy_liquidity_provider_registry';
 export * from '../test/generated-wrappers/erc20_bridge_sampler';
@@ -22,6 +23,7 @@ export * from '../test/generated-wrappers/i_mooniswap';
 export * from '../test/generated-wrappers/i_multi_bridge';
 export * from '../test/generated-wrappers/i_uniswap_exchange_quotes';
 export * from '../test/generated-wrappers/i_uniswap_v2_router01';
+export * from '../test/generated-wrappers/idodo';
 export * from '../test/generated-wrappers/kyber_sampler';
 export * from '../test/generated-wrappers/liquidity_provider_sampler';
 export * from '../test/generated-wrappers/m_stable_sampler';

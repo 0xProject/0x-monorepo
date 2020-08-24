@@ -43,6 +43,7 @@ export interface ContractAddresses {
     exchangeProxyFlashWallet: string;
     mStableBridge: string;
     mooniswapBridge: string;
+    dodoBridge: string;
     transformers: {
         wethTransformer: string;
         payTakerTransformer: string;

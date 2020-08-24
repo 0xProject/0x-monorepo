@@ -203,6 +203,8 @@ function getBridgeAddressFromFill(fill: CollapsedFill, opts: CreateOrderFromPath
             return opts.contractAddresses.mStableBridge;
         case ERC20BridgeSource.Mooniswap:
             return opts.contractAddresses.mooniswapBridge;
+        case ERC20BridgeSource.Dodo:
+            return '0xd0d0d0d011111111111111111111111111111111';
         default:
             break;
     }

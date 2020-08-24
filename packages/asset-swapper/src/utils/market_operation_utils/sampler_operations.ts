@@ -424,6 +424,23 @@ export const samplerOperations = {
             },
         };
     },
+    getDODOSellQuotes(makerToken: string, takerToken: string, takerFillAmounts: BigNumber[]): SourceQuoteOperation {
+        return {
+            source: ERC20BridgeSource.Dodo,
+            encodeCall: contract => {
+                return contract
+                    .sampleSellsFromDODO(takerToken, makerToken, takerFillAmounts)
+                    .getABIEncodedTransactionData();
+            },
+            handleCallResultsAsync: async (contract, callResults) => {
+                const data = contract
+                    .getABIDecodedReturnData<BigNumber[]>('sampleSellsFromDODO', callResults)
+                    .map(amount => ({ amount }));
+                console.log({ dodo: data });
+                return data;
+            },
+        };
+    },
     getMedianSellRateAsync: async (
         sources: ERC20BridgeSource[],
         makerToken: string,
@@ -610,6 +627,8 @@ export const samplerOperations = {
                                     takerToken,
                                     takerFillAmounts,
                                 );
+                            case ERC20BridgeSource.Dodo:
+                                return samplerOperations.getDODOSellQuotes(makerToken, takerToken, takerFillAmounts);
                             default:
                                 throw new Error(`Unsupported sell sample source: ${source}`);
                         }

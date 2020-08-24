@@ -10,6 +10,7 @@ import * as BancorBridge from '../test/generated-artifacts/BancorBridge.json';
 import * as ChaiBridge from '../test/generated-artifacts/ChaiBridge.json';
 import * as CurveBridge from '../test/generated-artifacts/CurveBridge.json';
 import * as DexForwarderBridge from '../test/generated-artifacts/DexForwarderBridge.json';
+import * as DODOBridge from '../test/generated-artifacts/DODOBridge.json';
 import * as DydxBridge from '../test/generated-artifacts/DydxBridge.json';
 import * as ERC1155Proxy from '../test/generated-artifacts/ERC1155Proxy.json';
 import * as ERC20BridgeProxy from '../test/generated-artifacts/ERC20BridgeProxy.json';
@@ -24,6 +25,7 @@ import * as IBalancerPool from '../test/generated-artifacts/IBalancerPool.json';
 import * as IBancorNetwork from '../test/generated-artifacts/IBancorNetwork.json';
 import * as IChai from '../test/generated-artifacts/IChai.json';
 import * as ICurve from '../test/generated-artifacts/ICurve.json';
+import * as IDODO from '../test/generated-artifacts/IDODO.json';
 import * as IDydx from '../test/generated-artifacts/IDydx.json';
 import * as IDydxBridge from '../test/generated-artifacts/IDydxBridge.json';
 import * as IERC20Bridge from '../test/generated-artifacts/IERC20Bridge.json';
@@ -70,6 +72,7 @@ export const artifacts = {
     BancorBridge: BancorBridge as ContractArtifact,
     ChaiBridge: ChaiBridge as ContractArtifact,
     CurveBridge: CurveBridge as ContractArtifact,
+    DODOBridge: DODOBridge as ContractArtifact,
     DexForwarderBridge: DexForwarderBridge as ContractArtifact,
     DydxBridge: DydxBridge as ContractArtifact,
     Eth2DaiBridge: Eth2DaiBridge as ContractArtifact,
@@ -87,6 +90,7 @@ export const artifacts = {
     IBancorNetwork: IBancorNetwork as ContractArtifact,
     IChai: IChai as ContractArtifact,
     ICurve: ICurve as ContractArtifact,
+    IDODO: IDODO as ContractArtifact,
     IDydx: IDydx as ContractArtifact,
     IDydxBridge: IDydxBridge as ContractArtifact,
     IERC20Bridge: IERC20Bridge as ContractArtifact,
