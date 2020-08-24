@@ -390,7 +390,11 @@ export const samplerOperations = {
             },
         };
     },
-    getMooniswapellQuotes(makerToken: string, takerToken: string, takerFillAmounts: BigNumber[]): SourceQuoteOperation {
+    getMooniswapSellQuotes(
+        makerToken: string,
+        takerToken: string,
+        takerFillAmounts: BigNumber[],
+    ): SourceQuoteOperation {
         return {
             source: ERC20BridgeSource.Mooniswap,
             encodeCall: contract => {
@@ -601,7 +605,7 @@ export const samplerOperations = {
                             case ERC20BridgeSource.MStable:
                                 return samplerOperations.getMStableSellQuotes(makerToken, takerToken, takerFillAmounts);
                             case ERC20BridgeSource.Mooniswap:
-                                return samplerOperations.getMooniswapellQuotes(
+                                return samplerOperations.getMooniswapSellQuotes(
                                     makerToken,
                                     takerToken,
                                     takerFillAmounts,
