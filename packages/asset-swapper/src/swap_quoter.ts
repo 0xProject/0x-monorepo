@@ -2,7 +2,7 @@ import { ContractAddresses, getContractAddressesForChainOrThrow } from '@0x/cont
 import { DevUtilsContract } from '@0x/contract-wrappers';
 import { schemas } from '@0x/json-schemas';
 import { assetDataUtils, SignedOrder } from '@0x/order-utils';
-import { APIOrder, MeshOrderProviderOpts, Orderbook, SRAPollingOrderProviderOpts } from '@0x/orderbook';
+import { MeshOrderProviderOpts, Orderbook, SRAPollingOrderProviderOpts } from '@0x/orderbook';
 import { BigNumber, providerUtils } from '@0x/utils';
 import { BlockParamLiteral, SupportedProvider, ZeroExProvider } from 'ethereum-types';
 import * as _ from 'lodash';

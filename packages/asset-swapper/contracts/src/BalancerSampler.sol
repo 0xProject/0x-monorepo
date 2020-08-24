@@ -25,7 +25,7 @@ import "./interfaces/IBalancer.sol";
 contract BalancerSampler {
 
     /// @dev Base gas limit for Balancer calls.
-    uint256 constant private BALANCER_CALL_GAS = 300e3; // 600k
+    uint256 constant private BALANCER_CALL_GAS = 300e3; // 300k
 
     struct BalancerState {
         uint256 takerTokenBalance;

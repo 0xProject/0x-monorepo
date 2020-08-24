@@ -34,12 +34,16 @@ export function getIntermediateTokens(
 export function getBestTwoHopQuote(
     marketSideLiquidity: MarketSideLiquidity,
     feeSchedule?: FeeSchedule,
-): { quote: DexSample<MultiHopFillData> | undefined; rate: BigNumber } {
+): { quote: DexSample<MultiHopFillData> | undefined; adjustedRate: BigNumber } {
     const { side, inputAmount, ethToOutputRate, twoHopQuotes } = marketSideLiquidity;
     return twoHopQuotes
         .map(quote => getTwoHopAdjustedRate(side, quote, inputAmount, ethToOutputRate, feeSchedule))
-        .reduce((prev, curr, i) => (curr.isGreaterThan(prev.rate) ? { rate: curr, quote: twoHopQuotes[i] } : prev), {
-            rate: ZERO_AMOUNT,
-            quote: undefined as DexSample<MultiHopFillData> | undefined,
-        });
+        .reduce(
+            (prev, curr, i) =>
+                curr.isGreaterThan(prev.adjustedRate) ? { adjustedRate: curr, quote: twoHopQuotes[i] } : prev,
+            {
+                adjustedRate: ZERO_AMOUNT,
+                quote: undefined as DexSample<MultiHopFillData> | undefined,
+            },
+        );
 }

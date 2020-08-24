@@ -106,6 +106,7 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
             });
         }
 
+        const intermediateToken = quote.isTwoHop ? getTokenFromAssetData(quote.orders[0].makerAssetData) : NULL_ADDRESS;
         // This transformer will fill the quote.
         if (quote.isTwoHop) {
             const [firstHopOrder, secondHopOrder] = quote.orders;
@@ -113,7 +114,7 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
                 deploymentNonce: this.transformerNonces.fillQuoteTransformer,
                 data: encodeFillQuoteTransformerData({
                     sellToken,
-                    buyToken: getTokenFromAssetData(firstHopOrder.makerAssetData),
+                    buyToken: intermediateToken,
                     side: FillQuoteTransformerSide.Sell,
                     fillAmount: firstHopOrder.takerAssetAmount,
                     maxOrderFillAmounts: [],
@@ -124,7 +125,7 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
             transforms.push({
                 deploymentNonce: this.transformerNonces.fillQuoteTransformer,
                 data: encodeFillQuoteTransformerData({
-                    sellToken: getTokenFromAssetData(secondHopOrder.takerAssetData),
+                    sellToken: intermediateToken,
                     buyToken,
                     side: FillQuoteTransformerSide.Sell,
                     fillAmount: MAX_UINT256,
@@ -185,9 +186,7 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
         transforms.push({
             deploymentNonce: this.transformerNonces.payTakerTransformer,
             data: encodePayTakerTransformerData({
-                tokens: [sellToken, buyToken, ETH_TOKEN_ADDRESS].concat(
-                    quote.isTwoHop ? getTokenFromAssetData(quote.orders[0].makerAssetData) : [],
-                ),
+                tokens: [sellToken, buyToken, ETH_TOKEN_ADDRESS].concat(quote.isTwoHop ? intermediateToken : []),
                 amounts: [],
             }),
         });

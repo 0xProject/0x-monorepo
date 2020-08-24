@@ -1,3 +1,4 @@
+export { ContractFunctionObj } from '@0x/base-contract';
 export { ContractAddresses } from '@0x/contract-addresses';
 export { WSOpts } from '@0x/mesh-rpc-client';
 export {
@@ -126,6 +127,10 @@ export {
     NativeCollapsedFill,
     NativeFillData,
     OptimizedMarketOrder,
+    SamplerContractCall,
+    SamplerContractOperation,
+    SourceInfo,
+    SourceQuoteOperation,
     TokenAdjacencyGraph,
     UniswapV2FillData,
 } from './utils/market_operation_utils/types';
@@ -143,3 +148,4 @@ export { rfqtMocker } from './utils/rfqt_mocker';
 export { ERC20BridgeSamplerContract } from './wrappers';
 import { ERC20BridgeSource } from './utils/market_operation_utils/types';
 export type Native = ERC20BridgeSource.Native;
+export type MultiHop = ERC20BridgeSource.MultiHop;

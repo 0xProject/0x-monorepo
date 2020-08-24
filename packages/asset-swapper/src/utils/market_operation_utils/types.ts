@@ -288,23 +288,30 @@ export interface SourceQuoteOperation<TFillData extends FillData = FillData>
     readonly source: ERC20BridgeSource;
 }
 
-interface SamplerContractCall<TParams extends any[], TReturn, TFillData extends FillData = FillData> {
+type Parameters<T> = T extends (...args: infer TArgs) => any ? TArgs : never;
+
+export interface SamplerContractCall<
+    TFunc extends (...args: any[]) => ContractFunctionObj<any>,
+    TFillData extends FillData = FillData
+> {
     contract: ERC20BridgeSamplerContract;
-    function: (...params: TParams) => ContractFunctionObj<TReturn>;
-    params: any[];
+    function: TFunc;
+    params: Parameters<TFunc>;
     callback?: (callResults: string, fillData: TFillData) => Promise<BigNumber[]>;
 }
 
-export class SamplerContractOperation<TParams extends any[], TReturn, TFillData extends FillData = FillData>
-    implements SourceQuoteOperation<TFillData> {
+export class SamplerContractOperation<
+    TFunc extends (...args: any[]) => ContractFunctionObj<any>,
+    TFillData extends FillData = FillData
+> implements SourceQuoteOperation<TFillData> {
     public readonly source: ERC20BridgeSource;
     public fillData: TFillData;
     private readonly _samplerContract: ERC20BridgeSamplerContract;
-    private readonly _samplerFunction: (...params: TParams) => ContractFunctionObj<TReturn>;
-    private readonly _params: any[];
+    private readonly _samplerFunction: TFunc;
+    private readonly _params: Parameters<TFunc>;
     private readonly _callback?: (callResults: string, fillData: TFillData) => Promise<BigNumber[]>;
 
-    constructor(opts: SourceInfo<TFillData> & SamplerContractCall<TParams, TReturn, TFillData>) {
+    constructor(opts: SourceInfo<TFillData> & SamplerContractCall<TFunc, TFillData>) {
         this.source = opts.source;
         this.fillData = opts.fillData || ({} as TFillData); // tslint:disable-line:no-object-literal-type-assertion
         this._samplerContract = opts.contract;
@@ -315,7 +322,7 @@ export class SamplerContractOperation<TParams extends any[], TReturn, TFillData 
 
     public encodeCall(): string {
         return this._samplerFunction
-            .bind(this._samplerContract)(...(this._params as TParams))
+            .bind(this._samplerContract)(...this._params)
             .getABIEncodedTransactionData();
     }
     public async handleCallResultsAsync(callResults: string): Promise<BigNumber[]> {

@@ -528,7 +528,7 @@ export class MarketOperationUtils {
         }
         const optimalPathRate = getPathAdjustedRate(side, optimalPath, inputAmount);
 
-        const { rate: bestTwoHopRate, quote: bestTwoHopQuote } = getBestTwoHopQuote(
+        const { adjustedRate: bestTwoHopRate, quote: bestTwoHopQuote } = getBestTwoHopQuote(
             marketSideLiquidity,
             opts.feeSchedule,
         );

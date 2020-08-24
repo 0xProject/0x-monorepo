@@ -145,9 +145,7 @@ export class DexOrderSampler extends SamplerOperations {
 
         // All operations are NOOPs
         if (callDatas.every(cd => cd === NULL_BYTES)) {
-            return Promise.all(
-                callDatas.map(async (_callData, i) => ops[i].handleCallResultsAsync(NULL_BYTES)),
-            );
+            return Promise.all(callDatas.map(async (_callData, i) => ops[i].handleCallResultsAsync(NULL_BYTES)));
         }
         // Execute all non-empty calldatas.
         const rawCallResults = await this._samplerContract
