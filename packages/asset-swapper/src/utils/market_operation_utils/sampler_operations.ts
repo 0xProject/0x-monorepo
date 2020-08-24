@@ -365,7 +365,7 @@ export const samplerOperations = {
             source: ERC20BridgeSource.MStable,
             encodeCall: contract => {
                 return contract
-                    .sampleSellsFromMStable(makerToken, takerToken, takerFillAmounts)
+                    .sampleSellsFromMStable(takerToken, makerToken, takerFillAmounts)
                     .getABIEncodedTransactionData();
             },
             handleCallResultsAsync: async (contract, callResults) => {
@@ -380,12 +380,46 @@ export const samplerOperations = {
             source: ERC20BridgeSource.MStable,
             encodeCall: contract => {
                 return contract
-                    .sampleBuysFromMStable(makerToken, takerToken, makerFillAmounts)
+                    .sampleBuysFromMStable(takerToken, makerToken, makerFillAmounts)
                     .getABIEncodedTransactionData();
             },
             handleCallResultsAsync: async (contract, callResults) => {
                 return contract
                     .getABIDecodedReturnData<BigNumber[]>('sampleBuysFromMStable', callResults)
+                    .map(amount => ({ amount }));
+            },
+        };
+    },
+    getMooniswapSellQuotes(
+        makerToken: string,
+        takerToken: string,
+        takerFillAmounts: BigNumber[],
+    ): SourceQuoteOperation {
+        return {
+            source: ERC20BridgeSource.Mooniswap,
+            encodeCall: contract => {
+                return contract
+                    .sampleSellsFromMooniswap(takerToken, makerToken, takerFillAmounts)
+                    .getABIEncodedTransactionData();
+            },
+            handleCallResultsAsync: async (contract, callResults) => {
+                return contract
+                    .getABIDecodedReturnData<BigNumber[]>('sampleSellsFromMooniswap', callResults)
+                    .map(amount => ({ amount }));
+            },
+        };
+    },
+    getMooniswapBuyQuotes(makerToken: string, takerToken: string, makerFillAmounts: BigNumber[]): SourceQuoteOperation {
+        return {
+            source: ERC20BridgeSource.Mooniswap,
+            encodeCall: contract => {
+                return contract
+                    .sampleBuysFromMooniswap(takerToken, makerToken, makerFillAmounts)
+                    .getABIEncodedTransactionData();
+            },
+            handleCallResultsAsync: async (contract, callResults) => {
+                return contract
+                    .getABIDecodedReturnData<BigNumber[]>('sampleBuysFromMooniswap', callResults)
                     .map(amount => ({ amount }));
             },
         };
@@ -570,6 +604,12 @@ export const samplerOperations = {
                                 );
                             case ERC20BridgeSource.MStable:
                                 return samplerOperations.getMStableSellQuotes(makerToken, takerToken, takerFillAmounts);
+                            case ERC20BridgeSource.Mooniswap:
+                                return samplerOperations.getMooniswapSellQuotes(
+                                    makerToken,
+                                    takerToken,
+                                    takerFillAmounts,
+                                );
                             default:
                                 throw new Error(`Unsupported sell sample source: ${source}`);
                         }
@@ -690,6 +730,12 @@ export const samplerOperations = {
                                 return []; //  FIXME: Waiting for Bancor SDK to support buy quotes, but don't throw an error here
                             case ERC20BridgeSource.MStable:
                                 return samplerOperations.getMStableBuyQuotes(makerToken, takerToken, makerFillAmounts);
+                            case ERC20BridgeSource.Mooniswap:
+                                return samplerOperations.getMooniswapBuyQuotes(
+                                    makerToken,
+                                    takerToken,
+                                    makerFillAmounts,
+                                );
                             default:
                                 throw new Error(`Unsupported buy sample source: ${source}`);
                         }

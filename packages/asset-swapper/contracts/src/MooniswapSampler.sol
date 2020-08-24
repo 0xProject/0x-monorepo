@@ -19,29 +19,27 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-utils/contracts/src/LibBytes.sol";
-import "./ILiquidityProvider.sol";
-import "./ILiquidityProviderRegistry.sol";
+import "@0x/contracts-utils/contracts/src/DeploymentConstants.sol";
+import "./IMooniswap.sol";
 import "./ApproximateBuys.sol";
 import "./SamplerUtils.sol";
 
 
-contract LiquidityProviderSampler is
+contract MooniswapSampler is
+    DeploymentConstants,
     SamplerUtils,
     ApproximateBuys
 {
-    /// @dev Default gas limit for liquidity provider calls.
-    uint256 constant private DEFAULT_CALL_GAS = 400e3; // 400k
+    /// @dev Gas limit for Mooniswap calls.
+    uint256 constant private MOONISWAP_CALL_GAS = 150e3; // 150k
 
-    /// @dev Sample sell quotes from an arbitrary on-chain liquidity provider.
-    /// @param registryAddress Address of the liquidity provider registry contract.
+    /// @dev Sample sell quotes from Mooniswap.
     /// @param takerToken Address of the taker token (what to sell).
     /// @param makerToken Address of the maker token (what to buy).
     /// @param takerTokenAmounts Taker token sell amount for each sample.
     /// @return makerTokenAmounts Maker amounts bought at each taker token
     ///         amount.
-    function sampleSellsFromLiquidityProviderRegistry(
-        address registryAddress,
+    function sampleSellsFromMooniswap(
         address takerToken,
         address makerToken,
         uint256[] memory takerTokenAmounts
@@ -50,28 +48,36 @@ contract LiquidityProviderSampler is
         view
         returns (uint256[] memory makerTokenAmounts)
     {
-        // Initialize array of maker token amounts.
+        _assertValidPair(makerToken, takerToken);
         uint256 numSamples = takerTokenAmounts.length;
         makerTokenAmounts = new uint256[](numSamples);
 
-        // Query registry for provider address.
-        address providerAddress = getLiquidityProviderFromRegistry(
-            registryAddress,
-            takerToken,
-            makerToken
+        address _takerToken = takerToken == _getWethAddress() ? address(0) : takerToken;
+        address _makerToken = makerToken == _getWethAddress() ? address(0) : makerToken;
+        // Find the pool for the pair, ETH is represented
+        // as address(0)
+        IMooniswap pool = IMooniswap(
+            IMooniswapRegistry(_getMooniswapAddress()).pools(_takerToken, _makerToken)
         );
-        // If provider doesn't exist, return all zeros.
-        if (providerAddress == address(0)) {
+        // If there is no pool then return early
+        if (address(pool) == address(0)) {
             return makerTokenAmounts;
         }
 
+        uint256 poolBalance = _takerToken == address(0) ? address(pool).balance : IERC20Token(_takerToken).balanceOf(address(pool));
+
         for (uint256 i = 0; i < numSamples; i++) {
+            // If the pool balance is smaller than the sell amount
+            // don't sample to avoid multiplication overflow in buys
+            if (poolBalance < takerTokenAmounts[i]) {
+                break;
+            }
             (bool didSucceed, bytes memory resultData) =
-                providerAddress.staticcall.gas(DEFAULT_CALL_GAS)(
+                address(pool).staticcall.gas(MOONISWAP_CALL_GAS)(
                     abi.encodeWithSelector(
-                        ILiquidityProvider(0).getSellQuote.selector,
-                        takerToken,
-                        makerToken,
+                        IMooniswap(0).getReturn.selector,
+                        _takerToken,
+                        _makerToken,
                         takerTokenAmounts[i]
                     ));
             uint256 buyAmount = 0;
@@ -86,15 +92,13 @@ contract LiquidityProviderSampler is
         }
     }
 
-    /// @dev Sample buy quotes from an arbitrary on-chain liquidity provider.
-    /// @param registryAddress Address of the liquidity provider registry contract.
+    /// @dev Sample buy quotes from Mooniswap.
     /// @param takerToken Address of the taker token (what to sell).
     /// @param makerToken Address of the maker token (what to buy).
-    /// @param makerTokenAmounts Maker token buy amount for each sample.
+    /// @param makerTokenAmounts Maker token sell amount for each sample.
     /// @return takerTokenAmounts Taker amounts sold at each maker token
     ///         amount.
-    function sampleBuysFromLiquidityProviderRegistry(
-        address registryAddress,
+    function sampleBuysFromMooniswap(
         address takerToken,
         address makerToken,
         uint256[] memory makerTokenAmounts
@@ -105,44 +109,15 @@ contract LiquidityProviderSampler is
     {
         return _sampleApproximateBuys(
             ApproximateBuyQuoteOpts({
-                makerTokenData: abi.encode(makerToken, registryAddress),
-                takerTokenData: abi.encode(takerToken, registryAddress),
-                getSellQuoteCallback: _sampleSellForApproximateBuyFromLiquidityProviderRegistry
+                makerTokenData: abi.encode(makerToken),
+                takerTokenData: abi.encode(takerToken),
+                getSellQuoteCallback: _sampleSellForApproximateBuyFromMooniswap
             }),
             makerTokenAmounts
         );
     }
 
-    /// @dev Returns the address of a liquidity provider for the given market
-    ///      (takerToken, makerToken), from a registry of liquidity providers.
-    ///      Returns address(0) if no such provider exists in the registry.
-    /// @param takerToken Taker asset managed by liquidity provider.
-    /// @param makerToken Maker asset managed by liquidity provider.
-    /// @return providerAddress Address of the liquidity provider.
-    function getLiquidityProviderFromRegistry(
-        address registryAddress,
-        address takerToken,
-        address makerToken
-    )
-        public
-        view
-        returns (address providerAddress)
-    {
-        if (registryAddress == address(0)) {
-            return address(0);
-        }
-        bytes memory callData = abi.encodeWithSelector(
-            ILiquidityProviderRegistry(0).getLiquidityProviderForMarket.selector,
-            takerToken,
-            makerToken
-        );
-        (bool didSucceed, bytes memory returnData) = registryAddress.staticcall(callData);
-        if (didSucceed && returnData.length == 32) {
-            return LibBytes.readAddress(returnData, 12);
-        }
-    }
-
-    function _sampleSellForApproximateBuyFromLiquidityProviderRegistry(
+    function _sampleSellForApproximateBuyFromMooniswap(
         bytes memory takerTokenData,
         bytes memory makerTokenData,
         uint256 sellAmount
@@ -151,14 +126,13 @@ contract LiquidityProviderSampler is
         view
         returns (uint256 buyAmount)
     {
-        (address takerToken, address plpRegistryAddress) =
-            abi.decode(takerTokenData, (address, address));
+        (address takerToken) =
+            abi.decode(takerTokenData, (address));
         (address makerToken) =
             abi.decode(makerTokenData, (address));
         (bool success, bytes memory resultData) =
             address(this).staticcall(abi.encodeWithSelector(
-                this.sampleSellsFromLiquidityProviderRegistry.selector,
-                plpRegistryAddress,
+                this.sampleSellsFromMooniswap.selector,
                 takerToken,
                 makerToken,
                 _toSingleValueArray(sellAmount)

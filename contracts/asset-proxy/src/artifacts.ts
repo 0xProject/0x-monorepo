@@ -30,6 +30,7 @@ import * as IERC20Bridge from '../generated-artifacts/IERC20Bridge.json';
 import * as IEth2Dai from '../generated-artifacts/IEth2Dai.json';
 import * as IGasToken from '../generated-artifacts/IGasToken.json';
 import * as IKyberNetworkProxy from '../generated-artifacts/IKyberNetworkProxy.json';
+import * as IMooniswap from '../generated-artifacts/IMooniswap.json';
 import * as IMStable from '../generated-artifacts/IMStable.json';
 import * as IUniswapExchange from '../generated-artifacts/IUniswapExchange.json';
 import * as IUniswapExchangeFactory from '../generated-artifacts/IUniswapExchangeFactory.json';
@@ -38,6 +39,7 @@ import * as KyberBridge from '../generated-artifacts/KyberBridge.json';
 import * as MixinAssetProxyDispatcher from '../generated-artifacts/MixinAssetProxyDispatcher.json';
 import * as MixinAuthorizable from '../generated-artifacts/MixinAuthorizable.json';
 import * as MixinGasToken from '../generated-artifacts/MixinGasToken.json';
+import * as MooniswapBridge from '../generated-artifacts/MooniswapBridge.json';
 import * as MStableBridge from '../generated-artifacts/MStableBridge.json';
 import * as MultiAssetProxy from '../generated-artifacts/MultiAssetProxy.json';
 import * as Ownable from '../generated-artifacts/Ownable.json';
@@ -74,6 +76,7 @@ export const artifacts = {
     KyberBridge: KyberBridge as ContractArtifact,
     MStableBridge: MStableBridge as ContractArtifact,
     MixinGasToken: MixinGasToken as ContractArtifact,
+    MooniswapBridge: MooniswapBridge as ContractArtifact,
     UniswapBridge: UniswapBridge as ContractArtifact,
     UniswapV2Bridge: UniswapV2Bridge as ContractArtifact,
     IAssetData: IAssetData as ContractArtifact,
@@ -91,6 +94,7 @@ export const artifacts = {
     IGasToken: IGasToken as ContractArtifact,
     IKyberNetworkProxy: IKyberNetworkProxy as ContractArtifact,
     IMStable: IMStable as ContractArtifact,
+    IMooniswap: IMooniswap as ContractArtifact,
     IUniswapExchange: IUniswapExchange as ContractArtifact,
     IUniswapExchangeFactory: IUniswapExchangeFactory as ContractArtifact,
     IUniswapV2Router01: IUniswapV2Router01 as ContractArtifact,

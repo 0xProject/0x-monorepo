@@ -40,6 +40,7 @@ export enum ERC20BridgeSource {
     Balancer = 'Balancer',
     Bancor = 'Bancor',
     MStable = 'mStable',
+    Mooniswap = 'Mooniswap',
 }
 
 // tslint:disable: enum-naming

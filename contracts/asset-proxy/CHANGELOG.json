@@ -17,6 +17,10 @@
             {
                 "note": "Added `MStableBridge`",
                 "pr": 2662
+            },
+            {
+                "note": "Added `MooniswapBridge`",
+                "pr": 2675
             }
         ]
     },

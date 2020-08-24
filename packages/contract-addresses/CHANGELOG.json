@@ -29,6 +29,10 @@
             {
                 "note": "Deploy `MStableBridge` on Mainnet",
                 "pr": 2662
+            },
+            {
+                "note": "Deploy `MooniswapBridge` on Mainnet",
+                "pr": 2675
             }
         ]
     },

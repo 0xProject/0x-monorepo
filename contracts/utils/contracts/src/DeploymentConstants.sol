@@ -52,6 +52,8 @@ contract DeploymentConstants {
     address constant private GST_COLLECTOR_ADDRESS = 0x000000D3b08566BE75A6DB803C03C85C0c1c5B96;
     /// @dev Mainnet address of the mStable mUSD contract.
     address constant private MUSD_ADDRESS = 0xe2f2a5C287993345a840Db3B0845fbC70f5935a5;
+    /// @dev Mainnet address of the Mooniswap Registry contract
+    address constant private MOONISWAP_REGISTRY = 0x71CD6666064C3A1354a3B4dca5fA1E2D3ee7D303;
 
     // // Ropsten addresses ///////////////////////////////////////////////////////
     // /// @dev Mainnet address of the WETH contract.
@@ -271,5 +273,15 @@ contract DeploymentConstants {
         returns (address musd)
     {
         return MUSD_ADDRESS;
+    }
+
+    /// @dev An overridable way to retrieve the Mooniswap registry address.
+    /// @return musd The Mooniswap registry address.
+    function _getMooniswapAddress()
+        internal
+        view
+        returns (address registry)
+    {
+        return MOONISWAP_REGISTRY;
     }
 }

@@ -57,6 +57,10 @@
             {
                 "note": "Merge `erc20-bridge-sampler` into this package",
                 "pr": 2664
+            },
+            {
+                "note": "Added `Mooniswap`",
+                "pr": 2675
             }
         ]
     },

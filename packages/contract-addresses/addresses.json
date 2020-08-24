@@ -41,6 +41,7 @@
         "exchangeProxyTransformerDeployer": "0x80a36559ab9a497fb658325ed771a584eb0f13da",
         "exchangeProxyFlashWallet": "0x22f9dcf4647084d6c31b2765f6910cd85c178c18",
         "mStableBridge": "0x2bf04fcea05f0989a14d9afa37aa376baca6b2b3",
+        "mooniswapBridge": "0xf384663c04a77a732e7a222c65b33fe471c7011c",
         "transformers": {
             "wethTransformer": "0x7bab5f7299e1ca123bb44eb71e6c89be7e558cc8",
             "payTakerTransformer": "0xe8c07a119452b55eee2f999478aab97f3656d841",
@@ -90,6 +91,7 @@
         "exchangeProxyTransformerDeployer": "0x80a36559ab9a497fb658325ed771a584eb0f13da",
         "exchangeProxyFlashWallet": "0x22f9dcf4647084d6c31b2765f6910cd85c178c18",
         "mStableBridge": "0x0000000000000000000000000000000000000000",
+        "mooniswapBridge": "0x0000000000000000000000000000000000000000",
         "transformers": {
             "wethTransformer": "0x7bab5f7299e1ca123bb44eb71e6c89be7e558cc8",
             "payTakerTransformer": "0xe8c07a119452b55eee2f999478aab97f3656d841",
@@ -139,6 +141,7 @@
         "exchangeProxyTransformerDeployer": "0x80a36559ab9a497fb658325ed771a584eb0f13da",
         "exchangeProxyFlashWallet": "0x22f9dcf4647084d6c31b2765f6910cd85c178c18",
         "mStableBridge": "0x0000000000000000000000000000000000000000",
+        "mooniswapBridge": "0x0000000000000000000000000000000000000000",
         "transformers": {
             "wethTransformer": "0x7bab5f7299e1ca123bb44eb71e6c89be7e558cc8",
             "payTakerTransformer": "0xe8c07a119452b55eee2f999478aab97f3656d841",
@@ -188,6 +191,7 @@
         "exchangeProxyTransformerDeployer": "0x80a36559ab9a497fb658325ed771a584eb0f13da",
         "exchangeProxyFlashWallet": "0x22f9dcf4647084d6c31b2765f6910cd85c178c18",
         "mStableBridge": "0x0000000000000000000000000000000000000000",
+        "mooniswapBridge": "0x0000000000000000000000000000000000000000",
         "transformers": {
             "wethTransformer": "0x7bab5f7299e1ca123bb44eb71e6c89be7e558cc8",
             "payTakerTransformer": "0xe8c07a119452b55eee2f999478aab97f3656d841",
@@ -237,6 +241,7 @@
         "exchangeProxyTransformerDeployer": "0x5409ed021d9299bf6814279a6a1411a7e866a631",
         "exchangeProxyFlashWallet": "0xb9682a8e7920b431f1d412b8510f0077410c8faa",
         "mStableBridge": "0x0000000000000000000000000000000000000000",
+        "mooniswapBridge": "0x0000000000000000000000000000000000000000",
         "transformers": {
             "wethTransformer": "0x3f16ca81691dab9184cb4606c361d73c4fd2510a",
             "payTakerTransformer": "0x7209185959d7227fb77274e1e88151d7c4c368d3",
