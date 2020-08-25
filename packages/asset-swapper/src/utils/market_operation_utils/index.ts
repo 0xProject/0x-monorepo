@@ -92,10 +92,16 @@ export class MarketOperationUtils {
         }
         const _opts = { ...DEFAULT_GET_MARKET_ORDERS_OPTS, ...opts };
         const [makerToken, takerToken] = getNativeOrderTokens(nativeOrders[0]);
-        const sampleAmounts = getSampleAmounts(takerAmount, _opts.numSamples, _opts.sampleDistributionBase);
+        const sampleAmounts = getSampleAmounts(
+            takerAmount,
+            _opts.numSamples,
+            _opts.sampleDistributionParameters.alpha,
+            _opts.sampleDistributionParameters.beta,
+        );
 
         // Call the sampler contract.
         const samplerPromise = this._sampler.executeAsync(
+            _opts.blockNumber,
             // Get native order fillable amounts.
             DexOrderSampler.ops.getOrderFillableTakerAmounts(nativeOrders, this.contractAddresses.exchange),
             // Get the custom liquidity provider from registry.
@@ -185,7 +191,7 @@ export class MarketOperationUtils {
             inputAmount: takerAmount,
             inputToken: takerToken,
             outputToken: makerToken,
-            dexQuotes: dexQuotes.concat(balancerQuotes),
+            dexQuotes: dexQuotes,
             nativeOrders,
             orderFillableAmounts,
             ethToOutputRate: ethToMakerAssetRate,
@@ -211,10 +217,16 @@ export class MarketOperationUtils {
         }
         const _opts = { ...DEFAULT_GET_MARKET_ORDERS_OPTS, ...opts };
         const [makerToken, takerToken] = getNativeOrderTokens(nativeOrders[0]);
-        const sampleAmounts = getSampleAmounts(makerAmount, _opts.numSamples, _opts.sampleDistributionBase);
+        const sampleAmounts = getSampleAmounts(
+            makerAmount,
+            _opts.numSamples,
+            _opts.sampleDistributionParameters.alpha,
+            _opts.sampleDistributionParameters.beta,
+        );
 
         // Call the sampler contract.
         const samplerPromise = this._sampler.executeAsync(
+            _opts.blockNumber,
             // Get native order fillable amounts.
             DexOrderSampler.ops.getOrderFillableMakerAmounts(nativeOrders, this.contractAddresses.exchange),
             // Get the custom liquidity provider from registry.

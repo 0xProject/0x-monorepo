@@ -9,6 +9,7 @@
     "types": "lib/src/index.d.ts",
     "scripts": {
         "build": "yarn pre_build && tsc -b",
+        "build:ts": "tsc -b",
         "watch": "tsc -w -p tsconfig.json",
         "build:ci": "yarn build",
         "pre_build": "run-s compile contracts:gen generate_contract_wrappers contracts:copy",

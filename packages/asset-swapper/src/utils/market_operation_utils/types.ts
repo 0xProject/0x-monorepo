@@ -240,13 +240,14 @@ export interface GetMarketOrdersOpts {
      */
     numSamples: number;
     /**
-     * The exponential sampling distribution base.
-     * A value of 1 will result in evenly spaced samples.
-     * > 1 will result in more samples at lower sizes.
-     * < 1 will result in more samples at higher sizes.
-     * Default: 1.25.
+     * The Kumaraswamy sampling distribution parameters.
+     * (1, 1) will result in evenly spaced samples.
+     * https://www.wolframalpha.com/input/?i=kumaraswamy%281%2C+1%29
+     * https://en.wikipedia.org/wiki/Kumaraswamy_distribution
+     * https://www.johndcook.com/blog/2009/11/24/kumaraswamy-distribution/
+     * Default: (1, 1).
      */
-    sampleDistributionBase: number;
+    sampleDistributionParameters: { alpha: number, beta: number };
     /**
      * Fees for each liquidity source, expressed in gas.
      */
@@ -266,6 +267,7 @@ export interface GetMarketOrdersOpts {
      * order. Defaults to `true`.
      */
     shouldBatchBridgeOrders: boolean;
+    blockNumber?: number;
 }
 
 /**

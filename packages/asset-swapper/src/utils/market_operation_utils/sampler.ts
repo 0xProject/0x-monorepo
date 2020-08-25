@@ -8,19 +8,26 @@ import { BancorService } from './bancor_service';
 import { samplerOperations } from './sampler_operations';
 import { BatchedOperation } from './types';
 
+// Evaluate the inverse CDF at `x` to obtain a point from Kumaraswamy(alpha, beta)
+function kumaraswamy(x: number, alpha: number, beta: number): number {
+    return (1 - (1 - x) ** (1 / beta)) ** (1 / alpha);
+}
+
 /**
  * Generate sample amounts up to `maxFillAmount`.
  */
-export function getSampleAmounts(maxFillAmount: BigNumber, numSamples: number, expBase: number = 1): BigNumber[] {
-    const distribution = [...Array<BigNumber>(numSamples)].map((_v, i) => new BigNumber(expBase).pow(i));
-    const stepSizes = distribution.map(d => d.div(BigNumber.sum(...distribution)));
-    const amounts = stepSizes.map((_s, i) => {
+export function getSampleAmounts(
+    maxFillAmount: BigNumber,
+    numSamples: number,
+    alpha: number,
+    beta: number,
+): BigNumber[] {
+    const steps = [...Array<number>(numSamples)].map((_x, i) => kumaraswamy((i + 1) / numSamples, alpha, beta));
+    const amounts = steps.map((s, i) => {
         if (i === numSamples - 1) {
             return maxFillAmount;
         }
-        return maxFillAmount
-            .times(BigNumber.sum(...[0, ...stepSizes.slice(0, i + 1)]))
-            .integerValue(BigNumber.ROUND_UP);
+        return maxFillAmount.times(s).integerValue(BigNumber.ROUND_UP);
     });
     return amounts;
 }
@@ -83,7 +90,7 @@ export class DexOrderSampler {
     // prettier-ignore
     public async executeAsync<
         T1, T2, T3, T4, T5
-    >(...ops: [T1, T2, T3, T4, T5]): Promise<[
+    >(block: number | undefined, ...ops: [T1, T2, T3, T4, T5]): Promise<[
         BatchedOperationResult<T1>,
         BatchedOperationResult<T2>,
         BatchedOperationResult<T3>,
@@ -133,19 +140,17 @@ export class DexOrderSampler {
     /**
      * Run a series of operations from `DexOrderSampler.ops` in a single transaction.
      */
-    public async executeAsync(...ops: any[]): Promise<any[]> {
-        return this.executeBatchAsync(ops);
+    public async executeAsync(block: number | undefined, ...ops: any[]): Promise<any[]> {
+        return this.executeBatchAsync(ops, block);
     }
 
     /**
      * Run a series of operations from `DexOrderSampler.ops` in a single transaction.
      * Takes an arbitrary length array, but is not typesafe.
      */
-    public async executeBatchAsync<T extends Array<BatchedOperation<any>>>(ops: T): Promise<any[]> {
+    public async executeBatchAsync<T extends Array<BatchedOperation<any>>>(ops: T, block?: number): Promise<any[]> {
         const callDatas = ops.map(o => o.encodeCall(this._samplerContract));
-        const { overrides, block } = this._samplerOverrides
-            ? this._samplerOverrides
-            : { overrides: undefined, block: undefined };
+        const { overrides } = this._samplerOverrides ? this._samplerOverrides : { overrides: undefined };
 
         // All operations are NOOPs
         if (callDatas.every(cd => cd === NULL_BYTES)) {
