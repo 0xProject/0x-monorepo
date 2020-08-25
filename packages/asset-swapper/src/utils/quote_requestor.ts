@@ -373,6 +373,8 @@ export class QuoteRequestor {
                                 ...partialLogEntry,
                                 response: {
                                     included: true,
+                                    apiKey: options.apiKey,
+                                    takerAddress: requestParams.takerAddress,
                                     statusCode: response.status,
                                     latencyMs: Date.now() - timeBeforeAwait,
                                 },
@@ -385,6 +387,8 @@ export class QuoteRequestor {
                                 ...partialLogEntry,
                                 response: {
                                     included: false,
+                                    apiKey: options.apiKey,
+                                    takerAddress: requestParams.takerAddress,
                                     statusCode: err.response ? err.response.status : undefined,
                                     latencyMs: Date.now() - timeBeforeAwait,
                                 },
