@@ -34,13 +34,7 @@ contract KyberSampler is
     ApproximateBuys
 {
     /// @dev Gas limit for Kyber calls.
-    uint256 constant private KYBER_CALL_GAS = 1500e3; // 1.5m
-    /// @dev The Kyber Uniswap Reserve address
-    address constant private KYBER_UNISWAP_RESERVE = 0x31E085Afd48a1d6e51Cc193153d625e8f0514C7F;
-    /// @dev The Kyber Uniswap V2 Reserve address
-    address constant private KYBER_UNISWAPV2_RESERVE = 0x10908C875D865C66f271F5d3949848971c9595C9;
-    /// @dev The Kyber Eth2Dai Reserve address
-    address constant private KYBER_ETH2DAI_RESERVE = 0x1E158c0e93c30d24e918Ef83d1e0bE23595C3c0f;
+    uint256 constant private KYBER_CALL_GAS = 500e3; // 500k
 
     /// @dev Sample sell quotes from Kyber.
     /// @param takerToken Address of the taker token (what to sell).
@@ -49,6 +43,7 @@ contract KyberSampler is
     /// @return makerTokenAmounts Maker amounts bought at each taker token
     ///         amount.
     function sampleSellsFromKyberNetwork(
+        bytes32 reserveId,
         address takerToken,
         address makerToken,
         uint256[] memory takerTokenAmounts
@@ -60,18 +55,12 @@ contract KyberSampler is
         _assertValidPair(makerToken, takerToken);
         uint256 numSamples = takerTokenAmounts.length;
         makerTokenAmounts = new uint256[](numSamples);
-        address wethAddress = _getWethAddress();
-        uint256 value;
+        bytes memory hint = this.encodeKyberHint(reserveId, takerToken, makerToken);
         for (uint256 i = 0; i < numSamples; i++) {
-            if (takerToken == wethAddress || makerToken == wethAddress) {
-                // Direct ETH based trade
-                value = _sampleSellFromKyberNetwork(takerToken, makerToken, takerTokenAmounts[i]);
-            } else {
-                // Hop to ETH
-                value = _sampleSellFromKyberNetwork(takerToken, wethAddress, takerTokenAmounts[i]);
-                if (value != 0) {
-                    value = _sampleSellFromKyberNetwork(wethAddress, makerToken, value);
-                }
+            uint256 value = _sampleSellFromKyberNetwork(hint, takerToken, makerToken, takerTokenAmounts[i]);
+            // Return early if the source has no liquidity
+            if (value == 0) {
+                return makerTokenAmounts;
             }
             makerTokenAmounts[i] = value;
         }
@@ -84,6 +73,7 @@ contract KyberSampler is
     /// @return takerTokenAmounts Taker amounts sold at each maker token
     ///         amount.
     function sampleBuysFromKyberNetwork(
+        bytes32 reserveId,
         address takerToken,
         address makerToken,
         uint256[] memory makerTokenAmounts
@@ -95,12 +85,75 @@ contract KyberSampler is
         _assertValidPair(makerToken, takerToken);
         return _sampleApproximateBuys(
             ApproximateBuyQuoteOpts({
-                makerTokenData: abi.encode(makerToken),
-                takerTokenData: abi.encode(takerToken),
+                makerTokenData: abi.encode(makerToken, reserveId),
+                takerTokenData: abi.encode(takerToken, reserveId),
                 getSellQuoteCallback: _sampleSellForApproximateBuyFromKyber
             }),
             makerTokenAmounts
         );
+    }
+
+    function encodeKyberHint(
+        bytes32 reserveId,
+        address takerToken,
+        address makerToken
+    )
+        public
+        view
+        returns (bytes memory hint)
+    {
+        IKyberHintHandler kyberHint = IKyberHintHandler(_getKyberHintHandlerAddress());
+        bytes32[] memory selectedReserves = new bytes32[](1);
+        selectedReserves[0] = reserveId;
+        bool didSucceed;
+        bytes memory resultData;
+        if (takerToken == _getWethAddress()) {
+            // ETH to Token
+            (didSucceed, resultData) =
+                address(kyberHint).staticcall.gas(KYBER_CALL_GAS)(
+                    abi.encodeWithSelector(
+                        IKyberHintHandler(0).buildEthToTokenHint.selector,
+                        makerToken,
+                        IKyberHintHandler.TradeType.MaskIn,
+                        selectedReserves,
+                        new uint256[](0)));
+            if (didSucceed) {
+                hint = abi.decode(resultData, (bytes));
+            }
+        } else if (makerToken == _getWethAddress()) {
+            // Token to ETH
+            (didSucceed, resultData) =
+                address(kyberHint).staticcall.gas(KYBER_CALL_GAS)(
+                    abi.encodeWithSelector(
+                        IKyberHintHandler(0).buildTokenToEthHint.selector,
+                        takerToken,
+                        IKyberHintHandler.TradeType.MaskIn,
+                        selectedReserves,
+                        new uint256[](0)));
+            if (didSucceed) {
+                hint = abi.decode(resultData, (bytes));
+            }
+        } else {
+            // Token to Token
+            (didSucceed, resultData) =
+                address(kyberHint).staticcall.gas(KYBER_CALL_GAS)(
+                    abi.encodeWithSelector(
+                        IKyberHintHandler(0).buildTokenToTokenHint.selector,
+                        takerToken,
+                        IKyberHintHandler.TradeType.MaskIn,
+                        selectedReserves,
+                        new uint256[](0),
+                        makerToken,
+                        IKyberHintHandler.TradeType.MaskIn,
+                        selectedReserves,
+                        new uint256[](0)
+                    )
+            );
+            if (didSucceed) {
+                hint = abi.decode(resultData, (bytes));
+            }
+        }
+        return hint;
     }
 
     function _sampleSellForApproximateBuyFromKyber(
@@ -112,11 +165,16 @@ contract KyberSampler is
         view
         returns (uint256 buyAmount)
     {
+        (address makerToken, bytes memory hint) =
+            abi.decode(makerTokenData, (address, bytes));
+        (address takerToken, ) =
+            abi.decode(takerTokenData, (address, bytes));
         (bool success, bytes memory resultData) =
             address(this).staticcall(abi.encodeWithSelector(
                 this.sampleSellsFromKyberNetwork.selector,
-                abi.decode(takerTokenData, (address)),
-                abi.decode(makerTokenData, (address)),
+                hint,
+                takerToken,
+                makerToken,
                 _toSingleValueArray(sellAmount)
             ));
         if (!success) {
@@ -126,26 +184,8 @@ contract KyberSampler is
         return abi.decode(resultData, (uint256[]))[0];
     }
 
-    function _appendToList(bytes32[] memory list, bytes32 item) private view returns (bytes32[] memory appendedList)
-    {
-        appendedList = new bytes32[](list.length + 1);
-        for (uint256 i = 0; i < list.length; i++) {
-            appendedList[i] = list[i];
-        }
-        appendedList[appendedList.length - 1] = item;
-    }
-
-    function _getKyberAddresses()
-        private
-        view
-        returns (IKyberHintHandler kyberHint, IKyberStorage kyberStorage)
-    {
-        (, , kyberHint, kyberStorage, ,) = IKyberNetwork(
-            IKyberNetworkProxy(_getKyberNetworkProxyAddress()).kyberNetwork()).getContracts();
-        return (IKyberHintHandler(kyberHint), IKyberStorage(kyberStorage));
-    }
-
     function _sampleSellFromKyberNetwork(
+        bytes memory hint,
         address takerToken,
         address makerToken,
         uint256 takerTokenAmount
@@ -154,40 +194,12 @@ contract KyberSampler is
         view
         returns (uint256 makerTokenAmount)
     {
-        (IKyberHintHandler kyberHint, IKyberStorage kyberStorage) = _getKyberAddresses();
-        // Ban reserves which can clash with our internal aggregation
-        bytes32[] memory reserveIds = kyberStorage.getReserveIdsPerTokenSrc(
-            takerToken == _getWethAddress() ? makerToken : takerToken
-        );
-        bytes32[] memory bannedReserveIds = new bytes32[](0);
-        // Poor mans resize and append
-        for (uint256 i = 0; i < reserveIds.length; i++) {
-            if (
-                reserveIds[i] == kyberStorage.getReserveId(KYBER_UNISWAP_RESERVE) ||
-                reserveIds[i] == kyberStorage.getReserveId(KYBER_UNISWAPV2_RESERVE) ||
-                reserveIds[i] == kyberStorage.getReserveId(KYBER_ETH2DAI_RESERVE)
-            ) {
-                bannedReserveIds = _appendToList(bannedReserveIds, reserveIds[i]);
-            }
-        }
         // Sampler either detects X->ETH/ETH->X
         // or subsamples as X->ETH-Y. So token->token here is not possible
-        bytes memory hint;
-        if (takerToken == _getWethAddress()) {
-            // ETH -> X
-            hint = kyberHint.buildEthToTokenHint(
-                    makerToken,
-                    IKyberHintHandler.TradeType.MaskOut,
-                    bannedReserveIds,
-                    new uint256[](0));
-        } else {
-            // X->ETH
-            hint = kyberHint.buildEthToTokenHint(
-                    takerToken,
-                    IKyberHintHandler.TradeType.MaskOut,
-                    bannedReserveIds,
-                    new uint256[](0));
+        if (hint.length == 0) {
+            return 0;
         }
+
         (bool didSucceed, bytes memory resultData) =
             _getKyberNetworkProxyAddress().staticcall.gas(KYBER_CALL_GAS)(
                 abi.encodeWithSelector(

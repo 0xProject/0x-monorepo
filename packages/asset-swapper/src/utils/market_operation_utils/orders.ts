@@ -25,6 +25,7 @@ import {
     CurveFillData,
     ERC20BridgeSource,
     Fill,
+    KyberFillData,
     LiquidityProviderFillData,
     MultiBridgeFillData,
     NativeCollapsedFill,
@@ -184,7 +185,8 @@ function getBridgeAddressFromFill(fill: CollapsedFill, opts: CreateOrderFromPath
         case ERC20BridgeSource.Eth2Dai:
             return opts.contractAddresses.eth2DaiBridge;
         case ERC20BridgeSource.Kyber:
-            return opts.contractAddresses.kyberBridge;
+            return '0xdeeeeeed11111111111111111111111111111111';
+        // return opts.contractAddresses.kyberBridge;
         case ERC20BridgeSource.Uniswap:
             return opts.contractAddresses.uniswapBridge;
         case ERC20BridgeSource.UniswapV2:
@@ -258,6 +260,14 @@ function createBridgeOrder(fill: CollapsedFill, opts: CreateOrderFromPathOpts): 
                 makerToken,
                 bridgeAddress,
                 createMultiBridgeData(takerToken, makerToken),
+            );
+            break;
+        case ERC20BridgeSource.Kyber:
+            const kyberFillData = (fill as CollapsedFill<KyberFillData>).fillData!; // tslint:disable-line:no-non-null-assertion
+            makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
+                makerToken,
+                bridgeAddress,
+                createKyberBridgeData(takerToken, kyberFillData.hint),
             );
             break;
         default:
@@ -356,6 +366,11 @@ function createBancorBridgeData(path: string[], networkAddress: string): string 
         { name: 'networkAddress', type: 'address' },
     ]);
     return encoder.encode({ path, networkAddress });
+}
+
+function createKyberBridgeData(fromTokenAddress: string, hint: string): string {
+    const encoder = AbiEncoder.create([{ name: 'fromTokenAddress', type: 'address' }, { name: 'hint', type: 'bytes' }]);
+    return encoder.encode({ fromTokenAddress, hint });
 }
 
 function createCurveBridgeData(

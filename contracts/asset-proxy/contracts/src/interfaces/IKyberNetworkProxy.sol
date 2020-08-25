@@ -42,5 +42,51 @@ interface IKyberNetworkProxy {
     )
         external
         payable
-        returns(uint256 boughtAmount);
+        returns (uint256 boughtAmount);
+
+    function tradeWithHint(
+        address sellTokenAddress,
+        uint256 sellAmount,
+        address buyTokenAddress,
+        address payable recipientAddress,
+        uint256 maxBuyTokenAmount,
+        uint256 minConversionRate,
+        address payable walletId,
+        bytes calldata hint
+    ) external
+      payable
+      returns (uint256 boughtAmount);
+}
+
+
+interface IKyberHintHandler {
+
+    function kyberStorage() external returns (address);
+
+    enum TradeType {BestOfAll, MaskIn, MaskOut, Split}
+
+    function buildTokenToEthHint(
+        address tokenSrc,
+        TradeType tokenToEthType,
+        bytes32[] calldata tokenToEthReserveIds,
+        uint256[] calldata tokenToEthSplits
+    ) external view returns (bytes memory hint);
+
+    function buildEthToTokenHint(
+        address tokenDest,
+        TradeType ethToTokenType,
+        bytes32[] calldata ethToTokenReserveIds,
+        uint256[] calldata ethToTokenSplits
+    ) external view returns (bytes memory hint);
+
+    function buildTokenToTokenHint(
+        address tokenSrc,
+        TradeType tokenToEthType,
+        bytes32[] calldata tokenToEthReserveIds,
+        uint256[] calldata tokenToEthSplits,
+        address tokenDest,
+        TradeType ethToTokenType,
+        bytes32[] calldata ethToTokenReserveIds,
+        uint256[] calldata ethToTokenSplits
+    ) external view returns (bytes memory hint);
 }

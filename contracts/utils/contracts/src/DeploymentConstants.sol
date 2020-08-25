@@ -28,6 +28,8 @@ contract DeploymentConstants {
     address constant private WETH_ADDRESS = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
     /// @dev Mainnet address of the KyberNetworkProxy contract.
     address constant private KYBER_NETWORK_PROXY_ADDRESS = 0x9AAb3f75489902f3a48495025729a0AF77d4b11e;
+    /// @dev Mainnet address of the KyberHintHandler contract.
+    address constant private KYBER_HINT_HANDLER_ADDRESS = 0xa1C0Fa73c39CFBcC11ec9Eb1Afc665aba9996E2C;
     /// @dev Mainnet address of the `UniswapExchangeFactory` contract.
     address constant private UNISWAP_EXCHANGE_FACTORY_ADDRESS = 0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95;
     /// @dev Mainnet address of the `UniswapV2Router01` contract.
@@ -153,6 +155,16 @@ contract DeploymentConstants {
         returns (address kyberAddress)
     {
         return KYBER_NETWORK_PROXY_ADDRESS;
+    }
+
+    /// @dev Overridable way to get the `KyberHintHandler` address.
+    /// @return kyberAddress The `IKyberHintHandler` address.
+    function _getKyberHintHandlerAddress()
+        internal
+        view
+        returns (address hintHandlerAddress)
+    {
+        return KYBER_HINT_HANDLER_ADDRESS;
     }
 
     /// @dev Overridable way to get the WETH address.

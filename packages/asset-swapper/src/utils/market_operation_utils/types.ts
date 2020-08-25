@@ -91,6 +91,11 @@ export interface UniswapV2FillData extends FillData {
     tokenAddressPath: string[];
 }
 
+export interface KyberFillData extends FillData {
+    hint: string;
+    reserveId: string;
+}
+
 export interface LiquidityProviderFillData extends FillData {
     poolAddress: string;
 }

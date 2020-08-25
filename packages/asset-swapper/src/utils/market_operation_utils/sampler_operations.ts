@@ -4,7 +4,7 @@ import { BigNumber, ERC20BridgeSource, SignedOrder } from '../..';
 
 import { BalancerPool, BalancerPoolsCache, computeBalancerBuyQuote, computeBalancerSellQuote } from './balancer_utils';
 import { BancorService } from './bancor_service';
-import { NULL_BYTES, ZERO_AMOUNT } from './constants';
+import { MAINNET_KYBER_INFOS, NULL_BYTES, ZERO_AMOUNT } from './constants';
 import { getCurveInfosForPair } from './curve_utils';
 import { getMultiBridgeIntermediateToken } from './multibridge_utils';
 import {
@@ -15,6 +15,7 @@ import {
     CurveInfo,
     DexSample,
     FillData,
+    KyberFillData,
     Quote,
     SourceQuoteOperation,
     UniswapV2FillData,
@@ -49,33 +50,56 @@ export const samplerOperations = {
             },
         };
     },
-    getKyberSellQuotes(makerToken: string, takerToken: string, takerFillAmounts: BigNumber[]): SourceQuoteOperation {
+    getKyberSellQuotes(
+        reserveId: string,
+        makerToken: string,
+        takerToken: string,
+        takerFillAmounts: BigNumber[],
+    ): SourceQuoteOperation<KyberFillData> {
         return {
             source: ERC20BridgeSource.Kyber,
             encodeCall: contract => {
                 return contract
-                    .sampleSellsFromKyberNetwork(takerToken, makerToken, takerFillAmounts)
+                    .batchCall([
+                        contract
+                            .sampleSellsFromKyberNetwork(reserveId, takerToken, makerToken, takerFillAmounts)
+                            .getABIEncodedTransactionData(),
+                        contract.encodeKyberHint(reserveId, takerToken, makerToken).getABIEncodedTransactionData(),
+                    ])
                     .getABIEncodedTransactionData();
             },
             handleCallResultsAsync: async (contract, callResults) => {
-                return contract
-                    .getABIDecodedReturnData<BigNumber[]>('sampleSellsFromKyberNetwork', callResults)
-                    .map(amount => ({ amount }));
+                const [samplesEncoded, hintEncoded] = contract.getABIDecodedReturnData<string[]>(
+                    'batchCall',
+                    callResults,
+                );
+                const samples = contract.getABIDecodedReturnData<BigNumber[]>(
+                    'sampleSellsFromKyberNetwork',
+                    samplesEncoded,
+                );
+                const hint = contract.getABIDecodedReturnData<string>('encodeKyberHint', hintEncoded);
+                const data = samples.map(amount => ({ amount, fillData: { hint, reserveId } }));
+                return data;
             },
         };
     },
-    getKyberBuyQuotes(makerToken: string, takerToken: string, makerFillAmounts: BigNumber[]): SourceQuoteOperation {
+    getKyberBuyQuotes(
+        reserveId: string,
+        makerToken: string,
+        takerToken: string,
+        makerFillAmounts: BigNumber[],
+    ): SourceQuoteOperation<KyberFillData> {
         return {
             source: ERC20BridgeSource.Kyber,
             encodeCall: contract => {
                 return contract
-                    .sampleBuysFromKyberNetwork(takerToken, makerToken, makerFillAmounts)
+                    .sampleBuysFromKyberNetwork(reserveId, takerToken, makerToken, makerFillAmounts)
                     .getABIEncodedTransactionData();
             },
             handleCallResultsAsync: async (contract, callResults) => {
                 return contract
                     .getABIDecodedReturnData<BigNumber[]>('sampleBuysFromKyberNetwork', callResults)
-                    .map(amount => ({ amount }));
+                    .map(amount => ({ amount, fillData: { hint: reserveId, reserveId } }));
             },
         };
     },
@@ -543,7 +567,14 @@ export const samplerOperations = {
                                 }
                                 return ops;
                             case ERC20BridgeSource.Kyber:
-                                return samplerOperations.getKyberSellQuotes(makerToken, takerToken, takerFillAmounts);
+                                return Object.values(MAINNET_KYBER_INFOS).map(reserveId =>
+                                    samplerOperations.getKyberSellQuotes(
+                                        reserveId,
+                                        makerToken,
+                                        takerToken,
+                                        takerFillAmounts,
+                                    ),
+                                );
                             case ERC20BridgeSource.Curve:
                                 return getCurveInfosForPair(takerToken, makerToken).map(curve =>
                                     samplerOperations.getCurveSellQuotes(
@@ -694,7 +725,14 @@ export const samplerOperations = {
                                 }
                                 return ops;
                             case ERC20BridgeSource.Kyber:
-                                return samplerOperations.getKyberBuyQuotes(makerToken, takerToken, makerFillAmounts);
+                                return Object.values(MAINNET_KYBER_INFOS).map(reserveId =>
+                                    samplerOperations.getKyberBuyQuotes(
+                                        reserveId,
+                                        makerToken,
+                                        takerToken,
+                                        makerFillAmounts,
+                                    ),
+                                );
                             case ERC20BridgeSource.Curve:
                                 return getCurveInfosForPair(takerToken, makerToken).map(curve =>
                                     samplerOperations.getCurveBuyQuotes(
