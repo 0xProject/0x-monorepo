@@ -25,7 +25,9 @@ export function getIntermediateTokens(
             [wethAddress],
         );
     }
-    return intermediateTokens;
+    return intermediateTokens.filter(
+        token => token.toLowerCase() !== makerToken.toLowerCase() && token.toLowerCase() !== takerToken.toLowerCase(),
+    );
 }
 
 /**

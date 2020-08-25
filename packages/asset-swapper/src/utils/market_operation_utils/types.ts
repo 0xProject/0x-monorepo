@@ -1,11 +1,9 @@
-import { ContractFunctionObj } from '@0x/base-contract';
 import { RFQTIndicativeQuote } from '@0x/quote-server';
 import { MarketOperation, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
 import { RfqtRequestOpts, SignedOrderWithFillableAmounts } from '../../types';
 import { QuoteRequestor } from '../../utils/quote_requestor';
-import { ERC20BridgeSamplerContract } from '../../wrappers';
 import { QuoteReport } from '../quote_report_generator';
 
 /**
@@ -279,59 +277,13 @@ export interface GetMarketOrdersOpts {
  */
 export interface BatchedOperation<TResult> {
     encodeCall(): string;
-    handleCallResultsAsync(callResults: string): Promise<TResult>;
+    handleCallResults(callResults: string): TResult;
 }
 
 export interface SourceQuoteOperation<TFillData extends FillData = FillData>
     extends BatchedOperation<BigNumber[]>,
         SourceInfo<TFillData> {
     readonly source: ERC20BridgeSource;
-}
-
-type Parameters<T> = T extends (...args: infer TArgs) => any ? TArgs : never;
-
-export interface SamplerContractCall<
-    TFunc extends (...args: any[]) => ContractFunctionObj<any>,
-    TFillData extends FillData = FillData
-> {
-    contract: ERC20BridgeSamplerContract;
-    function: TFunc;
-    params: Parameters<TFunc>;
-    callback?: (callResults: string, fillData: TFillData) => Promise<BigNumber[]>;
-}
-
-export class SamplerContractOperation<
-    TFunc extends (...args: any[]) => ContractFunctionObj<any>,
-    TFillData extends FillData = FillData
-> implements SourceQuoteOperation<TFillData> {
-    public readonly source: ERC20BridgeSource;
-    public fillData: TFillData;
-    private readonly _samplerContract: ERC20BridgeSamplerContract;
-    private readonly _samplerFunction: TFunc;
-    private readonly _params: Parameters<TFunc>;
-    private readonly _callback?: (callResults: string, fillData: TFillData) => Promise<BigNumber[]>;
-
-    constructor(opts: SourceInfo<TFillData> & SamplerContractCall<TFunc, TFillData>) {
-        this.source = opts.source;
-        this.fillData = opts.fillData || ({} as TFillData); // tslint:disable-line:no-object-literal-type-assertion
-        this._samplerContract = opts.contract;
-        this._samplerFunction = opts.function;
-        this._params = opts.params;
-        this._callback = opts.callback;
-    }
-
-    public encodeCall(): string {
-        return this._samplerFunction
-            .bind(this._samplerContract)(...this._params)
-            .getABIEncodedTransactionData();
-    }
-    public async handleCallResultsAsync(callResults: string): Promise<BigNumber[]> {
-        if (this._callback !== undefined) {
-            return this._callback(callResults, this.fillData);
-        } else {
-            return this._samplerContract.getABIDecodedReturnData<BigNumber[]>(this._samplerFunction.name, callResults);
-        }
-    }
 }
 
 export interface OptimizerResult {

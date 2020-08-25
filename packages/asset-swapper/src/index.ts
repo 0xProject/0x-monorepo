@@ -1,4 +1,9 @@
-export { ContractFunctionObj } from '@0x/base-contract';
+export {
+    AwaitTransactionSuccessOpts,
+    ContractFunctionObj,
+    ContractTxFunctionObj,
+    SendTransactionOpts,
+} from '@0x/base-contract';
 export { ContractAddresses } from '@0x/contract-addresses';
 export { WSOpts } from '@0x/mesh-rpc-client';
 export {
@@ -29,6 +34,7 @@ export {
     AbiDefinition,
     BlockParam,
     BlockParamLiteral,
+    CallData,
     CompilerOpts,
     CompilerSettings,
     CompilerSettingsMetadata,
@@ -67,6 +73,8 @@ export {
     StateMutability,
     SupportedProvider,
     TupleDataItem,
+    TxData,
+    TxDataPayable,
     Web3JsProvider,
     Web3JsV1Provider,
     Web3JsV2Provider,
@@ -109,15 +117,23 @@ export {
 } from './types';
 export { affiliateFeeUtils } from './utils/affiliate_fee_utils';
 export {
+    Parameters,
+    SamplerContractCall,
+    SamplerContractOperation,
+} from './utils/market_operation_utils/sampler_contract_operation';
+export {
     BancorFillData,
     BalancerFillData,
     CollapsedFill,
     CurveFillData,
     CurveFunctionSelectors,
     CurveInfo,
+    DexSample,
     ERC20BridgeSource,
     FeeSchedule,
+    Fill,
     FillData,
+    FillFlags,
     GetMarketOrdersRfqtOpts,
     LiquidityProviderFillData,
     MarketDepth,
@@ -127,8 +143,6 @@ export {
     NativeCollapsedFill,
     NativeFillData,
     OptimizedMarketOrder,
-    SamplerContractCall,
-    SamplerContractOperation,
     SourceInfo,
     SourceQuoteOperation,
     TokenAdjacencyGraph,

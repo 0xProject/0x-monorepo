@@ -371,12 +371,12 @@ describe('generateQuoteReport', async () => {
                 firstHopSource: {
                     source: ERC20BridgeSource.Balancer,
                     encodeCall: () => '',
-                    handleCallResultsAsync: async _callResults => Promise.resolve([new BigNumber(1337)]),
+                    handleCallResults: _callResults => [new BigNumber(1337)],
                 },
                 secondHopSource: {
                     source: ERC20BridgeSource.Curve,
                     encodeCall: () => '',
-                    handleCallResultsAsync: async _callResults => Promise.resolve([new BigNumber(1337)]),
+                    handleCallResults: _callResults => [new BigNumber(1337)],
                 },
             },
         };

@@ -173,12 +173,12 @@ export class MarketOperationUtils {
         );
 
         const offChainBalancerPromise = sampleBalancerOffChain
-            ? this._sampler.getBalancerSellQuotesAsync(makerToken, takerToken, sampleAmounts)
+            ? this._sampler.getBalancerSellQuotesOffChainAsync(makerToken, takerToken, sampleAmounts)
             : Promise.resolve([]);
 
         const offChainBancorPromise = _opts.excludedSources.includes(ERC20BridgeSource.Bancor)
             ? Promise.resolve([])
-            : this._sampler.getBancorSellQuotesAsync(makerToken, takerToken, sampleAmounts);
+            : this._sampler.getBancorSellQuotesOffChainAsync(makerToken, takerToken, [takerAmount]);
 
         const [
             [orderFillableAmounts, ethToMakerAssetRate, ethToTakerAssetRate, dexQuotes, twoHopQuotes],
@@ -285,7 +285,7 @@ export class MarketOperationUtils {
         );
 
         const offChainBalancerPromise = sampleBalancerOffChain
-            ? this._sampler.getBalancerBuyQuotesAsync(makerToken, takerToken, sampleAmounts)
+            ? this._sampler.getBalancerBuyQuotesOffChainAsync(makerToken, takerToken, sampleAmounts)
             : Promise.resolve([]);
 
         const rfqtPromise = getRfqtIndicativeQuotesAsync(

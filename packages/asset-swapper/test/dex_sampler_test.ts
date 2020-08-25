@@ -470,7 +470,7 @@ describe('DexSampler tests', () => {
                 undefined,
                 balancerPoolsCache,
             );
-            const quotes = await dexOrderSampler.getBalancerSellQuotesAsync(
+            const quotes = await dexOrderSampler.getBalancerSellQuotesOffChainAsync(
                 expectedMakerToken,
                 expectedTakerToken,
                 expectedTakerFillAmounts,
@@ -508,7 +508,7 @@ describe('DexSampler tests', () => {
                 bancorService,
                 undefined, // balancer cache
             );
-            const quotes = await dexOrderSampler.getBancorSellQuotesAsync(
+            const quotes = await dexOrderSampler.getBancorSellQuotesOffChainAsync(
                 expectedMakerToken,
                 expectedTakerToken,
                 expectedTakerFillAmounts,
@@ -609,7 +609,7 @@ describe('DexSampler tests', () => {
                 undefined,
                 balancerPoolsCache,
             );
-            const quotes = await dexOrderSampler.getBalancerBuyQuotesAsync(
+            const quotes = await dexOrderSampler.getBalancerBuyQuotesOffChainAsync(
                 expectedMakerToken,
                 expectedTakerToken,
                 expectedMakerFillAmounts,

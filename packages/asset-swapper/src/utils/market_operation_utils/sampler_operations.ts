@@ -10,6 +10,7 @@ import { MAX_UINT256, NULL_BYTES, ZERO_AMOUNT } from './constants';
 import { getCurveInfosForPair } from './curve_utils';
 import { getMultiBridgeIntermediateToken } from './multibridge_utils';
 import { getIntermediateTokens } from './multihop_utils';
+import { SamplerContractOperation } from './sampler_contract_operation';
 import {
     BalancerFillData,
     BancorFillData,
@@ -22,7 +23,6 @@ import {
     LiquidityProviderFillData,
     MultiBridgeFillData,
     MultiHopFillData,
-    SamplerContractOperation,
     SourceQuoteOperation,
     TokenAdjacencyGraph,
     UniswapV2FillData,
@@ -40,7 +40,7 @@ export class SamplerOperations {
             encodeCall: () => {
                 return '0x';
             },
-            handleCallResultsAsync: async _callResults => {
+            handleCallResults: _callResults => {
                 return result;
             },
         };
@@ -160,13 +160,13 @@ export class SamplerOperations {
             contract: this._samplerContract,
             function: this._samplerContract.sampleSellsFromLiquidityProviderRegistry,
             params: [registryAddress, takerToken, makerToken, takerFillAmounts],
-            callback: async (callResults: string, fillData: LiquidityProviderFillData): Promise<BigNumber[]> => {
+            callback: (callResults: string, fillData: LiquidityProviderFillData): BigNumber[] => {
                 const [samples, poolAddress] = this._samplerContract.getABIDecodedReturnData<[BigNumber[], string]>(
                     'sampleSellsFromLiquidityProviderRegistry',
                     callResults,
                 );
                 fillData.poolAddress = poolAddress;
-                return Promise.resolve(samples);
+                return samples;
             },
         });
     }
@@ -183,13 +183,13 @@ export class SamplerOperations {
             contract: this._samplerContract,
             function: this._samplerContract.sampleBuysFromLiquidityProviderRegistry,
             params: [registryAddress, takerToken, makerToken, makerFillAmounts],
-            callback: async (callResults: string, fillData: LiquidityProviderFillData): Promise<BigNumber[]> => {
+            callback: (callResults: string, fillData: LiquidityProviderFillData): BigNumber[] => {
                 const [samples, poolAddress] = this._samplerContract.getABIDecodedReturnData<[BigNumber[], string]>(
                     'sampleBuysFromLiquidityProviderRegistry',
                     callResults,
                 );
                 fillData.poolAddress = poolAddress;
-                return Promise.resolve(samples);
+                return samples;
             },
         });
     }
@@ -322,7 +322,7 @@ export class SamplerOperations {
         });
     }
 
-    public async getBalancerSellQuotesAsync(
+    public async getBalancerSellQuotesOffChainAsync(
         makerToken: string,
         takerToken: string,
         takerFillAmounts: BigNumber[],
@@ -338,7 +338,7 @@ export class SamplerOperations {
         );
     }
 
-    public async getBalancerBuyQuotesAsync(
+    public async getBalancerBuyQuotesOffChainAsync(
         makerToken: string,
         takerToken: string,
         makerFillAmounts: BigNumber[],
@@ -380,7 +380,7 @@ export class SamplerOperations {
         });
     }
 
-    public async getBancorSellQuotesAsync(
+    public async getBancorSellQuotesOffChainAsync(
         makerToken: string,
         takerToken: string,
         takerFillAmounts: BigNumber[],
@@ -455,7 +455,7 @@ export class SamplerOperations {
                 sources,
                 intermediateToken,
                 takerToken,
-                [new BigNumber(0)],
+                [ZERO_AMOUNT],
                 wethAddress,
                 liquidityProviderRegistryAddress,
             );
@@ -463,7 +463,7 @@ export class SamplerOperations {
                 sources,
                 makerToken,
                 intermediateToken,
-                [new BigNumber(0)],
+                [ZERO_AMOUNT],
                 wethAddress,
                 liquidityProviderRegistryAddress,
             );
@@ -473,18 +473,18 @@ export class SamplerOperations {
                 function: this._samplerContract.sampleTwoHopSell,
                 params: [firstHopOps.map(op => op.encodeCall()), secondHopOps.map(op => op.encodeCall()), sellAmount],
                 fillData: { intermediateToken } as MultiHopFillData, // tslint:disable-line:no-object-literal-type-assertion
-                callback: async (callResults: string, fillData: MultiHopFillData): Promise<BigNumber[]> => {
+                callback: (callResults: string, fillData: MultiHopFillData): BigNumber[] => {
                     const [firstHop, secondHop, buyAmount] = this._samplerContract.getABIDecodedReturnData<
                         [HopInfo, HopInfo, BigNumber]
                     >('sampleTwoHopSell', callResults);
                     if (buyAmount.isZero()) {
-                        return Promise.resolve([buyAmount]);
+                        return [ZERO_AMOUNT];
                     }
                     fillData.firstHopSource = firstHopOps[firstHop.sourceIndex.toNumber()];
                     fillData.secondHopSource = secondHopOps[secondHop.sourceIndex.toNumber()];
-                    await fillData.firstHopSource.handleCallResultsAsync(firstHop.returnData);
-                    await fillData.secondHopSource.handleCallResultsAsync(secondHop.returnData);
-                    return Promise.resolve([buyAmount]);
+                    fillData.firstHopSource.handleCallResults(firstHop.returnData);
+                    fillData.secondHopSource.handleCallResults(secondHop.returnData);
+                    return [buyAmount];
                 },
             });
         });
@@ -493,22 +493,20 @@ export class SamplerOperations {
                 const subCalls = subOps.map(op => op.encodeCall());
                 return this._samplerContract.batchCall(subCalls).getABIEncodedTransactionData();
             },
-            handleCallResultsAsync: async callResults => {
+            handleCallResults: callResults => {
                 const rawSubCallResults = this._samplerContract.getABIDecodedReturnData<string[]>(
                     'batchCall',
                     callResults,
                 );
-                return Promise.all(
-                    subOps.map(async (op, i) => {
-                        const [output] = await op.handleCallResultsAsync(rawSubCallResults[i]);
-                        return {
-                            source: op.source,
-                            output,
-                            input: sellAmount,
-                            fillData: op.fillData,
-                        };
-                    }),
-                );
+                return subOps.map((op, i) => {
+                    const [output] = op.handleCallResults(rawSubCallResults[i]);
+                    return {
+                        source: op.source,
+                        output,
+                        input: sellAmount,
+                        fillData: op.fillData,
+                    };
+                });
             },
         };
     }
@@ -546,18 +544,18 @@ export class SamplerOperations {
                 function: this._samplerContract.sampleTwoHopBuy,
                 params: [firstHopOps.map(op => op.encodeCall()), secondHopOps.map(op => op.encodeCall()), buyAmount],
                 fillData: { intermediateToken } as MultiHopFillData, // tslint:disable-line:no-object-literal-type-assertion
-                callback: async (callResults: string, fillData: MultiHopFillData): Promise<BigNumber[]> => {
+                callback: (callResults: string, fillData: MultiHopFillData): BigNumber[] => {
                     const [firstHop, secondHop, sellAmount] = this._samplerContract.getABIDecodedReturnData<
                         [HopInfo, HopInfo, BigNumber]
                     >('sampleTwoHopBuy', callResults);
                     if (sellAmount.isEqualTo(MAX_UINT256)) {
-                        return Promise.resolve([sellAmount]);
+                        return [sellAmount];
                     }
                     fillData.firstHopSource = firstHopOps[firstHop.sourceIndex.toNumber()];
                     fillData.secondHopSource = secondHopOps[secondHop.sourceIndex.toNumber()];
-                    await fillData.firstHopSource.handleCallResultsAsync(firstHop.returnData);
-                    await fillData.secondHopSource.handleCallResultsAsync(secondHop.returnData);
-                    return Promise.resolve([sellAmount]);
+                    fillData.firstHopSource.handleCallResults(firstHop.returnData);
+                    fillData.secondHopSource.handleCallResults(secondHop.returnData);
+                    return [sellAmount];
                 },
             });
         });
@@ -566,22 +564,20 @@ export class SamplerOperations {
                 const subCalls = subOps.map(op => op.encodeCall());
                 return this._samplerContract.batchCall(subCalls).getABIEncodedTransactionData();
             },
-            handleCallResultsAsync: async callResults => {
+            handleCallResults: callResults => {
                 const rawSubCallResults = this._samplerContract.getABIDecodedReturnData<string[]>(
                     'batchCall',
                     callResults,
                 );
-                return Promise.all(
-                    subOps.map(async (op, i) => {
-                        const [output] = await op.handleCallResultsAsync(rawSubCallResults[i]);
-                        return {
-                            source: op.source,
-                            output,
-                            input: buyAmount,
-                            fillData: op.fillData,
-                        };
-                    }),
-                );
+                return subOps.map((op, i) => {
+                    const [output] = op.handleCallResults(rawSubCallResults[i]);
+                    return {
+                        source: op.source,
+                        output,
+                        input: buyAmount,
+                        fillData: op.fillData,
+                    };
+                });
             },
         };
     }
@@ -616,7 +612,7 @@ export class SamplerOperations {
                 }
                 return this._samplerContract.batchCall([encodedCall]).getABIEncodedTransactionData();
             },
-            handleCallResultsAsync: async callResults => {
+            handleCallResults: callResults => {
                 if (callResults === NULL_BYTES) {
                     return ZERO_AMOUNT;
                 }
@@ -624,7 +620,7 @@ export class SamplerOperations {
                     'batchCall',
                     callResults,
                 );
-                const samples = await getSellQuotes.handleCallResultsAsync(rawSubCallResults[0]);
+                const samples = getSellQuotes.handleCallResults(rawSubCallResults[0]);
                 if (samples.length === 0) {
                     return ZERO_AMOUNT;
                 }
@@ -664,14 +660,12 @@ export class SamplerOperations {
                 const subCalls = subOps.map(op => op.encodeCall());
                 return this._samplerContract.batchCall(subCalls).getABIEncodedTransactionData();
             },
-            handleCallResultsAsync: async callResults => {
+            handleCallResults: callResults => {
                 const rawSubCallResults = this._samplerContract.getABIDecodedReturnData<string[]>(
                     'batchCall',
                     callResults,
                 );
-                const samples = await Promise.all(
-                    subOps.map(async (op, i) => op.handleCallResultsAsync(rawSubCallResults[i])),
-                );
+                const samples = subOps.map((op, i) => op.handleCallResults(rawSubCallResults[i]));
                 return subOps.map((op, i) => {
                     return samples[i].map((output, j) => ({
                         source: op.source,
@@ -705,14 +699,12 @@ export class SamplerOperations {
                 const subCalls = subOps.map(op => op.encodeCall());
                 return this._samplerContract.batchCall(subCalls).getABIEncodedTransactionData();
             },
-            handleCallResultsAsync: async callResults => {
+            handleCallResults: callResults => {
                 const rawSubCallResults = this._samplerContract.getABIDecodedReturnData<string[]>(
                     'batchCall',
                     callResults,
                 );
-                const samples = await Promise.all(
-                    subOps.map(async (op, i) => op.handleCallResultsAsync(rawSubCallResults[i])),
-                );
+                const samples = subOps.map((op, i) => op.handleCallResults(rawSubCallResults[i]));
                 return subOps.map((op, i) => {
                     return samples[i].map((output, j) => ({
                         source: op.source,
