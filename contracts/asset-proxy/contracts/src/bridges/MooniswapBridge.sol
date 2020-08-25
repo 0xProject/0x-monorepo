@@ -114,8 +114,7 @@ contract MooniswapBridge is
         }
 
         // Transfer funds to `to`
-        IERC20Token(toTokenAddress).transfer(to, state.boughtAmount);
-
+        LibERC20Token.transfer(toTokenAddress, to, state.boughtAmount);
 
         emit ERC20BridgeTransfer(
             // input token
