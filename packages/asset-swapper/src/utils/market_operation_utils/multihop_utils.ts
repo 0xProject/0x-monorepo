@@ -38,14 +38,18 @@ export function getBestTwoHopQuote(
     feeSchedule?: FeeSchedule,
 ): { quote: DexSample<MultiHopFillData> | undefined; adjustedRate: BigNumber } {
     const { side, inputAmount, ethToOutputRate, twoHopQuotes } = marketSideLiquidity;
-    return twoHopQuotes
+    if (twoHopQuotes.length === 0) {
+        return { adjustedRate: ZERO_AMOUNT, quote: undefined };
+    }
+    const best = twoHopQuotes
         .map(quote => getTwoHopAdjustedRate(side, quote, inputAmount, ethToOutputRate, feeSchedule))
         .reduce(
             (prev, curr, i) =>
                 curr.isGreaterThan(prev.adjustedRate) ? { adjustedRate: curr, quote: twoHopQuotes[i] } : prev,
             {
-                adjustedRate: ZERO_AMOUNT,
-                quote: undefined as DexSample<MultiHopFillData> | undefined,
+                adjustedRate: getTwoHopAdjustedRate(side, twoHopQuotes[0], inputAmount, ethToOutputRate, feeSchedule),
+                quote: twoHopQuotes[0],
             },
         );
+    return best;
 }
