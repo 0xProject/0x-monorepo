@@ -540,7 +540,7 @@ export class MarketOperationUtils {
                 twoHopQuotes,
                 nativeOrders,
                 orderFillableAmounts,
-                bestTwoHopQuote!,
+                bestTwoHopQuote,
                 opts.quoteRequestor,
             );
             return { optimizedOrders: twoHopOrders, quoteReport: twoHopQuoteReport, isTwoHop: true };
