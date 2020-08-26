@@ -61,6 +61,10 @@
             {
                 "note": "Added `Mooniswap`",
                 "pr": 2675
+            },
+            {
+                "note": "Stop requiring takerAddress for RFQ-T indicative quotes",
+                "pr": 2684
             }
         ]
     },
