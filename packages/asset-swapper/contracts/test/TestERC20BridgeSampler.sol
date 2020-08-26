@@ -22,9 +22,9 @@ import "@0x/contracts-asset-proxy/contracts/src/interfaces/IUniswapExchangeFacto
 import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "../src/ERC20BridgeSampler.sol";
-import "../src/IEth2Dai.sol";
-import "../src/IKyberNetworkProxy.sol";
-import "../src/IUniswapV2Router01.sol";
+import "../src/interfaces/IEth2Dai.sol";
+import "../src/interfaces/IKyberNetworkProxy.sol";
+import "../src/interfaces/IUniswapV2Router01.sol";
 
 
 library LibDeterministicQuotes {

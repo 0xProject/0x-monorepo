@@ -20,10 +20,10 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/DeploymentConstants.sol";
-import "./IKyberNetwork.sol";
-import "./IKyberNetworkProxy.sol";
-import "./IKyberStorage.sol";
-import "./IKyberHintHandler.sol";
+import "./interfaces/IKyberNetwork.sol";
+import "./interfaces/IKyberNetworkProxy.sol";
+import "./interfaces/IKyberStorage.sol";
+import "./interfaces/IKyberHintHandler.sol";
 import "./ApproximateBuys.sol";
 import "./SamplerUtils.sol";
 

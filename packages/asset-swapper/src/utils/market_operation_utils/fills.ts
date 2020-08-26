@@ -4,7 +4,7 @@ import { MarketOperation, SignedOrderWithFillableAmounts } from '../../types';
 import { fillableAmountsUtils } from '../../utils/fillable_amounts_utils';
 
 import { POSITIVE_INF, ZERO_AMOUNT } from './constants';
-import { CollapsedFill, DexSample, ERC20BridgeSource, FeeSchedule, Fill, FillFlags } from './types';
+import { CollapsedFill, DexSample, ERC20BridgeSource, FeeSchedule, Fill, FillFlags, MultiHopFillData } from './types';
 
 // tslint:disable: prefer-for-of no-bitwise completed-docs
 
@@ -153,6 +153,22 @@ function dexQuotesToPaths(
         paths.push(path);
     }
     return paths;
+}
+
+export function getTwoHopAdjustedRate(
+    side: MarketOperation,
+    twoHopQuote: DexSample<MultiHopFillData>,
+    targetInput: BigNumber,
+    ethToOutputRate: BigNumber,
+    fees: FeeSchedule = {},
+): BigNumber {
+    const { output, input, fillData } = twoHopQuote;
+    if (input.isLessThan(targetInput) || output.isZero()) {
+        return ZERO_AMOUNT;
+    }
+    const penalty = ethToOutputRate.times(fees[ERC20BridgeSource.MultiHop]!(fillData));
+    const adjustedOutput = side === MarketOperation.Sell ? output.minus(penalty) : output.plus(penalty);
+    return side === MarketOperation.Sell ? adjustedOutput.div(input) : input.div(adjustedOutput);
 }
 
 function sourceToFillFlags(source: ERC20BridgeSource): number {

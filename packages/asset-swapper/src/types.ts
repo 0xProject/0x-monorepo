@@ -2,7 +2,12 @@ import { BlockParam, ContractAddresses, GethCallOverrides } from '@0x/contract-w
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
-import { GetMarketOrdersOpts, OptimizedMarketOrder } from './utils/market_operation_utils/types';
+import {
+    ERC20BridgeSource,
+    GetMarketOrdersOpts,
+    OptimizedMarketOrder,
+    TokenAdjacencyGraph,
+} from './utils/market_operation_utils/types';
 import { QuoteReport } from './utils/quote_report_generator';
 import { LogFunction } from './utils/quote_requestor';
 
@@ -141,8 +146,6 @@ export interface ExchangeProxyContractOpts {
     affiliateFee: AffiliateFee;
 }
 
-export type SwapQuote = MarketBuySwapQuote | MarketSellSwapQuote;
-
 export interface GetExtensionContractTypeOpts {
     takerAddress?: string;
     ethAmount?: BigNumber;
@@ -165,6 +168,7 @@ export interface SwapQuoteBase {
     worstCaseQuoteInfo: SwapQuoteInfo;
     sourceBreakdown: SwapQuoteOrdersBreakdown;
     quoteReport?: QuoteReport;
+    isTwoHop: boolean;
 }
 
 /**
@@ -184,6 +188,8 @@ export interface MarketBuySwapQuote extends SwapQuoteBase {
     makerAssetFillAmount: BigNumber;
     type: MarketOperation.Buy;
 }
+
+export type SwapQuote = MarketBuySwapQuote | MarketSellSwapQuote;
 
 /**
  * feeTakerAssetAmount: The amount of takerAsset reserved for paying takerFees when swapping for desired assets.
@@ -205,9 +211,15 @@ export interface SwapQuoteInfo {
 /**
  * percentage breakdown of each liquidity source used in quote
  */
-export interface SwapQuoteOrdersBreakdown {
-    [source: string]: BigNumber;
-}
+export type SwapQuoteOrdersBreakdown = Partial<
+    { [key in Exclude<ERC20BridgeSource, typeof ERC20BridgeSource.MultiHop>]: BigNumber } & {
+        [ERC20BridgeSource.MultiHop]: {
+            proportion: BigNumber;
+            intermediateToken: string;
+            hops: ERC20BridgeSource[];
+        };
+    }
+>;
 
 /**
  * nativeExclusivelyRFQT: if set to `true`, Swap quote will exclude Open Orderbook liquidity.
@@ -272,6 +284,7 @@ export interface SwapQuoterOpts extends OrderPrunerOpts {
     ethGasStationUrl?: string;
     rfqt?: SwapQuoterRfqtOpts;
     samplerOverrides?: SamplerOverrides;
+    tokenAdjacencyGraph?: TokenAdjacencyGraph;
 }
 
 /**

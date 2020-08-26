@@ -138,6 +138,7 @@ export const ONE_ETHER = new BigNumber(1e18);
 export const NEGATIVE_INF = new BigNumber('-Infinity');
 export const POSITIVE_INF = new BigNumber('Infinity');
 export const ZERO_AMOUNT = new BigNumber(0);
+export const MAX_UINT256 = new BigNumber(2).pow(256).minus(1);
 export const ONE_HOUR_IN_SECONDS = 60 * 60;
 export const ONE_SECOND_MS = 1000;
 export const NULL_BYTES = '0x';

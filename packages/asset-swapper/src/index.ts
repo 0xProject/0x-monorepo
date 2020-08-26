@@ -1,3 +1,9 @@
+export {
+    AwaitTransactionSuccessOpts,
+    ContractFunctionObj,
+    ContractTxFunctionObj,
+    SendTransactionOpts,
+} from '@0x/base-contract';
 export { ContractAddresses } from '@0x/contract-addresses';
 export { WSOpts } from '@0x/mesh-rpc-client';
 export {
@@ -28,6 +34,7 @@ export {
     AbiDefinition,
     BlockParam,
     BlockParamLiteral,
+    CallData,
     CompilerOpts,
     CompilerSettings,
     CompilerSettingsMetadata,
@@ -66,6 +73,8 @@ export {
     StateMutability,
     SupportedProvider,
     TupleDataItem,
+    TxData,
+    TxDataPayable,
     Web3JsProvider,
     Web3JsV1Provider,
     Web3JsV2Provider,
@@ -108,28 +117,41 @@ export {
 } from './types';
 export { affiliateFeeUtils } from './utils/affiliate_fee_utils';
 export {
+    Parameters,
+    SamplerContractCall,
+    SamplerContractOperation,
+} from './utils/market_operation_utils/sampler_contract_operation';
+export {
     BancorFillData,
     BalancerFillData,
     CollapsedFill,
     CurveFillData,
     CurveFunctionSelectors,
     CurveInfo,
+    DexSample,
     ERC20BridgeSource,
     FeeSchedule,
+    Fill,
     FillData,
+    FillFlags,
     GetMarketOrdersRfqtOpts,
     LiquidityProviderFillData,
     MarketDepth,
     MarketDepthSide,
     MultiBridgeFillData,
+    MultiHopFillData,
     NativeCollapsedFill,
     NativeFillData,
     OptimizedMarketOrder,
+    SourceInfo,
+    SourceQuoteOperation,
+    TokenAdjacencyGraph,
     UniswapV2FillData,
 } from './utils/market_operation_utils/types';
 export { ProtocolFeeUtils } from './utils/protocol_fee_utils';
 export {
     BridgeReportSource,
+    MultiHopReportSource,
     NativeOrderbookReportSource,
     NativeRFQTReportSource,
     QuoteReport,
@@ -140,3 +162,4 @@ export { rfqtMocker } from './utils/rfqt_mocker';
 export { ERC20BridgeSamplerContract } from './wrappers';
 import { ERC20BridgeSource } from './utils/market_operation_utils/types';
 export type Native = ERC20BridgeSource.Native;
+export type MultiHop = ERC20BridgeSource.MultiHop;
