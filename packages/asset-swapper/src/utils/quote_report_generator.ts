@@ -1,7 +1,6 @@
 import { orderHashUtils } from '@0x/order-utils';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import * as _ from 'lodash';
 
 import { MarketOperation } from '../types';
 
@@ -53,6 +52,11 @@ export interface QuoteReport {
     sourcesDelivered: QuoteReportSource[];
 }
 
+interface SignedOrderWithMetadata extends SignedOrder {
+    hash: string;
+    fillableAmount: BigNumber;
+}
+
 const nativeOrderFromCollapsedFill = (cf: CollapsedFill): SignedOrder | undefined => {
     // Cast as NativeCollapsedFill and then check
     // if it really is a NativeCollapsedFill
@@ -82,18 +86,15 @@ export function generateQuoteReport(
         // length mismatch, abort
         throw new Error('orderFillableAmounts must be the same length as nativeOrders');
     }
-    const orderHashesToFillableAmounts: { [orderHash: string]: BigNumber } = {};
-    nativeOrders.forEach((nativeOrder, idx) => {
-        orderHashesToFillableAmounts[orderHashUtils.getOrderHash(nativeOrder)] = orderFillableAmounts[idx];
-    });
+    const orderWithMetadata: SignedOrderWithMetadata[] = nativeOrders.map((o, i) => ({
+        ...o,
+        hash: orderHashUtils.getOrderHash(o),
+        fillableAmount: orderFillableAmounts[i],
+    }));
 
     const dexReportSourcesConsidered = dexQuotes.map(quote => _dexSampleToReportSource(quote, marketOperation));
-    const nativeOrderSourcesConsidered = nativeOrders.map(order =>
-        _nativeOrderToReportSource(
-            order,
-            orderHashesToFillableAmounts[orderHashUtils.getOrderHash(order)],
-            quoteRequestor,
-        ),
+    const nativeOrderSourcesConsidered = orderWithMetadata.map(order =>
+        _nativeOrderToReportSource(order, quoteRequestor),
     );
     const multiHopSourcesConsidered = multiHopQuotes.map(quote =>
         _multiHopSampleToReportSource(quote, marketOperation),
@@ -109,11 +110,10 @@ export function generateQuoteReport(
         sourcesDelivered = liquidityDelivered.map(collapsedFill => {
             const foundNativeOrder = nativeOrderFromCollapsedFill(collapsedFill);
             if (foundNativeOrder) {
-                return _nativeOrderToReportSource(
-                    foundNativeOrder,
-                    orderHashesToFillableAmounts[orderHashUtils.getOrderHash(foundNativeOrder)],
-                    quoteRequestor,
-                );
+                const matchedOrder = orderWithMetadata.find(
+                    o => o.signature === foundNativeOrder.signature && o.salt === foundNativeOrder.salt,
+                )!;
+                return _nativeOrderToReportSource(matchedOrder, quoteRequestor);
             } else {
                 return _dexSampleToReportSource(collapsedFill, marketOperation);
             }
@@ -180,11 +180,10 @@ function _multiHopSampleToReportSource(
 }
 
 function _nativeOrderToReportSource(
-    nativeOrder: SignedOrder,
-    fillableAmount: BigNumber,
+    nativeOrderWithMetaData: SignedOrderWithMetadata,
     quoteRequestor?: QuoteRequestor,
 ): NativeRFQTReportSource | NativeOrderbookReportSource {
-    const orderHash = orderHashUtils.getOrderHash(nativeOrder);
+    const { hash: orderHash, fillableAmount, ...nativeOrder } = nativeOrderWithMetaData;
 
     const nativeOrderBase: NativeReportSourceBase = {
         liquiditySource: ERC20BridgeSource.Native,
@@ -205,7 +204,6 @@ function _nativeOrderToReportSource(
         };
         return rfqtSource;
     } else {
-        // if it's not an rfqt order, treat as normal
         const regularNativeOrder: NativeOrderbookReportSource = {
             ...nativeOrderBase,
             isRfqt: false,
