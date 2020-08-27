@@ -15,10 +15,7 @@ import * as Eth2DaiSampler from '../test/generated-artifacts/Eth2DaiSampler.json
 import * as IBalancer from '../test/generated-artifacts/IBalancer.json';
 import * as ICurve from '../test/generated-artifacts/ICurve.json';
 import * as IEth2Dai from '../test/generated-artifacts/IEth2Dai.json';
-import * as IKyberHintHandler from '../test/generated-artifacts/IKyberHintHandler.json';
 import * as IKyberNetwork from '../test/generated-artifacts/IKyberNetwork.json';
-import * as IKyberNetworkProxy from '../test/generated-artifacts/IKyberNetworkProxy.json';
-import * as IKyberStorage from '../test/generated-artifacts/IKyberStorage.json';
 import * as ILiquidityProvider from '../test/generated-artifacts/ILiquidityProvider.json';
 import * as ILiquidityProviderRegistry from '../test/generated-artifacts/ILiquidityProviderRegistry.json';
 import * as IMooniswap from '../test/generated-artifacts/IMooniswap.json';
@@ -58,10 +55,7 @@ export const artifacts = {
     IBalancer: IBalancer as ContractArtifact,
     ICurve: ICurve as ContractArtifact,
     IEth2Dai: IEth2Dai as ContractArtifact,
-    IKyberHintHandler: IKyberHintHandler as ContractArtifact,
     IKyberNetwork: IKyberNetwork as ContractArtifact,
-    IKyberNetworkProxy: IKyberNetworkProxy as ContractArtifact,
-    IKyberStorage: IKyberStorage as ContractArtifact,
     ILiquidityProvider: ILiquidityProvider as ContractArtifact,
     ILiquidityProviderRegistry: ILiquidityProviderRegistry as ContractArtifact,
     IMStable: IMStable as ContractArtifact,

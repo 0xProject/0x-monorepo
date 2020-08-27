@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2019 ZeroEx Intl.
+  Copyright 2020 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -45,6 +45,7 @@ contract KyberBridge is
         uint256 fromTokenBalance;
         uint256 payableAmount;
         uint256 conversionRate;
+        bytes hint;
     }
 
     /// @dev Kyber ETH pseudo-address.
@@ -85,47 +86,35 @@ contract KyberBridge is
         state.kyber = IKyberNetworkProxy(_getKyberNetworkProxyAddress());
         state.weth = IEtherToken(_getWethAddress());
         // Decode the bridge data to get the `fromTokenAddress`.
-        (state.fromTokenAddress) = abi.decode(bridgeData, (address));
+        (state.fromTokenAddress, state.hint) = abi.decode(bridgeData, (address, bytes));
         // Query the balance of "from" tokens.
         state.fromTokenBalance = IERC20Token(state.fromTokenAddress).balanceOf(address(this));
         if (state.fromTokenBalance == 0) {
             // Return failure if no input tokens.
             return BRIDGE_FAILED;
         }
-        // Compute the conversion rate, expressed in 18 decimals.
-        // The sequential notation is to get around stack limits.
-        state.conversionRate = KYBER_RATE_BASE;
-        state.conversionRate = state.conversionRate.safeMul(amount);
-        state.conversionRate = state.conversionRate.safeMul(
-            10 ** uint256(LibERC20Token.decimals(state.fromTokenAddress))
-        );
-        state.conversionRate = state.conversionRate.safeDiv(state.fromTokenBalance);
-        state.conversionRate = state.conversionRate.safeDiv(
-            10 ** uint256(LibERC20Token.decimals(toTokenAddress))
-        );
         if (state.fromTokenAddress == toTokenAddress) {
             // Just transfer the tokens if they're the same.
             LibERC20Token.transfer(state.fromTokenAddress, to, state.fromTokenBalance);
             return BRIDGE_SUCCESS;
-        } else if (state.fromTokenAddress != address(state.weth)) {
-            // If the input token is not WETH, grant an allowance to the exchange
-            // to spend them.
+        }
+        if (state.fromTokenAddress == address(state.weth)) {
+            // From WETH
+            state.fromTokenAddress = KYBER_ETH_ADDRESS;
+            state.payableAmount = state.fromTokenBalance;
+            state.weth.withdraw(state.fromTokenBalance);
+        } else {
             LibERC20Token.approveIfBelow(
                 state.fromTokenAddress,
                 address(state.kyber),
                 state.fromTokenBalance
             );
-        } else {
-            // If the input token is WETH, unwrap it and attach it to the call.
-            state.fromTokenAddress = KYBER_ETH_ADDRESS;
-            state.payableAmount = state.fromTokenBalance;
-            state.weth.withdraw(state.fromTokenBalance);
         }
         bool isToTokenWeth = toTokenAddress == address(state.weth);
 
         // Try to sell all of this contract's input token balance through
         // `KyberNetworkProxy.trade()`.
-        uint256 boughtAmount = state.kyber.trade.value(state.payableAmount)(
+        uint256 boughtAmount = state.kyber.tradeWithHint.value(state.payableAmount)(
             // Input token.
             state.fromTokenAddress,
             // Sell amount.
@@ -137,11 +126,11 @@ contract KyberBridge is
             isToTokenWeth ? address(uint160(address(this))) : address(uint160(to)),
             // Buy as much as possible.
             uint256(-1),
-            // Compute the minimum conversion rate, which is expressed in units with
-            // 18 decimal places.
-            state.conversionRate,
+            // The minimum conversion rate
+            1,
             // No affiliate address.
-            address(0)
+            address(0),
+            state.hint
         );
         // Wrap ETH output and transfer to recipient.
         if (isToTokenWeth) {
@@ -173,4 +162,5 @@ contract KyberBridge is
     {
         return LEGACY_WALLET_MAGIC_VALUE;
     }
+
 }

@@ -37,6 +37,10 @@
             {
                 "note": "Redeploy `MooniswapBridge` on Mainnet",
                 "pr": 2681
+            },
+            {
+                "note": "Redeploy `KyberBridge` on Mainnet",
+                "pr": 2683
             }
         ]
     },

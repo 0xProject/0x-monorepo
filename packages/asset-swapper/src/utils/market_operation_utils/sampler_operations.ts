@@ -6,7 +6,7 @@ import { ERC20BridgeSamplerContract } from '../../wrappers';
 
 import { BalancerPoolsCache, computeBalancerBuyQuote, computeBalancerSellQuote } from './balancer_utils';
 import { BancorService } from './bancor_service';
-import { MAX_UINT256, NULL_BYTES, ZERO_AMOUNT } from './constants';
+import { MAINNET_KYBER_RESERVE_IDS, MAX_UINT256, NULL_BYTES, ZERO_AMOUNT } from './constants';
 import { getCurveInfosForPair } from './curve_utils';
 import { getMultiBridgeIntermediateToken } from './multibridge_utils';
 import { getIntermediateTokens } from './multihop_utils';
@@ -20,6 +20,7 @@ import {
     DexSample,
     ERC20BridgeSource,
     HopInfo,
+    KyberFillData,
     LiquidityProviderFillData,
     MultiBridgeFillData,
     MultiHopFillData,
@@ -71,6 +72,7 @@ export class SamplerOperations {
     }
 
     public getKyberSellQuotes(
+        reserveId: string,
         makerToken: string,
         takerToken: string,
         takerFillAmounts: BigNumber[],
@@ -79,11 +81,21 @@ export class SamplerOperations {
             source: ERC20BridgeSource.Kyber,
             contract: this._samplerContract,
             function: this._samplerContract.sampleSellsFromKyberNetwork,
-            params: [takerToken, makerToken, takerFillAmounts],
+            params: [reserveId, takerToken, makerToken, takerFillAmounts],
+            callback: (callResults: string, fillData: KyberFillData): BigNumber[] => {
+                const [hint, samples] = this._samplerContract.getABIDecodedReturnData<[string, BigNumber[]]>(
+                    'sampleSellsFromKyberNetwork',
+                    callResults,
+                );
+                fillData.hint = hint;
+                fillData.reserveId = reserveId;
+                return samples;
+            },
         });
     }
 
     public getKyberBuyQuotes(
+        reserveId: string,
         makerToken: string,
         takerToken: string,
         makerFillAmounts: BigNumber[],
@@ -92,7 +104,16 @@ export class SamplerOperations {
             source: ERC20BridgeSource.Kyber,
             contract: this._samplerContract,
             function: this._samplerContract.sampleBuysFromKyberNetwork,
-            params: [takerToken, makerToken, makerFillAmounts],
+            params: [reserveId, takerToken, makerToken, makerFillAmounts],
+            callback: (callResults: string, fillData: KyberFillData): BigNumber[] => {
+                const [hint, samples] = this._samplerContract.getABIDecodedReturnData<[string, BigNumber[]]>(
+                    'sampleBuysFromKyberNetwork',
+                    callResults,
+                );
+                fillData.hint = hint;
+                fillData.reserveId = reserveId;
+                return samples;
+            },
         });
     }
 
@@ -746,7 +767,9 @@ export class SamplerOperations {
                             }
                             return ops;
                         case ERC20BridgeSource.Kyber:
-                            return this.getKyberSellQuotes(makerToken, takerToken, takerFillAmounts);
+                            return Object.values(MAINNET_KYBER_RESERVE_IDS).map(reserveId =>
+                                this.getKyberSellQuotes(reserveId, makerToken, takerToken, takerFillAmounts),
+                            );
                         case ERC20BridgeSource.Curve:
                             return getCurveInfosForPair(takerToken, makerToken).map(curve =>
                                 this.getCurveSellQuotes(
@@ -825,7 +848,9 @@ export class SamplerOperations {
                             }
                             return ops;
                         case ERC20BridgeSource.Kyber:
-                            return this.getKyberBuyQuotes(makerToken, takerToken, makerFillAmounts);
+                            return Object.values(MAINNET_KYBER_RESERVE_IDS).map(reserveId =>
+                                this.getKyberBuyQuotes(reserveId, makerToken, takerToken, makerFillAmounts),
+                            );
                         case ERC20BridgeSource.Curve:
                             return getCurveInfosForPair(takerToken, makerToken).map(curve =>
                                 this.getCurveBuyQuotes(

@@ -42,5 +42,31 @@ interface IKyberNetworkProxy {
     )
         external
         payable
-        returns(uint256 boughtAmount);
+        returns (uint256 boughtAmount);
+
+    /// @dev Sells `sellTokenAddress` tokens for `buyTokenAddress` tokens
+    /// using a hint for the reserve.
+    /// @param sellTokenAddress Token to sell.
+    /// @param sellAmount Amount of tokens to sell.
+    /// @param buyTokenAddress Token to buy.
+    /// @param recipientAddress Address to send bought tokens to.
+    /// @param maxBuyTokenAmount A limit on the amount of tokens to buy.
+    /// @param minConversionRate The minimal conversion rate. If actual rate
+    ///        is lower, trade is canceled.
+    /// @param walletId The wallet ID to send part of the fees
+    /// @param hint The hint for the selective inclusion (or exclusion) of reserves
+    /// @return boughtAmount Amount of tokens bought.
+    function tradeWithHint(
+        address sellTokenAddress,
+        uint256 sellAmount,
+        address buyTokenAddress,
+        address payable recipientAddress,
+        uint256 maxBuyTokenAmount,
+        uint256 minConversionRate,
+        address payable walletId,
+        bytes calldata hint
+    )
+        external
+        payable
+        returns (uint256 boughtAmount);
 }

@@ -81,24 +81,25 @@ blockchainTests.skip('Mainnet Sampler Tests', env => {
         const WETH = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
         const DAI = '0x6b175474e89094c44da98b954eedeac495271d0f';
         const USDC = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';
+        const RESERVE_ID = '0xff4b796265722046707200000000000000000000000000000000000000000000';
         describe('sampleSellsFromKyberNetwork()', () => {
             it('samples sells from Kyber DAI->WETH', async () => {
-                const samples = await testContract
-                    .sampleSellsFromKyberNetwork(DAI, WETH, [toBaseUnitAmount(1)])
+                const [, samples] = await testContract
+                    .sampleSellsFromKyberNetwork(RESERVE_ID, DAI, WETH, [toBaseUnitAmount(1)])
                     .callAsync({ overrides });
                 expect(samples.length).to.be.bignumber.greaterThan(0);
                 expect(samples[0]).to.be.bignumber.greaterThan(0);
             });
             it('samples sells from Kyber WETH->DAI', async () => {
-                const samples = await testContract
-                    .sampleSellsFromKyberNetwork(WETH, DAI, [toBaseUnitAmount(1)])
+                const [, samples] = await testContract
+                    .sampleSellsFromKyberNetwork(RESERVE_ID, WETH, DAI, [toBaseUnitAmount(1)])
                     .callAsync({ overrides });
                 expect(samples.length).to.be.bignumber.greaterThan(0);
                 expect(samples[0]).to.be.bignumber.greaterThan(0);
             });
             it('samples sells from Kyber DAI->USDC', async () => {
-                const samples = await testContract
-                    .sampleSellsFromKyberNetwork(DAI, USDC, [toBaseUnitAmount(1)])
+                const [, samples] = await testContract
+                    .sampleSellsFromKyberNetwork(RESERVE_ID, DAI, USDC, [toBaseUnitAmount(1)])
                     .callAsync({ overrides });
                 expect(samples.length).to.be.bignumber.greaterThan(0);
                 expect(samples[0]).to.be.bignumber.greaterThan(0);
@@ -109,8 +110,8 @@ blockchainTests.skip('Mainnet Sampler Tests', env => {
             it('samples buys from Kyber WETH->DAI', async () => {
                 // From ETH to DAI
                 // I want to buy 1 DAI
-                const samples = await testContract
-                    .sampleBuysFromKyberNetwork(WETH, DAI, [toBaseUnitAmount(1)])
+                const [, samples] = await testContract
+                    .sampleBuysFromKyberNetwork(RESERVE_ID, WETH, DAI, [toBaseUnitAmount(1)])
                     .callAsync({ overrides });
                 expect(samples.length).to.be.bignumber.greaterThan(0);
                 expect(samples[0]).to.be.bignumber.greaterThan(0);
@@ -119,8 +120,8 @@ blockchainTests.skip('Mainnet Sampler Tests', env => {
             it('samples buys from Kyber DAI->WETH', async () => {
                 // From USDC to DAI
                 // I want to buy 1 WETH
-                const samples = await testContract
-                    .sampleBuysFromKyberNetwork(DAI, WETH, [toBaseUnitAmount(1)])
+                const [, samples] = await testContract
+                    .sampleBuysFromKyberNetwork(RESERVE_ID, DAI, WETH, [toBaseUnitAmount(1)])
                     .callAsync({ overrides });
                 expect(samples.length).to.be.bignumber.greaterThan(0);
                 expect(samples[0]).to.be.bignumber.greaterThan(0);

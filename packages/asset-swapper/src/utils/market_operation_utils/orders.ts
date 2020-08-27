@@ -27,6 +27,7 @@ import {
     DexSample,
     ERC20BridgeSource,
     Fill,
+    KyberFillData,
     LiquidityProviderFillData,
     MultiBridgeFillData,
     MultiHopFillData,
@@ -295,6 +296,14 @@ function createBridgeOrder(
                 createMultiBridgeData(takerToken, makerToken),
             );
             break;
+        case ERC20BridgeSource.Kyber:
+            const kyberFillData = (fill as CollapsedFill<KyberFillData>).fillData!; // tslint:disable-line:no-non-null-assertion
+            makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
+                makerToken,
+                bridgeAddress,
+                createKyberBridgeData(takerToken, kyberFillData.hint),
+            );
+            break;
         default:
             makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
                 makerToken,
@@ -391,6 +400,11 @@ function createBancorBridgeData(path: string[], networkAddress: string): string 
         { name: 'networkAddress', type: 'address' },
     ]);
     return encoder.encode({ path, networkAddress });
+}
+
+function createKyberBridgeData(fromTokenAddress: string, hint: string): string {
+    const encoder = AbiEncoder.create([{ name: 'fromTokenAddress', type: 'address' }, { name: 'hint', type: 'bytes' }]);
+    return encoder.encode({ fromTokenAddress, hint });
 }
 
 function createCurveBridgeData(
