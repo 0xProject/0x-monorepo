@@ -532,15 +532,15 @@ export class MarketOperationUtils {
             marketSideLiquidity,
             opts.feeSchedule,
         );
-        if (bestTwoHopRate.isGreaterThan(optimalPathRate)) {
-            const twoHopOrders = createOrdersFromTwoHopSample(bestTwoHopQuote!, orderOpts);
+        if (bestTwoHopQuote && bestTwoHopRate.isGreaterThan(optimalPathRate)) {
+            const twoHopOrders = createOrdersFromTwoHopSample(bestTwoHopQuote, orderOpts);
             const twoHopQuoteReport = generateQuoteReport(
                 side,
                 _.flatten(dexQuotes),
                 twoHopQuotes,
                 nativeOrders,
                 orderFillableAmounts,
-                bestTwoHopQuote!,
+                bestTwoHopQuote,
                 opts.quoteRequestor,
             );
             return { optimizedOrders: twoHopOrders, quoteReport: twoHopQuoteReport, isTwoHop: true };
