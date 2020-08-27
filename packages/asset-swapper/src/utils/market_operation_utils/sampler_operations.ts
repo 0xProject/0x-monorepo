@@ -6,8 +6,9 @@ import { ERC20BridgeSamplerContract } from '../../wrappers';
 
 import { BalancerPoolsCache, computeBalancerBuyQuote, computeBalancerSellQuote } from './balancer_utils';
 import { BancorService } from './bancor_service';
-import { MAINNET_KYBER_RESERVE_IDS, MAX_UINT256, NULL_BYTES, ZERO_AMOUNT } from './constants';
+import { MAX_UINT256, NULL_BYTES, ZERO_AMOUNT } from './constants';
 import { getCurveInfosForPair } from './curve_utils';
+import { getKyberReserveIdsForPair } from './kyber_utils';
 import { getMultiBridgeIntermediateToken } from './multibridge_utils';
 import { getIntermediateTokens } from './multihop_utils';
 import { SamplerContractOperation } from './sampler_contract_operation';
@@ -767,7 +768,7 @@ export class SamplerOperations {
                             }
                             return ops;
                         case ERC20BridgeSource.Kyber:
-                            return Object.values(MAINNET_KYBER_RESERVE_IDS).map(reserveId =>
+                            return getKyberReserveIdsForPair(takerToken, makerToken).map(reserveId =>
                                 this.getKyberSellQuotes(reserveId, makerToken, takerToken, takerFillAmounts),
                             );
                         case ERC20BridgeSource.Curve:
@@ -848,7 +849,7 @@ export class SamplerOperations {
                             }
                             return ops;
                         case ERC20BridgeSource.Kyber:
-                            return Object.values(MAINNET_KYBER_RESERVE_IDS).map(reserveId =>
+                            return getKyberReserveIdsForPair(takerToken, makerToken).map(reserveId =>
                                 this.getKyberBuyQuotes(reserveId, makerToken, takerToken, makerFillAmounts),
                             );
                         case ERC20BridgeSource.Curve:

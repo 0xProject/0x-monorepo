@@ -122,8 +122,8 @@ export {
     SamplerContractOperation,
 } from './utils/market_operation_utils/sampler_contract_operation';
 export {
-    BancorFillData,
     BalancerFillData,
+    BancorFillData,
     CollapsedFill,
     CurveFillData,
     CurveFunctionSelectors,
@@ -135,6 +135,7 @@ export {
     FillData,
     FillFlags,
     GetMarketOrdersRfqtOpts,
+    KyberFillData,
     LiquidityProviderFillData,
     MarketDepth,
     MarketDepthSide,
