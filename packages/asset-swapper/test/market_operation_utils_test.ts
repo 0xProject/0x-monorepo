@@ -261,6 +261,7 @@ describe('MarketOperationUtils tests', () => {
         [ERC20BridgeSource.UniswapV2]: { tokenAddressPath: [] },
         [ERC20BridgeSource.Balancer]: { poolAddress: randomAddress() },
         [ERC20BridgeSource.Bancor]: { path: [], networkAddress: randomAddress() },
+        [ERC20BridgeSource.Kyber]: { hint: '0x', reserveId: '0x' },
         [ERC20BridgeSource.Curve]: {
             curve: {
                 poolAddress: randomAddress(),

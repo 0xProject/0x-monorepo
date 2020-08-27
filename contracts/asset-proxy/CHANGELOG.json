@@ -21,6 +21,10 @@
             {
                 "note": "Added `MooniswapBridge`",
                 "pr": 2675
+            },
+            {
+                "note": "Reworked `KyberBridge`",
+                "pr": 2683
             }
         ]
     },

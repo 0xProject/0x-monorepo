@@ -108,6 +108,11 @@ export interface BancorFillData extends FillData {
     networkAddress: string;
 }
 
+export interface KyberFillData extends FillData {
+    hint: string;
+    reserveId: string;
+}
+
 export interface Quote<TFillData = FillData> {
     amount: BigNumber;
     fillData?: TFillData;

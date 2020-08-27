@@ -23,6 +23,18 @@ export type SampleBuysHandler = (
     makerToken: string,
     makerTokenAmounts: BigNumber[],
 ) => SampleResults;
+export type SampleSellsKyberHandler = (
+    reserveId: string,
+    takerToken: string,
+    makerToken: string,
+    takerTokenAmounts: BigNumber[],
+) => [string, SampleResults];
+export type SampleBuysKyberHandler = (
+    reserveId: string,
+    takerToken: string,
+    makerToken: string,
+    makerTokenAmounts: BigNumber[],
+) => [string, SampleResults];
 export type SampleBuysMultihopHandler = (path: string[], takerTokenAmounts: BigNumber[]) => SampleResults;
 export type SampleSellsLPHandler = (
     registryAddress: string,
@@ -48,7 +60,7 @@ const DUMMY_PROVIDER = {
 interface Handlers {
     getOrderFillableMakerAssetAmounts: GetOrderFillableAssetAmountHandler;
     getOrderFillableTakerAssetAmounts: GetOrderFillableAssetAmountHandler;
-    sampleSellsFromKyberNetwork: SampleSellsHandler;
+    sampleSellsFromKyberNetwork: SampleSellsKyberHandler;
     sampleSellsFromLiquidityProviderRegistry: SampleSellsLPHandler;
     sampleSellsFromMultiBridge: SampleSellsMBHandler;
     sampleSellsFromEth2Dai: SampleSellsHandler;
@@ -104,13 +116,15 @@ export class MockSamplerContract extends ERC20BridgeSamplerContract {
     }
 
     public sampleSellsFromKyberNetwork(
+        reserveId: string,
         takerToken: string,
         makerToken: string,
         takerAssetAmounts: BigNumber[],
-    ): ContractFunctionObj<BigNumber[]> {
+    ): ContractFunctionObj<[string, BigNumber[]]> {
         return this._wrapCall(
             super.sampleSellsFromKyberNetwork,
             this._handlers.sampleSellsFromKyberNetwork,
+            reserveId,
             takerToken,
             makerToken,
             takerAssetAmounts,

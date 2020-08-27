@@ -73,6 +73,10 @@
             {
                 "note": "Use on-chain sampling (sometimes) for Balancer",
                 "pr": 2647
+            },
+            {
+                "note": "Re-worked `Kyber` quotes supporting multiple reserves",
+                "pr": 2683
             }
         ]
     },

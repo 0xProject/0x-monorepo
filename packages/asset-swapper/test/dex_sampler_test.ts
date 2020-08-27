@@ -135,16 +135,21 @@ describe('DexSampler tests', () => {
             const expectedTakerFillAmounts = getSampleAmounts(new BigNumber(100e18), 10);
             const expectedMakerFillAmounts = getSampleAmounts(new BigNumber(100e18), 10);
             const sampler = new MockSamplerContract({
-                sampleSellsFromKyberNetwork: (takerToken, makerToken, fillAmounts) => {
+                sampleSellsFromKyberNetwork: (_reserveId, takerToken, makerToken, fillAmounts) => {
                     expect(takerToken).to.eq(expectedTakerToken);
                     expect(makerToken).to.eq(expectedMakerToken);
                     expect(fillAmounts).to.deep.eq(expectedTakerFillAmounts);
-                    return expectedMakerFillAmounts;
+                    return ['0x', expectedMakerFillAmounts];
                 },
             });
             const dexOrderSampler = new DexOrderSampler(sampler);
             const [fillableAmounts] = await dexOrderSampler.executeAsync(
-                dexOrderSampler.getKyberSellQuotes(expectedMakerToken, expectedTakerToken, expectedTakerFillAmounts),
+                dexOrderSampler.getKyberSellQuotes(
+                    '0x',
+                    expectedMakerToken,
+                    expectedTakerToken,
+                    expectedTakerFillAmounts,
+                ),
             );
             expect(fillableAmounts).to.deep.eq(expectedMakerFillAmounts);
         });
@@ -373,12 +378,7 @@ describe('DexSampler tests', () => {
         it('getSellQuotes()', async () => {
             const expectedTakerToken = randomAddress();
             const expectedMakerToken = randomAddress();
-            const sources = [
-                ERC20BridgeSource.Kyber,
-                ERC20BridgeSource.Eth2Dai,
-                ERC20BridgeSource.Uniswap,
-                ERC20BridgeSource.UniswapV2,
-            ];
+            const sources = [ERC20BridgeSource.Eth2Dai, ERC20BridgeSource.Uniswap, ERC20BridgeSource.UniswapV2];
             const ratesBySource: RatesBySource = {
                 [ERC20BridgeSource.Kyber]: getRandomFloat(0, 100),
                 [ERC20BridgeSource.Eth2Dai]: getRandomFloat(0, 100),
@@ -387,12 +387,6 @@ describe('DexSampler tests', () => {
             };
             const expectedTakerFillAmounts = getSampleAmounts(new BigNumber(100e18), 3);
             const sampler = new MockSamplerContract({
-                sampleSellsFromKyberNetwork: (takerToken, makerToken, fillAmounts) => {
-                    expect(takerToken).to.eq(expectedTakerToken);
-                    expect(makerToken).to.eq(expectedMakerToken);
-                    expect(fillAmounts).to.deep.eq(expectedTakerFillAmounts);
-                    return fillAmounts.map(a => a.times(ratesBySource[ERC20BridgeSource.Kyber]).integerValue());
-                },
                 sampleSellsFromUniswap: (takerToken, makerToken, fillAmounts) => {
                     expect(takerToken).to.eq(expectedTakerToken);
                     expect(makerToken).to.eq(expectedMakerToken);
@@ -449,7 +443,8 @@ describe('DexSampler tests', () => {
                 })),
             ];
             //  extra quote for Uniswap V2, which provides a direct quote (tokenA -> tokenB) AND an ETH quote (tokenA -> ETH -> tokenB)
-            expect(quotes).to.have.lengthOf(sources.length + 1);
+            const additionalSourceCount = 1;
+            expect(quotes).to.have.lengthOf(sources.length + additionalSourceCount);
             expect(quotes).to.deep.eq(expectedQuotes.concat(uniswapV2ETHQuotes));
         });
         it('getSellQuotes() uses samples from Balancer', async () => {
