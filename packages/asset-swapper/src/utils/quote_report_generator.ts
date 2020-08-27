@@ -53,7 +53,7 @@ export interface QuoteReport {
 }
 
 interface SignedOrderWithMetadata extends SignedOrder {
-    hash: string;
+    orderHash: string;
     fillableAmount: BigNumber;
 }
 
@@ -88,7 +88,7 @@ export function generateQuoteReport(
     }
     const orderWithMetadata: SignedOrderWithMetadata[] = nativeOrders.map((o, i) => ({
         ...o,
-        hash: orderHashUtils.getOrderHash(o),
+        orderHash: orderHashUtils.getOrderHash(o),
         fillableAmount: orderFillableAmounts[i],
     }));
 
@@ -183,7 +183,7 @@ function _nativeOrderToReportSource(
     nativeOrderWithMetaData: SignedOrderWithMetadata,
     quoteRequestor?: QuoteRequestor,
 ): NativeRFQTReportSource | NativeOrderbookReportSource {
-    const { hash: orderHash, fillableAmount, ...nativeOrder } = nativeOrderWithMetaData;
+    const { orderHash, fillableAmount, ...nativeOrder } = nativeOrderWithMetaData;
 
     const nativeOrderBase: NativeReportSourceBase = {
         liquiditySource: ERC20BridgeSource.Native,
@@ -204,6 +204,7 @@ function _nativeOrderToReportSource(
         };
         return rfqtSource;
     } else {
+        // if it's not an rfqt order, treat as normal
         const regularNativeOrder: NativeOrderbookReportSource = {
             ...nativeOrderBase,
             isRfqt: false,
