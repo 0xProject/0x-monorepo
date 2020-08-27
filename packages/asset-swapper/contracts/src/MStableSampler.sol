@@ -21,7 +21,7 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/DeploymentConstants.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
-import "./IMStable.sol";
+import "./interfaces/IMStable.sol";
 import "./ApproximateBuys.sol";
 import "./SamplerUtils.sol";
 

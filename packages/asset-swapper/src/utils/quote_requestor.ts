@@ -350,10 +350,8 @@ export class QuoteRequestor {
                             switch (quoteType) {
                                 case 'firm':
                                     return 'quote';
-                                    break;
                                 case 'indicative':
                                     return 'price';
-                                    break;
                                 default:
                                     throw new Error(`Unexpected quote type ${quoteType}`);
                             }

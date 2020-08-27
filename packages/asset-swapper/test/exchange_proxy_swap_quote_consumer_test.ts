@@ -37,6 +37,7 @@ describe('ExchangeProxySwapQuoteConsumer', () => {
     const CHAIN_ID = 1;
     const TAKER_TOKEN = randomAddress();
     const MAKER_TOKEN = randomAddress();
+    const INTERMEDIATE_TOKEN = randomAddress();
     const TRANSFORMER_DEPLOYER = randomAddress();
     const contractAddresses = {
         ...getContractAddressesForChainOrThrow(CHAIN_ID),
@@ -121,6 +122,18 @@ describe('ExchangeProxySwapQuoteConsumer', () => {
             ...(side === MarketOperation.Buy
                 ? { makerAssetFillAmount: getRandomAmount() }
                 : { takerAssetFillAmount: getRandomAmount() }),
+        } as any;
+    }
+
+    function getRandomTwoHopQuote(side: MarketOperation): MarketBuySwapQuote | MarketSellSwapQuote {
+        const intermediateTokenAssetData = createAssetData(INTERMEDIATE_TOKEN);
+        return {
+            ...getRandomQuote(side),
+            orders: [
+                { ...getRandomOrder(), makerAssetData: intermediateTokenAssetData },
+                { ...getRandomOrder(), takerAssetData: intermediateTokenAssetData },
+            ],
+            isTwoHop: true,
         } as any;
     }
 
@@ -297,6 +310,53 @@ describe('ExchangeProxySwapQuoteConsumer', () => {
                     extensionContractOpts: { affiliateFee },
                 }),
             ).to.eventually.be.rejectedWith('Affiliate fees denominated in sell token are not yet supported');
+        });
+        it('Uses two `FillQuoteTransformer`s if given two-hop sell quote', async () => {
+            const quote = getRandomTwoHopQuote(MarketOperation.Sell) as MarketSellSwapQuote;
+            const callInfo = await consumer.getCalldataOrThrowAsync(quote, {
+                extensionContractOpts: { isTwoHop: true },
+            });
+            const callArgs = callDataEncoder.decode(callInfo.calldataHexString) as CallArgs;
+            expect(callArgs.inputToken).to.eq(TAKER_TOKEN);
+            expect(callArgs.outputToken).to.eq(MAKER_TOKEN);
+            expect(callArgs.inputTokenAmount).to.bignumber.eq(quote.worstCaseQuoteInfo.totalTakerAssetAmount);
+            expect(callArgs.minOutputTokenAmount).to.bignumber.eq(quote.worstCaseQuoteInfo.makerAssetAmount);
+            expect(callArgs.transformations).to.be.length(3);
+            expect(
+                callArgs.transformations[0].deploymentNonce.toNumber() ===
+                    consumer.transformerNonces.fillQuoteTransformer,
+            );
+            expect(
+                callArgs.transformations[1].deploymentNonce.toNumber() ===
+                    consumer.transformerNonces.fillQuoteTransformer,
+            );
+            expect(
+                callArgs.transformations[2].deploymentNonce.toNumber() ===
+                    consumer.transformerNonces.payTakerTransformer,
+            );
+            const [firstHopOrder, secondHopOrder] = quote.orders;
+            const firstHopFillQuoteTransformerData = decodeFillQuoteTransformerData(callArgs.transformations[0].data);
+            expect(firstHopFillQuoteTransformerData.side).to.eq(FillQuoteTransformerSide.Sell);
+            expect(firstHopFillQuoteTransformerData.fillAmount).to.bignumber.eq(firstHopOrder.takerAssetAmount);
+            expect(firstHopFillQuoteTransformerData.orders).to.deep.eq(cleanOrders([firstHopOrder]));
+            expect(firstHopFillQuoteTransformerData.signatures).to.deep.eq([firstHopOrder.signature]);
+            expect(firstHopFillQuoteTransformerData.sellToken).to.eq(TAKER_TOKEN);
+            expect(firstHopFillQuoteTransformerData.buyToken).to.eq(INTERMEDIATE_TOKEN);
+            const secondHopFillQuoteTransformerData = decodeFillQuoteTransformerData(callArgs.transformations[1].data);
+            expect(secondHopFillQuoteTransformerData.side).to.eq(FillQuoteTransformerSide.Sell);
+            expect(secondHopFillQuoteTransformerData.fillAmount).to.bignumber.eq(contractConstants.MAX_UINT256);
+            expect(secondHopFillQuoteTransformerData.orders).to.deep.eq(cleanOrders([secondHopOrder]));
+            expect(secondHopFillQuoteTransformerData.signatures).to.deep.eq([secondHopOrder.signature]);
+            expect(secondHopFillQuoteTransformerData.sellToken).to.eq(INTERMEDIATE_TOKEN);
+            expect(secondHopFillQuoteTransformerData.buyToken).to.eq(MAKER_TOKEN);
+            const payTakerTransformerData = decodePayTakerTransformerData(callArgs.transformations[2].data);
+            expect(payTakerTransformerData.amounts).to.deep.eq([]);
+            expect(payTakerTransformerData.tokens).to.deep.eq([
+                TAKER_TOKEN,
+                MAKER_TOKEN,
+                ETH_TOKEN_ADDRESS,
+                INTERMEDIATE_TOKEN,
+            ]);
         });
     });
 });

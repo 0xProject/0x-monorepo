@@ -19,12 +19,21 @@ export const assert = {
         sharedAssert.isHexString(`${variableName}.takerAssetData`, swapQuote.takerAssetData);
         sharedAssert.isHexString(`${variableName}.makerAssetData`, swapQuote.makerAssetData);
         sharedAssert.doesConformToSchema(`${variableName}.orders`, swapQuote.orders, schemas.signedOrdersSchema);
-        assert.isValidSwapQuoteOrders(
-            `${variableName}.orders`,
-            swapQuote.orders,
-            swapQuote.makerAssetData,
-            swapQuote.takerAssetData,
-        );
+        if (swapQuote.isTwoHop) {
+            assert.isValidTwoHopSwapQuoteOrders(
+                `${variableName}.orders`,
+                swapQuote.orders,
+                swapQuote.makerAssetData,
+                swapQuote.takerAssetData,
+            );
+        } else {
+            assert.isValidSwapQuoteOrders(
+                `${variableName}.orders`,
+                swapQuote.orders,
+                swapQuote.makerAssetData,
+                swapQuote.takerAssetData,
+            );
+        }
         assert.isValidSwapQuoteInfo(`${variableName}.bestCaseQuoteInfo`, swapQuote.bestCaseQuoteInfo);
         assert.isValidSwapQuoteInfo(`${variableName}.worstCaseQuoteInfo`, swapQuote.worstCaseQuoteInfo);
         if (swapQuote.type === MarketOperation.Buy) {
@@ -53,6 +62,28 @@ export const assert = {
                 }`,
             );
         });
+    },
+    isValidTwoHopSwapQuoteOrders(
+        variableName: string,
+        orders: SignedOrder[],
+        makerAssetData: string,
+        takerAssetData: string,
+    ): void {
+        assert.assert(orders.length === 2, `Expected ${variableName}.length to be 2 for a two-hop quote`);
+        assert.assert(
+            isAssetDataEquivalent(takerAssetData, orders[0].takerAssetData),
+            `Expected ${variableName}[0].takerAssetData to be ${takerAssetData} but found ${orders[0].takerAssetData}`,
+        );
+        assert.assert(
+            isAssetDataEquivalent(makerAssetData, orders[1].makerAssetData),
+            `Expected ${variableName}[1].makerAssetData to be ${makerAssetData} but found ${orders[1].makerAssetData}`,
+        );
+        assert.assert(
+            isAssetDataEquivalent(orders[0].makerAssetData, orders[1].takerAssetData),
+            `Expected ${variableName}[0].makerAssetData (${
+                orders[0].makerAssetData
+            }) to equal ${variableName}[1].takerAssetData (${orders[1].takerAssetData})`,
+        );
     },
     isValidOrdersForSwapQuoter<T extends Order>(variableName: string, orders: T[]): void {
         _.every(orders, (order: T, index: number) => {

@@ -19,7 +19,7 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "./IMultiBridge.sol";
+import "./interfaces/IMultiBridge.sol";
 
 
 contract MultiBridgeSampler {

@@ -39,10 +39,8 @@ const PROTOCOL_FEE_MULTIPLIER = new BigNumber(70000);
 const MARKET_UTILS_AMOUNT_BUFFER_PERCENTAGE = 0.5;
 
 const DEFAULT_SWAP_QUOTER_OPTS: SwapQuoterOpts = {
-    ...{
-        chainId: MAINNET_CHAIN_ID,
-        orderRefreshIntervalMs: 10000, // 10 seconds
-    },
+    chainId: MAINNET_CHAIN_ID,
+    orderRefreshIntervalMs: 10000, // 10 seconds
     ...DEFAULT_ORDER_PRUNER_OPTS,
     samplerGasLimit: 250e6,
     ethGasStationUrl: ETH_GAS_STATION_API_URL,

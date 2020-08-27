@@ -39,6 +39,7 @@ export async function getFullyFillableSwapQuoteWithNoFeesAsync(
         bestCaseQuoteInfo: quoteInfo,
         worstCaseQuoteInfo: quoteInfo,
         sourceBreakdown: breakdown,
+        isTwoHop: false,
     };
 
     if (operation === MarketOperation.Buy) {

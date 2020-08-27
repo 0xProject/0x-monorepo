@@ -18,10 +18,28 @@
 
 pragma solidity ^0.5.9;
 
+// Keepin everything together
+interface IKyberNetwork {
+
+
+}
+
+
+interface IKyberNetworkProxy {
+
+    function getExpectedRateAfterFee(
+        address src,
+        address dest,
+        uint256 srcQty,
+        uint256 platformFeeBps,
+        bytes calldata hint
+    )
+        external
+        view
+        returns (uint256 expectedRate);
+}
 
 interface IKyberHintHandler {
-
-    function kyberStorage() external returns (address);
 
     enum TradeType {BestOfAll, MaskIn, MaskOut, Split}
 
@@ -30,14 +48,20 @@ interface IKyberHintHandler {
         TradeType tokenToEthType,
         bytes32[] calldata tokenToEthReserveIds,
         uint256[] calldata tokenToEthSplits
-    ) external view returns (bytes memory hint);
+    )
+        external
+        view
+        returns (bytes memory hint);
 
     function buildEthToTokenHint(
         address tokenDest,
         TradeType ethToTokenType,
         bytes32[] calldata ethToTokenReserveIds,
         uint256[] calldata ethToTokenSplits
-    ) external view returns (bytes memory hint);
+    )
+        external
+        view
+        returns (bytes memory hint);
 
     function buildTokenToTokenHint(
         address tokenSrc,
@@ -48,5 +72,8 @@ interface IKyberHintHandler {
         TradeType ethToTokenType,
         bytes32[] calldata ethToTokenReserveIds,
         uint256[] calldata ethToTokenSplits
-    ) external view returns (bytes memory hint);
+    )
+        external
+        view
+        returns (bytes memory hint);
 }

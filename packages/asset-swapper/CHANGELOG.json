@@ -65,6 +65,22 @@
             {
                 "note": "Stop requiring takerAddress for RFQ-T indicative quotes",
                 "pr": 2684
+            },
+            {
+                "note": "Added two-hop support",
+                "pr": 2647
+            },
+            {
+                "note": "Move ERC20BridgeSampler interfaces into `interfaces` directory",
+                "pr": 2647
+            },
+            {
+                "note": "Use on-chain sampling (sometimes) for Balancer",
+                "pr": 2647
+            },
+            {
+                "note": "Re-worked `Kyber` quotes supporting multiple reserves",
+                "pr": 2683
             }
         ]
     },

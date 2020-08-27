@@ -451,8 +451,8 @@ workflows:
             - test-python:
                   requires:
                       - build
-            - static-tests-python:
-                  requires:
-                      - build
+            #- static-tests-python:
+            #      requires:
+            #          - build
             # skip python tox run for now, as we don't yet have multiple test environments to support.
             # - test-rest-python

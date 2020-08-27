@@ -20,8 +20,8 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
-import "./ILiquidityProvider.sol";
-import "./ILiquidityProviderRegistry.sol";
+import "./interfaces/ILiquidityProvider.sol";
+import "./interfaces/ILiquidityProviderRegistry.sol";
 import "./ApproximateBuys.sol";
 import "./SamplerUtils.sol";
 
@@ -48,21 +48,21 @@ contract LiquidityProviderSampler is
     )
         public
         view
-        returns (uint256[] memory makerTokenAmounts)
+        returns (uint256[] memory makerTokenAmounts, address providerAddress)
     {
         // Initialize array of maker token amounts.
         uint256 numSamples = takerTokenAmounts.length;
         makerTokenAmounts = new uint256[](numSamples);
 
         // Query registry for provider address.
-        address providerAddress = getLiquidityProviderFromRegistry(
+        providerAddress = _getLiquidityProviderFromRegistry(
             registryAddress,
             takerToken,
             makerToken
         );
         // If provider doesn't exist, return all zeros.
         if (providerAddress == address(0)) {
-            return makerTokenAmounts;
+            return (makerTokenAmounts, providerAddress);
         }
 
         for (uint256 i = 0; i < numSamples; i++) {
@@ -101,9 +101,14 @@ contract LiquidityProviderSampler is
     )
         public
         view
-        returns (uint256[] memory takerTokenAmounts)
+        returns (uint256[] memory takerTokenAmounts, address providerAddress)
     {
-        return _sampleApproximateBuys(
+        providerAddress = _getLiquidityProviderFromRegistry(
+            registryAddress,
+            takerToken,
+            makerToken
+        );
+        takerTokenAmounts = _sampleApproximateBuys(
             ApproximateBuyQuoteOpts({
                 makerTokenData: abi.encode(makerToken, registryAddress),
                 takerTokenData: abi.encode(takerToken, registryAddress),
@@ -119,12 +124,12 @@ contract LiquidityProviderSampler is
     /// @param takerToken Taker asset managed by liquidity provider.
     /// @param makerToken Maker asset managed by liquidity provider.
     /// @return providerAddress Address of the liquidity provider.
-    function getLiquidityProviderFromRegistry(
+    function _getLiquidityProviderFromRegistry(
         address registryAddress,
         address takerToken,
         address makerToken
     )
-        public
+        private
         view
         returns (address providerAddress)
     {
@@ -167,6 +172,7 @@ contract LiquidityProviderSampler is
             return 0;
         }
         // solhint-disable-next-line indent
-        return abi.decode(resultData, (uint256[]))[0];
+        (uint256[] memory amounts, ) = abi.decode(resultData, (uint256[], address));
+        return amounts[0];
     }
 }

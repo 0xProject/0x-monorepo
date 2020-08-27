@@ -1,16 +1,13 @@
 import { ContractAddresses } from '@0x/contract-addresses';
 import { ITransformERC20Contract } from '@0x/contract-wrappers';
 import {
-    assetDataUtils,
     encodeAffiliateFeeTransformerData,
     encodeFillQuoteTransformerData,
     encodePayTakerTransformerData,
     encodeWethTransformerData,
-    ERC20AssetData,
     ETH_TOKEN_ADDRESS,
     FillQuoteTransformerSide,
 } from '@0x/order-utils';
-import { AssetProxyId } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from '@0x/web3-wrapper';
 import * as ethjs from 'ethereumjs-util';
@@ -30,6 +27,7 @@ import {
     SwapQuoteGetOutputOpts,
 } from '../types';
 import { assert } from '../utils/assert';
+import { getTokenFromAssetData } from '../utils/utils';
 
 // tslint:disable-next-line:custom-no-magic-numbers
 const MAX_UINT256 = new BigNumber(2).pow(256).minus(1);
@@ -108,19 +106,48 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
             });
         }
 
+        const intermediateToken = quote.isTwoHop ? getTokenFromAssetData(quote.orders[0].makerAssetData) : NULL_ADDRESS;
         // This transformer will fill the quote.
-        transforms.push({
-            deploymentNonce: this.transformerNonces.fillQuoteTransformer,
-            data: encodeFillQuoteTransformerData({
-                sellToken,
-                buyToken,
-                side: isBuyQuote(quote) ? FillQuoteTransformerSide.Buy : FillQuoteTransformerSide.Sell,
-                fillAmount: isBuyQuote(quote) ? quote.makerAssetFillAmount : quote.takerAssetFillAmount,
-                maxOrderFillAmounts: [],
-                orders: quote.orders,
-                signatures: quote.orders.map(o => o.signature),
-            }),
-        });
+        if (quote.isTwoHop) {
+            const [firstHopOrder, secondHopOrder] = quote.orders;
+            transforms.push({
+                deploymentNonce: this.transformerNonces.fillQuoteTransformer,
+                data: encodeFillQuoteTransformerData({
+                    sellToken,
+                    buyToken: intermediateToken,
+                    side: FillQuoteTransformerSide.Sell,
+                    fillAmount: firstHopOrder.takerAssetAmount,
+                    maxOrderFillAmounts: [],
+                    orders: [firstHopOrder],
+                    signatures: [firstHopOrder.signature],
+                }),
+            });
+            transforms.push({
+                deploymentNonce: this.transformerNonces.fillQuoteTransformer,
+                data: encodeFillQuoteTransformerData({
+                    sellToken: intermediateToken,
+                    buyToken,
+                    side: FillQuoteTransformerSide.Sell,
+                    fillAmount: MAX_UINT256,
+                    maxOrderFillAmounts: [],
+                    orders: [secondHopOrder],
+                    signatures: [secondHopOrder.signature],
+                }),
+            });
+        } else {
+            transforms.push({
+                deploymentNonce: this.transformerNonces.fillQuoteTransformer,
+                data: encodeFillQuoteTransformerData({
+                    sellToken,
+                    buyToken,
+                    side: isBuyQuote(quote) ? FillQuoteTransformerSide.Buy : FillQuoteTransformerSide.Sell,
+                    fillAmount: isBuyQuote(quote) ? quote.makerAssetFillAmount : quote.takerAssetFillAmount,
+                    maxOrderFillAmounts: [],
+                    orders: quote.orders,
+                    signatures: quote.orders.map(o => o.signature),
+                }),
+            });
+        }
 
         if (isToETH) {
             // Create a WETH unwrapper if going to ETH.
@@ -159,7 +186,7 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
         transforms.push({
             deploymentNonce: this.transformerNonces.payTakerTransformer,
             data: encodePayTakerTransformerData({
-                tokens: [sellToken, buyToken, ETH_TOKEN_ADDRESS],
+                tokens: [sellToken, buyToken, ETH_TOKEN_ADDRESS].concat(quote.isTwoHop ? intermediateToken : []),
                 amounts: [],
             }),
         });
@@ -199,15 +226,6 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
 
 function isBuyQuote(quote: SwapQuote): quote is MarketBuySwapQuote {
     return quote.type === MarketOperation.Buy;
-}
-
-function getTokenFromAssetData(assetData: string): string {
-    const data = assetDataUtils.decodeAssetDataOrThrow(assetData);
-    if (data.assetProxyId !== AssetProxyId.ERC20) {
-        throw new Error(`Unsupported exchange proxy quote asset type: ${data.assetProxyId}`);
-    }
-    // tslint:disable-next-line:no-unnecessary-type-assertion
-    return (data as ERC20AssetData).tokenAddress;
 }
 
 /**

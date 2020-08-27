@@ -22,9 +22,9 @@ import "@0x/contracts-asset-proxy/contracts/src/interfaces/IUniswapExchangeFacto
 import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "../src/ERC20BridgeSampler.sol";
-import "../src/IEth2Dai.sol";
-import "../src/IKyberNetworkProxy.sol";
-import "../src/IUniswapV2Router01.sol";
+import "../src/interfaces/IEth2Dai.sol";
+import "../src/interfaces/IKyberNetwork.sol";
+import "../src/interfaces/IUniswapV2Router01.sol";
 
 
 library LibDeterministicQuotes {
@@ -253,76 +253,40 @@ contract TestERC20BridgeSamplerKyberNetwork is
 
     enum TradeType {BestOfAll, MaskIn, MaskOut, Split}
 
-    function kyberNetwork()
-        external
-        view
-        returns (address)
-    {
-        return address(this);
-    }
-
-    // IKyberNetwork
-    function getContracts()
-        external
-        view
-        returns (
-            address kyberFeeHandlerAddress,
-            address kyberDaoAddress,
-            address kyberMatchingEngineAddress,
-            address kyberStorageAddress,
-            address gasHelperAddress,
-            address[] memory kyberProxyAddresses
-    )
-    {
-        return (kyberFeeHandlerAddress,
-            kyberDaoAddress,
-            address(this),
-            address(this),
-            gasHelperAddress,
-            kyberProxyAddresses
-        );
-    }
-
-    // IKyberStorage
-    function getReserveIdsPerTokenSrc(
-        address /* token */
-    )
-        external
-        view
-        returns (bytes32[] memory reserveIds)
-    {
-        return reserveIds;
-    }
-
-    function getReserveId(
-        address /* reserve */
-    )
-        external
-        view
-        returns (bytes32 reserveId)
-    {
-        return reserveId;
-    }
-
     // IKyberHintHandler
     function buildTokenToEthHint(
-        address /* tokenSrc */,
+        address tokenSrc,
         TradeType /* tokenToEthType */,
         bytes32[] calldata /* tokenToEthReserveIds */,
         uint256[] calldata /* tokenToEthSplits */
     ) external view returns (bytes memory hint)
     {
-        return hint;
+        return abi.encode(tokenSrc);
     }
 
     function buildEthToTokenHint(
-        address /* tokenDest */,
+        address tokenDest,
         TradeType /* ethToTokenType */,
         bytes32[] calldata /* ethToTokenReserveIds */,
         uint256[] calldata /* ethToTokenSplits */
     ) external view returns (bytes memory hint)
     {
-        return hint;
+        return abi.encode(tokenDest);
+    }
+
+    // IKyberHintHandler
+    function buildTokenToTokenHint(
+        address tokenSrc,
+        TradeType /* tokenToEthType */,
+        bytes32[] calldata /* tokenToEthReserveIds */,
+        uint256[] calldata /* tokenToEthSplits */,
+        address /* tokenDest  */,
+        TradeType /* EthToTokenType */,
+        bytes32[] calldata /* EthToTokenReserveIds */,
+        uint256[] calldata /* EthToTokenSplits */
+    ) external view returns (bytes memory hint)
+    {
+        return abi.encode(tokenSrc);
     }
 
     // Deterministic `IKyberNetworkProxy.getExpectedRateAfterFee()`.
@@ -369,6 +333,14 @@ contract TestERC20BridgeSamplerKyberNetwork is
     }
 
     function _getKyberNetworkProxyAddress()
+        internal
+        view
+        returns (address)
+    {
+        return address(this);
+    }
+
+    function _getKyberHintHandlerAddress()
         internal
         view
         returns (address)
@@ -527,6 +499,15 @@ contract TestERC20BridgeSampler is
 
     // Overriden to point to a custom contract.
     function _getKyberNetworkProxyAddress()
+        internal
+        view
+        returns (address kyberAddress)
+    {
+        return address(kyber);
+    }
+
+    // Overriden to point to a custom contract.
+    function _getKyberHintHandlerAddress()
         internal
         view
         returns (address kyberAddress)

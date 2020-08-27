@@ -97,7 +97,7 @@ export function MakerMixin<TBase extends Constructor>(Base: TBase): TBase & Cons
             const [makerToken, makerFeeToken, takerToken, takerFeeToken] = Pseudorandom.sampleSize(
                 this.actor.deployment.tokens.erc20,
                 4, // tslint:disable-line:custom-no-magic-numbers
-            );
+            )!;
 
             // Maker and taker set balances/allowances to guarantee that the fill succeeds.
             // Amounts are chosen to be within each actor's balance (divided by 8, in case
@@ -146,7 +146,7 @@ export function MakerMixin<TBase extends Constructor>(Base: TBase): TBase & Cons
             const [leftMakerToken, leftTakerToken, makerFeeToken, takerFeeToken] = Pseudorandom.sampleSize(
                 this.actor.deployment.tokens.erc20,
                 4, // tslint:disable-line:custom-no-magic-numbers
-            );
+            )!;
             const rightMakerToken = leftTakerToken;
             const rightTakerToken = leftMakerToken;
 

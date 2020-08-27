@@ -5,7 +5,7 @@ import { ERC20BridgeSamplerContract } from '../../wrappers';
 
 import { BalancerPoolsCache } from './balancer_utils';
 import { BancorService } from './bancor_service';
-import { samplerOperations } from './sampler_operations';
+import { SamplerOperations } from './sampler_operations';
 import { BatchedOperation } from './types';
 
 /**
@@ -30,19 +30,15 @@ type BatchedOperationResult<T> = T extends BatchedOperation<infer TResult> ? TRe
 /**
  * Encapsulates interactions with the `ERC20BridgeSampler` contract.
  */
-export class DexOrderSampler {
-    /**
-     * Composable operations that can be batched in a single transaction,
-     * for use with `DexOrderSampler.executeAsync()`.
-     */
-    public static ops = samplerOperations;
-
+export class DexOrderSampler extends SamplerOperations {
     constructor(
-        private readonly _samplerContract: ERC20BridgeSamplerContract,
+        _samplerContract: ERC20BridgeSamplerContract,
         private readonly _samplerOverrides?: SamplerOverrides,
-        public bancorService?: BancorService,
-        public balancerPoolsCache: BalancerPoolsCache = new BalancerPoolsCache(),
-    ) {}
+        bancorService?: BancorService,
+        balancerPoolsCache?: BalancerPoolsCache,
+    ) {
+        super(_samplerContract, bancorService, balancerPoolsCache);
+    }
 
     /* Type overloads for `executeAsync()`. Could skip this if we would upgrade TS. */
 
@@ -142,16 +138,14 @@ export class DexOrderSampler {
      * Takes an arbitrary length array, but is not typesafe.
      */
     public async executeBatchAsync<T extends Array<BatchedOperation<any>>>(ops: T): Promise<any[]> {
-        const callDatas = ops.map(o => o.encodeCall(this._samplerContract));
+        const callDatas = ops.map(o => o.encodeCall());
         const { overrides, block } = this._samplerOverrides
             ? this._samplerOverrides
             : { overrides: undefined, block: undefined };
 
         // All operations are NOOPs
         if (callDatas.every(cd => cd === NULL_BYTES)) {
-            return Promise.all(
-                callDatas.map(async (_callData, i) => ops[i].handleCallResultsAsync(this._samplerContract, NULL_BYTES)),
-            );
+            return callDatas.map((_callData, i) => ops[i].handleCallResults(NULL_BYTES));
         }
         // Execute all non-empty calldatas.
         const rawCallResults = await this._samplerContract
@@ -159,11 +153,9 @@ export class DexOrderSampler {
             .callAsync({ overrides }, block);
         // Return the parsed results.
         let rawCallResultsIdx = 0;
-        return Promise.all(
-            callDatas.map(async (callData, i) => {
-                const result = callData !== NULL_BYTES ? rawCallResults[rawCallResultsIdx++] : NULL_BYTES;
-                return ops[i].handleCallResultsAsync(this._samplerContract, result);
-            }),
-        );
+        return callDatas.map((callData, i) => {
+            const result = callData !== NULL_BYTES ? rawCallResults[rawCallResultsIdx++] : NULL_BYTES;
+            return ops[i].handleCallResults(result);
+        });
     }
 }
