@@ -57,14 +57,14 @@ contract AsmUniswapFeature is {
             mstore(0x24, 0x40)
             mstore(0x44, 0x64)
             mstore(0x64, TRANSFER_FROM_SELECTOR)
-            mstore(0x88, caller())
-            mstore(0xA8, PAIR)
-            mstore(0xC8, calldataload(0x04)) // haveAmount
+            mstore(0x68, caller())
+            mstore(0x88, PAIR)
+            mstore(0xA8, calldataload(0x04)) // haveAmount
             call(
                 gas(),
                 ALLOWANCE_TARGET,
                 0,
-                0, 0xE8 // TODO: Padding?
+                0, 0xE4,
                 0, 0
             )
             // No need to check result, if transfer failed the UniswapV2Pair will
@@ -77,7 +77,7 @@ contract AsmUniswapFeature is {
                 gas(),
                 PAIR,
                 0,
-                0, 4
+                0, 4,
                 0, 0x40
             )
             // Call never fails (PAIR is trusted)
@@ -99,7 +99,7 @@ contract AsmUniswapFeature is {
                 gas(),
                 PAIR,
                 0,
-                0, 0xA4
+                0, 0xA4,
                 0, 0
             )
         }
