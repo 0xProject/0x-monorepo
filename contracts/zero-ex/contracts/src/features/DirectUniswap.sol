@@ -47,6 +47,9 @@ contract SignatureValidator is
         address wantToken,
         uint256 haveAmount
     ) {
+        // Uniswap requires amounts less than 2¹¹².
+        assert(haveAmount < 2**112);
+
         // Compute the UniswapV2Pair address
         IUniswapV2Pair pair = IUniswapV2Pair(address(
             uint256(keccak256(abi.encodePacked(
@@ -74,8 +77,11 @@ contract SignatureValidator is
         // <https://github.com/Uniswap/uniswap-v2-core/blob/master/contracts/UniswapV2Pair.sol#L179>
         if (haveToken < wantToken) {
             (uint256 haveReserve, uint256 wantReserve, ) = pair.getReserve();
+            // Uniswap reserves are 0 < x < 2¹¹² so math below can not
+            // overflow or divide by zero.
             uint256 wantAmount = (haveAmount * wantReserve * 997) /
                 (haveReserve * 1000 + haveAmount * 997);
+            // Call fails if the pair does not exist.
             pair.swap(0, wantAmount, to, new bytes(0));
         } else {
             (uint256 wantReserve, uint256 haveReserve, ) = pair.getReserve();
