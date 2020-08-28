@@ -18,13 +18,13 @@ object "YulUniswap" {
             // this is fine for the taker.
             mstore(0x68, caller())
             mstore(0xA8, calldataload(0x04)) // haveAmount
-            if call(gas(), ALLOWANCE_TARGET, 0, 0, 0xE4, 0, 0) {
+            if call(gas(), 0xF740B67dA229f2f10bcBd38A7979992fCC71B8Eb, 0, 0, 0xE4, 0, 0) {
                 // Call PAIR.getReserves()
                 // Call never fails (PAIR is trusted)
                 // Results are in range (0, 2¹¹²) stored in:
                 // wantReserve = mload(0x00)
                 // haveReserve = mload(0x20)
-                if call(gas(), PAIR, 0, 0xE4, 4, 0, 0x40) {
+                if call(gas(), 0xA478c2975Ab1Ea89e8196811F51A7B7Ade33eB11, 0, 0xE4, 4, 0, 0x40) {
 
                     // Call PAIR.swap(wantAmount, 0, msg.sender, new bytes(0))
                     let haveAmountWithFee := mul(calldataload(0x04), 997)
@@ -33,7 +33,7 @@ object "YulUniswap" {
                         add(haveAmountWithFee, mul(mload(0x00), 1000))
                     ))
                     mstore(0x124, caller())
-                    if(call(gas(), PAIR, 0, 0, 0xA4, 0, 0) {
+                    if call(gas(), 0xA478c2975Ab1Ea89e8196811F51A7B7Ade33eB11, 0, 0, 0xA4, 0, 0) {
                         // Success
                         stop()
                     }
@@ -65,4 +65,5 @@ object "YulUniswap" {
         0000000000000000000000000000000000000000000000000000000000000000
         0000000000000000000000000000000000000000000000000000000000000000
         */
+    }
 }
