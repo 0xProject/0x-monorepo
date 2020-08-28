@@ -31,14 +31,20 @@ import "./IFeature.sol";
 /// @dev Minima
 contract AsmUniswapFeature is {
 
-    address constant ALLOWANCE_TARGET = 0x5c69bee701ef814a2b6a3edd4b1652cb9cc5aa6f;
+    address constant ALLOWANCE_TARGET = 0xF740B67dA229f2f10bcBd38A7979992fCC71B8Eb;
 
     // WETH-DAI
-    address constant HAVE_TOKEN = 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2;
-    address constant WANT_TOKEN = 0x6b175474e89094c44da98b954eedeac495271d0f;
+    address constant HAVE_TOKEN = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
+    address constant WANT_TOKEN = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
 
     // UniswapV2Pair for WETH-DAI
-    address constant PAIR = 0x5c69bee701ef814a2b6a3edd4b1652cb9cc5aa6f;
+    address constant PAIR = 0xA478c2975Ab1Ea89e8196811F51A7B7Ade33eB11;
+
+    // Selectors
+    uint256 constant EXECUTE_CALL_SELECTOR = 
+    0xbca8c7b500000000000000000000000000000000000000000000000000000000;
+    uint256 constant GET_RESERVES_SELECTOR = 0x0902f1ac00000000000000000000000000000000000000000000000000000000;
+    uint256 constant SWAP_SELECTOR = 0x022c0d9f00000000000000000000000000000000000000000000000000000000;
 
     // Implements ABI `uniswapWethDai(uint112 haveAmount)`
     fallback() external payable {
@@ -49,16 +55,16 @@ contract AsmUniswapFeature is {
             mstore(0x00, EXECUTE_CALL_SELECTOR)
             mstore(0x04, HAVE_TOKEN)
             mstore(0x24, 0x40)
-            mstore(0x24, 0) // TODO: transfer from length 
-            mstore(0x44, TRANSFER_FROM_SELECTOR)
-            mstore(0x68, caller())
-            mstore(0x88, PAIR)
-            mstore(0xA8, calldataload(0x04)) // haveAmount
+            mstore(0x44, 0x64)
+            mstore(0x64, TRANSFER_FROM_SELECTOR)
+            mstore(0x88, caller())
+            mstore(0xA8, PAIR)
+            mstore(0xC8, calldataload(0x04)) // haveAmount
             call(
                 gas(),
                 ALLOWANCE_TARGET,
                 0,
-                0, 0xB8
+                0, 0xE8 // TODO: Padding?
                 0, 0
             )
             // No need to check result, if transfer failed the UniswapV2Pair will
@@ -74,8 +80,8 @@ contract AsmUniswapFeature is {
                 0, 4
                 0, 0x40
             )
-            // Call can not fail (PAIR is trusted)
-
+            // Call never fails (PAIR is trusted)
+            // Results are in range (0, 2¹¹²) stored in:
             // wantReserve = mload(0x00)
             // haveReserve = mload(0x20)
 
@@ -98,5 +104,4 @@ contract AsmUniswapFeature is {
             )
         }
     }
-
 }
