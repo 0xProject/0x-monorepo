@@ -19,34 +19,31 @@
 pragma solidity ^0.6.5;
 pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-utils/contracts/src/v06/errors/LibRichErrorsV06.sol";
-import "@0x/contracts-utils/contracts/src/v06/LibBytesV06.sol";
-import "../errors/LibSignatureRichErrors.sol";
-import "../fixins/FixinCommon.sol";
-import "../migrations/LibMigrate.sol";
-import "./ISignatureValidator.sol";
-import "./IFeature.sol";
+import "@0x/contracts-erc20/contracts/src/v06/IERC20TokenV06.sol";
+import "../external/IAllowanceTarget.sol";
 
 
-/// @dev Minima
-contract SignatureValidator is
-    IFeature,
-    ISignatureValidator,
-    FixinCommon
-{
+interface IUniswapV2Pair {
+    function getReserves() external view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast);
+    function swap(uint amount0Out, uint amount1Out, address to, bytes calldata data) external;
+}
+
+contract DirectUniswap {
     // Address of the `UniswapV2Factory`. It is used to derive addresses
     // of `UniswapV2Pair` instances.
     // TODO: Needs to change for testing.
-    address constant FACTORY = 0x5c69bee701ef814a2b6a3edd4b1652cb9cc5aa6f;
+    address constant FACTORY = 0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f;
+    IAllowanceTarget constant ALLOWANCE_TARGET = IAllowanceTarget(0xF740B67dA229f2f10bcBd38A7979992fCC71B8Eb);
 
-    /// @dev Convert `haveAmount` of `haveToken` from `from` into `wantToken` and transfer to `to`.
+    /// @dev Convert `haveAmount` of `haveToken` from `msg.sender` into `wantToken` and transfer to `to`.
     function uniswap(
-        address from,
         address to,
-        address haveToken,
+        address payable haveToken,
         address wantToken,
         uint256 haveAmount
-    ) {
+    )
+        external
+    {
         // Uniswap requires amounts less than 2¹¹².
         assert(haveAmount < 2**112);
 
@@ -56,8 +53,8 @@ contract SignatureValidator is
                 hex"ff",
                 FACTORY,
                 keccak256(abi.encodePacked(
-                    min(haveToken, wantToken),
-                    max(haveToken, wantToken)
+                    haveToken < wantToken ? haveToken : wantToken,
+                    haveToken > wantToken ? haveToken : wantToken
                 )),
                 // init code hash
                 hex"96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f"
@@ -66,9 +63,12 @@ contract SignatureValidator is
 
         // Transfer tokens to the UniswapV2Pair contract
         // Note: This doesn't affect the pair's reserve amounts.
-        // Note: This is simplified, add error handling!
-        // TODO: Use AllowanceTarget directly.
-        IERC20(haveToken).transferFrom(from, pair, haveAmount);
+        ALLOWANCE_TARGET.executeCall(haveToken, abi.encodeWithSelector(
+            IERC20TokenV06.transferFrom.selector,
+            msg.sender,
+            pair,
+            haveAmount
+        ));
 
         // Compute `wantAmount` and call pair contract for swap
         // Formula from `UniswapV2Library.getAmountOut`
@@ -76,7 +76,7 @@ contract SignatureValidator is
         // TODO: Compare above formula with the assertion in `UniswapV2Pair.swap`
         // <https://github.com/Uniswap/uniswap-v2-core/blob/master/contracts/UniswapV2Pair.sol#L179>
         if (haveToken < wantToken) {
-            (uint256 haveReserve, uint256 wantReserve, ) = pair.getReserve();
+            (uint256 haveReserve, uint256 wantReserve, ) = pair.getReserves();
             // Uniswap reserves are 0 < x < 2¹¹² so math below can not
             // overflow or divide by zero.
             uint256 wantAmount = (haveAmount * wantReserve * 997) /
@@ -84,7 +84,7 @@ contract SignatureValidator is
             // Call fails if the pair does not exist.
             pair.swap(0, wantAmount, to, new bytes(0));
         } else {
-            (uint256 wantReserve, uint256 haveReserve, ) = pair.getReserve();
+            (uint256 wantReserve, uint256 haveReserve, ) = pair.getReserves();
             uint256 wantAmount = (haveAmount * wantReserve * 997) /
                 (haveReserve * 1000 + haveAmount * 997);
             pair.swap(wantAmount, 0, to, new bytes(0));

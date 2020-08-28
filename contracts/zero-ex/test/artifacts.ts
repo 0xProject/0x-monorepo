@@ -8,6 +8,7 @@ import { ContractArtifact } from 'ethereum-types';
 import * as AffiliateFeeTransformer from '../test/generated-artifacts/AffiliateFeeTransformer.json';
 import * as AllowanceTarget from '../test/generated-artifacts/AllowanceTarget.json';
 import * as Bootstrap from '../test/generated-artifacts/Bootstrap.json';
+import * as DirectUniswap from '../test/generated-artifacts/DirectUniswap.json';
 import * as FillQuoteTransformer from '../test/generated-artifacts/FillQuoteTransformer.json';
 import * as FixinCommon from '../test/generated-artifacts/FixinCommon.json';
 import * as FixinEIP712 from '../test/generated-artifacts/FixinEIP712.json';
@@ -30,6 +31,7 @@ import * as ISimpleFunctionRegistry from '../test/generated-artifacts/ISimpleFun
 import * as ITestSimpleFunctionRegistryFeature from '../test/generated-artifacts/ITestSimpleFunctionRegistryFeature.json';
 import * as ITokenSpender from '../test/generated-artifacts/ITokenSpender.json';
 import * as ITransformERC20 from '../test/generated-artifacts/ITransformERC20.json';
+import * as IUniswapV2Router from '../test/generated-artifacts/IUniswapV2Router.json';
 import * as LibBootstrap from '../test/generated-artifacts/LibBootstrap.json';
 import * as LibCommonRichErrors from '../test/generated-artifacts/LibCommonRichErrors.json';
 import * as LibERC20Transformer from '../test/generated-artifacts/LibERC20Transformer.json';
@@ -99,6 +101,7 @@ export const artifacts = {
     IFlashWallet: IFlashWallet as ContractArtifact,
     TransformerDeployer: TransformerDeployer as ContractArtifact,
     Bootstrap: Bootstrap as ContractArtifact,
+    DirectUniswap: DirectUniswap as ContractArtifact,
     IBootstrap: IBootstrap as ContractArtifact,
     IFeature: IFeature as ContractArtifact,
     IMetaTransactions: IMetaTransactions as ContractArtifact,
@@ -138,6 +141,7 @@ export const artifacts = {
     IExchange: IExchange as ContractArtifact,
     IGasToken: IGasToken as ContractArtifact,
     ITestSimpleFunctionRegistryFeature: ITestSimpleFunctionRegistryFeature as ContractArtifact,
+    IUniswapV2Router: IUniswapV2Router as ContractArtifact,
     TestCallTarget: TestCallTarget as ContractArtifact,
     TestDelegateCaller: TestDelegateCaller as ContractArtifact,
     TestFillQuoteTransformerBridge: TestFillQuoteTransformerBridge as ContractArtifact,
