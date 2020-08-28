@@ -21,12 +21,7 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-erc20/contracts/src/v06/IERC20TokenV06.sol";
 import "../external/IAllowanceTarget.sol";
-
-
-interface IUniswapV2Pair {
-    function getReserves() external view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast);
-    function swap(uint amount0Out, uint amount1Out, address to, bytes calldata data) external;
-}
+import "./IUniswapV2Pair.sol";
 
 contract DirectUniswap {
     // Address of the `UniswapV2Factory`. It is used to derive addresses
