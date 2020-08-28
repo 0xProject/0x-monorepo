@@ -34,6 +34,9 @@ contract SignatureValidator is
     ISignatureValidator,
     FixinCommon
 {
+    // Address of the `UniswapV2Factory`. It is used to derive addresses
+    // of `UniswapV2Pair` instances.
+    // TODO: Needs to change for testing.
     address constant FACTORY = 0x5c69bee701ef814a2b6a3edd4b1652cb9cc5aa6f;
 
     /// @dev Convert `haveAmount` of `haveToken` from `from` into `wantToken` and transfer to `to`.
@@ -61,6 +64,7 @@ contract SignatureValidator is
         // Transfer tokens to the UniswapV2Pair contract
         // Note: This doesn't affect the pair's reserve amounts.
         // Note: This is simplified, add error handling!
+        // TODO: Use AllowanceTarget directly.
         IERC20(haveToken).transferFrom(from, pair, haveAmount);
 
         // Compute `wantAmount` and call pair contract for swap
