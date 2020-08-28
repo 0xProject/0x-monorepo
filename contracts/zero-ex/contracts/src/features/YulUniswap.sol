@@ -1,3 +1,6 @@
+// Compile with
+// docker run -v $(pwd)/contracts/zero-ex/contracts/src:/sources ethereum/solc:0.6.12 --strict-assembly /sources/features/YulUniswap.sol --optimize --optimize-runs 100000000
+
 object "YulUniswap" {
     // This is the constructor code of the contract.
     code {
