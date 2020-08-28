@@ -77,6 +77,10 @@
             {
                 "note": "Re-worked `Kyber` quotes supporting multiple reserves",
                 "pr": 2683
+            },
+            {
+                "note": "Enable Quote Report to be generated with an option `shouldGenerateQuoteReport`. Default is `false`",
+                "pr": 2687
             }
         ]
     },

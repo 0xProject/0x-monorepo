@@ -46,6 +46,7 @@ export const DEFAULT_GET_MARKET_ORDERS_OPTS: GetMarketOrdersOpts = {
     gasSchedule: {},
     allowFallback: true,
     shouldBatchBridgeOrders: true,
+    shouldGenerateQuoteReport: false,
 };
 
 /**

@@ -342,6 +342,7 @@ export class MarketOperationUtils {
             allowFallback: _opts.allowFallback,
             shouldBatchBridgeOrders: _opts.shouldBatchBridgeOrders,
             quoteRequestor: _opts.rfqt ? _opts.rfqt.quoteRequestor : undefined,
+            shouldGenerateQuoteReport: _opts.shouldGenerateQuoteReport,
         });
     }
 
@@ -368,6 +369,7 @@ export class MarketOperationUtils {
             allowFallback: _opts.allowFallback,
             shouldBatchBridgeOrders: _opts.shouldBatchBridgeOrders,
             quoteRequestor: _opts.rfqt ? _opts.rfqt.quoteRequestor : undefined,
+            shouldGenerateQuoteReport: _opts.shouldGenerateQuoteReport,
         });
     }
 
@@ -455,6 +457,7 @@ export class MarketOperationUtils {
                             feeSchedule: _opts.feeSchedule,
                             allowFallback: _opts.allowFallback,
                             shouldBatchBridgeOrders: _opts.shouldBatchBridgeOrders,
+                            shouldGenerateQuoteReport: false,
                         },
                     );
                     return optimizedOrders;
@@ -478,6 +481,7 @@ export class MarketOperationUtils {
             allowFallback?: boolean;
             shouldBatchBridgeOrders?: boolean;
             quoteRequestor?: QuoteRequestor;
+            shouldGenerateQuoteReport?: boolean;
         },
     ): Promise<OptimizerResult> {
         const {
@@ -534,15 +538,17 @@ export class MarketOperationUtils {
         );
         if (bestTwoHopQuote && bestTwoHopRate.isGreaterThan(optimalPathRate)) {
             const twoHopOrders = createOrdersFromTwoHopSample(bestTwoHopQuote, orderOpts);
-            const twoHopQuoteReport = generateQuoteReport(
-                side,
-                _.flatten(dexQuotes),
-                twoHopQuotes,
-                nativeOrders,
-                orderFillableAmounts,
-                bestTwoHopQuote,
-                opts.quoteRequestor,
-            );
+            const twoHopQuoteReport = opts.shouldGenerateQuoteReport
+                ? generateQuoteReport(
+                      side,
+                      _.flatten(dexQuotes),
+                      twoHopQuotes,
+                      nativeOrders,
+                      orderFillableAmounts,
+                      bestTwoHopQuote,
+                      opts.quoteRequestor,
+                  )
+                : undefined;
             return { optimizedOrders: twoHopOrders, quoteReport: twoHopQuoteReport, isTwoHop: true };
         }
 
@@ -574,15 +580,17 @@ export class MarketOperationUtils {
             }
         }
         const optimizedOrders = createOrdersFromPath(optimalPath, orderOpts);
-        const quoteReport = generateQuoteReport(
-            side,
-            _.flatten(dexQuotes),
-            twoHopQuotes,
-            nativeOrders,
-            orderFillableAmounts,
-            _.flatten(optimizedOrders.map(order => order.fills)),
-            opts.quoteRequestor,
-        );
+        const quoteReport = opts.shouldGenerateQuoteReport
+            ? generateQuoteReport(
+                  side,
+                  _.flatten(dexQuotes),
+                  twoHopQuotes,
+                  nativeOrders,
+                  orderFillableAmounts,
+                  _.flatten(optimizedOrders.map(order => order.fills)),
+                  opts.quoteRequestor,
+              )
+            : undefined;
         return { optimizedOrders, quoteReport, isTwoHop: false };
     }
 
