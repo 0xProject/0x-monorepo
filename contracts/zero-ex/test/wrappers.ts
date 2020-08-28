@@ -5,6 +5,8 @@
  */
 export * from '../test/generated-wrappers/affiliate_fee_transformer';
 export * from '../test/generated-wrappers/allowance_target';
+export * from '../test/generated-wrappers/asm_uniswap';
+export * from '../test/generated-wrappers/asm_uniswap_wrapper';
 export * from '../test/generated-wrappers/bootstrap';
 export * from '../test/generated-wrappers/direct_uniswap';
 export * from '../test/generated-wrappers/fill_quote_transformer';
@@ -28,6 +30,7 @@ export * from '../test/generated-wrappers/i_simple_function_registry';
 export * from '../test/generated-wrappers/i_test_simple_function_registry_feature';
 export * from '../test/generated-wrappers/i_token_spender';
 export * from '../test/generated-wrappers/i_transform_erc20';
+export * from '../test/generated-wrappers/i_uniswap_v2_pair';
 export * from '../test/generated-wrappers/i_uniswap_v2_router';
 export * from '../test/generated-wrappers/initial_migration';
 export * from '../test/generated-wrappers/lib_bootstrap';

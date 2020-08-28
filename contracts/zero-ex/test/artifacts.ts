@@ -7,6 +7,8 @@ import { ContractArtifact } from 'ethereum-types';
 
 import * as AffiliateFeeTransformer from '../test/generated-artifacts/AffiliateFeeTransformer.json';
 import * as AllowanceTarget from '../test/generated-artifacts/AllowanceTarget.json';
+import * as AsmUniswap from '../test/generated-artifacts/AsmUniswap.json';
+import * as AsmUniswapWrapper from '../test/generated-artifacts/AsmUniswapWrapper.json';
 import * as Bootstrap from '../test/generated-artifacts/Bootstrap.json';
 import * as DirectUniswap from '../test/generated-artifacts/DirectUniswap.json';
 import * as FillQuoteTransformer from '../test/generated-artifacts/FillQuoteTransformer.json';
@@ -31,6 +33,7 @@ import * as ISimpleFunctionRegistry from '../test/generated-artifacts/ISimpleFun
 import * as ITestSimpleFunctionRegistryFeature from '../test/generated-artifacts/ITestSimpleFunctionRegistryFeature.json';
 import * as ITokenSpender from '../test/generated-artifacts/ITokenSpender.json';
 import * as ITransformERC20 from '../test/generated-artifacts/ITransformERC20.json';
+import * as IUniswapV2Pair from '../test/generated-artifacts/IUniswapV2Pair.json';
 import * as IUniswapV2Router from '../test/generated-artifacts/IUniswapV2Router.json';
 import * as LibBootstrap from '../test/generated-artifacts/LibBootstrap.json';
 import * as LibCommonRichErrors from '../test/generated-artifacts/LibCommonRichErrors.json';
@@ -100,6 +103,8 @@ export const artifacts = {
     IAllowanceTarget: IAllowanceTarget as ContractArtifact,
     IFlashWallet: IFlashWallet as ContractArtifact,
     TransformerDeployer: TransformerDeployer as ContractArtifact,
+    AsmUniswap: AsmUniswap as ContractArtifact,
+    AsmUniswapWrapper: AsmUniswapWrapper as ContractArtifact,
     Bootstrap: Bootstrap as ContractArtifact,
     DirectUniswap: DirectUniswap as ContractArtifact,
     IBootstrap: IBootstrap as ContractArtifact,
@@ -110,6 +115,7 @@ export const artifacts = {
     ISimpleFunctionRegistry: ISimpleFunctionRegistry as ContractArtifact,
     ITokenSpender: ITokenSpender as ContractArtifact,
     ITransformERC20: ITransformERC20 as ContractArtifact,
+    IUniswapV2Pair: IUniswapV2Pair as ContractArtifact,
     MetaTransactions: MetaTransactions as ContractArtifact,
     Ownable: Ownable as ContractArtifact,
     SignatureValidator: SignatureValidator as ContractArtifact,
