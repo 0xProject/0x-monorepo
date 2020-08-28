@@ -214,6 +214,10 @@ export class QuoteRequestor {
     ): Promise<RFQTIndicativeQuote[]> {
         const _opts: RfqtRequestOpts = { ...constants.DEFAULT_RFQT_REQUEST_OPTS, ...options };
 
+        if (!_opts.takerAddress) {
+            _opts.takerAddress = constants.NULL_ADDRESS;
+        }
+
         const responsesWithStringInts = await this._getQuotesAsync<RFQTIndicativeQuote>( // not yet BigNumber
             makerAssetData,
             takerAssetData,
