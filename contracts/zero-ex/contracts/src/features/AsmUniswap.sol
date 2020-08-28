@@ -51,7 +51,7 @@ contract AsmUniswapFeature is {
         assembly {
             // Call ALLOWANCE_TARGET.executeCall(HAVE_TOKEN,
             //  "transferFrom(msg.sender, PAIR, haveAmount)")
-            // TODO: Use a big CODECOPY to create temple for all calls?
+            // TODO: Use a big CODECOPY to create templates for all calls?
             mstore(0x00, EXECUTE_CALL_SELECTOR)
             mstore(0x04, HAVE_TOKEN)
             mstore(0x24, 0x40)
