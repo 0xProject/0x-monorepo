@@ -44,19 +44,15 @@ contract AsmUniswap {
             // Call ALLOWANCE_TARGET.executeCall(HAVE_TOKEN,
             //  "transferFrom(msg.sender, PAIR, haveAmount)")
             // TODO: Use a big CODECOPY to create templates for all calls?
-            mstore(0x00, EXECUTE_CALL_SELECTOR)
-            mstore(0x04, HAVE_TOKEN)
-            mstore(0x24, 0x40)
-            mstore(0x44, 0x64)
-            mstore(0x64, TRANSFER_FROM_SELECTOR)
-            mstore(0x68, caller())
-            mstore(0x88, PAIR)
-            mstore(0xA8, calldataload(0x04)) // haveAmount
+            mstore(0x00, TRANSFER_FROM_SELECTOR)
+            mstore(0x04, caller())
+            mstore(0x24, PAIR)
+            mstore(0x44, calldataload(0x04)) // haveAmount
             let success := call(
                 gas(),
-                ALLOWANCE_TARGET,
+                HAVE_TOKEN,
                 0,
-                0, 0xE4,
+                0, 0x64,
                 0, 0
             )
             if iszero(success) {
