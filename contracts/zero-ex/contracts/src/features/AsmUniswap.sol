@@ -36,14 +36,12 @@ contract AsmUniswap {
     uint256 constant SWAP_SELECTOR = 0x022c0d9f00000000000000000000000000000000000000000000000000000000;
     uint256 constant TRANSFER_FROM_SELECTOR = 0x23b872dd00000000000000000000000000000000000000000000000000000000;
 
-    // Implements ABI `uniswap(address to, address haveToken,
-    //     address wantToken, uint256 haveAmount)`
+    // Implements ABI `uniswap(address haveToken, address wantToken, uint256 haveAmount)`
     fallback() external payable {
         assembly {
-            let to := calldataload(0x04)
-            let haveToken := calldataload(0x24)
-            let wantToken := calldataload(0x44)
-            let haveAmount := calldataload(0x64)
+            let haveToken := calldataload(0x04)
+            let wantToken := calldataload(0x24)
+            let haveAmount := calldataload(0x44)
             let order := lt(haveToken, wantToken)
 
             // Compute the UniswapV2Pair address
@@ -108,7 +106,7 @@ contract AsmUniswap {
                     add(haveAmountWithFee, mul(mload(0x00), 1000))
                 ))
             }
-            mstore(0x84, to)
+            mstore(0x84, caller())
             mstore(0xA4, 0x80)
             mstore(0xC4, 0)
             if iszero(call(gas(), pair, 0, 0x40, 0xF4, 0, 0)) {
