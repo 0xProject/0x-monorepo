@@ -111,7 +111,7 @@ blockchainTests.fork.only('UniswapV2 Benchmark', env => {
             const gas = [];
             for (let i = 0; i <= 10; i++) {
                 const tx = await asmUniswap
-                    .uniswapAsm(CHONKY_DAI_WALLET, DAI_ADDRESS, WETH_ADDRESS, constants.ONE_ETHER)
+                    .uniswapAsm(DAI_ADDRESS, WETH_ADDRESS, constants.ONE_ETHER)
                     .awaitTransactionSuccessAsync({ from: CHONKY_DAI_WALLET, gasPrice: 0 }, { shouldValidate: false });
                 gas.push(tx.gasUsed);
             }
@@ -121,7 +121,7 @@ blockchainTests.fork.only('UniswapV2 Benchmark', env => {
             const gas = [];
             for (let i = 0; i <= 10; i++) {
                 const tx = await asmUniswapImpl
-                    .uniswapAsm(CHONKY_DAI_WALLET, DAI_ADDRESS, WETH_ADDRESS, constants.ONE_ETHER)
+                    .uniswapAsm(DAI_ADDRESS, WETH_ADDRESS, constants.ONE_ETHER)
                     .awaitTransactionSuccessAsync({ from: CHONKY_DAI_WALLET, gasPrice: 0 }, { shouldValidate: false });
                 gas.push(tx.gasUsed);
             }
