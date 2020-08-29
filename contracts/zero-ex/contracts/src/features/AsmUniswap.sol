@@ -49,14 +49,14 @@ contract AsmUniswap {
             // Compute the UniswapV2Pair address
             switch order
             case 0 {
-                mstore(0x00, shl(96, wantToken))
-                mstore(0x14, shl(96, haveToken))
+                mstore(0x14, haveToken)
+                mstore(0x00, wantToken)
             }
             default {
-                mstore(0x00, shl(96, haveToken))
-                mstore(0x14, shl(96, wantToken))
+                mstore(0x14, wantToken)
+                mstore(0x00, haveToken)
             }
-            let salt := keccak256(0x00, 0x28)
+            let salt := keccak256(0x0C, 0x28)
             mstore(0x00, FF_FACTORY)
             mstore(0x15, salt)
             mstore(0x35, CODE_HASH)
