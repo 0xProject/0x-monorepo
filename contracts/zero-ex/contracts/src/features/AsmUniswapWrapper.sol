@@ -20,5 +20,10 @@ pragma solidity ^0.6.5;
 
 
 contract AsmUniswapWrapper {
-    function uniswapWethDai(uint112 haveAmount) external {}
+    function uniswapAsm(
+        address to,
+        address haveToken,
+        address wantToken,
+        uint256 haveAmount
+    ) external {}
 }

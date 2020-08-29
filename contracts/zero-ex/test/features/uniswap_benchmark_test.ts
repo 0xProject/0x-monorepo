@@ -58,7 +58,7 @@ blockchainTests.fork.only('UniswapV2 Benchmark', env => {
             .extend(directUniswap.getSelector('uniswap'), directUniswapImpl.address)
             .awaitTransactionSuccessAsync({ from: EP_GOVERNOR, gasPrice: 0 }, { shouldValidate: false });
         await registry
-            .extend(asmUniswap.getSelector('uniswapWethDai'), asmUniswapImpl.address)
+            .extend(asmUniswap.getSelector('uniswapAsm'), asmUniswapImpl.address)
             .awaitTransactionSuccessAsync({ from: EP_GOVERNOR, gasPrice: 0 }, { shouldValidate: false });
 
         await dai
@@ -111,7 +111,7 @@ blockchainTests.fork.only('UniswapV2 Benchmark', env => {
             const gas = [];
             for (let i = 0; i <= 10; i++) {
                 const tx = await asmUniswap
-                    .uniswapWethDai(constants.ONE_ETHER)
+                    .uniswapAsm(CHONKY_DAI_WALLET, DAI_ADDRESS, WETH_ADDRESS, constants.ONE_ETHER)
                     .awaitTransactionSuccessAsync({ from: CHONKY_DAI_WALLET, gasPrice: 0 }, { shouldValidate: false });
                 gas.push(tx.gasUsed);
             }
@@ -121,7 +121,7 @@ blockchainTests.fork.only('UniswapV2 Benchmark', env => {
             const gas = [];
             for (let i = 0; i <= 10; i++) {
                 const tx = await asmUniswapImpl
-                    .uniswapWethDai(constants.ONE_ETHER)
+                    .uniswapAsm(CHONKY_DAI_WALLET, DAI_ADDRESS, WETH_ADDRESS, constants.ONE_ETHER)
                     .awaitTransactionSuccessAsync({ from: CHONKY_DAI_WALLET, gasPrice: 0 }, { shouldValidate: false });
                 gas.push(tx.gasUsed);
             }
