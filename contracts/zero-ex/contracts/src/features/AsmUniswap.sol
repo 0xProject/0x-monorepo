@@ -49,21 +49,19 @@ contract AsmUniswap {
             // Compute the UniswapV2Pair address
             switch order
             case 0 {
-                mstore(0x00, wantToken)
-                mstore(0x20, haveToken)
+                mstore(0x00, shl(96, wantToken))
+                mstore(0x14, shl(96, haveToken))
             }
             default {
-                mstore(0x00, haveToken)
-                mstore(0x20, wantToken)
+                mstore(0x00, shl(96, haveToken))
+                mstore(0x14, shl(96, wantToken))
             }
-            let salt := keccak256(0x00, 0x40)
+            let salt := keccak256(0x00, 0x28)
             mstore(0x00, FF_FACTORY)
             mstore(0x15, salt)
             mstore(0x35, CODE_HASH)
             let pair := and(ADDRESS_MASK, keccak256(0, 0x55))
-            // TODO: Fix pair computation
-            pair := 0xA478c2975Ab1Ea89e8196811F51A7B7Ade33eB11
-
+            
             // Call ALLOWANCE_TARGET.executeCall(HAVE_TOKEN,
             //  "transferFrom(msg.sender, PAIR, haveAmount)")
             // TODO: Use a big CODECOPY to create templates for all calls?
