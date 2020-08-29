@@ -90,26 +90,22 @@ contract AsmUniswap {
             }
             // Call never fails (PAIR is trusted)
             // Results are in range (0, 2¹¹²) stored in:
-            
-            let wantReserve := mload(0x20)
-            let haveReserve := mload(0x00)
-
             // Call PAIR.swap(0, wantAmount, msg.sender, new bytes(0))
             let haveAmountWithFee := mul(calldataload(0x04), 997)
-            mstore(0x00, SWAP_SELECTOR)
-            mstore(0x04, 0)
-            mstore(0x24, div(
-                mul(haveAmountWithFee, wantReserve),
-                add(haveAmountWithFee, mul(haveReserve, 1000))
+            mstore(0x40, SWAP_SELECTOR)
+            mstore(0x44, 0)
+            mstore(0x64, div(
+                mul(haveAmountWithFee, mload(0x20)),
+                add(haveAmountWithFee, mul(mload(0x00), 1000))
             ))
-            mstore(0x44, caller())
-            mstore(0x64, 0x80)
-            mstore(0x84, 0)
+            mstore(0x84, caller())
+            mstore(0xA4, 0x80)
+            mstore(0xC4, 0)
             success := call(
                 gas(),
                 PAIR,
                 0,
-                0, 0xA4,
+                0x40, 0xA4,
                 0, 0
             )
             if success {
