@@ -60,6 +60,7 @@ blockchainTests.fork.only('UniswapV2 Benchmark', env => {
         await registry
             .extend(asmUniswap.getSelector('uniswapWethDai'), asmUniswapImpl.address)
             .awaitTransactionSuccessAsync({ from: EP_GOVERNOR, gasPrice: 0 }, { shouldValidate: false });
+
         await dai
             .approve(ALLOWANCE_TARGET, constants.MAX_UINT256)
             .awaitTransactionSuccessAsync({ from: CHONKY_DAI_WALLET, gasPrice: 0 }, { shouldValidate: false });
@@ -68,12 +69,21 @@ blockchainTests.fork.only('UniswapV2 Benchmark', env => {
             .awaitTransactionSuccessAsync({ from: CHONKY_DAI_WALLET, gasPrice: 0 }, { shouldValidate: false });
         uniswapV2Router02 = new IUniswapV2RouterContract(UNISWAPV2_ROUTER02, env.provider, env.txDefaults);
         const allowanceTarget = new IAllowanceTargetContract(ALLOWANCE_TARGET, env.provider, env.txDefaults);
+        // AllowanceTarget while bypassing ExchangeProxy
         await allowanceTarget
             .addAuthorizedAddress(directUniswapImpl.address)
             .awaitTransactionSuccessAsync({ from: EP_GOVERNOR, gasPrice: 0 }, { shouldValidate: false });
         await allowanceTarget
             .addAuthorizedAddress(asmUniswapImpl.address)
             .awaitTransactionSuccessAsync({ from: EP_GOVERNOR, gasPrice: 0 }, { shouldValidate: false });
+        // Set allowance directly on ExchangeProxy and asmUniswapImpl
+        await dai
+            .approve(zeroEx.address, constants.MAX_UINT256)
+            .awaitTransactionSuccessAsync({ from: CHONKY_DAI_WALLET, gasPrice: 0 }, { shouldValidate: false });
+        await dai
+            .approve(asmUniswapImpl.address, constants.MAX_UINT256)
+            .awaitTransactionSuccessAsync({ from: CHONKY_DAI_WALLET, gasPrice: 0 }, { shouldValidate: false });
+
     });
 
     blockchainTests('benchmark', () => {
