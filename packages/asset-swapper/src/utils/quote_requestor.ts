@@ -214,6 +214,11 @@ export class QuoteRequestor {
     ): Promise<RFQTIndicativeQuote[]> {
         const _opts: RfqtRequestOpts = { ...constants.DEFAULT_RFQT_REQUEST_OPTS, ...options };
 
+        // Originally a takerAddress was required for indicative quotes, but
+        // now we've eliminated that requirement.  @0x/quote-server, however,
+        // is still coded to expect a takerAddress.  So if the client didn't
+        // send one, just use the null address to satisfy the quote server's
+        // expectations.
         if (!_opts.takerAddress) {
             _opts.takerAddress = constants.NULL_ADDRESS;
         }
