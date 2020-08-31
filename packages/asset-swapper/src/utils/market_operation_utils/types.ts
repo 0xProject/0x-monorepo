@@ -275,6 +275,10 @@ export interface GetMarketOrdersOpts {
      * order. Defaults to `true`.
      */
     shouldBatchBridgeOrders: boolean;
+    /**
+     * Whether to generate a quote report
+     */
+    shouldGenerateQuoteReport: boolean;
 }
 
 /**
@@ -294,7 +298,7 @@ export interface SourceQuoteOperation<TFillData extends FillData = FillData>
 export interface OptimizerResult {
     optimizedOrders: OptimizedMarketOrder[];
     isTwoHop: boolean;
-    quoteReport: QuoteReport;
+    quoteReport?: QuoteReport;
 }
 
 export type MarketDepthSide = Array<Array<DexSample<FillData>>>;
