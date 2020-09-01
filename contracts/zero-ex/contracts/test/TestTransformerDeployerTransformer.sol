@@ -24,10 +24,15 @@ import "../src/transformers/LibERC20Transformer.sol";
 
 contract TestTransformerDeployerTransformer {
 
+    uint256 public constant CONSTRUCTOR_FAIL_VALUE = 3333;
     address payable public immutable deployer;
 
     constructor() public payable {
         deployer = msg.sender;
+        require(
+            msg.value != CONSTRUCTOR_FAIL_VALUE,
+            "TestTransformerDeployerTransformer/CONSTRUCTOR_FAIL"
+        );
     }
 
     modifier onlyDeployer() {
@@ -35,11 +40,11 @@ contract TestTransformerDeployerTransformer {
         _;
     }
 
-    function die()
+    function die(address payable ethRecipient)
         external
         onlyDeployer
     {
-        selfdestruct(deployer);
+        selfdestruct(ethRecipient);
     }
 
     function isDeployedByDeployer(uint32 nonce)

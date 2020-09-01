@@ -24,7 +24,7 @@ import "@0x/contracts-utils/contracts/src/v06/AuthorizableV06.sol";
 
 /// @dev A contract with a `die()` function.
 interface IKillable {
-    function die() external;
+    function die(address payable ethRecipient) external;
 }
 
 /// @dev Deployer contract for ERC20 transformers.
@@ -67,16 +67,19 @@ contract TransformerDeployer is
         assembly {
             deployedAddress := create(callvalue(), add(bytecode, 32), mload(bytecode))
         }
+        require(deployedAddress != address(0), 'TransformerDeployer/DEPLOY_FAILED');
         toDeploymentNonce[deployedAddress] = deploymentNonce;
         emit Deployed(deployedAddress, deploymentNonce, msg.sender);
     }
 
     /// @dev Call `die()` on a contract. Only callable by an authority.
-    function kill(IKillable target)
+    /// @param target The target contract to call `die()` on.
+    /// @param ethRecipient The Recipient of any ETH locked in `target`.
+    function kill(IKillable target, address payable ethRecipient)
         public
         onlyAuthorized
     {
-        target.die();
+        target.die(ethRecipient);
         emit Killed(address(target), msg.sender);
     }
 }

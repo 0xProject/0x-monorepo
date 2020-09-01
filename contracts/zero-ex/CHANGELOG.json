@@ -17,6 +17,10 @@
             {
                 "note": "Refund unused protocol fees to `refundReceiver` in FQT",
                 "pr": 2657
+            },
+            {
+                "note": "Fix `TransformerDeployer.kill()` calling the wrong `die()` interface.",
+                "pr": 2624
             }
         ]
     },
