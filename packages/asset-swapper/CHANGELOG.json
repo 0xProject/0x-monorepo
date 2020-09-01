@@ -63,6 +63,10 @@
                 "pr": 2675
             },
             {
+                "note": "Stop requiring takerAddress for RFQ-T indicative quotes",
+                "pr": 2684
+            },
+            {
                 "note": "Added two-hop support",
                 "pr": 2647
             },

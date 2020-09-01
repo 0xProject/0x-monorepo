@@ -39,18 +39,6 @@ function getTokenAddressOrThrow(assetData: string): string {
     throw new Error(`Decoded asset data (${JSON.stringify(decodedAssetData)}) does not contain a token address`);
 }
 
-function assertTakerAddressOrThrow(takerAddress: string | undefined): void {
-    if (
-        takerAddress === undefined ||
-        takerAddress === '' ||
-        takerAddress === '0x' ||
-        !takerAddress ||
-        takerAddress === constants.NULL_ADDRESS
-    ) {
-        throw new Error('RFQ-T requires the presence of a taker address');
-    }
-}
-
 function inferQueryParams(
     marketOperation: MarketOperation,
     makerAssetData: string,
@@ -137,7 +125,15 @@ export class QuoteRequestor {
         options: RfqtRequestOpts,
     ): Promise<RFQTFirmQuote[]> {
         const _opts: RfqtRequestOpts = { ...constants.DEFAULT_RFQT_REQUEST_OPTS, ...options };
-        assertTakerAddressOrThrow(_opts.takerAddress);
+        if (
+            _opts.takerAddress === undefined ||
+            _opts.takerAddress === '' ||
+            _opts.takerAddress === '0x' ||
+            !_opts.takerAddress ||
+            _opts.takerAddress === constants.NULL_ADDRESS
+        ) {
+            throw new Error('RFQ-T firm quotes require the presence of a taker address');
+        }
 
         const firmQuoteResponses = await this._getQuotesAsync<RFQTFirmQuote>( // not yet BigNumber
             makerAssetData,
@@ -217,7 +213,15 @@ export class QuoteRequestor {
         options: RfqtRequestOpts,
     ): Promise<RFQTIndicativeQuote[]> {
         const _opts: RfqtRequestOpts = { ...constants.DEFAULT_RFQT_REQUEST_OPTS, ...options };
-        assertTakerAddressOrThrow(_opts.takerAddress);
+
+        // Originally a takerAddress was required for indicative quotes, but
+        // now we've eliminated that requirement.  @0x/quote-server, however,
+        // is still coded to expect a takerAddress.  So if the client didn't
+        // send one, just use the null address to satisfy the quote server's
+        // expectations.
+        if (!_opts.takerAddress) {
+            _opts.takerAddress = constants.NULL_ADDRESS;
+        }
 
         const responsesWithStringInts = await this._getQuotesAsync<RFQTIndicativeQuote>( // not yet BigNumber
             makerAssetData,
