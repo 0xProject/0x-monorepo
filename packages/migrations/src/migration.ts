@@ -31,7 +31,6 @@ import {
     BridgeAdapterContract,
     FillQuoteTransformerContract,
     fullMigrateAsync as fullMigrateExchangeProxyAsync,
-    IZeroExContract,
     PayTakerTransformerContract,
     WethTransformerContract,
 } from '@0x/contracts-zero-ex';
