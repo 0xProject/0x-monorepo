@@ -42,10 +42,6 @@ contract SimpleFunctionRegistry is
 
     using LibRichErrorsV06 for bytes;
 
-    constructor() public FixinCommon() {
-        // solhint-disable-next-line no-empty-blocks
-    }
-
     /// @dev Initializes this feature, registering its own functions.
     /// @return success Magic bytes if successful.
     function bootstrap()

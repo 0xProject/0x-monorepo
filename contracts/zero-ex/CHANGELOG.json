@@ -21,6 +21,14 @@
             {
                 "note": "Fix `TransformerDeployer.kill()` calling the wrong `die()` interface.",
                 "pr": 2624
+            },
+            {
+                "note": "Address CD post-audit feedback",
+                "pr": 2657
+            },
+            {
+                "note": "Add `LogMetadataTransformer`",
+                "pr": 2657
             }
         ]
     },

@@ -12,6 +12,7 @@ import * as BridgeAdapter from '../test/generated-artifacts/BridgeAdapter.json';
 import * as FillQuoteTransformer from '../test/generated-artifacts/FillQuoteTransformer.json';
 import * as FixinCommon from '../test/generated-artifacts/FixinCommon.json';
 import * as FixinEIP712 from '../test/generated-artifacts/FixinEIP712.json';
+import * as FixinReentrancyGuard from '../test/generated-artifacts/FixinReentrancyGuard.json';
 import * as FlashWallet from '../test/generated-artifacts/FlashWallet.json';
 import * as FullMigration from '../test/generated-artifacts/FullMigration.json';
 import * as IAllowanceTarget from '../test/generated-artifacts/IAllowanceTarget.json';
@@ -53,6 +54,7 @@ import * as LibTokenSpenderStorage from '../test/generated-artifacts/LibTokenSpe
 import * as LibTransformERC20RichErrors from '../test/generated-artifacts/LibTransformERC20RichErrors.json';
 import * as LibTransformERC20Storage from '../test/generated-artifacts/LibTransformERC20Storage.json';
 import * as LibWalletRichErrors from '../test/generated-artifacts/LibWalletRichErrors.json';
+import * as LogMetadataTransformer from '../test/generated-artifacts/LogMetadataTransformer.json';
 import * as MetaTransactions from '../test/generated-artifacts/MetaTransactions.json';
 import * as MixinAdapterAddresses from '../test/generated-artifacts/MixinAdapterAddresses.json';
 import * as MixinBalancer from '../test/generated-artifacts/MixinBalancer.json';
@@ -141,6 +143,7 @@ export const artifacts = {
     LibSignedCallData: LibSignedCallData as ContractArtifact,
     FixinCommon: FixinCommon as ContractArtifact,
     FixinEIP712: FixinEIP712 as ContractArtifact,
+    FixinReentrancyGuard: FixinReentrancyGuard as ContractArtifact,
     FullMigration: FullMigration as ContractArtifact,
     InitialMigration: InitialMigration as ContractArtifact,
     LibBootstrap: LibBootstrap as ContractArtifact,
@@ -157,6 +160,7 @@ export const artifacts = {
     FillQuoteTransformer: FillQuoteTransformer as ContractArtifact,
     IERC20Transformer: IERC20Transformer as ContractArtifact,
     LibERC20Transformer: LibERC20Transformer as ContractArtifact,
+    LogMetadataTransformer: LogMetadataTransformer as ContractArtifact,
     PayTakerTransformer: PayTakerTransformer as ContractArtifact,
     Transformer: Transformer as ContractArtifact,
     WethTransformer: WethTransformer as ContractArtifact,

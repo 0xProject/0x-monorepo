@@ -16,6 +16,7 @@ export * from '../generated-wrappers/i_token_spender';
 export * from '../generated-wrappers/i_transform_erc20';
 export * from '../generated-wrappers/i_zero_ex';
 export * from '../generated-wrappers/initial_migration';
+export * from '../generated-wrappers/log_metadata_transformer';
 export * from '../generated-wrappers/meta_transactions';
 export * from '../generated-wrappers/ownable';
 export * from '../generated-wrappers/pay_taker_transformer';

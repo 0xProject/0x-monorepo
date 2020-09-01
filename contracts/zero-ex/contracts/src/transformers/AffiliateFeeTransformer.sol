@@ -32,7 +32,6 @@ import "./LibERC20Transformer.sol";
 contract AffiliateFeeTransformer is
     Transformer
 {
-    // solhint-disable no-empty-blocks
     using LibRichErrorsV06 for bytes;
     using LibSafeMathV06 for uint256;
     using LibERC20Transformer for IERC20TokenV06;
@@ -50,12 +49,6 @@ contract AffiliateFeeTransformer is
     }
 
     uint256 private constant MAX_UINT256 = uint256(-1);
-
-    /// @dev Create this contract.
-    constructor()
-        public
-        Transformer()
-    {}
 
     /// @dev Transfers tokens to recipients.
     /// @param context Context information.

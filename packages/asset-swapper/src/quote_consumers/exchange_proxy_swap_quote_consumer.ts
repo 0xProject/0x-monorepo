@@ -7,10 +7,10 @@ import {
     encodeWethTransformerData,
     ETH_TOKEN_ADDRESS,
     FillQuoteTransformerSide,
+    findTransformerNonce,
 } from '@0x/order-utils';
 import { BigNumber, providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from '@0x/web3-wrapper';
-import * as ethjs from 'ethereumjs-util';
 import * as _ from 'lodash';
 
 import { constants } from '../constants';
@@ -32,7 +32,6 @@ import { getTokenFromAssetData } from '../utils/utils';
 // tslint:disable-next-line:custom-no-magic-numbers
 const MAX_UINT256 = new BigNumber(2).pow(256).minus(1);
 const { NULL_ADDRESS } = constants;
-const MAX_NONCE_GUESSES = 2048;
 
 export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
     public readonly provider: ZeroExProvider;
@@ -229,33 +228,4 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
 
 function isBuyQuote(quote: SwapQuote): quote is MarketBuySwapQuote {
     return quote.type === MarketOperation.Buy;
-}
-
-/**
- * Find the nonce for a transformer given its deployer.
- * If `deployer` is the null address, zero will always be returned.
- */
-export function findTransformerNonce(transformer: string, deployer: string = NULL_ADDRESS): number {
-    if (deployer === NULL_ADDRESS) {
-        return 0;
-    }
-    const lowercaseTransformer = transformer.toLowerCase();
-    // Try to guess the nonce.
-    for (let nonce = 0; nonce < MAX_NONCE_GUESSES; ++nonce) {
-        const deployedAddress = getTransformerAddress(deployer, nonce);
-        if (deployedAddress === lowercaseTransformer) {
-            return nonce;
-        }
-    }
-    throw new Error(`${deployer} did not deploy ${transformer}!`);
-}
-
-/**
- * Compute the deployed address for a transformer given a deployer and nonce.
- */
-export function getTransformerAddress(deployer: string, nonce: number): string {
-    return ethjs.bufferToHex(
-        // tslint:disable-next-line: custom-no-magic-numbers
-        ethjs.rlphash([deployer, nonce] as any).slice(12),
-    );
 }

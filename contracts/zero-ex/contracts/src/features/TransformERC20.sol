@@ -61,10 +61,6 @@ contract TransformERC20 is
     /// @dev Version of this feature.
     uint256 public immutable override FEATURE_VERSION = _encodeVersion(1, 2, 0);
 
-    constructor() public FixinCommon() {
-        // solhint-disable-next-line no-empty-blocks
-    }
-
     /// @dev Initialize and register this feature.
     ///      Should be delegatecalled by `Migrate.migrate()`.
     /// @param transformerDeployer The trusted deployer for transformers.
@@ -257,16 +253,15 @@ contract TransformERC20 is
         // Compute how much output token has been transferred to the taker.
         state.takerOutputTokenBalanceAfter =
             LibERC20Transformer.getTokenBalanceOf(args.outputToken, args.taker);
-        if (state.takerOutputTokenBalanceAfter > state.takerOutputTokenBalanceBefore) {
-            outputTokenAmount = state.takerOutputTokenBalanceAfter.safeSub(
-                state.takerOutputTokenBalanceBefore
-            );
-        } else if (state.takerOutputTokenBalanceAfter < state.takerOutputTokenBalanceBefore) {
+        if (state.takerOutputTokenBalanceAfter < state.takerOutputTokenBalanceBefore) {
             LibTransformERC20RichErrors.NegativeTransformERC20OutputError(
                 address(args.outputToken),
                 state.takerOutputTokenBalanceBefore - state.takerOutputTokenBalanceAfter
             ).rrevert();
         }
+        outputTokenAmount = state.takerOutputTokenBalanceAfter.safeSub(
+            state.takerOutputTokenBalanceBefore
+        );
         // Ensure enough output token has been sent to the taker.
         if (outputTokenAmount < args.minOutputTokenAmount) {
             LibTransformERC20RichErrors.IncompleteTransformERC20Error(
