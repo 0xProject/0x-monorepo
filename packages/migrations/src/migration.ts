@@ -31,8 +31,7 @@ import {
     BridgeAdapterContract,
     FillQuoteTransformerContract,
     fullMigrateAsync as fullMigrateExchangeProxyAsync,
-    ITokenSpenderContract,
-    ITransformERC20Contract,
+    IZeroExContract,
     PayTakerTransformerContract,
     WethTransformerContract,
 } from '@0x/contracts-zero-ex';
@@ -330,16 +329,8 @@ export async function runMigrationsAsync(
     );
 
     const exchangeProxy = await fullMigrateExchangeProxyAsync(txDefaults.from, provider, txDefaults);
-    const exchangeProxyAllowanceTargetAddress = await new ITokenSpenderContract(
-        exchangeProxy.address,
-        provider,
-        txDefaults,
-    )
-        .getAllowanceTarget()
-        .callAsync();
-    const exchangeProxyFlashWalletAddress = await new ITransformERC20Contract(exchangeProxy.address, provider)
-        .getTransformWallet()
-        .callAsync();
+    const exchangeProxyAllowanceTargetAddress = await exchangeProxy.getAllowanceTarget().callAsync();
+    const exchangeProxyFlashWalletAddress = await exchangeProxy.getTransformWallet().callAsync();
 
     // Deploy transformers.
     const fillQuoteTransformer = await FillQuoteTransformerContract.deployFrom0xArtifactAsync(

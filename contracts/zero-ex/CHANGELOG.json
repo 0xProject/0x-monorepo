@@ -29,6 +29,18 @@
             {
                 "note": "Add `LogMetadataTransformer`",
                 "pr": 2657
+            },
+            {
+                "note": "Add `IUniswapV2Feature`",
+                "pr": "TODO"
+            },
+            {
+                "note": "Rename all feature contracts to have `Feature` suffix",
+                "pr": "TODO"
+            },
+            {
+                "note": "Return `IZeroExContract` in `fullMigrateAsync()`",
+                "pr": "TODO"
             }
         ]
     },

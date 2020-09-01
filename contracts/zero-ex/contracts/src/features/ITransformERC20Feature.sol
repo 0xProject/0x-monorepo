@@ -25,7 +25,7 @@ import "../external/IFlashWallet.sol";
 
 
 /// @dev Feature to composably transform between ERC20 tokens.
-interface ITransformERC20 {
+interface ITransformERC20Feature {
 
     /// @dev Defines a transformation to run in `transformERC20()`.
     struct Transformation {

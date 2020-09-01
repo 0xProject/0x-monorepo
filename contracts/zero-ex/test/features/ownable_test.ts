@@ -3,12 +3,12 @@ import { hexUtils, OwnableRevertErrors, StringRevertError, ZeroExRevertErrors } 
 
 import { artifacts } from '../artifacts';
 import { initialMigrateAsync } from '../utils/migration';
-import { IOwnableContract, IOwnableEvents, TestMigratorContract, TestMigratorEvents } from '../wrappers';
+import { IOwnableFeatureContract, IOwnableFeatureEvents, TestMigratorContract, TestMigratorEvents } from '../wrappers';
 
 blockchainTests.resets('Ownable feature', env => {
     const notOwner = randomAddress();
     let owner: string;
-    let ownable: IOwnableContract;
+    let ownable: IOwnableFeatureContract;
     let testMigrator: TestMigratorContract;
     let succeedingMigrateFnCallData: string;
     let failingMigrateFnCallData: string;
@@ -19,7 +19,7 @@ blockchainTests.resets('Ownable feature', env => {
         [owner] = await env.getAccountAddressesAsync();
         logDecoder = new LogDecoder(env.web3Wrapper, artifacts);
         const zeroEx = await initialMigrateAsync(owner, env.provider, env.txDefaults);
-        ownable = new IOwnableContract(zeroEx.address, env.provider, env.txDefaults);
+        ownable = new IOwnableFeatureContract(zeroEx.address, env.provider, env.txDefaults);
         testMigrator = await TestMigratorContract.deployFrom0xArtifactAsync(
             artifacts.TestMigrator,
             env.provider,
@@ -49,7 +49,7 @@ blockchainTests.resets('Ownable feature', env => {
                         newOwner,
                     },
                 ],
-                IOwnableEvents.OwnershipTransferred,
+                IOwnableFeatureEvents.OwnershipTransferred,
             );
             expect(await ownable.owner().callAsync()).to.eq(newOwner);
         });

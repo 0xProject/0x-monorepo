@@ -20,7 +20,6 @@ pragma solidity ^0.6.5;
 pragma experimental ABIEncoderV2;
 
 import "../src/ZeroEx.sol";
-import "../src/features/IBootstrap.sol";
 import "../src/migrations/FullMigration.sol";
 
 

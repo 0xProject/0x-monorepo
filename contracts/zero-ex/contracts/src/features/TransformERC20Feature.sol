@@ -32,17 +32,16 @@ import "../storage/LibTransformERC20Storage.sol";
 import "../transformers/IERC20Transformer.sol";
 import "../transformers/LibERC20Transformer.sol";
 import "./libs/LibSignedCallData.sol";
-import "./ITransformERC20.sol";
-import "./ITokenSpender.sol";
+import "./ITransformERC20Feature.sol";
+import "./ITokenSpenderFeature.sol";
 import "./IFeature.sol";
-import "./ISignatureValidator.sol";
-import "./ISimpleFunctionRegistry.sol";
+import "./ISignatureValidatorFeature.sol";
 
 
 /// @dev Feature to composably transform between ERC20 tokens.
-contract TransformERC20 is
+contract TransformERC20Feature is
     IFeature,
-    ITransformERC20,
+    ITransformERC20Feature,
     FixinCommon
 {
     using LibSafeMathV06 for uint256;
@@ -209,7 +208,7 @@ contract TransformERC20 is
         // If the input token amount is -1, transform the taker's entire
         // spendable balance.
         if (args.inputTokenAmount == uint256(-1)) {
-            args.inputTokenAmount = ITokenSpender(address(this))
+            args.inputTokenAmount = ITokenSpenderFeature(address(this))
                 .getSpendableERC20BalanceOf(args.inputToken, args.taker);
         }
 
@@ -313,7 +312,7 @@ contract TransformERC20 is
         // Transfer input tokens.
         if (!LibERC20Transformer.isTokenETH(inputToken)) {
             // Token is not ETH, so pull ERC20 tokens.
-            ITokenSpender(address(this))._spendERC20Tokens(
+            ITokenSpenderFeature(address(this))._spendERC20Tokens(
                 inputToken,
                 from,
                 to,
@@ -391,7 +390,7 @@ contract TransformERC20 is
             return bytes32(0);
         }
 
-        if (ISignatureValidator(address(this)).isValidHashSignature(
+        if (ISignatureValidatorFeature(address(this)).isValidHashSignature(
             callDataHash,
             getQuoteSigner(),
             signature

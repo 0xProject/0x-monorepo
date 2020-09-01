@@ -13,6 +13,10 @@
             {
                 "note": "Add bancorBridge to addresses",
                 "pr": 2650
+            },
+            {
+                "note": "Update EP migration.",
+                "pr": "TODO"
             }
         ]
     },

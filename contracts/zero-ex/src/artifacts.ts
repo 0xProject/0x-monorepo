@@ -13,19 +13,19 @@ import * as IAllowanceTarget from '../generated-artifacts/IAllowanceTarget.json'
 import * as IERC20Transformer from '../generated-artifacts/IERC20Transformer.json';
 import * as IFlashWallet from '../generated-artifacts/IFlashWallet.json';
 import * as InitialMigration from '../generated-artifacts/InitialMigration.json';
-import * as IOwnable from '../generated-artifacts/IOwnable.json';
-import * as ISimpleFunctionRegistry from '../generated-artifacts/ISimpleFunctionRegistry.json';
-import * as ITokenSpender from '../generated-artifacts/ITokenSpender.json';
-import * as ITransformERC20 from '../generated-artifacts/ITransformERC20.json';
+import * as IOwnableFeature from '../generated-artifacts/IOwnableFeature.json';
+import * as ISimpleFunctionRegistryFeature from '../generated-artifacts/ISimpleFunctionRegistryFeature.json';
+import * as ITokenSpenderFeature from '../generated-artifacts/ITokenSpenderFeature.json';
+import * as ITransformERC20Feature from '../generated-artifacts/ITransformERC20Feature.json';
 import * as IZeroEx from '../generated-artifacts/IZeroEx.json';
 import * as LogMetadataTransformer from '../generated-artifacts/LogMetadataTransformer.json';
-import * as MetaTransactions from '../generated-artifacts/MetaTransactions.json';
-import * as Ownable from '../generated-artifacts/Ownable.json';
+import * as MetaTransactionsFeature from '../generated-artifacts/MetaTransactionsFeature.json';
+import * as OwnableFeature from '../generated-artifacts/OwnableFeature.json';
 import * as PayTakerTransformer from '../generated-artifacts/PayTakerTransformer.json';
-import * as SignatureValidator from '../generated-artifacts/SignatureValidator.json';
-import * as SimpleFunctionRegistry from '../generated-artifacts/SimpleFunctionRegistry.json';
-import * as TokenSpender from '../generated-artifacts/TokenSpender.json';
-import * as TransformERC20 from '../generated-artifacts/TransformERC20.json';
+import * as SignatureValidatorFeature from '../generated-artifacts/SignatureValidatorFeature.json';
+import * as SimpleFunctionRegistryFeature from '../generated-artifacts/SimpleFunctionRegistryFeature.json';
+import * as TokenSpenderFeature from '../generated-artifacts/TokenSpenderFeature.json';
+import * as TransformERC20Feature from '../generated-artifacts/TransformERC20Feature.json';
 import * as WethTransformer from '../generated-artifacts/WethTransformer.json';
 import * as ZeroEx from '../generated-artifacts/ZeroEx.json';
 export const artifacts = {
@@ -36,20 +36,20 @@ export const artifacts = {
     IFlashWallet: IFlashWallet as ContractArtifact,
     IAllowanceTarget: IAllowanceTarget as ContractArtifact,
     IERC20Transformer: IERC20Transformer as ContractArtifact,
-    IOwnable: IOwnable as ContractArtifact,
-    ISimpleFunctionRegistry: ISimpleFunctionRegistry as ContractArtifact,
-    ITokenSpender: ITokenSpender as ContractArtifact,
-    ITransformERC20: ITransformERC20 as ContractArtifact,
+    IOwnableFeature: IOwnableFeature as ContractArtifact,
+    ISimpleFunctionRegistryFeature: ISimpleFunctionRegistryFeature as ContractArtifact,
+    ITokenSpenderFeature: ITokenSpenderFeature as ContractArtifact,
+    ITransformERC20Feature: ITransformERC20Feature as ContractArtifact,
     FillQuoteTransformer: FillQuoteTransformer as ContractArtifact,
     PayTakerTransformer: PayTakerTransformer as ContractArtifact,
     WethTransformer: WethTransformer as ContractArtifact,
-    Ownable: Ownable as ContractArtifact,
-    SimpleFunctionRegistry: SimpleFunctionRegistry as ContractArtifact,
-    TransformERC20: TransformERC20 as ContractArtifact,
-    TokenSpender: TokenSpender as ContractArtifact,
+    OwnableFeature: OwnableFeature as ContractArtifact,
+    SimpleFunctionRegistryFeature: SimpleFunctionRegistryFeature as ContractArtifact,
+    TransformERC20Feature: TransformERC20Feature as ContractArtifact,
+    TokenSpenderFeature: TokenSpenderFeature as ContractArtifact,
     AffiliateFeeTransformer: AffiliateFeeTransformer as ContractArtifact,
-    SignatureValidator: SignatureValidator as ContractArtifact,
-    MetaTransactions: MetaTransactions as ContractArtifact,
+    SignatureValidatorFeature: SignatureValidatorFeature as ContractArtifact,
+    MetaTransactionsFeature: MetaTransactionsFeature as ContractArtifact,
     LogMetadataTransformer: LogMetadataTransformer as ContractArtifact,
     BridgeAdapter: BridgeAdapter as ContractArtifact,
 };

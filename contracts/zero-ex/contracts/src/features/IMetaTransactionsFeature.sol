@@ -23,7 +23,7 @@ import "@0x/contracts-erc20/contracts/src/v06/IERC20TokenV06.sol";
 
 
 /// @dev Meta-transactions feature.
-interface IMetaTransactions {
+interface IMetaTransactionsFeature {
 
     /// @dev Describes an exchange proxy meta transaction.
     struct MetaTransactionData {

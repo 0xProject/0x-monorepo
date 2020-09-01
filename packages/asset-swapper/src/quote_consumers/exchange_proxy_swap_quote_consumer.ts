@@ -1,5 +1,5 @@
 import { ContractAddresses } from '@0x/contract-addresses';
-import { ITransformERC20Contract } from '@0x/contract-wrappers';
+import { IZeroExContract } from '@0x/contract-wrappers';
 import {
     encodeAffiliateFeeTransformerData,
     encodeFillQuoteTransformerData,
@@ -43,7 +43,7 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
         affiliateFeeTransformer: number;
     };
 
-    private readonly _transformFeature: ITransformERC20Contract;
+    private readonly _exchangeProxy: IZeroExContract;
 
     constructor(
         supportedProvider: SupportedProvider,
@@ -56,7 +56,7 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
         this.provider = provider;
         this.chainId = chainId;
         this.contractAddresses = contractAddresses;
-        this._transformFeature = new ITransformERC20Contract(contractAddresses.exchangeProxy, supportedProvider);
+        this._exchangeProxy = new IZeroExContract(contractAddresses.exchangeProxy, supportedProvider);
         this.transformerNonces = {
             wethTransformer: findTransformerNonce(
                 contractAddresses.transformers.wethTransformer,
@@ -194,7 +194,7 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
         });
 
         const minBuyAmount = BigNumber.max(0, quote.worstCaseQuoteInfo.makerAssetAmount.minus(buyTokenFeeAmount));
-        const calldataHexString = this._transformFeature
+        const calldataHexString = this._exchangeProxy
             .transformERC20(
                 isFromETH ? ETH_TOKEN_ADDRESS : sellToken,
                 isToETH ? ETH_TOKEN_ADDRESS : buyToken,
@@ -212,7 +212,7 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
         return {
             calldataHexString,
             ethAmount,
-            toAddress: this._transformFeature.address,
+            toAddress: this._exchangeProxy.address,
             allowanceTarget: this.contractAddresses.exchangeProxyAllowanceTarget,
         };
     }

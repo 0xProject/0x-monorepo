@@ -14,18 +14,18 @@ import { DecodedLogEntry } from 'ethereum-types';
 import * as ethjs from 'ethereumjs-util';
 
 import { generateCallDataHashSignature, signCallData } from '../../src/signed_call_data';
-import { TransformERC20Contract, ZeroExContract } from '../../src/wrappers';
+import { IZeroExContract, TransformERC20FeatureContract } from '../../src/wrappers';
 import { artifacts } from '../artifacts';
 import { abis } from '../utils/abis';
 import { fullMigrateAsync } from '../utils/migration';
 import {
     FlashWalletContract,
-    ITokenSpenderContract,
+    ITokenSpenderFeatureContract,
     TestMintableERC20TokenContract,
     TestMintTokenERC20TransformerContract,
     TestMintTokenERC20TransformerEvents,
     TestMintTokenERC20TransformerMintTransformEventArgs,
-    TransformERC20Events,
+    TransformERC20FeatureEvents,
 } from '../wrappers';
 
 const { NULL_BYTES, NULL_BYTES32 } = constants;
@@ -39,8 +39,8 @@ blockchainTests.resets('TransformERC20 feature', env => {
     let taker: string;
     let sender: string;
     let transformerDeployer: string;
-    let zeroEx: ZeroExContract;
-    let feature: TransformERC20Contract;
+    let zeroEx: IZeroExContract;
+    let feature: TransformERC20FeatureContract;
     let wallet: FlashWalletContract;
     let allowanceTarget: string;
 
@@ -51,7 +51,7 @@ blockchainTests.resets('TransformERC20 feature', env => {
             env.provider,
             env.txDefaults,
             {
-                transformERC20: (await TransformERC20Contract.deployFrom0xArtifactAsync(
+                transformERC20: (await TransformERC20FeatureContract.deployFrom0xArtifactAsync(
                     artifacts.TestTransformERC20,
                     env.provider,
                     env.txDefaults,
@@ -60,9 +60,9 @@ blockchainTests.resets('TransformERC20 feature', env => {
             },
             { transformerDeployer },
         );
-        feature = new TransformERC20Contract(zeroEx.address, env.provider, { ...env.txDefaults, from: sender }, abis);
+        feature = new TransformERC20FeatureContract(zeroEx.address, env.provider, { ...env.txDefaults, from: sender }, abis);
         wallet = new FlashWalletContract(await feature.getTransformWallet().callAsync(), env.provider, env.txDefaults);
-        allowanceTarget = await new ITokenSpenderContract(zeroEx.address, env.provider, env.txDefaults)
+        allowanceTarget = await new ITokenSpenderFeatureContract(zeroEx.address, env.provider, env.txDefaults)
             .getAllowanceTarget()
             .callAsync();
         await feature.setQuoteSigner(callDataSigner).awaitTransactionSuccessAsync({ from: owner });
@@ -99,7 +99,7 @@ blockchainTests.resets('TransformERC20 feature', env => {
             verifyEventsFromLogs(
                 receipt.logs,
                 [{ transformerDeployer: newDeployer }],
-                TransformERC20Events.TransformerDeployerUpdated,
+                TransformERC20FeatureEvents.TransformerDeployerUpdated,
             );
             const actualDeployer = await feature.getTransformerDeployer().callAsync();
             expect(actualDeployer).to.eq(newDeployer);
@@ -122,7 +122,7 @@ blockchainTests.resets('TransformERC20 feature', env => {
         it('owner can set the quote signer with `setQuoteSigner()`', async () => {
             const newSigner = randomAddress();
             const receipt = await feature.setQuoteSigner(newSigner).awaitTransactionSuccessAsync({ from: owner });
-            verifyEventsFromLogs(receipt.logs, [{ quoteSigner: newSigner }], TransformERC20Events.QuoteSignerUpdated);
+            verifyEventsFromLogs(receipt.logs, [{ quoteSigner: newSigner }], TransformERC20FeatureEvents.QuoteSignerUpdated);
             const actualSigner = await feature.getQuoteSigner().callAsync();
             expect(actualSigner).to.eq(newSigner);
         });
@@ -259,7 +259,7 @@ blockchainTests.resets('TransformERC20 feature', env => {
                             outputToken: outputToken.address,
                         },
                     ],
-                    TransformERC20Events.TransformedERC20,
+                    TransformERC20FeatureEvents.TransformedERC20,
                 );
                 verifyEventsFromLogs(
                     receipt.logs,
@@ -316,7 +316,7 @@ blockchainTests.resets('TransformERC20 feature', env => {
                             outputToken: ETH_TOKEN_ADDRESS,
                         },
                     ],
-                    TransformERC20Events.TransformedERC20,
+                    TransformERC20FeatureEvents.TransformedERC20,
                 );
                 verifyEventsFromLogs(
                     receipt.logs,
@@ -376,7 +376,7 @@ blockchainTests.resets('TransformERC20 feature', env => {
                             outputToken: outputToken.address,
                         },
                     ],
-                    TransformERC20Events.TransformedERC20,
+                    TransformERC20FeatureEvents.TransformedERC20,
                 );
                 verifyEventsFromLogs(
                     receipt.logs,

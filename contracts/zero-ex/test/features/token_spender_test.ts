@@ -7,29 +7,29 @@ import {
 } from '@0x/contracts-test-utils';
 import { BigNumber, hexUtils, StringRevertError, ZeroExRevertErrors } from '@0x/utils';
 
-import { TokenSpenderContract, ZeroExContract } from '../../src/wrappers';
+import { IZeroExContract, TokenSpenderFeatureContract } from '../../src/wrappers';
 import { artifacts } from '../artifacts';
 import { abis } from '../utils/abis';
 import { fullMigrateAsync } from '../utils/migration';
 import { TestTokenSpenderERC20TokenContract, TestTokenSpenderERC20TokenEvents } from '../wrappers';
 
 blockchainTests.resets('TokenSpender feature', env => {
-    let zeroEx: ZeroExContract;
-    let feature: TokenSpenderContract;
+    let zeroEx: IZeroExContract;
+    let feature: TokenSpenderFeatureContract;
     let token: TestTokenSpenderERC20TokenContract;
     let allowanceTarget: string;
 
     before(async () => {
         const [owner] = await env.getAccountAddressesAsync();
         zeroEx = await fullMigrateAsync(owner, env.provider, env.txDefaults, {
-            tokenSpender: (await TokenSpenderContract.deployFrom0xArtifactAsync(
+            tokenSpender: (await TokenSpenderFeatureContract.deployFrom0xArtifactAsync(
                 artifacts.TestTokenSpender,
                 env.provider,
                 env.txDefaults,
                 artifacts,
             )).address,
         });
-        feature = new TokenSpenderContract(zeroEx.address, env.provider, env.txDefaults, abis);
+        feature = new TokenSpenderFeatureContract(zeroEx.address, env.provider, env.txDefaults, abis);
         token = await TestTokenSpenderERC20TokenContract.deployFrom0xArtifactAsync(
             artifacts.TestTokenSpenderERC20Token,
             env.provider,

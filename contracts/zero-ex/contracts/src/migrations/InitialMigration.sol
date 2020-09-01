@@ -20,9 +20,9 @@ pragma solidity ^0.6.5;
 pragma experimental ABIEncoderV2;
 
 import "../ZeroEx.sol";
-import "../features/IBootstrap.sol";
-import "../features/SimpleFunctionRegistry.sol";
-import "../features/Ownable.sol";
+import "../features/IBootstrapFeature.sol";
+import "../features/SimpleFunctionRegistryFeature.sol";
+import "../features/OwnableFeature.sol";
 import "./LibBootstrap.sol";
 
 
@@ -31,8 +31,8 @@ contract InitialMigration {
 
     /// @dev Features to bootstrap into the the proxy contract.
     struct BootstrapFeatures {
-        SimpleFunctionRegistry registry;
-        Ownable ownable;
+        SimpleFunctionRegistryFeature registry;
+        OwnableFeature ownable;
     }
 
     /// @dev The allowed caller of `initializeZeroEx()`. In production, this would be
@@ -70,7 +70,7 @@ contract InitialMigration {
         require(msg.sender == initializeCaller, "InitialMigration/INVALID_SENDER");
 
         // Bootstrap the initial feature set.
-        IBootstrap(address(zeroEx)).bootstrap(
+        IBootstrapFeature(address(zeroEx)).bootstrap(
             address(this),
             abi.encodeWithSelector(this.bootstrap.selector, owner, features)
         );
@@ -99,26 +99,26 @@ contract InitialMigration {
         LibBootstrap.delegatecallBootstrapFunction(
             address(features.registry),
             abi.encodeWithSelector(
-                SimpleFunctionRegistry.bootstrap.selector
+                SimpleFunctionRegistryFeature.bootstrap.selector
             )
         );
 
-        // Initialize Ownable.
+        // Initialize OwnableFeature.
         LibBootstrap.delegatecallBootstrapFunction(
             address(features.ownable),
             abi.encodeWithSelector(
-                Ownable.bootstrap.selector
+                OwnableFeature.bootstrap.selector
             )
         );
 
-        // De-register `SimpleFunctionRegistry._extendSelf`.
-        SimpleFunctionRegistry(address(this)).rollback(
-            SimpleFunctionRegistry._extendSelf.selector,
+        // De-register `SimpleFunctionRegistryFeature._extendSelf`.
+        SimpleFunctionRegistryFeature(address(this)).rollback(
+            SimpleFunctionRegistryFeature._extendSelf.selector,
             address(0)
         );
 
         // Transfer ownership to the real owner.
-        Ownable(address(this)).transferOwnership(owner);
+        OwnableFeature(address(this)).transferOwnership(owner);
 
         success = LibBootstrap.BOOTSTRAP_SUCCESS;
     }
