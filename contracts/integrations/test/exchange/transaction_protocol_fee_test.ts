@@ -121,7 +121,7 @@ blockchainTests.resets('Transaction <> protocol fee integration tests', env => {
             maker.address,
             wethless.address,
             '0x',
-        ).toString();
+        ).encode();
         return new ExchangeRevertErrors.TransactionExecutionError(
             transactionHashUtils.getTransactionHashHex(failedTransaction),
             nestedError,
@@ -252,7 +252,7 @@ blockchainTests.resets('Transaction <> protocol fee integration tests', env => {
                     .awaitTransactionSuccessAsync({ from: alice.address, value: REFUND_AMOUNT });
                 const expectedError = new ExchangeRevertErrors.TransactionExecutionError(
                     transactionHashUtils.getTransactionHashHex(recursiveTransaction),
-                    protocolFeeError(order, transaction).toString(),
+                    protocolFeeError(order, transaction).encode(),
                 );
                 return expect(tx).to.revertWith(expectedError);
             });

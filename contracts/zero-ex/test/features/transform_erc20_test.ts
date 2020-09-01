@@ -60,7 +60,12 @@ blockchainTests.resets('TransformERC20 feature', env => {
             },
             { transformerDeployer },
         );
-        feature = new TransformERC20FeatureContract(zeroEx.address, env.provider, { ...env.txDefaults, from: sender }, abis);
+        feature = new TransformERC20FeatureContract(
+            zeroEx.address,
+            env.provider,
+            { ...env.txDefaults, from: sender },
+            abis,
+        );
         wallet = new FlashWalletContract(await feature.getTransformWallet().callAsync(), env.provider, env.txDefaults);
         allowanceTarget = await new ITokenSpenderFeatureContract(zeroEx.address, env.provider, env.txDefaults)
             .getAllowanceTarget()
@@ -122,7 +127,11 @@ blockchainTests.resets('TransformERC20 feature', env => {
         it('owner can set the quote signer with `setQuoteSigner()`', async () => {
             const newSigner = randomAddress();
             const receipt = await feature.setQuoteSigner(newSigner).awaitTransactionSuccessAsync({ from: owner });
-            verifyEventsFromLogs(receipt.logs, [{ quoteSigner: newSigner }], TransformERC20FeatureEvents.QuoteSignerUpdated);
+            verifyEventsFromLogs(
+                receipt.logs,
+                [{ quoteSigner: newSigner }],
+                TransformERC20FeatureEvents.QuoteSignerUpdated,
+            );
             const actualSigner = await feature.getQuoteSigner().callAsync();
             expect(actualSigner).to.eq(newSigner);
         });

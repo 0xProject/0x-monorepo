@@ -278,7 +278,7 @@ blockchainTests.resets('Exchange fills dydx orders', env => {
             } catch (e) {
                 assetProxyError = decodeThrownErrorAsRevertError(e).values.errorData;
             }
-            expect(assetProxyError).to.deep.equal(new StringRevertError(expectedAssetProxyError.toString()));
+            expect(assetProxyError).to.deep.equal(new StringRevertError(expectedAssetProxyError.encode()));
         });
     });
 });

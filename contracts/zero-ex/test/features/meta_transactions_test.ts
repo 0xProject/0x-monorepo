@@ -52,7 +52,12 @@ blockchainTests.resets('MetaTransactions feature', env => {
         zeroEx = await fullMigrateAsync(owner, env.provider, env.txDefaults, {
             transformERC20: transformERC20Feature.address,
         });
-        feature = new MetaTransactionsFeatureContract(zeroEx.address, env.provider, { ...env.txDefaults, from: sender }, abis);
+        feature = new MetaTransactionsFeatureContract(
+            zeroEx.address,
+            env.provider,
+            { ...env.txDefaults, from: sender },
+            abis,
+        );
         feeToken = await TestMintableERC20TokenContract.deployFrom0xArtifactAsync(
             artifacts.TestMintableERC20Token,
             env.provider,

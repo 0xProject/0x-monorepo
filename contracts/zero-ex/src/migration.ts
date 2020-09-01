@@ -45,8 +45,12 @@ export async function deployBootstrapFeaturesAsync(
             )).address,
         ownable:
             features.ownable ||
-            (await OwnableFeatureContract.deployFrom0xArtifactAsync(artifacts.OwnableFeature, provider, txDefaults, artifacts))
-                .address,
+            (await OwnableFeatureContract.deployFrom0xArtifactAsync(
+                artifacts.OwnableFeature,
+                provider,
+                txDefaults,
+                artifacts,
+            )).address,
     };
 }
 
