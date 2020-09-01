@@ -32,15 +32,15 @@
             },
             {
                 "note": "Add `IUniswapV2Feature`",
-                "pr": "TODO"
+                "pr": 2657
             },
             {
                 "note": "Rename all feature contracts to have `Feature` suffix",
-                "pr": "TODO"
+                "pr": 2657
             },
             {
                 "note": "Return `IZeroExContract` in `fullMigrateAsync()`",
-                "pr": "TODO"
+                "pr": 2657
             }
         ]
     },

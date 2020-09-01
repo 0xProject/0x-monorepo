@@ -92,7 +92,7 @@
             },
             {
                 "note": "Use `IZeroExContract` in EP swap quote consumer.",
-                "pr": "TODO"
+                "pr": 2657
             }
         ]
     },
