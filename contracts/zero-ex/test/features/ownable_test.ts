@@ -102,7 +102,7 @@ blockchainTests.resets('Ownable feature', env => {
             return expect(tx).to.revertWith(
                 new ZeroExRevertErrors.Ownable.MigrateCallFailedError(
                     testMigrator.address,
-                    new StringRevertError('OOPSIE').toString(),
+                    new StringRevertError('OOPSIE').encode(),
                 ),
             );
         });

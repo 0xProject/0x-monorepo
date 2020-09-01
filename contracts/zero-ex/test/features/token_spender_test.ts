@@ -98,7 +98,7 @@ blockchainTests.resets('TokenSpender feature', env => {
                 tokenFrom,
                 tokenTo,
                 tokenAmount,
-                new StringRevertError('TestTokenSpenderERC20Token/Revert').toString(),
+                new StringRevertError('TestTokenSpenderERC20Token/Revert').encode(),
             );
             return expect(tx).to.revertWith(expectedError);
         });

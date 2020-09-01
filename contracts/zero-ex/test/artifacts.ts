@@ -7,8 +7,8 @@ import { ContractArtifact } from 'ethereum-types';
 
 import * as AffiliateFeeTransformer from '../test/generated-artifacts/AffiliateFeeTransformer.json';
 import * as AllowanceTarget from '../test/generated-artifacts/AllowanceTarget.json';
-import * as BridgeAdapter from '../test/generated-artifacts/BridgeAdapter.json';
 import * as BootstrapFeature from '../test/generated-artifacts/BootstrapFeature.json';
+import * as BridgeAdapter from '../test/generated-artifacts/BridgeAdapter.json';
 import * as FillQuoteTransformer from '../test/generated-artifacts/FillQuoteTransformer.json';
 import * as FixinCommon from '../test/generated-artifacts/FixinCommon.json';
 import * as FixinEIP712 from '../test/generated-artifacts/FixinEIP712.json';
@@ -16,8 +16,8 @@ import * as FixinReentrancyGuard from '../test/generated-artifacts/FixinReentran
 import * as FlashWallet from '../test/generated-artifacts/FlashWallet.json';
 import * as FullMigration from '../test/generated-artifacts/FullMigration.json';
 import * as IAllowanceTarget from '../test/generated-artifacts/IAllowanceTarget.json';
-import * as IBridgeAdapter from '../test/generated-artifacts/IBridgeAdapter.json';
 import * as IBootstrapFeature from '../test/generated-artifacts/IBootstrapFeature.json';
+import * as IBridgeAdapter from '../test/generated-artifacts/IBridgeAdapter.json';
 import * as IERC20Bridge from '../test/generated-artifacts/IERC20Bridge.json';
 import * as IERC20Transformer from '../test/generated-artifacts/IERC20Transformer.json';
 import * as IExchange from '../test/generated-artifacts/IExchange.json';
@@ -32,7 +32,6 @@ import * as ISimpleFunctionRegistryFeature from '../test/generated-artifacts/ISi
 import * as ITestSimpleFunctionRegistryFeature from '../test/generated-artifacts/ITestSimpleFunctionRegistryFeature.json';
 import * as ITokenSpenderFeature from '../test/generated-artifacts/ITokenSpenderFeature.json';
 import * as ITransformERC20Feature from '../test/generated-artifacts/ITransformERC20Feature.json';
-import * as IUniswapV2Feature from '../test/generated-artifacts/IUniswapV2Feature.json';
 import * as IZeroEx from '../test/generated-artifacts/IZeroEx.json';
 import * as LibBootstrap from '../test/generated-artifacts/LibBootstrap.json';
 import * as LibCommonRichErrors from '../test/generated-artifacts/LibCommonRichErrors.json';
@@ -56,6 +55,7 @@ import * as LibTransformERC20RichErrors from '../test/generated-artifacts/LibTra
 import * as LibTransformERC20Storage from '../test/generated-artifacts/LibTransformERC20Storage.json';
 import * as LibWalletRichErrors from '../test/generated-artifacts/LibWalletRichErrors.json';
 import * as LogMetadataTransformer from '../test/generated-artifacts/LogMetadataTransformer.json';
+import * as MetaTransactionsFeature from '../test/generated-artifacts/MetaTransactionsFeature.json';
 import * as MixinAdapterAddresses from '../test/generated-artifacts/MixinAdapterAddresses.json';
 import * as MixinBalancer from '../test/generated-artifacts/MixinBalancer.json';
 import * as MixinCurve from '../test/generated-artifacts/MixinCurve.json';
@@ -65,7 +65,6 @@ import * as MixinOasis from '../test/generated-artifacts/MixinOasis.json';
 import * as MixinUniswap from '../test/generated-artifacts/MixinUniswap.json';
 import * as MixinUniswapV2 from '../test/generated-artifacts/MixinUniswapV2.json';
 import * as MixinZeroExBridge from '../test/generated-artifacts/MixinZeroExBridge.json';
-import * as MetaTransactionsFeature from '../test/generated-artifacts/MetaTransactionsFeature.json';
 import * as OwnableFeature from '../test/generated-artifacts/OwnableFeature.json';
 import * as PayTakerTransformer from '../test/generated-artifacts/PayTakerTransformer.json';
 import * as SignatureValidatorFeature from '../test/generated-artifacts/SignatureValidatorFeature.json';
@@ -135,7 +134,6 @@ export const artifacts = {
     ISimpleFunctionRegistryFeature: ISimpleFunctionRegistryFeature as ContractArtifact,
     ITokenSpenderFeature: ITokenSpenderFeature as ContractArtifact,
     ITransformERC20Feature: ITransformERC20Feature as ContractArtifact,
-    IUniswapV2Feature: IUniswapV2Feature as ContractArtifact,
     MetaTransactionsFeature: MetaTransactionsFeature as ContractArtifact,
     OwnableFeature: OwnableFeature as ContractArtifact,
     SignatureValidatorFeature: SignatureValidatorFeature as ContractArtifact,

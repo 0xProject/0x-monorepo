@@ -301,7 +301,7 @@ blockchainTests.resets('MetaTransactions feature', env => {
                 new ZeroExRevertErrors.MetaTransactions.MetaTransactionCallFailedError(
                     mtxHash,
                     actualCallData,
-                    new StringRevertError('FAIL').toString(),
+                    new StringRevertError('FAIL').encode(),
                 ),
             );
         });
@@ -469,7 +469,7 @@ blockchainTests.resets('MetaTransactions feature', env => {
                         mtxHash,
                         signers[0],
                         signature,
-                    ).toString(),
+                    ).encode(),
                 ),
             );
         });
