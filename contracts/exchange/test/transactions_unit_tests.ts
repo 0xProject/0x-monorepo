@@ -101,7 +101,7 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
             const executableError = new StringRevertError('EXECUTABLE_FAILED');
             const expectedError = new ExchangeRevertErrors.TransactionExecutionError(
                 transactionHash,
-                executableError.toString(),
+                executableError.encode(),
             );
 
             // Call the `batchExecuteTransactions()` function and ensure that it reverts with the expected revert error.
@@ -123,7 +123,7 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
             const executableError = new StringRevertError('EXECUTABLE_FAILED');
             const expectedError = new ExchangeRevertErrors.TransactionExecutionError(
                 transactionHash,
-                executableError.toString(),
+                executableError.encode(),
             );
 
             // Call the `batchExecuteTransactions()` function and ensure that it reverts with the expected revert error.
@@ -145,7 +145,7 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
             const executableError = new StringRevertError('EXECUTABLE_FAILED');
             const expectedError = new ExchangeRevertErrors.TransactionExecutionError(
                 transactionHash,
-                executableError.toString(),
+                executableError.encode(),
             );
 
             // Call the `batchExecuteTransactions()` function and ensure that it reverts with the expected revert error.
@@ -280,7 +280,7 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
             const outerExecuteTransactionHash = transactionHashUtils.getTransactionHashHex(outerExecuteTransaction);
             const outerExpectedError = new ExchangeRevertErrors.TransactionExecutionError(
                 outerExecuteTransactionHash,
-                innerExpectedError.toString(),
+                innerExpectedError.encode(),
             );
             const tx = transactionsContract
                 .batchExecuteTransactions([outerExecuteTransaction], [randomSignature()])
@@ -363,7 +363,7 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
             const errorData = new ExchangeRevertErrors.TransactionInvalidContextError(
                 innerTransactionHash,
                 accounts[0],
-            ).toString();
+            ).encode();
             const expectedError = new ExchangeRevertErrors.TransactionExecutionError(outerTransactionHash, errorData);
             const tx = transactionsContract
                 .executeTransaction(outerTransaction, validSignature)
@@ -385,7 +385,7 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
             const errorData = new ExchangeRevertErrors.TransactionInvalidContextError(
                 innerTransactionHash,
                 accounts[0],
-            ).toString();
+            ).encode();
             const expectedError = new ExchangeRevertErrors.TransactionExecutionError(outerTransactionHash, errorData);
             const tx = transactionsContract
                 .executeTransaction(outerTransaction, validSignature)
@@ -466,7 +466,7 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
             const executableError = new StringRevertError('EXECUTABLE_FAILED');
             const expectedError = new ExchangeRevertErrors.TransactionExecutionError(
                 transactionHash,
-                executableError.toString(),
+                executableError.encode(),
             );
             const tx = transactionsContract
                 .executeTransaction(transaction, randomSignature())
@@ -486,7 +486,7 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
             const executableError = new StringRevertError('EXECUTABLE_FAILED');
             const expectedError = new ExchangeRevertErrors.TransactionExecutionError(
                 transactionHash,
-                executableError.toString(),
+                executableError.encode(),
             );
             const tx = transactionsContract
                 .executeTransaction(transaction, validSignature)

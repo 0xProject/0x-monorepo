@@ -290,7 +290,7 @@ describe('AssetProxyDispatcher', () => {
             const expectedError = new ExchangeRevertErrors.AssetProxyTransferError(
                 orderHash,
                 encodedAssetData,
-                nestedError.toString(),
+                nestedError.encode(),
             );
             const tx = assetProxyDispatcher
                 .dispatchTransferFrom(orderHash, encodedAssetData, makerAddress, takerAddress, amount)
@@ -313,7 +313,7 @@ describe('AssetProxyDispatcher', () => {
             const expectedError = new ExchangeRevertErrors.AssetProxyTransferError(
                 transferIndexAsBytes32,
                 assetDataB,
-                nestedError.toString(),
+                nestedError.encode(),
             );
             const tx = assetProxyDispatcher
                 .simulateDispatchTransferFromCalls(

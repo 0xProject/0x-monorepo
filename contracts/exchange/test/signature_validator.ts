@@ -300,7 +300,7 @@ blockchainTests.resets('MixinSignatureValidator', env => {
                 hashHex,
                 validatorWallet.address,
                 signatureHex,
-                new StringRevertError(validatorWalletRevertReason).toString(),
+                new StringRevertError(validatorWalletRevertReason).encode(),
             );
             const tx = validateAsync(hashHex, validatorWallet.address, signatureHex, ValidatorWalletAction.Revert);
             return expect(tx).to.revertWith(expectedError);
@@ -562,7 +562,7 @@ blockchainTests.resets('MixinSignatureValidator', env => {
                 validatorWallet.address,
                 data,
                 signatureHex,
-                new StringRevertError(validatorWalletRevertReason).toString(),
+                new StringRevertError(validatorWalletRevertReason).encode(),
             );
             const tx = validateAsync(signedOrder, signatureHex, ValidatorWalletAction.Revert);
             return expect(tx).to.revertWith(expectedError);
@@ -693,7 +693,7 @@ blockchainTests.resets('MixinSignatureValidator', env => {
                 validatorWallet.address,
                 data,
                 signatureHex,
-                new StringRevertError(validatorWalletRevertReason).toString(),
+                new StringRevertError(validatorWalletRevertReason).encode(),
             );
             const tx = validateAsync(signedOrder, signatureHex, ValidatorWalletAction.Revert);
             return expect(tx).to.revertWith(expectedError);
@@ -916,7 +916,7 @@ blockchainTests.resets('MixinSignatureValidator', env => {
                 validatorWallet.address,
                 data,
                 signatureHex,
-                new StringRevertError(validatorWalletRevertReason).toString(),
+                new StringRevertError(validatorWalletRevertReason).encode(),
             );
             const tx = validateAsync(signedTransaction, signatureHex, ValidatorWalletAction.Revert);
             return expect(tx).to.revertWith(expectedError);
@@ -1041,7 +1041,7 @@ blockchainTests.resets('MixinSignatureValidator', env => {
                 validatorWallet.address,
                 data,
                 signatureHex,
-                new StringRevertError(validatorWalletRevertReason).toString(),
+                new StringRevertError(validatorWalletRevertReason).encode(),
             );
             const tx = validateAsync(signedTransaction, signatureHex, ValidatorWalletAction.Revert);
             return expect(tx).to.revertWith(expectedError);
