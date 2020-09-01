@@ -48,9 +48,9 @@ contract TransformerDeployer is
     mapping (address => uint256) public toDeploymentNonce;
 
     /// @dev Create this contract and register authorities.
-    constructor(address[] memory authorities) public {
-        for (uint256 i = 0; i < authorities.length; ++i) {
-            _addAuthorizedAddress(authorities[i]);
+    constructor(address[] memory initialAuthorities) public {
+        for (uint256 i = 0; i < initialAuthorities.length; ++i) {
+            _addAuthorizedAddress(initialAuthorities[i]);
         }
     }
 
