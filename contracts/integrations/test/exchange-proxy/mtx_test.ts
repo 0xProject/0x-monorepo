@@ -25,7 +25,7 @@ import * as ethjs from 'ethereumjs-util';
 
 const { MAX_UINT256, NULL_ADDRESS, NULL_BYTES, NULL_BYTES32, ZERO_AMOUNT } = constants;
 
-blockchainTests.resets.only('exchange proxy - meta-transactions', env => {
+blockchainTests.resets('exchange proxy - meta-transactions', env => {
     const quoteSignerKey = hexUtils.random();
     const quoteSigner = hexUtils.toHex(ethjs.privateToAddress(ethjs.toBuffer(quoteSignerKey)));
     let owner: string;
