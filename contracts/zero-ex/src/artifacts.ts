@@ -50,6 +50,6 @@ export const artifacts = {
     AffiliateFeeTransformer: AffiliateFeeTransformer as ContractArtifact,
     SignatureValidator: SignatureValidator as ContractArtifact,
     MetaTransactions: MetaTransactions as ContractArtifact,
-    BridgeAdapter: BridgeAdapter as ContractArtifact,
     LogMetadataTransformer: LogMetadataTransformer as ContractArtifact,
+    BridgeAdapter: BridgeAdapter as ContractArtifact,
 };
