@@ -29,6 +29,7 @@ import {
     Fill,
     KyberFillData,
     LiquidityProviderFillData,
+    MooniswapFillData,
     MultiBridgeFillData,
     MultiHopFillData,
     NativeCollapsedFill,
@@ -304,6 +305,14 @@ function createBridgeOrder(
                 createKyberBridgeData(takerToken, kyberFillData.hint),
             );
             break;
+        case ERC20BridgeSource.Mooniswap:
+            const mooniswapFillData = (fill as CollapsedFill<MooniswapFillData>).fillData!; // tslint:disable-line:no-non-null-assertion
+            makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
+                makerToken,
+                bridgeAddress,
+                createMooniswapBridgeData(takerToken, mooniswapFillData.poolAddress),
+            );
+            break;
         default:
             makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
                 makerToken,
@@ -405,6 +414,11 @@ function createBancorBridgeData(path: string[], networkAddress: string): string 
 function createKyberBridgeData(fromTokenAddress: string, hint: string): string {
     const encoder = AbiEncoder.create([{ name: 'fromTokenAddress', type: 'address' }, { name: 'hint', type: 'bytes' }]);
     return encoder.encode({ fromTokenAddress, hint });
+}
+
+function createMooniswapBridgeData(takerToken: string, poolAddress: string): string {
+    const encoder = AbiEncoder.create([{ name: 'takerToken', type: 'address' }, { name: 'pool', type: 'address' }]);
+    return encoder.encode({ takerToken, poolAddress });
 }
 
 function createCurveBridgeData(

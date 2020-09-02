@@ -46,49 +46,68 @@ contract MooniswapSampler is
     )
         public
         view
-        returns (uint256[] memory makerTokenAmounts)
+        returns (IMooniswap pool, uint256[] memory makerTokenAmounts)
     {
         _assertValidPair(makerToken, takerToken);
         uint256 numSamples = takerTokenAmounts.length;
         makerTokenAmounts = new uint256[](numSamples);
 
-        address _takerToken = takerToken == _getWethAddress() ? address(0) : takerToken;
-        address _makerToken = makerToken == _getWethAddress() ? address(0) : makerToken;
+        address mooniswapTakerToken = takerToken == _getWethAddress() ? address(0) : takerToken;
+        address mooniswapMakerToken = makerToken == _getWethAddress() ? address(0) : makerToken;
         // Find the pool for the pair, ETH is represented
         // as address(0)
-        IMooniswap pool = IMooniswap(
-            IMooniswapRegistry(_getMooniswapAddress()).pools(_takerToken, _makerToken)
+        pool = IMooniswap(
+            IMooniswapRegistry(_getMooniswapAddress()).pools(mooniswapTakerToken, mooniswapMakerToken)
         );
         // If there is no pool then return early
         if (address(pool) == address(0)) {
-            return makerTokenAmounts;
+            return (pool, makerTokenAmounts);
         }
 
-        uint256 poolBalance = _takerToken == address(0) ? address(pool).balance : IERC20Token(_takerToken).balanceOf(address(pool));
-
         for (uint256 i = 0; i < numSamples; i++) {
-            // If the pool balance is smaller than the sell amount
-            // don't sample to avoid multiplication overflow in buys
-            if (poolBalance < takerTokenAmounts[i]) {
-                break;
-            }
-            (bool didSucceed, bytes memory resultData) =
-                address(pool).staticcall.gas(MOONISWAP_CALL_GAS)(
-                    abi.encodeWithSelector(
-                        IMooniswap(0).getReturn.selector,
-                        _takerToken,
-                        _makerToken,
-                        takerTokenAmounts[i]
-                    ));
-            uint256 buyAmount = 0;
-            if (didSucceed) {
-                buyAmount = abi.decode(resultData, (uint256));
-            }
+            uint256 buyAmount = sampleSingleSellFromMooniswapPool(
+                pool,
+                mooniswapTakerToken,
+                mooniswapMakerToken,
+                takerTokenAmounts[i]
+            );
             // Exit early if the amount is too high for the source to serve
             if (buyAmount == 0) {
                 break;
             }
             makerTokenAmounts[i] = buyAmount;
+        }
+    }
+
+    function sampleSingleSellFromMooniswapPool(
+        IMooniswap pool,
+        address mooniswapTakerToken,
+        address mooniswapMakerToken,
+        uint256 takerTokenAmount
+    )
+        public
+        view
+        returns (uint256 makerTokenAmount)
+    {
+        uint256 poolBalance = mooniswapTakerToken == address(0)
+            ? address(pool).balance
+            : IERC20Token(mooniswapTakerToken).balanceOf(address(pool));
+
+        // If the pool balance is smaller than the sell amount
+        // don't sample to avoid multiplication overflow in buys
+        if (poolBalance < takerTokenAmount) {
+            return makerTokenAmount;
+        }
+        (bool didSucceed, bytes memory resultData) =
+            address(pool).staticcall.gas(MOONISWAP_CALL_GAS)(
+                abi.encodeWithSelector(
+                    IMooniswap(0).getReturn.selector,
+                    mooniswapTakerToken,
+                    mooniswapMakerToken,
+                    takerTokenAmount
+                ));
+        if (didSucceed) {
+            makerTokenAmount = abi.decode(resultData, (uint256));
         }
     }
 
@@ -105,12 +124,28 @@ contract MooniswapSampler is
     )
         public
         view
-        returns (uint256[] memory takerTokenAmounts)
+        returns (IMooniswap pool, uint256[] memory takerTokenAmounts)
     {
-        return _sampleApproximateBuys(
+        _assertValidPair(makerToken, takerToken);
+        uint256 numSamples = takerTokenAmounts.length;
+        makerTokenAmounts = new uint256[](numSamples);
+
+        address mooniswapTakerToken = takerToken == _getWethAddress() ? address(0) : takerToken;
+        address mooniswapMakerToken = makerToken == _getWethAddress() ? address(0) : makerToken;
+        // Find the pool for the pair, ETH is represented
+        // as address(0)
+        pool = IMooniswap(
+            IMooniswapRegistry(_getMooniswapAddress()).pools(mooniswapTakerToken, mooniswapMakerToken)
+        );
+        // If there is no pool then return early
+        if (address(pool) == address(0)) {
+            return (pool, takerTokenAmounts);
+        }
+
+        takerTokenAmounts = _sampleApproximateBuys(
             ApproximateBuyQuoteOpts({
-                makerTokenData: abi.encode(makerToken),
-                takerTokenData: abi.encode(takerToken),
+                makerTokenData: abi.encode(mooniswapMakerToken, pool),
+                takerTokenData: abi.encode(mooniswapTakerToken, pool),
                 getSellQuoteCallback: _sampleSellForApproximateBuyFromMooniswap
             }),
             makerTokenAmounts
@@ -126,15 +161,16 @@ contract MooniswapSampler is
         view
         returns (uint256 buyAmount)
     {
-        (address takerToken) =
-            abi.decode(takerTokenData, (address));
-        (address makerToken) =
+        (address mooniswapTakerToken, IMooniswap pool) =
+            abi.decode(takerTokenData, (address, IMooniswap));
+        (address mooniswapMakerToken) =
             abi.decode(makerTokenData, (address));
         (bool success, bytes memory resultData) =
             address(this).staticcall(abi.encodeWithSelector(
-                this.sampleSellsFromMooniswap.selector,
-                takerToken,
-                makerToken,
+                this.sampleSingleSellFromMooniswapPool.selector,
+                pool,
+                mooniswapTakerToken,
+                mooniswapMakerToken,
                 _toSingleValueArray(sellAmount)
             ));
         if (!success) {

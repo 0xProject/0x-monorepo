@@ -97,6 +97,10 @@
             {
                 "note": "Set `rfqtTakerAddress` to null in EP consumer",
                 "pr": 2692
+            },
+            {
+                "note": "Return Mooniswap pool in sampler and encode it in bridge data",
+                "pr": 2692
             }
         ]
     },
