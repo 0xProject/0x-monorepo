@@ -80,8 +80,8 @@ contract MixinMooniswap is
         internal
         returns (uint256 boughtAmount)
     {
-        IERC20TokenV06 sellToken = abi.decode(bridgeData, (IERC20TokenV06));
-        IMooniswapPool pool = REGISTRY.pools(sellToken, buyToken);
+        (IERC20TokenV06 sellToken, IMooniswapPool pool) =
+            abi.decode(bridgeData, (IERC20TokenV06, IMooniswapPool));
 
         // Convert WETH to ETH.
         uint256 ethValue = 0;
