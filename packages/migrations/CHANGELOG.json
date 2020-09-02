@@ -17,6 +17,10 @@
             {
                 "note": "Update EP migration.",
                 "pr": 2657
+            },
+            {
+                "note": "Add mooniswap addresses to `BridgeAdapter` deployment",
+                "pr": 2692
             }
         ]
     },

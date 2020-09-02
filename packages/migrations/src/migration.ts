@@ -314,6 +314,7 @@ export async function runMigrationsAsync(
             balancerBridge: NULL_ADDRESS,
             curveBridge: NULL_ADDRESS,
             kyberBridge: NULL_ADDRESS,
+            mooniswapBridge: NULL_ADDRESS,
             mStableBridge: NULL_ADDRESS,
             oasisBridge: NULL_ADDRESS,
             uniswapBridge: NULL_ADDRESS,
@@ -323,6 +324,7 @@ export async function runMigrationsAsync(
             uniswapV2Router: NULL_ADDRESS,
             uniswapExchangeFactory: NULL_ADDRESS,
             mStable: NULL_ADDRESS,
+            mooniswapRegistry: NULL_ADDRESS,
             weth: etherToken.address,
         },
     );
