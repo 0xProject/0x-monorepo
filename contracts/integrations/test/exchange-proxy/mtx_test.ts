@@ -106,7 +106,7 @@ blockchainTests.resets('exchange proxy - meta-transactions', env => {
         orders: SignedOrder[];
     }
 
-    async function generateSwapAsync(orderFields: Partial<Order> = {}): Promise<SwapInfo> {
+    async function generateSwapAsync(orderFields: Partial<Order> = {}, isRfqt: boolean = false): Promise<SwapInfo> {
         const order = await signatureUtils.ecSignTypedDataOrderAsync(
             env.provider,
             {
@@ -116,7 +116,7 @@ blockchainTests.resets('exchange proxy - meta-transactions', env => {
                 salt: new BigNumber(hexUtils.random()),
                 feeRecipientAddress: NULL_ADDRESS,
                 senderAddress: NULL_ADDRESS,
-                takerAddress: flashWalletAddress,
+                takerAddress: isRfqt ? flashWalletAddress : NULL_ADDRESS,
                 makerAddress: maker,
                 makerAssetData: assetDataUtils.encodeERC20AssetData(outputToken.address),
                 takerAssetData: assetDataUtils.encodeERC20AssetData(inputToken.address),
@@ -144,6 +144,7 @@ blockchainTests.resets('exchange proxy - meta-transactions', env => {
                     fillAmount: order.takerAssetAmount,
                     maxOrderFillAmounts: [],
                     refundReceiver: hexUtils.leftPad(2, 20), // Send refund to sender.
+                    rfqtTakerAddress: isRfqt ? taker : NULL_ADDRESS,
                     side: FillQuoteTransformerSide.Sell,
                 }),
             },
@@ -205,6 +206,7 @@ blockchainTests.resets('exchange proxy - meta-transactions', env => {
     async function createMetaTransactionAsync(
         data: string,
         value: BigNumber,
+        fee?: BigNumber | number,
     ): Promise<SignedExchangeProxyMetaTransaction> {
         return signatureUtils.ecSignTypedDataExchangeProxyMetaTransactionAsync(
             env.provider,
@@ -218,7 +220,7 @@ blockchainTests.resets('exchange proxy - meta-transactions', env => {
                 salt: new BigNumber(hexUtils.random()),
                 callData: data,
                 feeToken: feeToken.address,
-                feeAmount: getRandomPortion(TAKER_FEE_BALANCE),
+                feeAmount: fee !== undefined ? new BigNumber(fee) : getRandomPortion(TAKER_FEE_BALANCE),
                 domain: {
                     chainId: 1,
                     name: 'ZeroEx',
@@ -229,6 +231,42 @@ blockchainTests.resets('exchange proxy - meta-transactions', env => {
             taker,
         );
     }
+
+    it('can call `transformERC20()` with signed calldata and no relayer fee', async () => {
+        const swap = await generateSwapAsync();
+        const callDataHash = hexUtils.hash(getSwapData(swap));
+        const signedSwapData = getSignedSwapData(swap);
+        const _protocolFee = protocolFee.times(GAS_PRICE).times(swap.orders.length + 1); // Pay a little more fee than needed.
+        const mtx = await createMetaTransactionAsync(signedSwapData, _protocolFee, 0);
+        const relayerEthBalanceBefore = await env.web3Wrapper.getBalanceInWeiAsync(relayer);
+        const receipt = await zeroEx
+            .executeMetaTransaction(mtx, mtx.signature)
+            .awaitTransactionSuccessAsync({ from: relayer, value: mtx.value, gasPrice: GAS_PRICE });
+        const relayerEthRefund = relayerEthBalanceBefore
+            .minus(await env.web3Wrapper.getBalanceInWeiAsync(relayer))
+            .minus(GAS_PRICE.times(receipt.gasUsed));
+        // Ensure the relayer got back the unused protocol fees.
+        expect(relayerEthRefund).to.bignumber.eq(protocolFee.times(GAS_PRICE));
+        // Ensure the relayer got paid no mtx fees.
+        expect(await feeToken.balanceOf(relayer).callAsync()).to.bignumber.eq(0);
+        // Ensure the taker got output tokens.
+        expect(await outputToken.balanceOf(taker).callAsync()).to.bignumber.eq(swap.minOutputTokenAmount);
+        // Ensure the maker got input tokens.
+        expect(await inputToken.balanceOf(maker).callAsync()).to.bignumber.eq(swap.inputTokenAmount);
+        // Check events.
+        verifyEventsFromLogs(
+            receipt.logs,
+            [
+                {
+                    taker,
+                    callDataHash,
+                    sender: zeroEx.address,
+                    data: NULL_BYTES,
+                },
+            ],
+            'TransformerMetadata',
+        );
+    });
 
     it('can call `transformERC20()` with signed calldata and a relayer fee', async () => {
         const swap = await generateSwapAsync();
@@ -294,6 +332,42 @@ blockchainTests.resets('exchange proxy - meta-transactions', env => {
                     taker,
                     // Only signed calldata should have a nonzero hash.
                     callDataHash: NULL_BYTES32,
+                    sender: zeroEx.address,
+                    data: NULL_BYTES,
+                },
+            ],
+            'TransformerMetadata',
+        );
+    });
+
+    it('`transformERC20()` can fill RFQT order if calldata is signed', async () => {
+        const swap = await generateSwapAsync({}, true);
+        const callDataHash = hexUtils.hash(getSwapData(swap));
+        const signedSwapData = getSignedSwapData(swap);
+        const _protocolFee = protocolFee.times(GAS_PRICE).times(swap.orders.length + 1); // Pay a little more fee than needed.
+        const mtx = await createMetaTransactionAsync(signedSwapData, _protocolFee, 0);
+        const relayerEthBalanceBefore = await env.web3Wrapper.getBalanceInWeiAsync(relayer);
+        const receipt = await zeroEx
+            .executeMetaTransaction(mtx, mtx.signature)
+            .awaitTransactionSuccessAsync({ from: relayer, value: mtx.value, gasPrice: GAS_PRICE });
+        const relayerEthRefund = relayerEthBalanceBefore
+            .minus(await env.web3Wrapper.getBalanceInWeiAsync(relayer))
+            .minus(GAS_PRICE.times(receipt.gasUsed));
+        // Ensure the relayer got back the unused protocol fees.
+        expect(relayerEthRefund).to.bignumber.eq(protocolFee.times(GAS_PRICE));
+        // Ensure the relayer got paid no mtx fees.
+        expect(await feeToken.balanceOf(relayer).callAsync()).to.bignumber.eq(0);
+        // Ensure the taker got output tokens.
+        expect(await outputToken.balanceOf(taker).callAsync()).to.bignumber.eq(swap.minOutputTokenAmount);
+        // Ensure the maker got input tokens.
+        expect(await inputToken.balanceOf(maker).callAsync()).to.bignumber.eq(swap.inputTokenAmount);
+        // Check events.
+        verifyEventsFromLogs(
+            receipt.logs,
+            [
+                {
+                    taker,
+                    callDataHash,
                     sender: zeroEx.address,
                     data: NULL_BYTES,
                 },

@@ -27,7 +27,7 @@ import "@0x/contracts-utils/contracts/src/v06/LibSafeMathV06.sol";
 import "@0x/contracts-utils/contracts/src/v06/LibMathV06.sol";
 import "../errors/LibTransformERC20RichErrors.sol";
 import "../vendor/v3/IExchange.sol";
-import "../bridges/IBridgeAdapter.sol";
+import "./bridges/IBridgeAdapter.sol";
 import "./Transformer.sol";
 import "./LibERC20Transformer.sol";
 
@@ -50,7 +50,7 @@ contract FillQuoteTransformer is
 
     /// @dev Transform data to ABI-encode and pass into `transform()`.
     struct TransformData {
-        // Whether we aer performing a market sell or buy.
+        // Whether we are performing a market sell or buy.
         Side side;
         // The token being sold.
         // This should be an actual token, not the ETH pseudo-token.
@@ -77,6 +77,9 @@ contract FillQuoteTransformer is
         // `address(1)`: Send to the taker.
         // `address(2)`: Send to the sender (caller of `transformERC20()`).
         address payable refundReceiver;
+        // Required taker address for RFQT orders.
+        // Null means any taker can fill it.
+        address rfqtTakerAddress;
     }
 
     /// @dev Results of a call to `_fillOrder()`.
@@ -96,6 +99,7 @@ contract FillQuoteTransformer is
         uint256 soldAmount;
         uint256 protocolFee;
         uint256 takerTokenBalanceRemaining;
+        bool isRfqtAllowed;
     }
 
     /// @dev Emitted when a trade is skipped due to a lack of funds
@@ -178,9 +182,14 @@ contract FillQuoteTransformer is
         // Approve the ERC20 proxy to spend `sellToken`.
         data.sellToken.approveIfBelow(erc20Proxy, data.fillAmount);
 
-        // Fill the orders.
         state.protocolFee = exchange.protocolFeeMultiplier().safeMul(tx.gasprice);
         state.ethRemaining = address(this).balance;
+        // RFQT orders can only be filled if we have a valid calldata hash
+        // (calldata was signed), and the actual taker matches the RFQT taker (if set).
+        state.isRfqtAllowed = context.callDataHash != bytes32(0)
+            && (data.rfqtTakerAddress == address(0) || context.taker == data.rfqtTakerAddress);
+
+        // Fill the orders.
         for (uint256 i = 0; i < data.orders.length; ++i) {
             // Check if we've hit our targets.
             if (data.side == Side.Sell) {
@@ -434,6 +443,11 @@ contract FillQuoteTransformer is
             }
             return results;
         } else {
+            // If the order taker address is set to this contract's address then
+            // this is an RFQT order, and we will only fill it if allowed to.
+            if (order.takerAddress == address(this) && !state.isRfqtAllowed) {
+                return results; // Empty results.
+            }
             // Emit an event if we do not have sufficient ETH to cover the protocol fee.
             if (state.ethRemaining < state.protocolFee) {
                 emit ProtocolFeeUnfunded(state.ethRemaining, state.protocolFee);

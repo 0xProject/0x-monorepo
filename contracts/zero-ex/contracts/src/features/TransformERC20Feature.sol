@@ -386,13 +386,19 @@ contract TransformERC20Feature is
         view
         returns (bytes32 validCallDataHash)
     {
+        address quoteSigner = getQuoteSigner();
+        if (quoteSigner == address(0)) {
+            // If no quote signer is configured, then all calldata hashes are
+            // valid.
+            return callDataHash;
+        }
         if (signature.length == 0) {
             return bytes32(0);
         }
 
         if (ISignatureValidatorFeature(address(this)).isValidHashSignature(
             callDataHash,
-            getQuoteSigner(),
+            quoteSigner,
             signature
         )) {
             return callDataHash;

@@ -26,34 +26,36 @@ import "./MixinAdapterAddresses.sol";
 
 interface IKyberNetworkProxy {
 
-    /// @dev Sells `sellTokenAddress` tokens for `buyTokenAddress` tokens.
-    /// @param sellTokenAddress Token to sell.
+    /// @dev Sells `sellTokenAddress` tokens for `buyTokenAddress` tokens
+    /// using a hint for the reserve.
+    /// @param sellToken Token to sell.
     /// @param sellAmount Amount of tokens to sell.
-    /// @param buyTokenAddress Token to buy.
+    /// @param buyToken Token to buy.
     /// @param recipientAddress Address to send bought tokens to.
     /// @param maxBuyTokenAmount A limit on the amount of tokens to buy.
     /// @param minConversionRate The minimal conversion rate. If actual rate
     ///        is lower, trade is canceled.
     /// @param walletId The wallet ID to send part of the fees
+    /// @param hint The hint for the selective inclusion (or exclusion) of reserves
     /// @return boughtAmount Amount of tokens bought.
-    function trade(
-        address sellTokenAddress,
+    function tradeWithHint(
+        IERC20TokenV06 sellToken,
         uint256 sellAmount,
-        address buyTokenAddress,
+        IERC20TokenV06 buyToken,
         address payable recipientAddress,
         uint256 maxBuyTokenAmount,
         uint256 minConversionRate,
-        address walletId
+        address payable walletId,
+        bytes calldata hint
     )
         external
         payable
-        returns(uint256 boughtAmount);
+        returns (uint256 boughtAmount);
 }
 
 contract MixinKyber is
     MixinAdapterAddresses
 {
-
     using LibERC20TokenV06 for IERC20TokenV06;
 
     /// @dev Address indicating the trade is using ETH
@@ -71,41 +73,39 @@ contract MixinKyber is
     }
 
     function _tradeKyber(
-        address toTokenAddress,
+        IERC20TokenV06 buyToken,
         uint256 sellAmount,
         bytes memory bridgeData
     )
         internal
         returns (uint256 boughtAmount)
     {
-        // Decode the bridge data to get the `fromTokenAddress`.
-        address fromTokenAddress = abi.decode(bridgeData, (address));
-        uint256 payableAmount;
+        (IERC20TokenV06 sellToken, bytes memory hint) =
+            abi.decode(bridgeData, (IERC20TokenV06, bytes));
 
-        if (fromTokenAddress != address(WETH)) {
+        uint256 payableAmount = 0;
+        if (sellToken != WETH) {
             // If the input token is not WETH, grant an allowance to the exchange
             // to spend them.
-            IERC20TokenV06(fromTokenAddress).approveIfBelow(
+            sellToken.approveIfBelow(
                 address(KYBER_NETWORK_PROXY),
                 sellAmount
             );
         } else {
             // If the input token is WETH, unwrap it and attach it to the call.
-            fromTokenAddress = KYBER_ETH_ADDRESS;
             payableAmount = sellAmount;
             WETH.withdraw(payableAmount);
         }
-        bool isToTokenWeth = toTokenAddress == address(WETH);
 
         // Try to sell all of this contract's input token balance through
         // `KyberNetworkProxy.trade()`.
-        boughtAmount = KYBER_NETWORK_PROXY.trade{ value: payableAmount }(
+        boughtAmount = KYBER_NETWORK_PROXY.tradeWithHint{ value: payableAmount }(
             // Input token.
-            fromTokenAddress,
+            sellToken == WETH ? IERC20TokenV06(KYBER_ETH_ADDRESS) : sellToken,
             // Sell amount.
             sellAmount,
             // Output token.
-            isToTokenWeth ? KYBER_ETH_ADDRESS : toTokenAddress,
+            buyToken == WETH ? IERC20TokenV06(KYBER_ETH_ADDRESS) : buyToken,
             // Transfer to this contract
             address(uint160(address(this))),
             // Buy as much as possible.
@@ -113,9 +113,11 @@ contract MixinKyber is
             // Lowest minimum conversion rate
             1,
             // No affiliate address.
-            address(0)
+            address(0),
+            hint
         );
-        if (isToTokenWeth) {
+        // If receving ETH, wrap it to WETH.
+        if (buyToken == WETH) {
             WETH.deposit{ value: boughtAmount }();
         }
         return boughtAmount;

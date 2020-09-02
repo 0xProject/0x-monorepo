@@ -31,16 +31,24 @@
                 "pr": 2657
             },
             {
-                "note": "Add `IUniswapV2Feature`",
-                "pr": 2657
-            },
-            {
                 "note": "Rename all feature contracts to have `Feature` suffix",
                 "pr": 2657
             },
             {
                 "note": "Return `IZeroExContract` in `fullMigrateAsync()`",
                 "pr": 2657
+            },
+            {
+                "note": "Add taker address enforcement to RFQT orders in FQT",
+                "pr": 2692
+            },
+            {
+                "note": "All calldata is valid if quote signer is unset in `TransformERC20`",
+                "pr": 2692
+            },
+            {
+                "note": "Add updated Kyber and Mooniswap rollup to FQT",
+                "pr": 2692
             }
         ]
     },
