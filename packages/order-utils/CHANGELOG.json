@@ -21,6 +21,10 @@
             {
                 "note": "Fix EP signature utils schema assertion.",
                 "pr": 2657
+            },
+            {
+                "note": "Add `rfqtTakerAddress` to `FillQuoteTransformerData`",
+                "pr": 2692
             }
         ]
     },
