@@ -93,6 +93,10 @@
             {
                 "note": "Use `IZeroExContract` in EP swap quote consumer.",
                 "pr": 2657
+            },
+            {
+                "note": "Set `rfqtTakerAddress` to null in EP consumer",
+                "pr": 2692
             }
         ]
     },
