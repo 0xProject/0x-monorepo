@@ -20,7 +20,7 @@ import {
     SignedExchangeProxyMetaTransaction,
 } from '@0x/order-utils';
 import { AssetProxyId, Order, SignedOrder } from '@0x/types';
-import { BigNumber, hexUtils } from '@0x/utils';
+import { BigNumber, hexUtils, ZeroExRevertErrors } from '@0x/utils';
 import * as ethjs from 'ethereumjs-util';
 
 const { MAX_UINT256, NULL_ADDRESS, NULL_BYTES, NULL_BYTES32, ZERO_AMOUNT } = constants;
@@ -374,5 +374,53 @@ blockchainTests.resets('exchange proxy - meta-transactions', env => {
             ],
             'TransformerMetadata',
         );
+    });
+
+    it('`transformERC20()` can fill RFQT order if calldata is not signed but no quote signer configured', async () => {
+        const swap = await generateSwapAsync({}, true);
+        const callData = getSwapData(swap);
+        const callDataHash = hexUtils.hash(callData);
+        const _protocolFee = protocolFee.times(GAS_PRICE).times(swap.orders.length + 1); // Pay a little more fee than needed.
+        const mtx = await createMetaTransactionAsync(callData, _protocolFee, 0);
+        const relayerEthBalanceBefore = await env.web3Wrapper.getBalanceInWeiAsync(relayer);
+        await zeroEx.setQuoteSigner(NULL_ADDRESS).awaitTransactionSuccessAsync({ from: owner });
+        const receipt = await zeroEx
+            .executeMetaTransaction(mtx, mtx.signature)
+            .awaitTransactionSuccessAsync({ from: relayer, value: mtx.value, gasPrice: GAS_PRICE });
+        const relayerEthRefund = relayerEthBalanceBefore
+            .minus(await env.web3Wrapper.getBalanceInWeiAsync(relayer))
+            .minus(GAS_PRICE.times(receipt.gasUsed));
+        // Ensure the relayer got back the unused protocol fees.
+        expect(relayerEthRefund).to.bignumber.eq(protocolFee.times(GAS_PRICE));
+        // Ensure the relayer got paid no mtx fees.
+        expect(await feeToken.balanceOf(relayer).callAsync()).to.bignumber.eq(0);
+        // Ensure the taker got output tokens.
+        expect(await outputToken.balanceOf(taker).callAsync()).to.bignumber.eq(swap.minOutputTokenAmount);
+        // Ensure the maker got input tokens.
+        expect(await inputToken.balanceOf(maker).callAsync()).to.bignumber.eq(swap.inputTokenAmount);
+        // Check events.
+        verifyEventsFromLogs(
+            receipt.logs,
+            [
+                {
+                    taker,
+                    callDataHash,
+                    sender: zeroEx.address,
+                    data: NULL_BYTES,
+                },
+            ],
+            'TransformerMetadata',
+        );
+    });
+
+    it('`transformERC20()` cannot fill RFQT order if calldata is not signed', async () => {
+        const swap = await generateSwapAsync({}, true);
+        const callData = getSwapData(swap);
+        const _protocolFee = protocolFee.times(GAS_PRICE).times(swap.orders.length + 1); // Pay a little more fee than needed.
+        const mtx = await createMetaTransactionAsync(callData, _protocolFee, 0);
+        const tx = zeroEx
+            .executeMetaTransaction(mtx, mtx.signature)
+            .awaitTransactionSuccessAsync({ from: relayer, value: mtx.value, gasPrice: GAS_PRICE });
+        return expect(tx).to.revertWith(new ZeroExRevertErrors.MetaTransactions.MetaTransactionCallFailedError());
     });
 });
