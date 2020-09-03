@@ -32,7 +32,7 @@ const { NULL_ADDRESS, NULL_BYTES, NULL_BYTES32 } = constants;
 
 type MintTokenTransformerEvent = DecodedLogEntry<TestMintTokenERC20TransformerMintTransformEventArgs>;
 
-blockchainTests.resets.only('TransformERC20 feature', env => {
+blockchainTests.resets('TransformERC20 feature', env => {
     const callDataSignerKey = hexUtils.random();
     const callDataSigner = ethjs.bufferToHex(ethjs.privateToAddress(ethjs.toBuffer(callDataSignerKey)));
     let owner: string;
