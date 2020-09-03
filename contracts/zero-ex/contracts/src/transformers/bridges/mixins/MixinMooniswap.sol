@@ -88,5 +88,10 @@ contract MixinMooniswap is
             1,
             address(0)
         );
+
+        // Wrap ETH to WETH.
+        if (buyToken == WETH) {
+            WETH.deposit{value:boughtAmount}();
+        }
     }
 }
