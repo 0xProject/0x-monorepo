@@ -52,7 +52,7 @@ contract EfficientFill {
         // Unpack maker order
         uint32 expiration = uint32(pairExpirationFill >> 128);
         uint32 storageSlot = uint32(pairExpirationFill >> 160);
-        uint32 slotNonce = uint32(pairExpirationFill >> 192)
+        uint32 nonce = uint32(pairExpirationFill >> 192);
         uint32 pair = uint32(pairExpirationFill >> 224);
         uint128 makerAmount = uint128(makerTakerAmount);
         uint128 takerAmount = uint128(makerTakerAmount >> 128);
@@ -89,7 +89,7 @@ contract EfficientFill {
                 takerToken,
                 expiration,
                 storageSlot,
-                slotNonce,
+                nonce,
                 pairExpirationFill >> 128,
             ))
         ));
@@ -112,22 +112,25 @@ contract EfficientFill {
         // Read the storage slot
         // NOTE: Storage slots are indexed by (maker, storageSlot). This allows
         // a maker to re-use slots, saving 15k gas.
-        // NOTE: Alternative designs are possible. Instead of a nonce we could
-        // store the expiration in the slot and allow expired slots to be cleared or re-used.
-        // TODO: Expiration based is probably better.
         bytes32 storageLocation = keccak256(abi.encode(maker, storageSlot));
         uint256 orderState = orderStates[storageLocation];
         uint128 fillAmount = uint128(orderState);
-        uint32 storageNonce = uint32(orderState >> 128);
+        uint32 storageExpiration = uint32(orderState >> 128);
 
         // Check storage nonce
-        // NOTE: It is maker's responsibility to set strictly incrementing nonces
-        // for each slot. If there are multiple un-expired orders for the same slot
-        // only the last one seen by the contract will be accepted.
-        require(slotNonce >= storageNonce);
-        if (slotNonce > storageNonce) {
+        // NOTE: Not sure if this is better than the nonce based one. The nonce
+        // based allows quicker re-use and implicitely cancels the old order
+        // the moment the new one is used.
+        if (storageExpiration < block.timestamp) {
+            // Storage slot has expired and can be reset
             fillAmount = 0;
         } else {
+            // This partially prevents maker from re-using a storage slot.
+            // NOTE: It is important that storageExpiration is monotonically
+            // increasing, otherwise a situation with conflicting orders can
+            // result in the longer-duration one being filled twice.
+            require(expiration == storageExpiration);
+
             // Prevent math underflow when maker accidentaly creates a storage
             // slot collision.
             require(fillAmount <= makerAmount);
@@ -156,7 +159,7 @@ contract EfficientFill {
 
         // Update fill state
         fillAmount += makerFillAmount;
-        orderStates[storageLocation] = (uint256(storageNonce) << 128) | uint256(fillAmount);
+        orderStates[storageLocation] = (uint256(expiration) << 128) | uint256(fillAmount);
 
         // Transfer tokens
         ALLOWANCE_TARGET.executeCall(haveToken, abi.encodeWithSelector(
