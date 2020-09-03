@@ -26,22 +26,16 @@ contract EfficientFill {
 
     IAllowanceTarget constant ALLOWANCE_TARGET = IAllowanceTarget(0xF740B67dA229f2f10bcBd38A7979992fCC71B8Eb);
 
+    bytes2 constant EIP_191_PREFIX = 0x1901;
+    bytes32 constant EIP_712_DOMAIN_HASH = 0x1901; // TODO
     uint8 constant CHAIN_ID = 1; // Ethereum mainnet
     uint8 constant V_OFFSET = CHAIN_ID * 2 + 35;
 
-    mapping (uint32 => address) public tokens;
-    mapping (bytes32 => uint128) public fillState;
-
-    // Note: Re-useable storage slots. (saves 15k gas)
-    // (address, slot_id) => (version, expiry, cancelled, fillAmount)
-    // Clearable storage slots (contain expiry)
-
-    bytes2 constant EIP_191_PREFIX = 0x1901;
-    bytes32 constant EIP_712_DOMAIN_HASH = 0x1901;
+    mapping (bytes32 => uint256) public orderStates;
 
     function fillKnownPair(
         uint256 pairExpirationFill,
-        uint256 haveAndWantAmount,
+        uint256 makerTakerAmount,
         bytes32 makerSignatureR,
         bytes32 makerSignatureSV,
     )
@@ -52,40 +46,49 @@ contract EfficientFill {
         uint32 storageSlot = uint32(pairExpirationFill >> 160);
         uint32 slotNonce = uint32(pairExpirationFill >> 192)
         uint32 pair = uint32(pairExpirationFill >> 224);
-        uint128 haveAmount = uint128(haveAndWantAmount);
-        uint128 wantAmount = uint128(haveAndWantAmount >> 128);
+        uint128 makerAmount = uint128(makerTakerAmount);
+        uint128 takerAmount = uint128(makerTakerAmount >> 128);
+
+        // Check expiration (UTC in seconds)
+        require(expiration < block.timestamp);
 
         // Decode pair
+        // Not passing the token addresses in calldata saves about 700 gas.
+        // TODO: Write a second `fill` function that does take addresses.
         address makerToken;
         address takerToken;
-        if (pair == 0) {
-            makerToken = 0x;
-        } else if (pair == 1) {
-            
+        if (pair == 0) { // WETH-DAI
+            makerToken = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
+            takerToken = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
+        } else if (pair == 1) { // DAI-WETH
+            makerToken = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
+            takerToken = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
         } else {
+            // TODO: Add more popular cases
             revert();
         }
 
         // Process signature
-        // Note: R and S are the two SecP256k1 ECDSA signature parameters.
-        // They should be reduced mod p = 2^256 - 2^32 - 29 - 28 - 27 - 26 - 24 - 1.
-        // For a given value of S, p - S is also a valid value. We can use
-        // this to normalize S to an even value, and use the lowest bit to store
-        // the y-coordinate recovery bit for the V parameter.
+        // Create a nice use friendly EIP-712 message for signatures.
         bytes32 eip712Hash = keccak256(abi.encode(
             EIP_191_PREFIX,
             EIP_712_DOMAIN_HASH,
             keccak256(abi.encode(
-                haveToken,
-                wantToken,
-                haveAmount,
-                wantAmount,
+                makerAmount,
+                makerToken,
+                takerAmount,
+                takerToken,
                 expiration,
                 storageSlot,
-                nonce,
+                slotNonce,
                 pairExpirationFill >> 128,
             ))
         ));
+        // Unpack signature S and V
+        // NOTE: The signature S parameter has one bit of maleability, which
+        // we can use to always force it to an even number. The signature V
+        // parameter can have only two values for a given chain. We use this
+        // to pack S and V together in a single `uint256`.
         uint256 makerSignatureS = makerSignatureSV - (makerSignatureSV & 1);
         uint256 makerSignatureSV = V_OFFSET + (makerSignatureSV & 1);
         address maker = ecrecover(
@@ -93,50 +96,75 @@ contract EfficientFill {
             makerSignatureV + V_OFFSET,
             makerSignatureR,
             makerSignatureS);
-        // Note: when the signature is invalid, this will (with cryptographic certainty)
+        // NOTE: when the signature is invalid, this will (with cryptographic certainty)
         // produce a non-existing address. In that case, the token transferFrom call is
         // expected to fail.
 
-        // Storage slot
-        bytes32 storageHash = keccak256(abi.encode(
-           maker, storageSlot
-        ));
+        // Read the storage slot
+        // NOTE: Storage slots are indexed by (maker, storageSlot). This allows
+        // a maker to re-use slots, saving 15k gas.
+        // NOTE: Alternative designs are possible. Instead of a nonce we could
+        // store the expiration in the slot and allow expired slots to be cleared or re-used.
+        // TODO: Expiration based is probably better.
+        bytes32 storageLocation = keccak256(abi.encode(maker, storageSlot));
+        uint256 orderState = orderStates[storageLocation];
+        uint128 fillAmount = uint128(orderState);
+        uint32 storageNonce = uint32(orderState >> 128);
 
-        // TODO: 
+        // Check storage nonce
+        // NOTE: It is maker's responsibility to set strictly incrementing nonces
+        // for each slot. If there are multiple un-expired orders for the same slot
+        // only the last one seen by the contract will be accepted.
+        require(slotNonce >= storageNonce);
+        if (slotNonce > storageNonce) {
+            fillAmount = 0;
+        } else {
+            // Prevent math underflow when maker accidentaly creates a storage
+            // slot collision.
+            require(fillAmount <= makerAmount);
+        }
 
         // Unpack taker order
-        uint128 fillAmount = uint128(pairExpirationFill);
+        // NOTE: Taker amount is denominated in makerToken. It is taker's
+        // off-chain responsibility to compute this value.
+        // TODO: It would be nicer to have this in takerToken.
+        uint128 makerFillAmount = uint128(pairExpirationFill);
         address taker = msg.sender;
 
-        // Check expiration timestamp in nanoseconds.
-        // Note: The fractional part of the timestamp can be used as a nonce.
-        require(uint256(expiration) < uint256(block.timestamp) * 1e9);
-
         // Compute fill amounts
-        uint128 fillAmount = fillState[orderHash];
+        // NOTE: fillAmount >= makerAmount, so no underflow possible.
+        makerFillAmount = min(makerFillAmount, makerAmount - fillAmount);
+        // NOTE: It is Taker's off-chain responsibility to take care of potential
+        // rounding errors. This is made more complicated by fillAmount being able
+        // to change between signing and settlement.
+        // NOTE: All amounts are uint128, so no overflows possible here.
+        // NOTE: If makerAmount is zero then makerFillAmount and takerFillAmount
+        // will both be zero, which is fine.
+        // TODO: Might need EVM asm here, to avoid Solidity's build in
+        // division by zero protection (we want EVMs native behaviour where the
+        // result is zero).
+        uint128 takerFillAmount = makerFillAmount * takerAmount / makerAmount;
 
         // Update fill state
+        fillAmount += makerFillAmount;
+        orderStates[storageLocation] = (uint256(storageNonce) << 128) | uint256(fillAmount);
 
         // Transfer tokens
-        // Note: This doesn't affect the pair's reserve amounts.
         ALLOWANCE_TARGET.executeCall(haveToken, abi.encodeWithSelector(
             IERC20TokenV06.transferFrom.selector,
-            msg.sender,
-            pair,
-            haveAmount
+            maker,
+            taker,
+            makerFillAmount
         ));
-
         ALLOWANCE_TARGET.executeCall(haveToken, abi.encodeWithSelector(
             IERC20TokenV06.transferFrom.selector,
-            msg.sender,
-            pair,
-            haveAmount
+            taker,
+            maker,
+            takerFillAmount
         ));
-    }
 
-    function clearExpired(
-        address[] addresses,
-        bytes32[] slots
-    ) {
+        // NOTE: There is no log event. Events cost a lot of gas and don't add
+        // anything on-chain. If you want to track fills you can do so by
+        // parsing the transactions or watch the contract state delta.
     }
 }
