@@ -54,19 +54,9 @@ contract MooniswapSampler is
 
         address mooniswapTakerToken = takerToken == _getWethAddress() ? address(0) : takerToken;
         address mooniswapMakerToken = makerToken == _getWethAddress() ? address(0) : makerToken;
-        // Find the pool for the pair, ETH is represented
-        // as address(0)
-        pool = IMooniswap(
-            IMooniswapRegistry(_getMooniswapAddress()).pools(mooniswapTakerToken, mooniswapMakerToken)
-        );
-        // If there is no pool then return early
-        if (address(pool) == address(0)) {
-            return (pool, makerTokenAmounts);
-        }
 
         for (uint256 i = 0; i < numSamples; i++) {
             uint256 buyAmount = sampleSingleSellFromMooniswapPool(
-                pool,
                 mooniswapTakerToken,
                 mooniswapMakerToken,
                 takerTokenAmounts[i]
@@ -80,7 +70,6 @@ contract MooniswapSampler is
     }
 
     function sampleSingleSellFromMooniswapPool(
-        IMooniswap pool,
         address mooniswapTakerToken,
         address mooniswapMakerToken,
         uint256 takerTokenAmount
@@ -89,10 +78,17 @@ contract MooniswapSampler is
         view
         returns (uint256 makerTokenAmount)
     {
+        // Find the pool for the pair.
+        IMooniswap pool = IMooniswap(
+            IMooniswapRegistry(_getMooniswapAddress()).pools(mooniswapTakerToken, mooniswapMakerToken)
+        );
+        // If there is no pool then return early
+        if (address(pool) == address(0)) {
+            return makerTokenAmount;
+        }
         uint256 poolBalance = mooniswapTakerToken == address(0)
             ? address(pool).balance
             : IERC20Token(mooniswapTakerToken).balanceOf(address(pool));
-
         // If the pool balance is smaller than the sell amount
         // don't sample to avoid multiplication overflow in buys
         if (poolBalance < takerTokenAmount) {
@@ -101,7 +97,7 @@ contract MooniswapSampler is
         (bool didSucceed, bytes memory resultData) =
             address(pool).staticcall.gas(MOONISWAP_CALL_GAS)(
                 abi.encodeWithSelector(
-                    IMooniswap(0).getReturn.selector,
+                    pool.getReturn.selector,
                     mooniswapTakerToken,
                     mooniswapMakerToken,
                     takerTokenAmount
@@ -128,27 +124,22 @@ contract MooniswapSampler is
     {
         _assertValidPair(makerToken, takerToken);
         uint256 numSamples = makerTokenAmounts.length;
-        makerTokenAmounts = new uint256[](numSamples);
+        takerTokenAmounts = new uint256[](numSamples);
 
         address mooniswapTakerToken = takerToken == _getWethAddress() ? address(0) : takerToken;
         address mooniswapMakerToken = makerToken == _getWethAddress() ? address(0) : makerToken;
-        // Find the pool for the pair, ETH is represented
-        // as address(0)
-        pool = IMooniswap(
-            IMooniswapRegistry(_getMooniswapAddress()).pools(mooniswapTakerToken, mooniswapMakerToken)
-        );
-        // If there is no pool then return early
-        if (address(pool) == address(0)) {
-            return (pool, takerTokenAmounts);
-        }
 
         takerTokenAmounts = _sampleApproximateBuys(
             ApproximateBuyQuoteOpts({
-                makerTokenData: abi.encode(mooniswapMakerToken, pool),
-                takerTokenData: abi.encode(mooniswapTakerToken, pool),
+                makerTokenData: abi.encode(mooniswapMakerToken),
+                takerTokenData: abi.encode(mooniswapTakerToken),
                 getSellQuoteCallback: _sampleSellForApproximateBuyFromMooniswap
             }),
             makerTokenAmounts
+        );
+
+        pool = IMooniswap(
+            IMooniswapRegistry(_getMooniswapAddress()).pools(mooniswapTakerToken, mooniswapMakerToken)
         );
     }
 
@@ -161,12 +152,9 @@ contract MooniswapSampler is
         view
         returns (uint256 buyAmount)
     {
-        (address mooniswapTakerToken, IMooniswap pool) =
-            abi.decode(takerTokenData, (address, IMooniswap));
-        (address mooniswapMakerToken) =
-            abi.decode(makerTokenData, (address));
+        address mooniswapTakerToken = abi.decode(takerTokenData, (address));
+        address mooniswapMakerToken = abi.decode(makerTokenData, (address));
         return sampleSingleSellFromMooniswapPool(
-            pool,
             mooniswapTakerToken,
             mooniswapMakerToken,
             sellAmount
