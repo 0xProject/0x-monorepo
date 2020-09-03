@@ -417,7 +417,7 @@ function createKyberBridgeData(fromTokenAddress: string, hint: string): string {
 }
 
 function createMooniswapBridgeData(takerToken: string, poolAddress: string): string {
-    const encoder = AbiEncoder.create([{ name: 'takerToken', type: 'address' }, { name: 'pool', type: 'address' }]);
+    const encoder = AbiEncoder.create([{ name: 'takerToken', type: 'address' }, { name: 'poolAddress', type: 'address' }]);
     return encoder.encode({ takerToken, poolAddress });
 }
 
