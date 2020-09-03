@@ -334,20 +334,6 @@ export async function runMigrationsAsync(
     const exchangeProxyFlashWalletAddress = await exchangeProxy.getTransformWallet().callAsync();
 
     // Deploy transformers.
-    const fillQuoteTransformer = await FillQuoteTransformerContract.deployFrom0xArtifactAsync(
-        exchangeProxyArtifacts.FillQuoteTransformer,
-        provider,
-        txDefaults,
-        allArtifacts,
-        exchange.address,
-        bridgeAdapter.address,
-    );
-    const payTakerTransformer = await PayTakerTransformerContract.deployFrom0xArtifactAsync(
-        exchangeProxyArtifacts.PayTakerTransformer,
-        provider,
-        txDefaults,
-        allArtifacts,
-    );
     const wethTransformer = await WethTransformerContract.deployFrom0xArtifactAsync(
         exchangeProxyArtifacts.WethTransformer,
         provider,
@@ -355,11 +341,25 @@ export async function runMigrationsAsync(
         allArtifacts,
         etherToken.address,
     );
+    const payTakerTransformer = await PayTakerTransformerContract.deployFrom0xArtifactAsync(
+        exchangeProxyArtifacts.PayTakerTransformer,
+        provider,
+        txDefaults,
+        allArtifacts,
+    );
     const affiliateFeeTransformer = await AffiliateFeeTransformerContract.deployFrom0xArtifactAsync(
         exchangeProxyArtifacts.AffiliateFeeTransformer,
         provider,
         txDefaults,
         allArtifacts,
+    );
+    const fillQuoteTransformer = await FillQuoteTransformerContract.deployFrom0xArtifactAsync(
+        exchangeProxyArtifacts.FillQuoteTransformer,
+        provider,
+        txDefaults,
+        allArtifacts,
+        exchange.address,
+        bridgeAdapter.address,
     );
 
     const contractAddresses = {
