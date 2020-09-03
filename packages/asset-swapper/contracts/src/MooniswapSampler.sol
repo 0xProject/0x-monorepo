@@ -127,7 +127,7 @@ contract MooniswapSampler is
         returns (IMooniswap pool, uint256[] memory takerTokenAmounts)
     {
         _assertValidPair(makerToken, takerToken);
-        uint256 numSamples = takerTokenAmounts.length;
+        uint256 numSamples = makerTokenAmounts.length;
         makerTokenAmounts = new uint256[](numSamples);
 
         address mooniswapTakerToken = takerToken == _getWethAddress() ? address(0) : takerToken;
@@ -165,18 +165,11 @@ contract MooniswapSampler is
             abi.decode(takerTokenData, (address, IMooniswap));
         (address mooniswapMakerToken) =
             abi.decode(makerTokenData, (address));
-        (bool success, bytes memory resultData) =
-            address(this).staticcall(abi.encodeWithSelector(
-                this.sampleSingleSellFromMooniswapPool.selector,
-                pool,
-                mooniswapTakerToken,
-                mooniswapMakerToken,
-                _toSingleValueArray(sellAmount)
-            ));
-        if (!success) {
-            return 0;
-        }
-        // solhint-disable-next-line indent
-        return abi.decode(resultData, (uint256[]))[0];
+        return sampleSingleSellFromMooniswapPool(
+            pool,
+            mooniswapTakerToken,
+            mooniswapMakerToken,
+            sellAmount
+        );
     }
 }

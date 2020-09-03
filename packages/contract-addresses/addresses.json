@@ -196,7 +196,7 @@
             "wethTransformer": "0x8d822fe2b42f60531203e288f5f357fa79474437",
             "payTakerTransformer": "0x150652244723102faeaefa4c79597d097ffa26c6",
             "affiliateFeeTransformer": "0xa39b40642e8e00435857a0fe7d0655e08cc2217e",
-            "fillQuoteTransformer": "0xaf77ff7b00ff528abdcac3f1dcf072de702b758e",
+            "fillQuoteTransformer": "0xaf77ff7b00ff528abdcac3f1dcf072de702b758e"
         }
     },
     "1337": {
