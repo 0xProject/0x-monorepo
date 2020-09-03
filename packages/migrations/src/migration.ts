@@ -324,7 +324,6 @@ export async function runMigrationsAsync(
             uniswapV2Router: NULL_ADDRESS,
             uniswapExchangeFactory: NULL_ADDRESS,
             mStable: NULL_ADDRESS,
-            mooniswapRegistry: NULL_ADDRESS,
             weth: etherToken.address,
         },
     );
