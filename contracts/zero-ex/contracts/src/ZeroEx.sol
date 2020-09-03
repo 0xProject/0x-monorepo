@@ -48,29 +48,45 @@ contract ZeroEx {
 
     /// @dev Forwards calls to the appropriate implementation contract.
     fallback() external payable {
-        bytes4 selector = msg.data.readBytes4(0);
-        address impl = getFunctionImplementation(selector);
-        if (impl == address(0)) {
-            _revertWithData(LibProxyRichErrors.NotImplementedError(selector));
-        }
+        assembly {
+            // Copy calldata to memory
+            // NOTE: Offset by 28 bytes (which doesn't affect gas cost)
+            // so we can use mload(0) to retrieve the bytes4 selector without
+            // having to do a shift.
+            calldatacopy(28, 0, calldatasize())
 
-        (bool success, bytes memory resultData) = impl.delegatecall(msg.data);
-        if (!success) {
-            _revertWithData(resultData);
+            // Delegate call
+            // NOTE: The 2^32 delegatees are stored in the first 2^32 storage slots.
+            // TODO: Adjust `LibProxyStorage`
+            // NOTE: Empty calldata (receive Ether) is treated as 0x00000000.
+            // TODO: Non-existant entries call the zero address, is this guaranteed to revert?
+            let success := delegatecall(
+                gas(),
+                sload(mload(0)),
+                28, calldatasize(),
+                0, 0
+            )
+            returndatacopy(0, 0, returndatasize())
+            if success {
+                return(0, returndatasize())
+            }
+            revert(0, returndatasize())
         }
-        _returnWithData(resultData);
     }
 
     /// @dev Fallback for just receiving ether.
-    receive() external payable {}
+    // NOTE: Removed to avoid selector branching. Now maps to bytes4(0).
+    // receive() external payable {}
 
     // solhint-enable state-visibility
 
     /// @dev Get the implementation contract of a registered function.
     /// @param selector The function selector.
     /// @return impl The implementation contract address.
+    // NOTE: Made private to avoid creating a selector branch. If we want this
+    // function public we can register it like all the other functions.
     function getFunctionImplementation(bytes4 selector)
-        public
+        private
         view
         returns (address impl)
     {
