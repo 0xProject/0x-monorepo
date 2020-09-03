@@ -67,6 +67,10 @@ contract MooniswapSampler is
             }
             makerTokenAmounts[i] = buyAmount;
         }
+
+        pool = IMooniswap(
+            IMooniswapRegistry(_getMooniswapAddress()).pools(mooniswapTakerToken, mooniswapMakerToken)
+        );
     }
 
     function sampleSingleSellFromMooniswapPool(
