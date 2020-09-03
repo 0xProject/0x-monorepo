@@ -32,6 +32,9 @@ contract ZeroEx {
     // solhint-disable separate-by-one-line-in-contract,indent,var-name-mixedcase
     using LibBytesV06 for bytes;
 
+    // NotImplementedError(bytes4)
+    bytes4 constant NOT_IMPLEMENTED_ERROR_SELECTOR = 0x734e6e1c;
+
     /// @dev Construct this contract and register the `Bootstrap` feature.
     ///      After constructing this contract, `bootstrap()` should be called
     ///      by `bootstrap()` to seed the initial feature set.
@@ -55,22 +58,29 @@ contract ZeroEx {
             // having to do a shift.
             calldatacopy(28, 0, calldatasize())
 
-            // Delegate call
-            // NOTE: The 2^32 delegatees are stored in the first 2^32 storage slots.
-            // TODO: Adjust `LibProxyStorage`
-            // NOTE: Empty calldata (receive Ether) is treated as 0x00000000.
-            // TODO: Non-existant entries call the zero address, is this guaranteed to revert?
-            let success := delegatecall(
-                gas(),
-                sload(mload(0)),
-                28, calldatasize(),
-                0, 0
-            )
-            returndatacopy(0, 0, returndatasize())
-            if success {
-                return(0, returndatasize())
+            let delegate := sload(mload(0))
+            if delegate {
+                // Delegate call
+                // NOTE: The 2^32 delegatees are stored in the first 2^32 storage slots.
+                // TODO: Adjust `LibProxyStorage`
+                // NOTE: Empty calldata (receive Ether) is treated as 0x00000000.
+                let success := delegatecall(
+                    gas(),
+                    delegate,
+                    28, calldatasize(),
+                    0, 0
+                )
+                returndatacopy(0, 0, returndatasize())
+                if success {
+                    return(0, returndatasize())
+                }
+                // Delegate failed. Bubble error.
+                revert(0, returndatasize())
             }
-            revert(0, returndatasize())
+            // Invalid function selector. Revert with NotImplementedError.
+            mstore(0x20, mload(0))
+            mstore(0x00, NOT_IMPLEMENTED_ERROR_SELECTOR)
+            revert(0, 0x40)
         }
     }
 
