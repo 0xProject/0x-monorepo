@@ -41,18 +41,6 @@ interface IMooniswapPool {
         returns (uint256 boughtAmount);
 }
 
-/// @dev Moooniswap registry interface.
-interface IMooniswapRegistry {
-
-    function pools(
-        IERC20TokenV06 token1,
-        IERC20TokenV06 token2
-    )
-        external
-        view
-        returns (IMooniswapPool);
-}
-
 /// @dev BridgeAdapter mixin for mooniswap.
 contract MixinMooniswap is
     MixinAdapterAddresses
@@ -60,15 +48,12 @@ contract MixinMooniswap is
     using LibERC20TokenV06 for IERC20TokenV06;
     using LibERC20TokenV06 for IEtherTokenV06;
 
-    /// @dev Mooniswap registry contract.
-    IMooniswapRegistry private immutable REGISTRY;
     /// @dev WETH token.
     IEtherTokenV06 private immutable WETH;
 
     constructor(AdapterAddresses memory addresses)
         public
     {
-        REGISTRY = IMooniswapRegistry(addresses.mooniswapRegistry);
         WETH = IEtherTokenV06(addresses.weth);
     }
 

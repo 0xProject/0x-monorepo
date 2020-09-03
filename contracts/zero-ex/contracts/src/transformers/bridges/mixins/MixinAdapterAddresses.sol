@@ -37,7 +37,6 @@ contract MixinAdapterAddresses
         address uniswapV2Router;
         address uniswapExchangeFactory;
         address mStable;
-        address mooniswapRegistry;
         // Other
         address weth;
     }
