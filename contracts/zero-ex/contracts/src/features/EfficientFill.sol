@@ -26,6 +26,7 @@ contract EfficientFill {
 
     IAllowanceTarget constant ALLOWANCE_TARGET = IAllowanceTarget(0xF740B67dA229f2f10bcBd38A7979992fCC71B8Eb);
 
+    uint256 FILL_FEE_GAS = 10000;
     bytes2 constant EIP_191_PREFIX = 0x1901;
     bytes32 constant EIP_712_DOMAIN_HASH = 0x1901; // TODO
     uint8 constant CHAIN_ID = 1; // Ethereum mainnet
@@ -41,6 +42,13 @@ contract EfficientFill {
     )
         payable external
     {
+        // Check protocol fee payment
+        // NOTE: Fees are accumulated in the contract in aggegrate. Any
+        // attribution to makers should be done off-chain. A governance
+        // controlled function should take them out and distribute them
+        // to whomever.
+        require(msg.value >= FILL_FEE_GAS * gasprice());
+
         // Unpack maker order
         uint32 expiration = uint32(pairExpirationFill >> 128);
         uint32 storageSlot = uint32(pairExpirationFill >> 160);
