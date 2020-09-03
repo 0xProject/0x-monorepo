@@ -76,7 +76,10 @@ contract TransformERC20Feature is
         _registerFeatureFunction(this.getQuoteSigner.selector);
         _registerFeatureFunction(this.transformERC20.selector);
         _registerFeatureFunction(this._transformERC20.selector);
-        this.createTransformWallet();
+        if (this.getTransformWallet() == IFlashWallet(address(0))) {
+            // Create the transform wallet if it doesn't exist.
+            this.createTransformWallet();
+        }
         LibTransformERC20Storage.getStorage().transformerDeployer = transformerDeployer;
         return LibMigrate.MIGRATE_SUCCESS;
     }
