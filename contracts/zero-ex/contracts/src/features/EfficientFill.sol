@@ -74,6 +74,7 @@ contract EfficientFill {
             EIP_191_PREFIX,
             EIP_712_DOMAIN_HASH,
             keccak256(abi.encode(
+                address(this),
                 makerAmount,
                 makerToken,
                 takerAmount,
