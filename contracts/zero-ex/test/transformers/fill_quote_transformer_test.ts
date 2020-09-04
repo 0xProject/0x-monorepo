@@ -62,6 +62,7 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                 balancerBridge: NULL_ADDRESS,
                 curveBridge: NULL_ADDRESS,
                 kyberBridge: NULL_ADDRESS,
+                mooniswapBridge: NULL_ADDRESS,
                 mStableBridge: NULL_ADDRESS,
                 oasisBridge: NULL_ADDRESS,
                 uniswapBridge: NULL_ADDRESS,
@@ -273,6 +274,7 @@ blockchainTests.resets('FillQuoteTransformer', env => {
             maxOrderFillAmounts: [],
             fillAmount: MAX_UINT256,
             refundReceiver: NULL_ADDRESS,
+            rfqtTakerAddress: NULL_ADDRESS,
             ...fields,
         });
     }

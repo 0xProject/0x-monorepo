@@ -41,6 +41,10 @@
             {
                 "note": "Redeploy `KyberBridge` on Mainnet",
                 "pr": 2683
+            },
+            {
+                "note": "Update transformer deployer and transformers for champagne-problems deployment",
+                "pr": 2693
             }
         ]
     },

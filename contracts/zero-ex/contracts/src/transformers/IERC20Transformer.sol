@@ -28,6 +28,7 @@ interface IERC20Transformer {
     /// @dev Context information to pass into `transform()` by `TransformERC20.transformERC20()`.
     struct TransformContext {
         // The hash of the `TransformERC20.transformERC20()` calldata.
+        // Will be null if the calldata is not signed.
         bytes32 callDataHash;
         // The caller of `TransformERC20.transformERC20()`.
         address payable sender;

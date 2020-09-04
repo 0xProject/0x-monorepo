@@ -50,7 +50,6 @@ interface IUniswapV2Router02 {
 contract MixinUniswapV2 is
     MixinAdapterAddresses
 {
-
     using LibERC20TokenV06 for IERC20TokenV06;
 
     /// @dev Mainnet address of the `UniswapV2Router02` contract.
@@ -63,21 +62,23 @@ contract MixinUniswapV2 is
     }
 
     function _tradeUniswapV2(
-        address toTokenAddress,
+        IERC20TokenV06 buyToken,
         uint256 sellAmount,
         bytes memory bridgeData
     )
         internal
-        returns (uint256)
+        returns (uint256 boughtAmount)
     {
-        // Decode the bridge data to get the `fromTokenAddress`.
         // solhint-disable indent
         address[] memory path = abi.decode(bridgeData, (address[]));
         // solhint-enable indent
 
         require(path.length >= 2, "UniswapV2Bridge/PATH_LENGTH_MUST_BE_AT_LEAST_TWO");
-        require(path[path.length - 1] == toTokenAddress, "UniswapV2Bridge/LAST_ELEMENT_OF_PATH_MUST_MATCH_OUTPUT_TOKEN");
-        // Grant the Uniswap router an allowance.
+        require(
+            path[path.length - 1] == address(buyToken),
+            "UniswapV2Bridge/LAST_ELEMENT_OF_PATH_MUST_MATCH_OUTPUT_TOKEN"
+        );
+        // Grant the Uniswap router an allowance to sell the first token.
         IERC20TokenV06(path[0]).approveIfBelow(
             address(UNISWAP_V2_ROUTER),
             sellAmount
@@ -88,7 +89,7 @@ contract MixinUniswapV2 is
             sellAmount,
              // Minimum buy amount.
             1,
-            // Convert `fromTokenAddress` to `toTokenAddress`.
+            // Convert to `buyToken` along this path.
             path,
             // Recipient is `this`.
             address(this),

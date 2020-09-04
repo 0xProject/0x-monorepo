@@ -60,6 +60,7 @@ import * as MixinAdapterAddresses from '../test/generated-artifacts/MixinAdapter
 import * as MixinBalancer from '../test/generated-artifacts/MixinBalancer.json';
 import * as MixinCurve from '../test/generated-artifacts/MixinCurve.json';
 import * as MixinKyber from '../test/generated-artifacts/MixinKyber.json';
+import * as MixinMooniswap from '../test/generated-artifacts/MixinMooniswap.json';
 import * as MixinMStable from '../test/generated-artifacts/MixinMStable.json';
 import * as MixinOasis from '../test/generated-artifacts/MixinOasis.json';
 import * as MixinUniswap from '../test/generated-artifacts/MixinUniswap.json';
@@ -100,17 +101,6 @@ import * as ZeroEx from '../test/generated-artifacts/ZeroEx.json';
 export const artifacts = {
     IZeroEx: IZeroEx as ContractArtifact,
     ZeroEx: ZeroEx as ContractArtifact,
-    BridgeAdapter: BridgeAdapter as ContractArtifact,
-    IBridgeAdapter: IBridgeAdapter as ContractArtifact,
-    MixinAdapterAddresses: MixinAdapterAddresses as ContractArtifact,
-    MixinBalancer: MixinBalancer as ContractArtifact,
-    MixinCurve: MixinCurve as ContractArtifact,
-    MixinKyber: MixinKyber as ContractArtifact,
-    MixinMStable: MixinMStable as ContractArtifact,
-    MixinOasis: MixinOasis as ContractArtifact,
-    MixinUniswap: MixinUniswap as ContractArtifact,
-    MixinUniswapV2: MixinUniswapV2 as ContractArtifact,
-    MixinZeroExBridge: MixinZeroExBridge as ContractArtifact,
     LibCommonRichErrors: LibCommonRichErrors as ContractArtifact,
     LibMetaTransactionsRichErrors: LibMetaTransactionsRichErrors as ContractArtifact,
     LibOwnableRichErrors: LibOwnableRichErrors as ContractArtifact,
@@ -164,6 +154,18 @@ export const artifacts = {
     PayTakerTransformer: PayTakerTransformer as ContractArtifact,
     Transformer: Transformer as ContractArtifact,
     WethTransformer: WethTransformer as ContractArtifact,
+    BridgeAdapter: BridgeAdapter as ContractArtifact,
+    IBridgeAdapter: IBridgeAdapter as ContractArtifact,
+    MixinAdapterAddresses: MixinAdapterAddresses as ContractArtifact,
+    MixinBalancer: MixinBalancer as ContractArtifact,
+    MixinCurve: MixinCurve as ContractArtifact,
+    MixinKyber: MixinKyber as ContractArtifact,
+    MixinMStable: MixinMStable as ContractArtifact,
+    MixinMooniswap: MixinMooniswap as ContractArtifact,
+    MixinOasis: MixinOasis as ContractArtifact,
+    MixinUniswap: MixinUniswap as ContractArtifact,
+    MixinUniswapV2: MixinUniswapV2 as ContractArtifact,
+    MixinZeroExBridge: MixinZeroExBridge as ContractArtifact,
     IERC20Bridge: IERC20Bridge as ContractArtifact,
     IExchange: IExchange as ContractArtifact,
     IGasToken: IGasToken as ContractArtifact,

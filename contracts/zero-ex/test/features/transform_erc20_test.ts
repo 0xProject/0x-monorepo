@@ -28,7 +28,7 @@ import {
     TransformERC20FeatureEvents,
 } from '../wrappers';
 
-const { NULL_BYTES, NULL_BYTES32 } = constants;
+const { NULL_ADDRESS, NULL_BYTES, NULL_BYTES32 } = constants;
 
 type MintTokenTransformerEvent = DecodedLogEntry<TestMintTokenERC20TransformerMintTransformEventArgs>;
 
@@ -682,6 +682,37 @@ blockchainTests.resets('TransformERC20 feature', env => {
                     from: taker,
                     value: callValue,
                     data: signedCallData,
+                });
+                const { callDataHash: actualCallDataHash } = (receipt.logs[0] as MintTokenTransformerEvent).args;
+                expect(actualCallDataHash).to.eq(hexUtils.hash(callData));
+            });
+
+            it('passes the calldata hash to transformer when no quote signer configured', async () => {
+                const startingOutputTokenBalance = getRandomInteger(0, '100e18');
+                const startingInputTokenBalance = getRandomInteger(0, '100e18');
+                await outputToken.mint(taker, startingOutputTokenBalance).awaitTransactionSuccessAsync();
+                await inputToken.mint(taker, startingInputTokenBalance).awaitTransactionSuccessAsync();
+                const inputTokenAmount = getRandomPortion(startingInputTokenBalance);
+                const minOutputTokenAmount = getRandomInteger(1, '1e18');
+                const outputTokenMintAmount = minOutputTokenAmount;
+                const callValue = getRandomInteger(1, '1e18');
+                const transformation = createMintTokenTransformation({
+                    outputTokenMintAmount,
+                    inputTokenBurnAmunt: inputTokenAmount,
+                });
+                const bakedCall = feature.transformERC20(
+                    inputToken.address,
+                    outputToken.address,
+                    inputTokenAmount,
+                    minOutputTokenAmount,
+                    [transformation],
+                );
+                const callData = bakedCall.getABIEncodedTransactionData();
+                await feature.setQuoteSigner(NULL_ADDRESS).awaitTransactionSuccessAsync({ from: owner });
+                const receipt = await bakedCall.awaitTransactionSuccessAsync({
+                    from: taker,
+                    value: callValue,
+                    data: callData,
                 });
                 const { callDataHash: actualCallDataHash } = (receipt.logs[0] as MintTokenTransformerEvent).args;
                 expect(actualCallDataHash).to.eq(hexUtils.hash(callData));

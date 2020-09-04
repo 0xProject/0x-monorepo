@@ -27,19 +27,18 @@ import "./MixinAdapterAddresses.sol";
 interface IMStable {
 
     function swap(
-        address _input,
-        address _output,
-        uint256 _quantity,
-        address _recipient
+        IERC20TokenV06 sellToken,
+        IERC20TokenV06 buyToken,
+        uint256 sellAmount,
+        address recipient
     )
         external
-        returns (uint256 output);
+        returns (uint256 boughtAmount);
 }
 
 contract MixinMStable is
     MixinAdapterAddresses
 {
-
     using LibERC20TokenV06 for IERC20TokenV06;
 
     /// @dev Mainnet address of the mStable mUSD contract.
@@ -52,21 +51,21 @@ contract MixinMStable is
     }
 
     function _tradeMStable(
-        address toTokenAddress,
+        IERC20TokenV06 buyToken,
         uint256 sellAmount,
         bytes memory bridgeData
     )
         internal
         returns (uint256 boughtAmount)
     {
-        // Decode the bridge data to get the `fromTokenAddress`.
-        (address fromTokenAddress) = abi.decode(bridgeData, (address));
-        // Grant an allowance to the exchange to spend `fromTokenAddress` token.
-        IERC20TokenV06(fromTokenAddress).approveIfBelow(address(MSTABLE), sellAmount);
+        // Decode the bridge data to get the `sellToken`.
+        (IERC20TokenV06 sellToken) = abi.decode(bridgeData, (IERC20TokenV06));
+        // Grant an allowance to the exchange to spend `sellToken` token.
+        sellToken.approveIfBelow(address(MSTABLE), sellAmount);
 
         boughtAmount = MSTABLE.swap(
-            fromTokenAddress,
-            toTokenAddress,
+            sellToken,
+            buyToken,
             sellAmount,
             address(this)
         );

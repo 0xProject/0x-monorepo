@@ -76,7 +76,10 @@ contract TransformERC20Feature is
         _registerFeatureFunction(this.getQuoteSigner.selector);
         _registerFeatureFunction(this.transformERC20.selector);
         _registerFeatureFunction(this._transformERC20.selector);
-        this.createTransformWallet();
+        if (this.getTransformWallet() == IFlashWallet(address(0))) {
+            // Create the transform wallet if it doesn't exist.
+            this.createTransformWallet();
+        }
         LibTransformERC20Storage.getStorage().transformerDeployer = transformerDeployer;
         return LibMigrate.MIGRATE_SUCCESS;
     }
@@ -386,13 +389,19 @@ contract TransformERC20Feature is
         view
         returns (bytes32 validCallDataHash)
     {
+        address quoteSigner = getQuoteSigner();
+        if (quoteSigner == address(0)) {
+            // If no quote signer is configured, then all calldata hashes are
+            // valid.
+            return callDataHash;
+        }
         if (signature.length == 0) {
             return bytes32(0);
         }
 
         if (ISignatureValidatorFeature(address(this)).isValidHashSignature(
             callDataHash,
-            getQuoteSigner(),
+            quoteSigner,
             signature
         )) {
             return callDataHash;

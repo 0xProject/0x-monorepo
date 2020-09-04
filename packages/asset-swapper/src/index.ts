@@ -140,6 +140,7 @@ export {
     LiquidityProviderFillData,
     MarketDepth,
     MarketDepthSide,
+    MooniswapFillData,
     MultiBridgeFillData,
     MultiHopFillData,
     NativeCollapsedFill,
