@@ -1,5 +1,5 @@
 import { schemas, SchemaValidator } from '@0x/json-schemas';
-import { assetDataUtils, orderCalculationUtils, orderHashUtils, SignedOrder } from '@0x/order-utils';
+import { assetDataUtils, orderCalculationUtils, SignedOrder } from '@0x/order-utils';
 import { RFQTFirmQuote, RFQTIndicativeQuote, TakerRequest } from '@0x/quote-server';
 import { ERC20AssetData } from '@0x/types';
 import { BigNumber, logUtils } from '@0x/utils';
