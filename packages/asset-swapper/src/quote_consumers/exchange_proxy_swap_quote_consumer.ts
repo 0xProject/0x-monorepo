@@ -96,6 +96,11 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
         const buyToken = getTokenFromAssetData(quote.makerAssetData);
         const sellAmount = quote.worstCaseQuoteInfo.totalTakerAssetAmount;
         let minBuyAmount = getSwapMinBuyAmount(quote);
+        let ethAmount = quote.worstCaseQuoteInfo.protocolFeeInWeiAmount;
+        if (isFromETH) {
+            ethAmount = ethAmount.plus(sellAmount);
+        }
+        const { buyTokenFeeAmount, sellTokenFeeAmount, recipient: feeRecipient } = affiliateFee;
 
         // VIP routes.
         if (isDirectUniswapCompatible(quote, optsWithDefaults)) {
@@ -119,6 +124,25 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
                     )
                     .getABIEncodedTransactionData(),
                 ethAmount: isFromETH ? sellAmount : ZERO_AMOUNT,
+                toAddress: this._exchangeProxy.address,
+                allowanceTarget: this.contractAddresses.exchangeProxyAllowanceTarget,
+            };
+        }
+
+        if (shouldGoDirectlyToLiquidityProvider(quote)) {
+            const calldataHexString = this._exchangeProxy
+                .sellToLiquidityProvider(
+                    isToETH ? ETH_TOKEN_ADDRESS : buyToken,
+                    isFromETH ? ETH_TOKEN_ADDRESS : sellToken,
+                    NULL_ADDRESS,
+                    sellAmount,
+                    minBuyAmount,
+                )
+                .getABIEncodedTransactionData();
+
+            return {
+                calldataHexString,
+                ethAmount,
                 toAddress: this._exchangeProxy.address,
                 allowanceTarget: this.contractAddresses.exchangeProxyAllowanceTarget,
             };
@@ -198,8 +222,6 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
         }
 
         // This transformer pays affiliate fees.
-        const { buyTokenFeeAmount, sellTokenFeeAmount, recipient: feeRecipient } = affiliateFee;
-
         if (buyTokenFeeAmount.isGreaterThan(0) && feeRecipient !== NULL_ADDRESS) {
             transforms.push({
                 deploymentNonce: this.transformerNonces.affiliateFeeTransformer,
@@ -216,7 +238,6 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
             // Adjust the minimum buy amount by the fee.
             minBuyAmount = BigNumber.max(0, minBuyAmount.minus(buyTokenFeeAmount));
         }
-
         if (sellTokenFeeAmount.isGreaterThan(0) && feeRecipient !== NULL_ADDRESS) {
             throw new Error('Affiliate fees denominated in sell token are not yet supported');
         }
@@ -239,11 +260,6 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
                 transforms,
             )
             .getABIEncodedTransactionData();
-
-        let ethAmount = quote.worstCaseQuoteInfo.protocolFeeInWeiAmount;
-        if (isFromETH) {
-            ethAmount = ethAmount.plus(sellAmount);
-        }
 
         return {
             calldataHexString,
@@ -290,4 +306,10 @@ function isDirectUniswapCompatible(quote: SwapQuote, opts: ExchangeProxyContract
         return false;
     }
     return true;
+}
+
+function shouldGoDirectlyToLiquidityProvider(quote: SwapQuote): boolean {
+    return (
+        quote.orders.length === 1 && _.get(quote, 'orders[0].fills[0].source') === ERC20BridgeSource.LiquidityProvider
+    );
 }
