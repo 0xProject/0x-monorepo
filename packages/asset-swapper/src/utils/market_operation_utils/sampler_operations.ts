@@ -23,6 +23,7 @@ import {
     HopInfo,
     KyberFillData,
     LiquidityProviderFillData,
+    MooniswapFillData,
     MultiBridgeFillData,
     MultiHopFillData,
     SourceQuoteOperation,
@@ -446,6 +447,14 @@ export class SamplerOperations {
             contract: this._samplerContract,
             function: this._samplerContract.sampleSellsFromMooniswap,
             params: [takerToken, makerToken, takerFillAmounts],
+            callback: (callResults: string, fillData: MooniswapFillData): BigNumber[] => {
+                const [poolAddress, samples] = this._samplerContract.getABIDecodedReturnData<[string, BigNumber[]]>(
+                    'sampleSellsFromMooniswap',
+                    callResults,
+                );
+                fillData.poolAddress = poolAddress;
+                return samples;
+            },
         });
     }
 
@@ -459,6 +468,14 @@ export class SamplerOperations {
             contract: this._samplerContract,
             function: this._samplerContract.sampleBuysFromMooniswap,
             params: [takerToken, makerToken, makerFillAmounts],
+            callback: (callResults: string, fillData: MooniswapFillData): BigNumber[] => {
+                const [poolAddress, samples] = this._samplerContract.getABIDecodedReturnData<[string, BigNumber[]]>(
+                    'sampleBuysFromMooniswap',
+                    callResults,
+                );
+                fillData.poolAddress = poolAddress;
+                return samples;
+            },
         });
     }
 

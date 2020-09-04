@@ -20,7 +20,7 @@ pragma solidity ^0.6.5;
 pragma experimental ABIEncoderV2;
 
 import "../src/ZeroEx.sol";
-import "../src/features/IBootstrap.sol";
+import "../src/features/IBootstrapFeature.sol";
 import "../src/migrations/InitialMigration.sol";
 
 
@@ -34,7 +34,7 @@ contract TestInitialMigration is
     constructor(address deployer) public InitialMigration(deployer) {}
 
     function callBootstrap(ZeroEx zeroEx) external {
-        IBootstrap(address(zeroEx)).bootstrap(address(this), new bytes(0));
+        IBootstrapFeature(address(zeroEx)).bootstrap(address(this), new bytes(0));
     }
 
     function bootstrap(address owner, BootstrapFeatures memory features)
@@ -45,7 +45,7 @@ contract TestInitialMigration is
         success = InitialMigration.bootstrap(owner, features);
         // Snoop the bootstrap feature contract.
         bootstrapFeature = ZeroEx(address(uint160(address(this))))
-            .getFunctionImplementation(IBootstrap.bootstrap.selector);
+            .getFunctionImplementation(IBootstrapFeature.bootstrap.selector);
     }
 
     function die(address payable ethRecipient) public override {

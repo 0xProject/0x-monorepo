@@ -1,5 +1,5 @@
 import { ContractAddresses } from '@0x/contract-addresses';
-import { ITransformERC20Contract } from '@0x/contract-wrappers';
+import { IZeroExContract } from '@0x/contract-wrappers';
 import {
     encodeAffiliateFeeTransformerData,
     encodeFillQuoteTransformerData,
@@ -7,10 +7,10 @@ import {
     encodeWethTransformerData,
     ETH_TOKEN_ADDRESS,
     FillQuoteTransformerSide,
+    findTransformerNonce,
 } from '@0x/order-utils';
 import { BigNumber, providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from '@0x/web3-wrapper';
-import * as ethjs from 'ethereumjs-util';
 import * as _ from 'lodash';
 
 import { constants } from '../constants';
@@ -32,7 +32,6 @@ import { getTokenFromAssetData } from '../utils/utils';
 // tslint:disable-next-line:custom-no-magic-numbers
 const MAX_UINT256 = new BigNumber(2).pow(256).minus(1);
 const { NULL_ADDRESS } = constants;
-const MAX_NONCE_GUESSES = 2048;
 
 export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
     public readonly provider: ZeroExProvider;
@@ -44,7 +43,7 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
         affiliateFeeTransformer: number;
     };
 
-    private readonly _transformFeature: ITransformERC20Contract;
+    private readonly _exchangeProxy: IZeroExContract;
 
     constructor(
         supportedProvider: SupportedProvider,
@@ -57,7 +56,7 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
         this.provider = provider;
         this.chainId = chainId;
         this.contractAddresses = contractAddresses;
-        this._transformFeature = new ITransformERC20Contract(contractAddresses.exchangeProxy, supportedProvider);
+        this._exchangeProxy = new IZeroExContract(contractAddresses.exchangeProxy, supportedProvider);
         this.transformerNonces = {
             wethTransformer: findTransformerNonce(
                 contractAddresses.transformers.wethTransformer,
@@ -84,7 +83,7 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
     ): Promise<CalldataInfo> {
         assert.isValidSwapQuote('quote', quote);
         // tslint:disable-next-line:no-object-literal-type-assertion
-        const { affiliateFee, isFromETH, isToETH } = {
+        const { refundReceiver, affiliateFee, isFromETH, isToETH } = {
             ...constants.DEFAULT_EXCHANGE_PROXY_EXTENSION_CONTRACT_OPTS,
             ...opts.extensionContractOpts,
         } as ExchangeProxyContractOpts;
@@ -116,8 +115,10 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
                     sellToken,
                     buyToken: intermediateToken,
                     side: FillQuoteTransformerSide.Sell,
+                    refundReceiver: refundReceiver || NULL_ADDRESS,
                     fillAmount: firstHopOrder.takerAssetAmount,
                     maxOrderFillAmounts: [],
+                    rfqtTakerAddress: NULL_ADDRESS,
                     orders: [firstHopOrder],
                     signatures: [firstHopOrder.signature],
                 }),
@@ -125,11 +126,13 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
             transforms.push({
                 deploymentNonce: this.transformerNonces.fillQuoteTransformer,
                 data: encodeFillQuoteTransformerData({
-                    sellToken: intermediateToken,
                     buyToken,
+                    sellToken: intermediateToken,
+                    refundReceiver: refundReceiver || NULL_ADDRESS,
                     side: FillQuoteTransformerSide.Sell,
                     fillAmount: MAX_UINT256,
                     maxOrderFillAmounts: [],
+                    rfqtTakerAddress: NULL_ADDRESS,
                     orders: [secondHopOrder],
                     signatures: [secondHopOrder.signature],
                 }),
@@ -140,9 +143,11 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
                 data: encodeFillQuoteTransformerData({
                     sellToken,
                     buyToken,
+                    refundReceiver: refundReceiver || NULL_ADDRESS,
                     side: isBuyQuote(quote) ? FillQuoteTransformerSide.Buy : FillQuoteTransformerSide.Sell,
                     fillAmount: isBuyQuote(quote) ? quote.makerAssetFillAmount : quote.takerAssetFillAmount,
                     maxOrderFillAmounts: [],
+                    rfqtTakerAddress: NULL_ADDRESS,
                     orders: quote.orders,
                     signatures: quote.orders.map(o => o.signature),
                 }),
@@ -192,7 +197,7 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
         });
 
         const minBuyAmount = BigNumber.max(0, quote.worstCaseQuoteInfo.makerAssetAmount.minus(buyTokenFeeAmount));
-        const calldataHexString = this._transformFeature
+        const calldataHexString = this._exchangeProxy
             .transformERC20(
                 isFromETH ? ETH_TOKEN_ADDRESS : sellToken,
                 isToETH ? ETH_TOKEN_ADDRESS : buyToken,
@@ -210,7 +215,7 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
         return {
             calldataHexString,
             ethAmount,
-            toAddress: this._transformFeature.address,
+            toAddress: this._exchangeProxy.address,
             allowanceTarget: this.contractAddresses.exchangeProxyAllowanceTarget,
         };
     }
@@ -226,33 +231,4 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
 
 function isBuyQuote(quote: SwapQuote): quote is MarketBuySwapQuote {
     return quote.type === MarketOperation.Buy;
-}
-
-/**
- * Find the nonce for a transformer given its deployer.
- * If `deployer` is the null address, zero will always be returned.
- */
-export function findTransformerNonce(transformer: string, deployer: string = NULL_ADDRESS): number {
-    if (deployer === NULL_ADDRESS) {
-        return 0;
-    }
-    const lowercaseTransformer = transformer.toLowerCase();
-    // Try to guess the nonce.
-    for (let nonce = 0; nonce < MAX_NONCE_GUESSES; ++nonce) {
-        const deployedAddress = getTransformerAddress(deployer, nonce);
-        if (deployedAddress === lowercaseTransformer) {
-            return nonce;
-        }
-    }
-    throw new Error(`${deployer} did not deploy ${transformer}!`);
-}
-
-/**
- * Compute the deployed address for a transformer given a deployer and nonce.
- */
-export function getTransformerAddress(deployer: string, nonce: number): string {
-    return ethjs.bufferToHex(
-        // tslint:disable-next-line: custom-no-magic-numbers
-        ethjs.rlphash([deployer, nonce] as any).slice(12),
-    );
 }

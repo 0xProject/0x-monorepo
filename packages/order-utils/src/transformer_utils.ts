@@ -1,5 +1,10 @@
 import { Order } from '@0x/types';
 import { AbiEncoder, BigNumber } from '@0x/utils';
+import * as ethjs from 'ethereumjs-util';
+
+import { constants } from './constants';
+
+const { NULL_ADDRESS } = constants;
 
 const ORDER_ABI_COMPONENTS = [
     { name: 'makerAddress', type: 'address' },
@@ -37,6 +42,8 @@ export const fillQuoteTransformerDataEncoder = AbiEncoder.create([
             { name: 'signatures', type: 'bytes[]' },
             { name: 'maxOrderFillAmounts', type: 'uint256[]' },
             { name: 'fillAmount', type: 'uint256' },
+            { name: 'refundReceiver', type: 'address' },
+            { name: 'rfqtTakerAddress', type: 'address' },
         ],
     },
 ]);
@@ -60,6 +67,8 @@ export interface FillQuoteTransformerData {
     signatures: string[];
     maxOrderFillAmounts: BigNumber[];
     fillAmount: BigNumber;
+    refundReceiver: string;
+    rfqtTakerAddress: string;
 }
 
 /**
@@ -184,4 +193,37 @@ export function encodeAffiliateFeeTransformerData(data: AffiliateFeeTransformerD
  */
 export function decodeAffiliateFeeTransformerData(encoded: string): AffiliateFeeTransformerData {
     return affiliateFeeTransformerDataEncoder.decode(encoded);
+}
+
+/**
+ * Find the nonce for a transformer given its deployer.
+ * If `deployer` is the null address, zero will always be returned.
+ */
+export function findTransformerNonce(
+    transformer: string,
+    deployer: string = NULL_ADDRESS,
+    maxGuesses: number = 1024,
+): number {
+    if (deployer === NULL_ADDRESS) {
+        return 0;
+    }
+    const lowercaseTransformer = transformer.toLowerCase();
+    // Try to guess the nonce.
+    for (let nonce = 0; nonce < maxGuesses; ++nonce) {
+        const deployedAddress = getTransformerAddress(deployer, nonce);
+        if (deployedAddress === lowercaseTransformer) {
+            return nonce;
+        }
+    }
+    throw new Error(`${deployer} did not deploy ${transformer}!`);
+}
+
+/**
+ * Compute the deployed address for a transformer given a deployer and nonce.
+ */
+export function getTransformerAddress(deployer: string, nonce: number): string {
+    return ethjs.bufferToHex(
+        // tslint:disable-next-line: custom-no-magic-numbers
+        ethjs.rlphash([deployer, nonce] as any).slice(12),
+    );
 }

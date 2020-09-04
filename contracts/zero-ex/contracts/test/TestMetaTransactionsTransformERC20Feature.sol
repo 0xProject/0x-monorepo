@@ -19,11 +19,12 @@
 pragma solidity ^0.6.5;
 pragma experimental ABIEncoderV2;
 
-import "../src/features/TransformERC20.sol";
+import "../src/features/TransformERC20Feature.sol";
+import "../src/features/IMetaTransactionsFeature.sol";
 
 
 contract TestMetaTransactionsTransformERC20Feature is
-    TransformERC20
+    TransformERC20Feature
 {
     event TransformERC20Called(
         address sender,
@@ -46,6 +47,49 @@ contract TestMetaTransactionsTransformERC20Feature is
     {
         if (msg.value == 666) {
             revert('FAIL');
+        }
+
+        if (msg.value == 777) {
+            // Try to reenter `executeMetaTransaction()`
+            IMetaTransactionsFeature(address(this)).executeMetaTransaction(
+                IMetaTransactionsFeature.MetaTransactionData({
+                    signer: address(0),
+                    sender: address(0),
+                    minGasPrice: 0,
+                    maxGasPrice: 0,
+                    expirationTimeSeconds: 0,
+                    salt: 0,
+                    callData: "",
+                    value: 0,
+                    feeToken: IERC20TokenV06(0),
+                    feeAmount: 0
+                }),
+                ""
+            );
+        }
+
+        if (msg.value == 888) {
+            // Try to reenter `batchExecuteMetaTransactions()`
+            IMetaTransactionsFeature.MetaTransactionData[] memory mtxs =
+                new IMetaTransactionsFeature.MetaTransactionData[](1);
+            bytes[] memory signatures = new bytes[](1);
+            mtxs[0] = IMetaTransactionsFeature.MetaTransactionData({
+                signer: address(0),
+                sender: address(0),
+                minGasPrice: 0,
+                maxGasPrice: 0,
+                expirationTimeSeconds: 0,
+                salt: 0,
+                callData: "",
+                value: 0,
+                feeToken: IERC20TokenV06(0),
+                feeAmount: 0
+            });
+            signatures[0] = "";
+            IMetaTransactionsFeature(address(this)).batchExecuteMetaTransactions(
+                mtxs,
+                signatures
+            );
         }
 
         emit TransformERC20Called(

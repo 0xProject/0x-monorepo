@@ -170,7 +170,7 @@ describe('RevertError', () => {
             const nested = new StringRevertError(message);
             const parent = new ParentRevertError(nested.encode());
             const decoded = RevertError.decode(parent.encode());
-            expect(decoded.toString()).to.equal(new ParentRevertError(nested.toString()).toString());
+            expect(decoded.encode()).to.equal(new ParentRevertError(nested.encode()).encode());
         });
     });
     describe('getThrownErrorRevertErrorBytes', () => {

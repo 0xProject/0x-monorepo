@@ -24,8 +24,8 @@ describe('quote_simulation tests', async () => {
     const DEFAULT_TAKER_ASSET_DATA = assetDataUtils.encodeERC20AssetData(TAKER_TOKEN);
     const GAS_SCHEDULE = { [ERC20BridgeSource.Native]: _.constant(1) };
 
-    // Check if two numbers are within `maxError` error rate within each other (default 1 bps).
-    function assertRoughlyEquals(n1: BigNumber, n2: BigNumber, maxError: BigNumber | number = 1e-12): void {
+    // Check if two numbers are within `maxError` error rate within each other.
+    function assertRoughlyEquals(n1: BigNumber, n2: BigNumber, maxError: BigNumber | number = 1e-10): void {
         // |n2-n1| / max(|n1|, |n2|)
         const err = n2
             .minus(n1)

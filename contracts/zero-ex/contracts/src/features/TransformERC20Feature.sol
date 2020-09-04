@@ -32,17 +32,16 @@ import "../storage/LibTransformERC20Storage.sol";
 import "../transformers/IERC20Transformer.sol";
 import "../transformers/LibERC20Transformer.sol";
 import "./libs/LibSignedCallData.sol";
-import "./ITransformERC20.sol";
-import "./ITokenSpender.sol";
+import "./ITransformERC20Feature.sol";
+import "./ITokenSpenderFeature.sol";
 import "./IFeature.sol";
-import "./ISignatureValidator.sol";
-import "./ISimpleFunctionRegistry.sol";
+import "./ISignatureValidatorFeature.sol";
 
 
 /// @dev Feature to composably transform between ERC20 tokens.
-contract TransformERC20 is
+contract TransformERC20Feature is
     IFeature,
-    ITransformERC20,
+    ITransformERC20Feature,
     FixinCommon
 {
     using LibSafeMathV06 for uint256;
@@ -61,10 +60,6 @@ contract TransformERC20 is
     /// @dev Version of this feature.
     uint256 public immutable override FEATURE_VERSION = _encodeVersion(1, 2, 0);
 
-    constructor() public FixinCommon() {
-        // solhint-disable-next-line no-empty-blocks
-    }
-
     /// @dev Initialize and register this feature.
     ///      Should be delegatecalled by `Migrate.migrate()`.
     /// @param transformerDeployer The trusted deployer for transformers.
@@ -81,7 +76,10 @@ contract TransformERC20 is
         _registerFeatureFunction(this.getQuoteSigner.selector);
         _registerFeatureFunction(this.transformERC20.selector);
         _registerFeatureFunction(this._transformERC20.selector);
-        this.createTransformWallet();
+        if (this.getTransformWallet() == IFlashWallet(address(0))) {
+            // Create the transform wallet if it doesn't exist.
+            this.createTransformWallet();
+        }
         LibTransformERC20Storage.getStorage().transformerDeployer = transformerDeployer;
         return LibMigrate.MIGRATE_SUCCESS;
     }
@@ -213,7 +211,7 @@ contract TransformERC20 is
         // If the input token amount is -1, transform the taker's entire
         // spendable balance.
         if (args.inputTokenAmount == uint256(-1)) {
-            args.inputTokenAmount = ITokenSpender(address(this))
+            args.inputTokenAmount = ITokenSpenderFeature(address(this))
                 .getSpendableERC20BalanceOf(args.inputToken, args.taker);
         }
 
@@ -257,16 +255,15 @@ contract TransformERC20 is
         // Compute how much output token has been transferred to the taker.
         state.takerOutputTokenBalanceAfter =
             LibERC20Transformer.getTokenBalanceOf(args.outputToken, args.taker);
-        if (state.takerOutputTokenBalanceAfter > state.takerOutputTokenBalanceBefore) {
-            outputTokenAmount = state.takerOutputTokenBalanceAfter.safeSub(
-                state.takerOutputTokenBalanceBefore
-            );
-        } else if (state.takerOutputTokenBalanceAfter < state.takerOutputTokenBalanceBefore) {
+        if (state.takerOutputTokenBalanceAfter < state.takerOutputTokenBalanceBefore) {
             LibTransformERC20RichErrors.NegativeTransformERC20OutputError(
                 address(args.outputToken),
                 state.takerOutputTokenBalanceBefore - state.takerOutputTokenBalanceAfter
             ).rrevert();
         }
+        outputTokenAmount = state.takerOutputTokenBalanceAfter.safeSub(
+            state.takerOutputTokenBalanceBefore
+        );
         // Ensure enough output token has been sent to the taker.
         if (outputTokenAmount < args.minOutputTokenAmount) {
             LibTransformERC20RichErrors.IncompleteTransformERC20Error(
@@ -318,7 +315,7 @@ contract TransformERC20 is
         // Transfer input tokens.
         if (!LibERC20Transformer.isTokenETH(inputToken)) {
             // Token is not ETH, so pull ERC20 tokens.
-            ITokenSpender(address(this))._spendERC20Tokens(
+            ITokenSpenderFeature(address(this))._spendERC20Tokens(
                 inputToken,
                 from,
                 to,
@@ -360,9 +357,12 @@ contract TransformERC20 is
             // Call data.
             abi.encodeWithSelector(
                 IERC20Transformer.transform.selector,
-                callDataHash,
-                taker,
-                transformation.data
+                IERC20Transformer.TransformContext({
+                    callDataHash: callDataHash,
+                    sender: msg.sender,
+                    taker: taker,
+                    data: transformation.data
+                })
             )
         );
         // Ensure the transformer returned the magic bytes.
@@ -389,13 +389,19 @@ contract TransformERC20 is
         view
         returns (bytes32 validCallDataHash)
     {
+        address quoteSigner = getQuoteSigner();
+        if (quoteSigner == address(0)) {
+            // If no quote signer is configured, then all calldata hashes are
+            // valid.
+            return callDataHash;
+        }
         if (signature.length == 0) {
             return bytes32(0);
         }
 
-        if (ISignatureValidator(address(this)).isValidHashSignature(
+        if (ISignatureValidatorFeature(address(this)).isValidHashSignature(
             callDataHash,
-            getQuoteSigner(),
+            quoteSigner,
             signature
         )) {
             return callDataHash;

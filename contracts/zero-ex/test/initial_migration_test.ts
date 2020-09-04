@@ -4,10 +4,10 @@ import { hexUtils, ZeroExRevertErrors } from '@0x/utils';
 import { artifacts } from './artifacts';
 import { BootstrapFeatures, deployBootstrapFeaturesAsync } from './utils/migration';
 import {
-    IBootstrapContract,
+    IBootstrapFeatureContract,
     InitialMigrationContract,
-    IOwnableContract,
-    SimpleFunctionRegistryContract,
+    IOwnableFeatureContract,
+    SimpleFunctionRegistryFeatureContract,
     TestInitialMigrationContract,
     ZeroExContract,
 } from './wrappers';
@@ -16,7 +16,7 @@ blockchainTests.resets('Initial migration', env => {
     let owner: string;
     let zeroEx: ZeroExContract;
     let migrator: TestInitialMigrationContract;
-    let bootstrapFeature: IBootstrapContract;
+    let bootstrapFeature: IBootstrapFeatureContract;
     let features: BootstrapFeatures;
 
     before(async () => {
@@ -29,7 +29,7 @@ blockchainTests.resets('Initial migration', env => {
             artifacts,
             env.txDefaults.from as string,
         );
-        bootstrapFeature = new IBootstrapContract(
+        bootstrapFeature = new IBootstrapFeatureContract(
             await migrator.bootstrapFeature().callAsync(),
             env.provider,
             env.txDefaults,
@@ -82,10 +82,10 @@ blockchainTests.resets('Initial migration', env => {
     });
 
     describe('Ownable feature', () => {
-        let ownable: IOwnableContract;
+        let ownable: IOwnableFeatureContract;
 
         before(async () => {
-            ownable = new IOwnableContract(zeroEx.address, env.provider, env.txDefaults);
+            ownable = new IOwnableFeatureContract(zeroEx.address, env.provider, env.txDefaults);
         });
 
         it('has the correct owner', async () => {
@@ -95,10 +95,10 @@ blockchainTests.resets('Initial migration', env => {
     });
 
     describe('SimpleFunctionRegistry feature', () => {
-        let registry: SimpleFunctionRegistryContract;
+        let registry: SimpleFunctionRegistryFeatureContract;
 
         before(async () => {
-            registry = new SimpleFunctionRegistryContract(zeroEx.address, env.provider, env.txDefaults);
+            registry = new SimpleFunctionRegistryFeatureContract(zeroEx.address, env.provider, env.txDefaults);
         });
 
         it('_extendSelf() is deregistered', async () => {

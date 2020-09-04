@@ -1,4 +1,5 @@
 import { RevertError } from '../../revert_error';
+import { Numberish } from '../../types';
 
 // tslint:disable:max-classes-per-file
 export class OnlyCallableBySelfError extends RevertError {
@@ -9,14 +10,16 @@ export class OnlyCallableBySelfError extends RevertError {
     }
 }
 
-// This is identical to the one in utils.
-// export class IllegalReentrancyError extends RevertError {
-//     constructor() {
-//         super('IllegalReentrancyError', 'IllegalReentrancyError()', {});
-//     }
-// }
+export class IllegalReentrancyError extends RevertError {
+    constructor(selector?: string, reentrancyFlags?: Numberish) {
+        super('IllegalReentrancyError', 'IllegalReentrancyError(bytes4 selector, uint256 reentrancyFlags)', {
+            selector,
+            reentrancyFlags,
+        });
+    }
+}
 
-const types = [OnlyCallableBySelfError];
+const types = [OnlyCallableBySelfError, IllegalReentrancyError];
 
 // Register the types we've defined.
 for (const type of types) {

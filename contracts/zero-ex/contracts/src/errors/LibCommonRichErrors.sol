@@ -34,13 +34,15 @@ library LibCommonRichErrors {
         );
     }
 
-    function IllegalReentrancyError()
+    function IllegalReentrancyError(bytes4 selector, uint256 reentrancyFlags)
         internal
         pure
         returns (bytes memory)
     {
         return abi.encodeWithSelector(
-            bytes4(keccak256("IllegalReentrancyError()"))
+            bytes4(keccak256("IllegalReentrancyError(bytes4,uint256)")),
+            selector,
+            reentrancyFlags
         );
     }
 }

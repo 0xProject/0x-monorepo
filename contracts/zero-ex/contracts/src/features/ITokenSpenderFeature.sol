@@ -23,7 +23,7 @@ import "@0x/contracts-erc20/contracts/src/v06/IERC20TokenV06.sol";
 
 
 /// @dev Feature that allows spending token allowances.
-interface ITokenSpender {
+interface ITokenSpenderFeature {
 
     /// @dev Transfers ERC20 tokens from `owner` to `to`.
     ///      Only callable from within.

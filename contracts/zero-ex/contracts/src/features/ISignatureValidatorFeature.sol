@@ -21,7 +21,7 @@ pragma experimental ABIEncoderV2;
 
 
 /// @dev Feature for validating signatures.
-interface ISignatureValidator {
+interface ISignatureValidatorFeature {
 
    /// @dev Allowed signature types.
     enum SignatureType {

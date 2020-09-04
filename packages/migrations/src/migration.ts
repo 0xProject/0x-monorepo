@@ -31,8 +31,6 @@ import {
     BridgeAdapterContract,
     FillQuoteTransformerContract,
     fullMigrateAsync as fullMigrateExchangeProxyAsync,
-    ITokenSpenderContract,
-    ITransformERC20Contract,
     PayTakerTransformerContract,
     WethTransformerContract,
 } from '@0x/contracts-zero-ex';
@@ -316,6 +314,7 @@ export async function runMigrationsAsync(
             balancerBridge: NULL_ADDRESS,
             curveBridge: NULL_ADDRESS,
             kyberBridge: NULL_ADDRESS,
+            mooniswapBridge: NULL_ADDRESS,
             mStableBridge: NULL_ADDRESS,
             oasisBridge: NULL_ADDRESS,
             uniswapBridge: NULL_ADDRESS,
@@ -330,32 +329,10 @@ export async function runMigrationsAsync(
     );
 
     const exchangeProxy = await fullMigrateExchangeProxyAsync(txDefaults.from, provider, txDefaults);
-    const exchangeProxyAllowanceTargetAddress = await new ITokenSpenderContract(
-        exchangeProxy.address,
-        provider,
-        txDefaults,
-    )
-        .getAllowanceTarget()
-        .callAsync();
-    const exchangeProxyFlashWalletAddress = await new ITransformERC20Contract(exchangeProxy.address, provider)
-        .getTransformWallet()
-        .callAsync();
+    const exchangeProxyAllowanceTargetAddress = await exchangeProxy.getAllowanceTarget().callAsync();
+    const exchangeProxyFlashWalletAddress = await exchangeProxy.getTransformWallet().callAsync();
 
     // Deploy transformers.
-    const fillQuoteTransformer = await FillQuoteTransformerContract.deployFrom0xArtifactAsync(
-        exchangeProxyArtifacts.FillQuoteTransformer,
-        provider,
-        txDefaults,
-        allArtifacts,
-        exchange.address,
-        bridgeAdapter.address,
-    );
-    const payTakerTransformer = await PayTakerTransformerContract.deployFrom0xArtifactAsync(
-        exchangeProxyArtifacts.PayTakerTransformer,
-        provider,
-        txDefaults,
-        allArtifacts,
-    );
     const wethTransformer = await WethTransformerContract.deployFrom0xArtifactAsync(
         exchangeProxyArtifacts.WethTransformer,
         provider,
@@ -363,11 +340,25 @@ export async function runMigrationsAsync(
         allArtifacts,
         etherToken.address,
     );
+    const payTakerTransformer = await PayTakerTransformerContract.deployFrom0xArtifactAsync(
+        exchangeProxyArtifacts.PayTakerTransformer,
+        provider,
+        txDefaults,
+        allArtifacts,
+    );
     const affiliateFeeTransformer = await AffiliateFeeTransformerContract.deployFrom0xArtifactAsync(
         exchangeProxyArtifacts.AffiliateFeeTransformer,
         provider,
         txDefaults,
         allArtifacts,
+    );
+    const fillQuoteTransformer = await FillQuoteTransformerContract.deployFrom0xArtifactAsync(
+        exchangeProxyArtifacts.FillQuoteTransformer,
+        provider,
+        txDefaults,
+        allArtifacts,
+        exchange.address,
+        bridgeAdapter.address,
     );
 
     const contractAddresses = {

@@ -26,14 +26,14 @@ import "../storage/LibOwnableStorage.sol";
 import "../migrations/LibBootstrap.sol";
 import "../migrations/LibMigrate.sol";
 import "./IFeature.sol";
-import "./IOwnable.sol";
-import "./SimpleFunctionRegistry.sol";
+import "./IOwnableFeature.sol";
+import "./SimpleFunctionRegistryFeature.sol";
 
 
 /// @dev Owner management features.
-contract Ownable is
+contract OwnableFeature is
     IFeature,
-    IOwnable,
+    IOwnableFeature,
     FixinCommon
 {
 
@@ -43,10 +43,6 @@ contract Ownable is
     uint256 public immutable override FEATURE_VERSION = _encodeVersion(1, 0, 0);
 
     using LibRichErrorsV06 for bytes;
-
-    constructor() public FixinCommon() {
-        // solhint-disable-next-line no-empty-blocks
-    }
 
     /// @dev Initializes this feature. The intial owner will be set to this (ZeroEx)
     ///      to allow the bootstrappers to call `extend()`. Ownership should be
@@ -58,9 +54,9 @@ contract Ownable is
         LibOwnableStorage.getStorage().owner = address(this);
 
         // Register feature functions.
-        SimpleFunctionRegistry(address(this))._extendSelf(this.transferOwnership.selector, _implementation);
-        SimpleFunctionRegistry(address(this))._extendSelf(this.owner.selector, _implementation);
-        SimpleFunctionRegistry(address(this))._extendSelf(this.migrate.selector, _implementation);
+        SimpleFunctionRegistryFeature(address(this))._extendSelf(this.transferOwnership.selector, _implementation);
+        SimpleFunctionRegistryFeature(address(this))._extendSelf(this.owner.selector, _implementation);
+        SimpleFunctionRegistryFeature(address(this))._extendSelf(this.migrate.selector, _implementation);
         return LibBootstrap.BOOTSTRAP_SUCCESS;
     }
 

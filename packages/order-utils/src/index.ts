@@ -77,7 +77,9 @@ export {
     AffiliateFeeTransformerData,
     encodeAffiliateFeeTransformerData,
     decodeAffiliateFeeTransformerData,
-} from './transformer_data_encoders';
+    findTransformerNonce,
+    getTransformerAddress,
+} from './transformer_utils';
 
 export { getOrderHash, getExchangeMetaTransactionHash, getExchangeProxyMetaTransactionHash } from './hash_utils';
 

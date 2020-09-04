@@ -25,26 +25,25 @@ import "./MixinAdapterAddresses.sol";
 
 interface IOasis {
 
-    /// @dev Sell `sellAmount` of `fromToken` token and receive `toToken` token.
-    /// @param fromToken The token being sold.
-    /// @param sellAmount The amount of `fromToken` token being sold.
-    /// @param toToken The token being bought.
-    /// @param minFillAmount Minimum amount of `toToken` token to buy.
-    /// @return fillAmount Amount of `toToken` bought.
+    /// @dev Sell `sellAmount` of `sellToken` token and receive `buyToken` token.
+    /// @param sellToken The token being sold.
+    /// @param sellAmount The amount of `sellToken` token being sold.
+    /// @param buyToken The token being bought.
+    /// @param minBoughtAmount Minimum amount of `buyToken` token to buy.
+    /// @return boughtAmount Amount of `buyToken` bought.
     function sellAllAmount(
-        address fromToken,
+        IERC20TokenV06 sellToken,
         uint256 sellAmount,
-        address toToken,
-        uint256 minFillAmount
+        IERC20TokenV06 buyToken,
+        uint256 minBoughtAmount
     )
         external
-        returns (uint256 fillAmount);
+        returns (uint256 boughtAmount);
 }
 
 contract MixinOasis is
     MixinAdapterAddresses
 {
-
     using LibERC20TokenV06 for IERC20TokenV06;
 
     /// @dev Mainnet address of the Oasis `MatchingMarket` contract.
@@ -57,25 +56,25 @@ contract MixinOasis is
     }
 
     function _tradeOasis(
-        address toTokenAddress,
+        IERC20TokenV06 buyToken,
         uint256 sellAmount,
         bytes memory bridgeData
     )
         internal
         returns (uint256 boughtAmount)
     {
-        // Decode the bridge data to get the `fromTokenAddress`.
-        (address fromTokenAddress) = abi.decode(bridgeData, (address));
-        // Grant an allowance to the exchange to spend `fromTokenAddress` token.
-        IERC20TokenV06(fromTokenAddress).approveIfBelow(
+        // Decode the bridge data to get the `sellToken`.
+        (IERC20TokenV06 sellToken) = abi.decode(bridgeData, (IERC20TokenV06));
+        // Grant an allowance to the exchange to spend `sellToken` token.
+        sellToken.approveIfBelow(
             address(OASIS),
             sellAmount
         );
-        // Try to sell all of this contract's `fromTokenAddress` token balance.
+        // Try to sell all of this contract's `sellToken` token balance.
         boughtAmount = OASIS.sellAllAmount(
-            fromTokenAddress,
+            sellToken,
             sellAmount,
-            toTokenAddress,
+            buyToken,
             // min fill amount
             1
         );

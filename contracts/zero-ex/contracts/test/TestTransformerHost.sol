@@ -32,18 +32,14 @@ contract TestTransformerHost {
 
     function rawExecuteTransform(
         IERC20Transformer transformer,
-        bytes32 callDataHash,
-        address taker,
-        bytes calldata data
+        IERC20Transformer.TransformContext calldata context
     )
         external
     {
         (bool _success, bytes memory resultData) =
             address(transformer).delegatecall(abi.encodeWithSelector(
                 transformer.transform.selector,
-                callDataHash,
-                taker,
-                data
+                context
             ));
         if (!_success) {
             resultData.rrevert();

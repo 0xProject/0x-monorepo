@@ -25,17 +25,25 @@ import "@0x/contracts-erc20/contracts/src/v06/IERC20TokenV06.sol";
 /// @dev A transformation callback used in `TransformERC20.transformERC20()`.
 interface IERC20Transformer {
 
+    /// @dev Context information to pass into `transform()` by `TransformERC20.transformERC20()`.
+    struct TransformContext {
+        // The hash of the `TransformERC20.transformERC20()` calldata.
+        // Will be null if the calldata is not signed.
+        bytes32 callDataHash;
+        // The caller of `TransformERC20.transformERC20()`.
+        address payable sender;
+        // taker The taker address, which may be distinct from `sender` in the case
+        // meta-transactions.
+        address payable taker;
+        // Arbitrary data to pass to the transformer.
+        bytes data;
+    }
+
     /// @dev Called from `TransformERC20.transformERC20()`. This will be
     ///      delegatecalled in the context of the FlashWallet instance being used.
-    /// @param callDataHash The hash of the `TransformERC20.transformERC20()` calldata.
-    /// @param taker The taker address (caller of `TransformERC20.transformERC20()`).
-    /// @param data Arbitrary data to pass to the transformer.
+    /// @param context Context information.
     /// @return success The success bytes (`LibERC20Transformer.TRANSFORMER_SUCCESS`).
-    function transform(
-        bytes32 callDataHash,
-        address payable taker,
-        bytes calldata data
-    )
+    function transform(TransformContext calldata context)
         external
         returns (bytes4 success);
 }

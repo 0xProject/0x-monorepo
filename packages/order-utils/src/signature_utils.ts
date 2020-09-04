@@ -206,7 +206,9 @@ export const signatureUtils = {
         transaction: ExchangeProxyMetaTransaction,
         signerAddress: string,
     ): Promise<SignedExchangeProxyMetaTransaction> {
-        assert.doesConformToSchema('transaction', transaction, schemas.zeroExTransactionSchema, [schemas.hexSchema]);
+        assert.doesConformToSchema('transaction', transaction, schemas.exchangeProxyMetaTransactionSchema, [
+            schemas.hexSchema,
+        ]);
         try {
             const signedTransaction = await signatureUtils.ecSignTypedDataExchangeProxyMetaTransactionAsync(
                 supportedProvider,
@@ -253,7 +255,9 @@ export const signatureUtils = {
     ): Promise<SignedExchangeProxyMetaTransaction> {
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         assert.isETHAddressHex('signerAddress', signerAddress);
-        assert.doesConformToSchema('transaction', transaction, schemas.zeroExTransactionSchema, [schemas.hexSchema]);
+        assert.doesConformToSchema('transaction', transaction, schemas.exchangeProxyMetaTransactionSchema, [
+            schemas.hexSchema,
+        ]);
         const web3Wrapper = new Web3Wrapper(provider);
         await assert.isSenderAddressAsync('signerAddress', signerAddress, web3Wrapper);
         const normalizedSignerAddress = signerAddress.toLowerCase();
