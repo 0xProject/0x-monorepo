@@ -17,6 +17,7 @@ export const SELL_SOURCES = [
     // ERC20BridgeSource.Bancor, // FIXME: Disabled until Bancor SDK supports batch requests
     ERC20BridgeSource.MStable,
     ERC20BridgeSource.Mooniswap,
+    ERC20BridgeSource.Swerve,
 ];
 
 /**
@@ -32,6 +33,7 @@ export const BUY_SOURCES = [
     // ERC20BridgeSource.Bancor, // FIXME: Disabled until Bancor SDK supports buy quotes
     ERC20BridgeSource.MStable,
     ERC20BridgeSource.Mooniswap,
+    ERC20BridgeSource.Swerve,
 ];
 
 export const DEFAULT_GET_MARKET_ORDERS_OPTS: GetMarketOrdersOpts = {
@@ -129,6 +131,20 @@ export const MAINNET_CURVE_INFOS: { [name: string]: CurveInfo } = {
             '0xeb4c2781e4eba804ce9a9803c67d0893436bb27d',
             '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
             '0xfe18be6b3bd88a2d2a7f928d00292e7a9963cfc6',
+        ],
+    },
+};
+export const MAINNET_SWERVE_INFOS: { [name: string]: CurveInfo } = {
+    swUSD: {
+        exchangeFunctionSelector: CurveFunctionSelectors.exchange,
+        sellQuoteFunctionSelector: CurveFunctionSelectors.get_dy_underlying,
+        buyQuoteFunctionSelector: CurveFunctionSelectors.get_dx_underlying,
+        poolAddress: '0x329239599afB305DA0A2eC69c58F8a6697F9F88d',
+        tokens: [
+            '0x6b175474e89094c44da98b954eedeac495271d0f',
+            '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+            '0xdac17f958d2ee523a2206206994597c13d831ec7',
+            '0x0000000000085d4780b73119b644ae5ecd22b376',
         ],
     },
 };

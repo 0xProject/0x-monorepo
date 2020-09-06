@@ -41,6 +41,7 @@ export enum ERC20BridgeSource {
     MStable = 'mStable',
     Mooniswap = 'Mooniswap',
     MultiHop = 'MultiHop',
+    Swerve = 'Swerve',
 }
 
 // tslint:disable: enum-naming
@@ -69,6 +70,8 @@ export interface CurveInfo {
     tokens: string[];
 }
 
+export interface SwerveInfo extends CurveInfo {}
+
 // Internal `fillData` field for `Fill` objects.
 export interface FillData {}
 
@@ -86,6 +89,12 @@ export interface CurveFillData extends FillData {
     fromTokenIdx: number;
     toTokenIdx: number;
     curve: CurveInfo;
+}
+
+export interface SwerveFillData extends FillData {
+    fromTokenIdx: number;
+    toTokenIdx: number;
+    pool: SwerveInfo;
 }
 
 export interface BalancerFillData extends FillData {
