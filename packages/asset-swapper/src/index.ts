@@ -148,6 +148,8 @@ export {
     OptimizedMarketOrder,
     SourceInfo,
     SourceQuoteOperation,
+    SwerveFillData,
+    SwerveInfo,
     TokenAdjacencyGraph,
     UniswapV2FillData,
 } from './utils/market_operation_utils/types';
