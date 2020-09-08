@@ -411,30 +411,22 @@ export class SamplerOperations {
         if (this.bancorService === undefined) {
             throw new Error('Cannot sample liquidity from Bancor; no Bancor service instantiated.');
         }
-        return Promise.all(
-            takerFillAmounts.map(async amount => {
-                try {
-                    const { amount: output, fillData } = await this.bancorService!.getQuoteAsync(
-                        takerToken,
-                        makerToken,
-                        amount,
-                    );
-                    return {
-                        source: ERC20BridgeSource.Bancor,
-                        output,
-                        input: amount,
-                        fillData,
-                    };
-                } catch (e) {
-                    return {
-                        source: ERC20BridgeSource.Bancor,
-                        output: ZERO_AMOUNT,
-                        input: amount,
-                        fillData: { path: [], networkAddress: '' },
-                    };
-                }
-            }),
-        );
+        try {
+            const quotes = await this.bancorService!.getQuotesAsync(takerToken, makerToken, takerFillAmounts);
+            return quotes.map((quote, i) => ({
+                source: ERC20BridgeSource.Bancor,
+                output: quote.amount,
+                input: takerFillAmounts[i],
+                fillData: quote.fillData,
+            }));
+        } catch (e) {
+            return takerFillAmounts.map(input => ({
+                source: ERC20BridgeSource.Bancor,
+                output: ZERO_AMOUNT,
+                input,
+                fillData: { path: [], networkAddress: '' },
+            }));
+        }
     }
 
     public getMooniswapSellQuotes(

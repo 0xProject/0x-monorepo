@@ -488,13 +488,15 @@ describe('DexSampler tests', () => {
             const expectedTakerFillAmounts = getSampleAmounts(new BigNumber(100e18), 3);
             const rate = getRandomFloat(0, 100);
             const bancorService = new MockBancorService(provider, {
-                getQuoteAsync: async (fromToken: string, toToken: string, amount: BigNumber) => {
+                getQuotesAsync: async (fromToken: string, toToken: string, amounts: BigNumber[]) => {
                     expect(fromToken).equal(expectedTakerToken);
                     expect(toToken).equal(expectedMakerToken);
-                    return Promise.resolve({
-                        fillData: { path: [fromToken, toToken], networkAddress },
-                        amount: amount.multipliedBy(rate),
-                    });
+                    return Promise.resolve(
+                        amounts.map(a => ({
+                            fillData: { path: [fromToken, toToken], networkAddress },
+                            amount: a.multipliedBy(rate),
+                        })),
+                    );
                 },
             });
             const dexOrderSampler = new DexOrderSampler(

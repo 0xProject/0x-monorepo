@@ -29,8 +29,8 @@ describe.skip('Bancor Service', () => {
     });
     it('should retrieve a quote', async () => {
         const amt = new BigNumber(2);
-        const quote = await bancorService.getQuoteAsync(eth, bnt, amt);
-        const fillData = quote.fillData as BancorFillData;
+        const quotes = await bancorService.getQuotesAsync(eth, bnt, [amt]);
+        const fillData = quotes[0].fillData as BancorFillData;
 
         // get rate from the bancor sdk
         const sdk = await bancorService.getSDKAsync();
@@ -39,14 +39,14 @@ describe.skip('Bancor Service', () => {
         expect(fillData.networkAddress).to.match(ADDRESS_REGEX);
         expect(fillData.path).to.be.an.instanceOf(Array);
         expect(fillData.path).to.have.lengthOf(3);
-        expect(quote.amount.dp(0)).to.bignumber.eq(
+        expect(quotes[0].amount.dp(0)).to.bignumber.eq(
             new BigNumber(expectedAmt).multipliedBy(bancorService.minReturnAmountBufferPercentage).dp(0),
         );
     });
     // HACK (xianny): for exploring SDK results
     it('should retrieve multiple quotes', async () => {
         const amts = [1, 10, 100, 1000].map(a => new BigNumber(a).multipliedBy(10e18));
-        const quotes = await Promise.all(amts.map(async amount => bancorService.getQuoteAsync(eth, bnt, amount)));
+        const quotes = await bancorService.getQuotesAsync(eth, bnt, amts);
         quotes.map((q, i) => {
             // tslint:disable:no-console
             const fillData = q.fillData as BancorFillData;

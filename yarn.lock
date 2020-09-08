@@ -699,6 +699,17 @@
   dependencies:
     lodash "^4.17.11"
 
+"@0x/contracts-erc20-bridge-sampler@^1.7.0":
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/@0x/contracts-erc20-bridge-sampler/-/contracts-erc20-bridge-sampler-1.7.0.tgz#7e5fb31ad89cd2ac122de798c68ae4aefcc375c0"
+  dependencies:
+    "@0x/base-contract" "^6.2.3"
+    "@0x/types" "^3.2.0"
+    "@0x/typescript-typings" "^5.1.1"
+    "@0x/utils" "^5.5.1"
+    ethereum-types "^3.2.0"
+    lodash "^4.17.11"
+
 "@0x/coordinator-server@^1.0.5":
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/@0x/coordinator-server/-/coordinator-server-1.0.5.tgz#3fda0d5f2af45f0baa7663ad0a5e8465b4161081"
@@ -1061,9 +1072,9 @@
     isomorphic-fetch "^2.2.1"
     typescript "^3.8.3"
 
-"@bancor/sdk@^0.2.5":
-  version "0.2.5"
-  resolved "https://registry.yarnpkg.com/@bancor/sdk/-/sdk-0.2.5.tgz#dda2d6a91bc130684d83e5d395c00677cd0fdd71"
+"@bancor/sdk@^0.2.9":
+  version "0.2.9"
+  resolved "https://registry.yarnpkg.com/@bancor/sdk/-/sdk-0.2.9.tgz#2e4c168dc9d667709e3ed85eac3b15362c5676d8"
   dependencies:
     "@types/text-encoding" "0.0.35"
     decimal.js "^10.2.0"

@@ -5,7 +5,7 @@ import { BancorService } from '../../src/utils/market_operation_utils/bancor_ser
 import { BancorFillData, Quote } from '../../src/utils/market_operation_utils/types';
 
 export interface Handlers {
-    getQuoteAsync: (fromToken: string, toToken: string, amount: BigNumber) => Promise<Quote<BancorFillData>>;
+    getQuotesAsync: (fromToken: string, toToken: string, amount: BigNumber[]) => Promise<Array<Quote<BancorFillData>>>;
 }
 
 export class MockBancorService extends BancorService {
@@ -16,9 +16,13 @@ export class MockBancorService extends BancorService {
         super(provider);
     }
 
-    public async getQuoteAsync(fromToken: string, toToken: string, amount: BigNumber): Promise<Quote<BancorFillData>> {
-        return this.handlers.getQuoteAsync
-            ? this.handlers.getQuoteAsync(fromToken, toToken, amount)
-            : super.getQuoteAsync(fromToken, toToken, amount);
+    public async getQuotesAsync(
+        fromToken: string,
+        toToken: string,
+        amounts: BigNumber[],
+    ): Promise<Array<Quote<BancorFillData>>> {
+        return this.handlers.getQuotesAsync
+            ? this.handlers.getQuotesAsync(fromToken, toToken, amounts)
+            : super.getQuotesAsync(fromToken, toToken, amounts);
     }
 }

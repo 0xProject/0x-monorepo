@@ -3,6 +3,7 @@ import { RFQTIndicativeQuote } from '@0x/quote-server';
 import { SignedOrder } from '@0x/types';
 import { BigNumber, NULL_ADDRESS } from '@0x/utils';
 import * as _ from 'lodash';
+import { sample } from 'lodash';
 
 import { MarketOperation } from '../../types';
 import { QuoteRequestor } from '../quote_requestor';
@@ -176,9 +177,16 @@ export class MarketOperationUtils {
             ? this._sampler.getBalancerSellQuotesOffChainAsync(makerToken, takerToken, sampleAmounts)
             : Promise.resolve([]);
 
-        const offChainBancorPromise = _opts.excludedSources.includes(ERC20BridgeSource.Bancor)
-            ? Promise.resolve([])
-            : this._sampler.getBancorSellQuotesOffChainAsync(makerToken, takerToken, [takerAmount]);
+        const bntToken =
+            this._sampler.bancorService && await this._sampler.bancorService.getBancorTokenAddressAsync();
+        const shouldSampleBancor =
+            !_opts.excludedSources.includes(ERC20BridgeSource.Bancor) &&
+            bntToken !== undefined &&
+            (makerToken === bntToken || takerToken === bntToken);
+
+        const offChainBancorPromise = shouldSampleBancor
+            ? this._sampler.getBancorSellQuotesOffChainAsync(makerToken, takerToken, sampleAmounts)
+            : Promise.resolve([]);
 
         const [
             [orderFillableAmounts, ethToMakerAssetRate, ethToTakerAssetRate, dexQuotes, twoHopQuotes],
