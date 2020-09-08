@@ -2,7 +2,7 @@ import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { ZERO_AMOUNT } from './constants';
-import { getTwoHopAdjustedRate } from './fills';
+import { getTwoHopAdjustedRate } from './rate_utils';
 import { DexSample, FeeSchedule, MarketSideLiquidity, MultiHopFillData, TokenAdjacencyGraph } from './types';
 
 /**

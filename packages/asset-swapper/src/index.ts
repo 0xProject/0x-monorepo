@@ -119,6 +119,7 @@ export {
     SwapQuoterRfqtOpts,
 } from './types';
 export { affiliateFeeUtils } from './utils/affiliate_fee_utils';
+export { SOURCE_FLAGS } from './utils/market_operation_utils/constants';
 export {
     Parameters,
     SamplerContractCall,
@@ -136,7 +137,6 @@ export {
     FeeSchedule,
     Fill,
     FillData,
-    FillFlags,
     GetMarketOrdersRfqtOpts,
     KyberFillData,
     LiquidityProviderFillData,

@@ -16,6 +16,7 @@
         "generated-artifacts/ITransformERC20Feature.json",
         "generated-artifacts/IZeroEx.json",
         "generated-artifacts/InitialMigration.json",
+        "generated-artifacts/LiquidityProviderFeature.json",
         "generated-artifacts/LogMetadataTransformer.json",
         "generated-artifacts/MetaTransactionsFeature.json",
         "generated-artifacts/OwnableFeature.json",
