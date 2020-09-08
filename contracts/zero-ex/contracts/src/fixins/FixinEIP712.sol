@@ -22,7 +22,6 @@ pragma experimental ABIEncoderV2;
 import "@0x/contracts-utils/contracts/src/v06/errors/LibRichErrorsV06.sol";
 import "../errors/LibCommonRichErrors.sol";
 import "../errors/LibOwnableRichErrors.sol";
-import "../features/IOwnable.sol";
 
 
 /// @dev EIP712 helpers for features.

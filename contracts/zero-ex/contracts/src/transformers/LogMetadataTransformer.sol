@@ -19,20 +19,28 @@
 pragma solidity ^0.6.5;
 pragma experimental ABIEncoderV2;
 
-import "../src/transformers/Transformer.sol";
-import "../src/transformers/IERC20Transformer.sol";
-import "../src/transformers/LibERC20Transformer.sol";
+import "./Transformer.sol";
+import "./LibERC20Transformer.sol";
 
 
-contract TestTransformerBase is
-    IERC20Transformer,
+/// @dev A transformer that just emits an event with an arbitrary byte payload.
+contract LogMetadataTransformer is
     Transformer
 {
+    event TransformerMetadata(bytes32 callDataHash, address sender, address taker, bytes data);
+
+    /// @dev Maximum uint256 value.
+    uint256 private constant MAX_UINT256 = uint256(-1);
+
+    /// @dev Emits an event.
+    /// @param context Context information.
+    /// @return success The success bytes (`LibERC20Transformer.TRANSFORMER_SUCCESS`).
     function transform(TransformContext calldata context)
         external
         override
         returns (bytes4 success)
     {
+        emit TransformerMetadata(context.callDataHash, context.sender, context.taker, context.data);
         return LibERC20Transformer.TRANSFORMER_SUCCESS;
     }
 }

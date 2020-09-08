@@ -31,6 +31,8 @@ contract TestFillQuoteTransformerHost is
         IERC20Transformer transformer,
         TestMintableERC20Token inputToken,
         uint256 inputTokenAmount,
+        address payable sender,
+        address payable taker,
         bytes calldata data
     )
         external
@@ -40,6 +42,14 @@ contract TestFillQuoteTransformerHost is
             inputToken.mint(address(this), inputTokenAmount);
         }
         // Have to make this call externally because transformers aren't payable.
-        this.rawExecuteTransform(transformer, bytes32(0), msg.sender, data);
+        this.rawExecuteTransform(
+            transformer,
+            IERC20Transformer.TransformContext({
+                callDataHash: bytes32(0),
+                sender: sender,
+                taker: taker,
+                data: data
+            })
+        );
     }
 }

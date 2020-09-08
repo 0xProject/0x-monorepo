@@ -40,9 +40,9 @@ export class OnlyCallableByExchangeError extends RevertError {
 }
 
 export class ExchangeManagerError extends RevertError {
-    constructor(error?: ExchangeManagerErrorCodes, senderAddress?: string) {
+    constructor(errorCode?: ExchangeManagerErrorCodes, senderAddress?: string) {
         super('ExchangeManagerError', 'ExchangeManagerError(uint8 errorCode, address senderAddress)', {
-            error,
+            errorCode,
             senderAddress,
         });
     }

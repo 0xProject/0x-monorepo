@@ -13,6 +13,18 @@
             {
                 "note": "Add bancorBridge to addresses",
                 "pr": 2650
+            },
+            {
+                "note": "Update EP migration.",
+                "pr": 2657
+            },
+            {
+                "note": "Add mooniswap addresses to `BridgeAdapter` deployment",
+                "pr": 2692
+            },
+            {
+                "note": "Reorder transformer deployments",
+                "pr": 2693
             }
         ]
     },

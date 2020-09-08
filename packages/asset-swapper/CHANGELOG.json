@@ -85,6 +85,22 @@
             {
                 "note": "Enable Quote Report to be generated with an option `shouldGenerateQuoteReport`. Default is `false`",
                 "pr": 2687
+            },
+            {
+                "note": "Add `refundReceiver` to `ExchangeProxySwapQuoteConsumer` options.",
+                "pr": 2657
+            },
+            {
+                "note": "Use `IZeroExContract` in EP swap quote consumer.",
+                "pr": 2657
+            },
+            {
+                "note": "Set `rfqtTakerAddress` to null in EP consumer",
+                "pr": 2692
+            },
+            {
+                "note": "Return Mooniswap pool in sampler and encode it in bridge data",
+                "pr": 2692
             }
         ]
     },

@@ -21,7 +21,7 @@ pragma experimental ABIEncoderV2;
 
 
 /// @dev Detachable `bootstrap()` feature.
-interface IBootstrap {
+interface IBootstrapFeature {
 
     /// @dev Bootstrap the initial feature set of this contract by delegatecalling
     ///      into `target`. Before exiting the `bootstrap()` function will

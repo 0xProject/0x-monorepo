@@ -5,6 +5,10 @@
             {
                 "note": "Update curveBridge tests",
                 "pr": 2633
+            },
+            {
+                "note": "Add EP RFQT + MTX tests",
+                "pr": 2692
             }
         ]
     },

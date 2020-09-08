@@ -21,24 +21,27 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/v06/errors/LibRichErrorsV06.sol";
 import "@0x/contracts-utils/contracts/src/v06/LibBytesV06.sol";
+import "@0x/contracts-utils/contracts/src/v06/LibSafeMathV06.sol";
 import "../errors/LibMetaTransactionsRichErrors.sol";
 import "../fixins/FixinCommon.sol";
+import "../fixins/FixinReentrancyGuard.sol";
 import "../fixins/FixinEIP712.sol";
 import "../migrations/LibMigrate.sol";
 import "../storage/LibMetaTransactionsStorage.sol";
 import "./libs/LibSignedCallData.sol";
-import "./IMetaTransactions.sol";
-import "./ITransformERC20.sol";
-import "./ISignatureValidator.sol";
-import "./ITokenSpender.sol";
+import "./IMetaTransactionsFeature.sol";
+import "./ITransformERC20Feature.sol";
+import "./ISignatureValidatorFeature.sol";
+import "./ITokenSpenderFeature.sol";
 import "./IFeature.sol";
 
 
 /// @dev MetaTransactions feature.
-contract MetaTransactions is
+contract MetaTransactionsFeature is
     IFeature,
-    IMetaTransactions,
+    IMetaTransactionsFeature,
     FixinCommon,
+    FixinReentrancyGuard,
     FixinEIP712
 {
     using LibBytesV06 for bytes;
@@ -69,7 +72,7 @@ contract MetaTransactions is
         IERC20TokenV06 outputToken;
         uint256 inputTokenAmount;
         uint256 minOutputTokenAmount;
-        ITransformERC20.Transformation[] transformations;
+        ITransformERC20Feature.Transformation[] transformations;
     }
 
     /// @dev Name of this feature.
@@ -91,6 +94,16 @@ contract MetaTransactions is
             "uint256 feeAmount"
         ")"
     );
+
+    /// @dev Refunds up to `msg.value` leftover ETH at the end of the call.
+    modifier refundsAttachedEth() {
+        _;
+        uint256 remainingBalance =
+            LibSafeMathV06.min256(msg.value, address(this).balance);
+        if (remainingBalance > 0) {
+            msg.sender.transfer(remainingBalance);
+        }
+    }
 
     constructor(address zeroExAddress)
         public
@@ -127,9 +140,11 @@ contract MetaTransactions is
         public
         payable
         override
+        nonReentrant(REENTRANCY_MTX)
+        refundsAttachedEth
         returns (bytes memory returnResult)
     {
-        return _executeMetaTransactionPrivate(
+        returnResult = _executeMetaTransactionPrivate(
             msg.sender,
             mtx,
             signature
@@ -147,6 +162,8 @@ contract MetaTransactions is
         public
         payable
         override
+        nonReentrant(REENTRANCY_MTX)
+        refundsAttachedEth
         returns (bytes[] memory returnResults)
     {
         if (mtxs.length != signatures.length) {
@@ -254,28 +271,30 @@ contract MetaTransactions is
 
         _validateMetaTransaction(state);
 
-        // Mark the transaction executed.
-        assert(block.number > 0);
+        // Mark the transaction executed by storing the block at which it was executed.
+        // Currently the block number just indicates that the mtx was executed and
+        // serves no other purpose from within this contract.
         LibMetaTransactionsStorage.getStorage()
             .mtxHashToExecutedBlockNumber[state.hash] = block.number;
 
-        // Execute the call based on the selector.
-        state.selector = mtx.callData.readBytes4(0);
-        if (state.selector == ITransformERC20.transformERC20.selector) {
-            returnResult = _executeTransformERC20Call(state);
-        } else {
-            LibMetaTransactionsRichErrors
-                .MetaTransactionUnsupportedFunctionError(state.hash, state.selector)
-                .rrevert();
-        }
         // Pay the fee to the sender.
         if (mtx.feeAmount > 0) {
-            ITokenSpender(address(this))._spendERC20Tokens(
+            ITokenSpenderFeature(address(this))._spendERC20Tokens(
                 mtx.feeToken,
                 mtx.signer, // From the signer.
                 sender, // To the sender.
                 mtx.feeAmount
             );
+        }
+
+        // Execute the call based on the selector.
+        state.selector = mtx.callData.readBytes4(0);
+        if (state.selector == ITransformERC20Feature.transformERC20.selector) {
+            returnResult = _executeTransformERC20Call(state);
+        } else {
+            LibMetaTransactionsRichErrors
+                .MetaTransactionUnsupportedFunctionError(state.hash, state.selector)
+                .rrevert();
         }
         emit MetaTransactionExecuted(
             state.hash,
@@ -330,7 +349,7 @@ contract MetaTransactions is
         }
         // Must be signed by signer.
         try
-            ISignatureValidator(address(this))
+            ISignatureValidatorFeature(address(this))
                 .validateHashSignature(state.hash, state.mtx.signer, state.signature)
         {}
         catch (bytes memory err) {
@@ -353,9 +372,9 @@ contract MetaTransactions is
         }
     }
 
-    /// @dev Execute a `ITransformERC20.transformERC20()` meta-transaction call
+    /// @dev Execute a `ITransformERC20Feature.transformERC20()` meta-transaction call
     ///      by decoding the call args and translating the call to the internal
-    ///      `ITransformERC20._transformERC20()` variant, where we can override
+    ///      `ITransformERC20Feature._transformERC20()` variant, where we can override
     ///      the taker address.
     function _executeTransformERC20Call(ExecuteState memory state)
         private
@@ -367,7 +386,7 @@ contract MetaTransactions is
         // since decoding a single struct arg consumes far less stack space than
         // decoding multiple struct args.
 
-        // Where the encoding for multiple args (with the seleector ommitted)
+        // Where the encoding for multiple args (with the selector ommitted)
         // would typically look like:
         // | argument                 |  offset |
         // |--------------------------|---------|
@@ -394,7 +413,7 @@ contract MetaTransactions is
             bytes memory encodedStructArgs = new bytes(state.mtx.callData.length - 4 + 32);
             // Copy the args data from the original, after the new struct offset prefix.
             bytes memory fromCallData = state.mtx.callData;
-            assert(fromCallData.length >= 4);
+            assert(fromCallData.length >= 160);
             uint256 fromMem;
             uint256 toMem;
             assembly {
@@ -407,19 +426,19 @@ contract MetaTransactions is
                 toMem := add(encodedStructArgs, 64)
             }
             LibBytesV06.memCopy(toMem, fromMem, fromCallData.length - 4);
-            // Decode call args for `ITransformERC20.transformERC20()` as a struct.
+            // Decode call args for `ITransformERC20Feature.transformERC20()` as a struct.
             args = abi.decode(encodedStructArgs, (ExternalTransformERC20Args));
         }
         // Parse the signature and hash out of the calldata so `_transformERC20()`
         // can authenticate it.
         (bytes32 callDataHash, bytes memory callDataSignature) =
             LibSignedCallData.parseCallData(state.mtx.callData);
-        // Call `ITransformERC20._transformERC20()` (internal variant).
+        // Call `ITransformERC20Feature._transformERC20()` (internal variant).
         return _callSelf(
             state.hash,
             abi.encodeWithSelector(
-                ITransformERC20._transformERC20.selector,
-                ITransformERC20.TransformERC20Args({
+                ITransformERC20Feature._transformERC20.selector,
+                ITransformERC20Feature.TransformERC20Args({
                     taker: state.mtx.signer, // taker is mtx signer
                     inputToken: args.inputToken,
                     outputToken: args.outputToken,

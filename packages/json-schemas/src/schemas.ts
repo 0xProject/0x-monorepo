@@ -7,6 +7,7 @@ import * as ecSignatureParameterSchema from '../schemas/ec_signature_parameter_s
 import * as ecSignatureSchema from '../schemas/ec_signature_schema.json';
 import * as eip712DomainSchema from '../schemas/eip712_domain_schema.json';
 import * as eip712TypedDataSchema from '../schemas/eip712_typed_data_schema.json';
+import * as exchangeProxyMetaTransactionSchema from '../schemas/exchange_proxy_meta_transaction_schema.json';
 import * as hexSchema from '../schemas/hex_schema.json';
 import * as indexFilterValuesSchema from '../schemas/index_filter_values_schema.json';
 import * as jsNumber from '../schemas/js_number_schema.json';
@@ -87,5 +88,6 @@ export const schemas = {
     relayerApiOrdersResponseSchema,
     relayerApiAssetDataPairsSchema,
     zeroExTransactionSchema,
+    exchangeProxyMetaTransactionSchema,
     wholeNumberSchema,
 };

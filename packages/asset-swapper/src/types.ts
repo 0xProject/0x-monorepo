@@ -136,14 +136,30 @@ export interface AffiliateFee {
 }
 
 /**
+ * Automatically resolved protocol fee refund receiver addresses.
+ */
+export enum ExchangeProxyRefundReceiver {
+    // Refund to the taker address.
+    Taker = '0x0000000000000000000000000000000000000001',
+    // Refund to the sender address.
+    Sender = '0x0000000000000000000000000000000000000002',
+}
+
+/**
  * @param isFromETH Whether the input token is ETH.
  * @param isToETH Whether the output token is ETH.
  * @param affiliateFee Fee denominated in taker or maker asset to send to specified recipient.
+ * @param refundReceiver The receiver of unspent protocol fees.
+ *        May be a valid address or one of:
+ *        `address(0)`: Stay in flash wallet.
+ *        `address(1)`: Send to the taker.
+ *        `address(2)`: Send to the sender (caller of `transformERC20()`).
  */
 export interface ExchangeProxyContractOpts {
     isFromETH: boolean;
     isToETH: boolean;
     affiliateFee: AffiliateFee;
+    refundReceiver: string | ExchangeProxyRefundReceiver;
 }
 
 export interface GetExtensionContractTypeOpts {

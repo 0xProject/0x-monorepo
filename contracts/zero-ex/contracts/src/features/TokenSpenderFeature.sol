@@ -28,15 +28,14 @@ import "../fixins/FixinCommon.sol";
 import "../migrations/LibMigrate.sol";
 import "../external/IAllowanceTarget.sol";
 import "../storage/LibTokenSpenderStorage.sol";
-import "./ITokenSpender.sol";
+import "./ITokenSpenderFeature.sol";
 import "./IFeature.sol";
-import "./ISimpleFunctionRegistry.sol";
 
 
 /// @dev Feature that allows spending token allowances.
-contract TokenSpender is
+contract TokenSpenderFeature is
     IFeature,
-    ITokenSpender,
+    ITokenSpenderFeature,
     FixinCommon
 {
     // solhint-disable
@@ -47,10 +46,6 @@ contract TokenSpender is
     // solhint-enable
 
     using LibRichErrorsV06 for bytes;
-
-    constructor() public FixinCommon() {
-        // solhint-disable-next-line no-empty-blocks
-    }
 
     /// @dev Initialize and register this feature. Should be delegatecalled
     ///      into during a `Migrate.migrate()`.

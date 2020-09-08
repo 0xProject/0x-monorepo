@@ -34,13 +34,13 @@ contract MixinCurve {
     struct CurveBridgeData {
         address curveAddress;
         bytes4 exchangeFunctionSelector;
-        address fromTokenAddress;
+        IERC20TokenV06 sellToken;
         int128 fromCoinIdx;
         int128 toCoinIdx;
     }
 
     function _tradeCurve(
-        address toTokenAddress,
+        IERC20TokenV06 buyToken,
         uint256 sellAmount,
         bytes memory bridgeData
     )
@@ -49,8 +49,8 @@ contract MixinCurve {
     {
         // Decode the bridge data to get the Curve metadata.
         CurveBridgeData memory data = abi.decode(bridgeData, (CurveBridgeData));
-        IERC20TokenV06(data.fromTokenAddress).approveIfBelow(data.curveAddress, sellAmount);
-        uint256 beforeBalance = IERC20TokenV06(toTokenAddress).balanceOf(address(this));
+        data.sellToken.approveIfBelow(data.curveAddress, sellAmount);
+        uint256 beforeBalance = buyToken.balanceOf(address(this));
         (bool success, bytes memory resultData) =
             data.curveAddress.call(abi.encodeWithSelector(
                 data.exchangeFunctionSelector,
@@ -64,7 +64,6 @@ contract MixinCurve {
         if (!success) {
             resultData.rrevert();
         }
-
-        return IERC20TokenV06(toTokenAddress).balanceOf(address(this)).safeSub(beforeBalance);
+        return buyToken.balanceOf(address(this)).safeSub(beforeBalance);
     }
 }

@@ -23,6 +23,7 @@ import "./mixins/MixinAdapterAddresses.sol";
 import "./mixins/MixinBalancer.sol";
 import "./mixins/MixinCurve.sol";
 import "./mixins/MixinKyber.sol";
+import "./mixins/MixinMooniswap.sol";
 import "./mixins/MixinMStable.sol";
 import "./mixins/MixinOasis.sol";
 import "./mixins/MixinUniswap.sol";
@@ -34,6 +35,7 @@ contract BridgeAdapter is
     MixinBalancer,
     MixinCurve,
     MixinKyber,
+    MixinMooniswap,
     MixinMStable,
     MixinOasis,
     MixinUniswap,
@@ -44,6 +46,7 @@ contract BridgeAdapter is
     address private immutable BALANCER_BRIDGE_ADDRESS;
     address private immutable CURVE_BRIDGE_ADDRESS;
     address private immutable KYBER_BRIDGE_ADDRESS;
+    address private immutable MOONISWAP_BRIDGE_ADDRESS;
     address private immutable MSTABLE_BRIDGE_ADDRESS;
     address private immutable OASIS_BRIDGE_ADDRESS;
     address private immutable UNISWAP_BRIDGE_ADDRESS;
@@ -57,8 +60,8 @@ contract BridgeAdapter is
     /// @param from The bridge address, indicating the underlying source of the fill.
     /// @param to The `to` address, currrently `address(this)`
     event ERC20BridgeTransfer(
-        address inputToken,
-        address outputToken,
+        IERC20TokenV06 inputToken,
+        IERC20TokenV06 outputToken,
         uint256 inputTokenAmount,
         uint256 outputTokenAmount,
         address from,
@@ -70,6 +73,7 @@ contract BridgeAdapter is
         MixinBalancer()
         MixinCurve()
         MixinKyber(addresses)
+        MixinMooniswap(addresses)
         MixinMStable(addresses)
         MixinOasis(addresses)
         MixinUniswap(addresses)
@@ -79,6 +83,7 @@ contract BridgeAdapter is
         BALANCER_BRIDGE_ADDRESS = addresses.balancerBridge;
         CURVE_BRIDGE_ADDRESS = addresses.curveBridge;
         KYBER_BRIDGE_ADDRESS = addresses.kyberBridge;
+        MOONISWAP_BRIDGE_ADDRESS = addresses.mooniswapBridge;
         MSTABLE_BRIDGE_ADDRESS = addresses.mStableBridge;
         OASIS_BRIDGE_ADDRESS = addresses.oasisBridge;
         UNISWAP_BRIDGE_ADDRESS = addresses.uniswapBridge;
@@ -87,19 +92,19 @@ contract BridgeAdapter is
 
     function trade(
         bytes calldata makerAssetData,
-        address fromTokenAddress,
+        IERC20TokenV06 sellToken,
         uint256 sellAmount
     )
         external
         returns (uint256 boughtAmount)
     {
         (
-            address toTokenAddress,
+            IERC20TokenV06 buyToken,
             address bridgeAddress,
             bytes memory bridgeData
         ) = abi.decode(
             makerAssetData[4:],
-            (address, address, bytes)
+            (IERC20TokenV06, address, bytes)
         );
         require(
             bridgeAddress != address(this) && bridgeAddress != address(0),
@@ -108,65 +113,71 @@ contract BridgeAdapter is
 
         if (bridgeAddress == CURVE_BRIDGE_ADDRESS) {
             boughtAmount = _tradeCurve(
-                toTokenAddress,
+                buyToken,
                 sellAmount,
                 bridgeData
             );
         } else if (bridgeAddress == UNISWAP_V2_BRIDGE_ADDRESS) {
             boughtAmount = _tradeUniswapV2(
-                toTokenAddress,
+                buyToken,
                 sellAmount,
                 bridgeData
             );
         } else if (bridgeAddress == UNISWAP_BRIDGE_ADDRESS) {
             boughtAmount = _tradeUniswap(
-                toTokenAddress,
+                buyToken,
                 sellAmount,
                 bridgeData
             );
         } else if (bridgeAddress == BALANCER_BRIDGE_ADDRESS) {
             boughtAmount = _tradeBalancer(
-                toTokenAddress,
+                buyToken,
                 sellAmount,
                 bridgeData
             );
         } else if (bridgeAddress == KYBER_BRIDGE_ADDRESS) {
             boughtAmount = _tradeKyber(
-                toTokenAddress,
+                buyToken,
+                sellAmount,
+                bridgeData
+            );
+        } else if (bridgeAddress == MOONISWAP_BRIDGE_ADDRESS) {
+            boughtAmount = _tradeMooniswap(
+                buyToken,
                 sellAmount,
                 bridgeData
             );
         } else if (bridgeAddress == MSTABLE_BRIDGE_ADDRESS) {
             boughtAmount = _tradeMStable(
-                toTokenAddress,
+                buyToken,
                 sellAmount,
                 bridgeData
             );
         } else if (bridgeAddress == OASIS_BRIDGE_ADDRESS) {
             boughtAmount = _tradeOasis(
-                toTokenAddress,
+                buyToken,
                 sellAmount,
                 bridgeData
             );
         } else {
             boughtAmount = _tradeZeroExBridge(
                 bridgeAddress,
-                fromTokenAddress,
-                toTokenAddress,
+                sellToken,
+                buyToken,
                 sellAmount,
                 bridgeData
             );
+            // Do not emit an event. The bridge contract should emit one itself.
+            return boughtAmount;
         }
 
         emit ERC20BridgeTransfer(
-            fromTokenAddress,
-            toTokenAddress,
+            sellToken,
+            buyToken,
             sellAmount,
             boughtAmount,
             bridgeAddress,
             address(this)
         );
-
-        return boughtAmount;
     }
 }

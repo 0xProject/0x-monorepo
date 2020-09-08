@@ -1,6 +1,6 @@
 [
     {
-        "version": "10.3.1",
+        "version": "10.4.0",
         "changes": [
             {
                 "note": "Add gitpkg.",
@@ -9,6 +9,22 @@
             {
                 "note": "Fix `decodeAffiliateFeeTransformerData`",
                 "pr": 2658
+            },
+            {
+                "note": "Add `refundReceiver` field to `FillQuoteTransformer.TransformData`.",
+                "pr": 2657
+            },
+            {
+                "note": "Add `findTransformerNonce()` and `getTransformerAddress()` functions.",
+                "pr": 2657
+            },
+            {
+                "note": "Fix EP signature utils schema assertion.",
+                "pr": 2657
+            },
+            {
+                "note": "Add `rfqtTakerAddress` to `FillQuoteTransformerData`",
+                "pr": 2692
             }
         ]
     },

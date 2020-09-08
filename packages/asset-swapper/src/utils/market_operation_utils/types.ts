@@ -113,6 +113,10 @@ export interface KyberFillData extends FillData {
     reserveId: string;
 }
 
+export interface MooniswapFillData extends FillData {
+    poolAddress: string;
+}
+
 export interface Quote<TFillData = FillData> {
     amount: BigNumber;
     fillData?: TFillData;

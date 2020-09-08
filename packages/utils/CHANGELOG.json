@@ -5,6 +5,10 @@
             {
                 "note": "Added support for nested rich revert decoding",
                 "pr": 2668
+            },
+            {
+                "note": "Add EP flavor of `IllegalReentrancyError`.",
+                "pr": 2657
             }
         ]
     },

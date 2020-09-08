@@ -22,8 +22,8 @@ pragma experimental ABIEncoderV2;
 import "@0x/contracts-utils/contracts/src/v06/errors/LibRichErrorsV06.sol";
 import "../errors/LibCommonRichErrors.sol";
 import "../errors/LibOwnableRichErrors.sol";
-import "../features/IOwnable.sol";
-import "../features/ISimpleFunctionRegistry.sol";
+import "../features/IOwnableFeature.sol";
+import "../features/ISimpleFunctionRegistryFeature.sol";
 
 
 /// @dev Common feature utilities.
@@ -45,7 +45,7 @@ abstract contract FixinCommon {
     /// @dev The caller of this function must be the owner.
     modifier onlyOwner() virtual {
         {
-            address owner = IOwnable(address(this)).owner();
+            address owner = IOwnableFeature(address(this)).owner();
             if (msg.sender != owner) {
                 LibOwnableRichErrors.OnlyOwnerError(
                     msg.sender,
@@ -68,7 +68,7 @@ abstract contract FixinCommon {
     function _registerFeatureFunction(bytes4 selector)
         internal
     {
-        ISimpleFunctionRegistry(address(this)).extend(selector, _implementation);
+        ISimpleFunctionRegistryFeature(address(this)).extend(selector, _implementation);
     }
 
     /// @dev Encode a feature version as a `uint256`.

@@ -40,28 +40,26 @@ contract TestMintTokenERC20Transformer is
         address context,
         address caller,
         bytes32 callDataHash,
+        address sender,
         address taker,
         bytes data,
         uint256 inputTokenBalance,
         uint256 ethBalance
     );
 
-    function transform(
-        bytes32 callDataHash,
-        address payable taker,
-        bytes calldata data_
-    )
+    function transform(TransformContext calldata context)
         external
         override
         returns (bytes4 success)
     {
-        TransformData memory data = abi.decode(data_, (TransformData));
+        TransformData memory data = abi.decode(context.data, (TransformData));
         emit MintTransform(
             address(this),
             msg.sender,
-            callDataHash,
-            taker,
-            data_,
+            context.callDataHash,
+            context.sender,
+            context.taker,
+            context.data,
             data.inputToken.balanceOf(address(this)),
             address(this).balance
         );
@@ -69,14 +67,14 @@ contract TestMintTokenERC20Transformer is
         data.inputToken.transfer(address(0), data.burnAmount);
         // Mint output tokens.
         if (LibERC20Transformer.isTokenETH(IERC20TokenV06(address(data.outputToken)))) {
-            taker.transfer(data.mintAmount);
+            context.taker.transfer(data.mintAmount);
         } else {
             data.outputToken.mint(
-                taker,
+                context.taker,
                 data.mintAmount
             );
             // Burn fees from output.
-            data.outputToken.burn(taker, data.feeAmount);
+            data.outputToken.burn(context.taker, data.feeAmount);
         }
         return LibERC20Transformer.TRANSFORMER_SUCCESS;
     }

@@ -26,6 +26,7 @@ contract MixinAdapterAddresses
         address balancerBridge;
         address curveBridge;
         address kyberBridge;
+        address mooniswapBridge;
         address mStableBridge;
         address oasisBridge;
         address uniswapBridge;
