@@ -101,6 +101,10 @@
             {
                 "note": "Return Mooniswap pool in sampler and encode it in bridge data",
                 "pr": 2692
+            },
+            {
+                "note": "Added `Swerve`",
+                "pr": 2698
             }
         ]
     },

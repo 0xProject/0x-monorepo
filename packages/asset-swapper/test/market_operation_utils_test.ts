@@ -27,6 +27,15 @@ const MAKER_TOKEN = randomAddress();
 const TAKER_TOKEN = randomAddress();
 const MAKER_ASSET_DATA = assetDataUtils.encodeERC20AssetData(MAKER_TOKEN);
 const TAKER_ASSET_DATA = assetDataUtils.encodeERC20AssetData(TAKER_TOKEN);
+const DEFAULT_EXCLUDED = [
+    ERC20BridgeSource.UniswapV2,
+    ERC20BridgeSource.Curve,
+    ERC20BridgeSource.Balancer,
+    ERC20BridgeSource.MStable,
+    ERC20BridgeSource.Mooniswap,
+    ERC20BridgeSource.Bancor,
+    ERC20BridgeSource.Swerve,
+];
 
 // tslint:disable: custom-no-magic-numbers promise-function-async
 describe('MarketOperationUtils tests', () => {
@@ -238,11 +247,11 @@ describe('MarketOperationUtils tests', () => {
         [source: string]: Numberish[];
     }
 
-    const DEFAULT_RATES: RatesBySource = {
-        [ERC20BridgeSource.Native]: createDecreasingRates(NUM_SAMPLES),
-        [ERC20BridgeSource.Eth2Dai]: createDecreasingRates(NUM_SAMPLES),
-        [ERC20BridgeSource.Kyber]: createDecreasingRates(NUM_SAMPLES),
-        [ERC20BridgeSource.Uniswap]: createDecreasingRates(NUM_SAMPLES),
+    const ZERO_RATES: RatesBySource = {
+        [ERC20BridgeSource.Native]: _.times(NUM_SAMPLES, () => 0),
+        [ERC20BridgeSource.Eth2Dai]: _.times(NUM_SAMPLES, () => 0),
+        [ERC20BridgeSource.Uniswap]: _.times(NUM_SAMPLES, () => 0),
+        [ERC20BridgeSource.Kyber]: _.times(NUM_SAMPLES, () => 0),
         [ERC20BridgeSource.UniswapV2]: _.times(NUM_SAMPLES, () => 0),
         [ERC20BridgeSource.Balancer]: _.times(NUM_SAMPLES, () => 0),
         [ERC20BridgeSource.Bancor]: _.times(NUM_SAMPLES, () => 0),
@@ -251,6 +260,14 @@ describe('MarketOperationUtils tests', () => {
         [ERC20BridgeSource.MultiBridge]: _.times(NUM_SAMPLES, () => 0),
         [ERC20BridgeSource.MStable]: _.times(NUM_SAMPLES, () => 0),
         [ERC20BridgeSource.Mooniswap]: _.times(NUM_SAMPLES, () => 0),
+        [ERC20BridgeSource.Swerve]: _.times(NUM_SAMPLES, () => 0),
+    };
+
+    const DEFAULT_RATES: RatesBySource = {
+        ...ZERO_RATES,
+        [ERC20BridgeSource.Native]: createDecreasingRates(NUM_SAMPLES),
+        [ERC20BridgeSource.Eth2Dai]: createDecreasingRates(NUM_SAMPLES),
+        [ERC20BridgeSource.Uniswap]: createDecreasingRates(NUM_SAMPLES),
     };
 
     interface FillDataBySource {
@@ -263,6 +280,17 @@ describe('MarketOperationUtils tests', () => {
         [ERC20BridgeSource.Bancor]: { path: [], networkAddress: randomAddress() },
         [ERC20BridgeSource.Kyber]: { hint: '0x', reserveId: '0x' },
         [ERC20BridgeSource.Curve]: {
+            curve: {
+                poolAddress: randomAddress(),
+                tokens: [TAKER_TOKEN, MAKER_TOKEN],
+                exchangeFunctionSelector: hexUtils.random(4),
+                sellQuoteFunctionSelector: hexUtils.random(4),
+                buyQuoteFunctionSelector: hexUtils.random(4),
+            },
+            fromTokenIdx: 0,
+            toTokenIdx: 1,
+        },
+        [ERC20BridgeSource.Swerve]: {
             curve: {
                 poolAddress: randomAddress(),
                 tokens: [TAKER_TOKEN, MAKER_TOKEN],
@@ -416,14 +444,7 @@ describe('MarketOperationUtils tests', () => {
                 sampleDistributionBase: 1,
                 bridgeSlippage: 0,
                 maxFallbackSlippage: 100,
-                excludedSources: [
-                    ERC20BridgeSource.UniswapV2,
-                    ERC20BridgeSource.Curve,
-                    ERC20BridgeSource.Balancer,
-                    ERC20BridgeSource.MStable,
-                    ERC20BridgeSource.Mooniswap,
-                    ERC20BridgeSource.Bancor,
-                ],
+                excludedSources: DEFAULT_EXCLUDED,
                 allowFallback: false,
                 shouldBatchBridgeOrders: false,
             };
@@ -583,7 +604,7 @@ describe('MarketOperationUtils tests', () => {
             });
 
             it('can mix convex sources', async () => {
-                const rates: RatesBySource = {};
+                const rates: RatesBySource = { ...DEFAULT_RATES };
                 rates[ERC20BridgeSource.Native] = [0.4, 0.3, 0.2, 0.1];
                 rates[ERC20BridgeSource.Uniswap] = [0.5, 0.05, 0.05, 0.05];
                 rates[ERC20BridgeSource.Eth2Dai] = [0.6, 0.05, 0.05, 0.05];
@@ -852,14 +873,7 @@ describe('MarketOperationUtils tests', () => {
                 sampleDistributionBase: 1,
                 bridgeSlippage: 0,
                 maxFallbackSlippage: 100,
-                excludedSources: [
-                    ERC20BridgeSource.Kyber,
-                    ERC20BridgeSource.UniswapV2,
-                    ERC20BridgeSource.Curve,
-                    ERC20BridgeSource.Balancer,
-                    ERC20BridgeSource.MStable,
-                    ERC20BridgeSource.Mooniswap,
-                ],
+                excludedSources: DEFAULT_EXCLUDED,
                 allowFallback: false,
                 shouldBatchBridgeOrders: false,
             };
@@ -1019,7 +1033,7 @@ describe('MarketOperationUtils tests', () => {
             });
 
             it('can mix convex sources', async () => {
-                const rates: RatesBySource = {};
+                const rates: RatesBySource = { ...ZERO_RATES };
                 rates[ERC20BridgeSource.Native] = [0.4, 0.3, 0.2, 0.1];
                 rates[ERC20BridgeSource.Uniswap] = [0.5, 0.05, 0.05, 0.05];
                 rates[ERC20BridgeSource.Eth2Dai] = [0.6, 0.05, 0.05, 0.05];
@@ -1049,6 +1063,7 @@ describe('MarketOperationUtils tests', () => {
                 // dropping their effective rates.
                 const nativeFeeRate = 0.06;
                 const rates: RatesBySource = {
+                    ...ZERO_RATES,
                     [ERC20BridgeSource.Native]: [1, 0.99, 0.98, 0.97], // Effectively [0.94, ~0.93, ~0.92, ~0.91]
                     [ERC20BridgeSource.Uniswap]: [0.96, 0.1, 0.1, 0.1],
                     [ERC20BridgeSource.Eth2Dai]: [0.95, 0.1, 0.1, 0.1],
@@ -1086,6 +1101,7 @@ describe('MarketOperationUtils tests', () => {
                 // dropping its effective rates.
                 const uniswapFeeRate = 0.2;
                 const rates: RatesBySource = {
+                    ...ZERO_RATES,
                     [ERC20BridgeSource.Native]: [0.95, 0.1, 0.1, 0.1],
                     // Effectively [0.8, ~0.5, ~0, ~0]
                     [ERC20BridgeSource.Uniswap]: [1, 0.7, 0.2, 0.2],
@@ -1118,7 +1134,7 @@ describe('MarketOperationUtils tests', () => {
             });
 
             it('fallback orders use different sources', async () => {
-                const rates: RatesBySource = {};
+                const rates: RatesBySource = { ...ZERO_RATES };
                 rates[ERC20BridgeSource.Native] = [0.9, 0.8, 0.5, 0.5];
                 rates[ERC20BridgeSource.Uniswap] = [0.6, 0.05, 0.01, 0.01];
                 rates[ERC20BridgeSource.Eth2Dai] = [0.4, 0.3, 0.01, 0.01];
@@ -1138,7 +1154,7 @@ describe('MarketOperationUtils tests', () => {
             });
 
             it('does not create a fallback if below maxFallbackSlippage', async () => {
-                const rates: RatesBySource = {};
+                const rates: RatesBySource = { ...ZERO_RATES };
                 rates[ERC20BridgeSource.Native] = [1, 1, 0.01, 0.01];
                 rates[ERC20BridgeSource.Uniswap] = [1, 1, 0.01, 0.01];
                 rates[ERC20BridgeSource.Eth2Dai] = [0.49, 0.49, 0.49, 0.49];
@@ -1159,7 +1175,7 @@ describe('MarketOperationUtils tests', () => {
             });
 
             it('batches contiguous bridge sources', async () => {
-                const rates: RatesBySource = {};
+                const rates: RatesBySource = { ...ZERO_RATES };
                 rates[ERC20BridgeSource.Native] = [0.5, 0.01, 0.01, 0.01];
                 rates[ERC20BridgeSource.Eth2Dai] = [0.49, 0.02, 0.01, 0.01];
                 rates[ERC20BridgeSource.Uniswap] = [0.48, 0.01, 0.01, 0.01];
