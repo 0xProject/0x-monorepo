@@ -1,4 +1,3 @@
-import { orderHashUtils } from '@0x/order-utils';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
@@ -31,7 +30,6 @@ interface NativeReportSourceBase {
     liquiditySource: ERC20BridgeSource.Native;
     makerAmount: BigNumber;
     takerAmount: BigNumber;
-    orderHash: string;
     nativeOrder: SignedOrder;
     fillableTakerAmount: BigNumber;
 }
@@ -53,17 +51,6 @@ export interface QuoteReport {
     sourcesDelivered: QuoteReportSource[];
 }
 
-const nativeOrderFromCollapsedFill = (cf: CollapsedFill): SignedOrder | undefined => {
-    // Cast as NativeCollapsedFill and then check
-    // if it really is a NativeCollapsedFill
-    const possibleNativeCollapsedFill = cf as NativeCollapsedFill;
-    if (possibleNativeCollapsedFill.fillData && possibleNativeCollapsedFill.fillData.order) {
-        return possibleNativeCollapsedFill.fillData.order;
-    } else {
-        return undefined;
-    }
-};
-
 /**
  * Generates a report of sources considered while computing the optimized
  * swap quote, and the sources ultimately included in the computed quote.
@@ -77,23 +64,9 @@ export function generateQuoteReport(
     liquidityDelivered: CollapsedFill[] | DexSample<MultiHopFillData>,
     quoteRequestor?: QuoteRequestor,
 ): QuoteReport {
-    // convert order fillable amount array to easy to look up hash
-    if (orderFillableAmounts.length !== nativeOrders.length) {
-        // length mismatch, abort
-        throw new Error('orderFillableAmounts must be the same length as nativeOrders');
-    }
-    const orderHashesToFillableAmounts: { [orderHash: string]: BigNumber } = {};
-    nativeOrders.forEach((nativeOrder, idx) => {
-        orderHashesToFillableAmounts[orderHashUtils.getOrderHash(nativeOrder)] = orderFillableAmounts[idx];
-    });
-
     const dexReportSourcesConsidered = dexQuotes.map(quote => _dexSampleToReportSource(quote, marketOperation));
-    const nativeOrderSourcesConsidered = nativeOrders.map(order =>
-        _nativeOrderToReportSource(
-            order,
-            orderHashesToFillableAmounts[orderHashUtils.getOrderHash(order)],
-            quoteRequestor,
-        ),
+    const nativeOrderSourcesConsidered = nativeOrders.map((order, idx) =>
+        _nativeOrderToReportSource(order, orderFillableAmounts[idx], quoteRequestor),
     );
     const multiHopSourcesConsidered = multiHopQuotes.map(quote =>
         _multiHopSampleToReportSource(quote, marketOperation),
@@ -106,12 +79,18 @@ export function generateQuoteReport(
 
     let sourcesDelivered;
     if (Array.isArray(liquidityDelivered)) {
+        // create easy way to look up fillable amounts
+        const nativeOrderSignaturesToFillableAmounts = _nativeOrderSignaturesToFillableAmounts(
+            nativeOrders,
+            orderFillableAmounts,
+        );
+        // map sources delivered
         sourcesDelivered = liquidityDelivered.map(collapsedFill => {
-            const foundNativeOrder = nativeOrderFromCollapsedFill(collapsedFill);
+            const foundNativeOrder = _nativeOrderFromCollapsedFill(collapsedFill);
             if (foundNativeOrder) {
                 return _nativeOrderToReportSource(
                     foundNativeOrder,
-                    orderHashesToFillableAmounts[orderHashUtils.getOrderHash(foundNativeOrder)],
+                    nativeOrderSignaturesToFillableAmounts[foundNativeOrder.signature],
                     quoteRequestor,
                 );
             } else {
@@ -179,24 +158,48 @@ function _multiHopSampleToReportSource(
     }
 }
 
+function _nativeOrderSignaturesToFillableAmounts(
+    nativeOrders: SignedOrder[],
+    fillableAmounts: BigNumber[],
+): { [orderSignature: string]: BigNumber } {
+    // create easy way to look up fillable amounts based on native order signatures
+    if (fillableAmounts.length !== nativeOrders.length) {
+        // length mismatch, abort
+        throw new Error('orderFillableAmounts must be the same length as nativeOrders');
+    }
+    const nativeOrderSignaturesToFillableAmounts: { [orderSignature: string]: BigNumber } = {};
+    nativeOrders.forEach((nativeOrder, idx) => {
+        nativeOrderSignaturesToFillableAmounts[nativeOrder.signature] = fillableAmounts[idx];
+    });
+    return nativeOrderSignaturesToFillableAmounts;
+}
+
+function _nativeOrderFromCollapsedFill(cf: CollapsedFill): SignedOrder | undefined {
+    // Cast as NativeCollapsedFill and then check
+    // if it really is a NativeCollapsedFill
+    const possibleNativeCollapsedFill = cf as NativeCollapsedFill;
+    if (possibleNativeCollapsedFill.fillData && possibleNativeCollapsedFill.fillData.order) {
+        return possibleNativeCollapsedFill.fillData.order;
+    } else {
+        return undefined;
+    }
+}
+
 function _nativeOrderToReportSource(
     nativeOrder: SignedOrder,
     fillableAmount: BigNumber,
     quoteRequestor?: QuoteRequestor,
 ): NativeRFQTReportSource | NativeOrderbookReportSource {
-    const orderHash = orderHashUtils.getOrderHash(nativeOrder);
-
     const nativeOrderBase: NativeReportSourceBase = {
         liquiditySource: ERC20BridgeSource.Native,
         makerAmount: nativeOrder.makerAssetAmount,
         takerAmount: nativeOrder.takerAssetAmount,
         fillableTakerAmount: fillableAmount,
         nativeOrder,
-        orderHash,
     };
 
     // if we find this is an rfqt order, label it as such and associate makerUri
-    const foundRfqtMakerUri = quoteRequestor && quoteRequestor.getMakerUriForOrderHash(orderHash);
+    const foundRfqtMakerUri = quoteRequestor && quoteRequestor.getMakerUriForOrderSignature(nativeOrder.signature);
     if (foundRfqtMakerUri) {
         const rfqtSource: NativeRFQTReportSource = {
             ...nativeOrderBase,

@@ -1,5 +1,4 @@
 // tslint:disable:custom-no-magic-numbers
-import { orderHashUtils } from '@0x/order-utils';
 import { SignedOrder } from '@0x/types';
 import { BigNumber, hexUtils } from '@0x/utils';
 import * as chai from 'chai';
@@ -113,19 +112,19 @@ describe('generateQuoteReport', async () => {
         // quote generator mock
         const quoteRequestor = TypeMoq.Mock.ofType<QuoteRequestor>();
         quoteRequestor
-            .setup(qr => qr.getMakerUriForOrderHash(orderHashUtils.getOrderHash(orderbookOrder2)))
+            .setup(qr => qr.getMakerUriForOrderSignature(orderbookOrder2.signature))
             .returns(() => {
                 return undefined;
             })
             .verifiable(TypeMoq.Times.atLeastOnce());
         quoteRequestor
-            .setup(qr => qr.getMakerUriForOrderHash(orderHashUtils.getOrderHash(rfqtOrder1)))
+            .setup(qr => qr.getMakerUriForOrderSignature(rfqtOrder1.signature))
             .returns(() => {
                 return 'https://rfqt1.provider.club';
             })
             .verifiable(TypeMoq.Times.atLeastOnce());
         quoteRequestor
-            .setup(qr => qr.getMakerUriForOrderHash(orderHashUtils.getOrderHash(rfqtOrder2)))
+            .setup(qr => qr.getMakerUriForOrderSignature(rfqtOrder2.signature))
             .returns(() => {
                 return 'https://rfqt2.provider.club';
             })
@@ -145,7 +144,6 @@ describe('generateQuoteReport', async () => {
             liquiditySource: ERC20BridgeSource.Native,
             makerAmount: rfqtOrder1.makerAssetAmount,
             takerAmount: rfqtOrder1.takerAssetAmount,
-            orderHash: orderHashUtils.getOrderHash(rfqtOrder1),
             nativeOrder: rfqtOrder1,
             fillableTakerAmount: rfqtOrder1FillableAmount,
             isRfqt: true,
@@ -155,7 +153,6 @@ describe('generateQuoteReport', async () => {
             liquiditySource: ERC20BridgeSource.Native,
             makerAmount: rfqtOrder2.makerAssetAmount,
             takerAmount: rfqtOrder2.takerAssetAmount,
-            orderHash: orderHashUtils.getOrderHash(rfqtOrder2),
             nativeOrder: rfqtOrder2,
             fillableTakerAmount: rfqtOrder2FillableAmount,
             isRfqt: true,
@@ -165,7 +162,6 @@ describe('generateQuoteReport', async () => {
             liquiditySource: ERC20BridgeSource.Native,
             makerAmount: orderbookOrder1.makerAssetAmount,
             takerAmount: orderbookOrder1.takerAssetAmount,
-            orderHash: orderHashUtils.getOrderHash(orderbookOrder1),
             nativeOrder: orderbookOrder1,
             fillableTakerAmount: orderbookOrder1FillableAmount,
             isRfqt: false,
@@ -174,7 +170,6 @@ describe('generateQuoteReport', async () => {
             liquiditySource: ERC20BridgeSource.Native,
             makerAmount: orderbookOrder2.makerAssetAmount,
             takerAmount: orderbookOrder2.takerAssetAmount,
-            orderHash: orderHashUtils.getOrderHash(orderbookOrder2),
             nativeOrder: orderbookOrder2,
             fillableTakerAmount: orderbookOrder2FillableAmount,
             isRfqt: false,
@@ -291,7 +286,6 @@ describe('generateQuoteReport', async () => {
             liquiditySource: ERC20BridgeSource.Native,
             makerAmount: orderbookOrder1.makerAssetAmount,
             takerAmount: orderbookOrder1.takerAssetAmount,
-            orderHash: orderHashUtils.getOrderHash(orderbookOrder1),
             nativeOrder: orderbookOrder1,
             fillableTakerAmount: orderbookOrder1FillableAmount,
             isRfqt: false,
@@ -300,7 +294,6 @@ describe('generateQuoteReport', async () => {
             liquiditySource: ERC20BridgeSource.Native,
             makerAmount: orderbookOrder2.makerAssetAmount,
             takerAmount: orderbookOrder2.takerAssetAmount,
-            orderHash: orderHashUtils.getOrderHash(orderbookOrder2),
             nativeOrder: orderbookOrder2,
             fillableTakerAmount: orderbookOrder2FillableAmount,
             isRfqt: false,
@@ -393,7 +386,6 @@ describe('generateQuoteReport', async () => {
             liquiditySource: ERC20BridgeSource.Native,
             makerAmount: orderbookOrder1.makerAssetAmount,
             takerAmount: orderbookOrder1.takerAssetAmount,
-            orderHash: orderHashUtils.getOrderHash(orderbookOrder1),
             nativeOrder: orderbookOrder1,
             fillableTakerAmount: orderbookOrder1FillableAmount,
             isRfqt: false,

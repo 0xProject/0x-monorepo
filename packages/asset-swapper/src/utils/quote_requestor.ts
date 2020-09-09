@@ -1,5 +1,5 @@
 import { schemas, SchemaValidator } from '@0x/json-schemas';
-import { assetDataUtils, orderCalculationUtils, orderHashUtils, SignedOrder } from '@0x/order-utils';
+import { assetDataUtils, orderCalculationUtils, SignedOrder } from '@0x/order-utils';
 import { RFQTFirmQuote, RFQTIndicativeQuote, TakerRequest } from '@0x/quote-server';
 import { ERC20AssetData } from '@0x/types';
 import { BigNumber, logUtils } from '@0x/utils';
@@ -106,7 +106,7 @@ export type LogFunction = (obj: object, msg?: string, ...args: any[]) => void;
 
 export class QuoteRequestor {
     private readonly _schemaValidator: SchemaValidator = new SchemaValidator();
-    private readonly _orderHashToMakerUri: { [orderHash: string]: string } = {};
+    private readonly _orderSignatureToMakerUri: { [orderSignature: string]: string } = {};
 
     constructor(
         private readonly _rfqtAssetOfferings: RfqtMakerAssetOfferings,
@@ -196,7 +196,7 @@ export class QuoteRequestor {
             }
 
             // Store makerUri for looking up later
-            this._orderHashToMakerUri[orderHashUtils.getOrderHash(orderWithBigNumberInts)] = firmQuoteResponse.makerUri;
+            this._orderSignatureToMakerUri[orderWithBigNumberInts.signature] = firmQuoteResponse.makerUri;
 
             // Passed all validation, add it to result
             result.push({ signedOrder: orderWithBigNumberInts });
@@ -269,10 +269,10 @@ export class QuoteRequestor {
     }
 
     /**
-     * Given an order hash, returns the makerUri that the order originated from
+     * Given an order signature, returns the makerUri that the order originated from
      */
-    public getMakerUriForOrderHash(orderHash: string): string | undefined {
-        return this._orderHashToMakerUri[orderHash];
+    public getMakerUriForOrderSignature(orderSignature: string): string | undefined {
+        return this._orderSignatureToMakerUri[orderSignature];
     }
 
     private _isValidRfqtIndicativeQuoteResponse(response: RFQTIndicativeQuote): boolean {
