@@ -117,6 +117,7 @@ export interface LiquidityProviderFillData extends FillData {
 export interface MultiBridgeFillData extends FillData {
     poolAddress: string;
 }
+
 export interface BancorFillData extends FillData {
     path: string[];
     networkAddress: string;

@@ -295,7 +295,7 @@ describe('MarketOperationUtils tests', () => {
             toTokenIdx: 1,
         },
         [ERC20BridgeSource.Swerve]: {
-            curve: {
+            pool: {
                 poolAddress: randomAddress(),
                 tokens: [TAKER_TOKEN, MAKER_TOKEN],
                 exchangeFunctionSelector: hexUtils.random(4),
