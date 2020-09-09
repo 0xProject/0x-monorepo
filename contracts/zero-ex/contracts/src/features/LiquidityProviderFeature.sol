@@ -26,6 +26,7 @@ import "@0x/contracts-utils/contracts/src/v06/errors/LibRichErrorsV06.sol";
 import "@0x/contracts-utils/contracts/src/v06/LibSafeMathV06.sol";
 import "../errors/LibLiquidityProviderRichErrors.sol";
 import "../fixins/FixinCommon.sol";
+import "../migrations/LibMigrate.sol";
 import "../storage/LibLiquidityProviderStorage.sol";
 import "./IFeature.sol";
 import "./ILiquidityProviderFeature.sol";
@@ -77,6 +78,19 @@ contract LiquidityProviderFeature is
         FixinCommon()
     {
         weth = weth_;
+    }
+
+    /// @dev Initialize and register this feature.
+    ///      Should be delegatecalled by `Migrate.migrate()`.
+    /// @return success `LibMigrate.SUCCESS` on success.
+    function migrate()
+        external
+        returns (bytes4 success)
+    {
+        _registerFeatureFunction(this.sellToLiquidityProvider.selector);
+        _registerFeatureFunction(this.setLiquidityProviderForMarket.selector);
+        _registerFeatureFunction(this.getLiquidityProviderForMarket.selector);
+        return LibMigrate.MIGRATE_SUCCESS;
     }
 
     function sellToLiquidityProvider(
