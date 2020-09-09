@@ -43,6 +43,7 @@ export enum ERC20BridgeSource {
     MultiHop = 'MultiHop',
     Swerve = 'Swerve',
     SushiSwap = 'SushiSwap',
+    Synthetix = 'Synthetix',
 }
 
 // tslint:disable: enum-naming
@@ -108,6 +109,11 @@ export interface UniswapV2FillData extends FillData {
 
 export interface SushiSwapFillData extends UniswapV2FillData {
     router: string;
+}
+
+export interface SynthetixFillData extends FillData {
+    takerCurrencyKey: string;
+    makerCurrencyKey: string;
 }
 
 export interface LiquidityProviderFillData extends FillData {

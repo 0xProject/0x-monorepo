@@ -21,6 +21,7 @@ import * as ILiquidityProviderRegistry from '../test/generated-artifacts/ILiquid
 import * as IMooniswap from '../test/generated-artifacts/IMooniswap.json';
 import * as IMStable from '../test/generated-artifacts/IMStable.json';
 import * as IMultiBridge from '../test/generated-artifacts/IMultiBridge.json';
+import * as ISynthetix from '../test/generated-artifacts/ISynthetix.json';
 import * as IUniswapExchangeQuotes from '../test/generated-artifacts/IUniswapExchangeQuotes.json';
 import * as IUniswapV2Router01 from '../test/generated-artifacts/IUniswapV2Router01.json';
 import * as KyberSampler from '../test/generated-artifacts/KyberSampler.json';
@@ -31,6 +32,7 @@ import * as MultiBridgeSampler from '../test/generated-artifacts/MultiBridgeSamp
 import * as NativeOrderSampler from '../test/generated-artifacts/NativeOrderSampler.json';
 import * as SamplerUtils from '../test/generated-artifacts/SamplerUtils.json';
 import * as SushiSwapSampler from '../test/generated-artifacts/SushiSwapSampler.json';
+import * as SynthetixSampler from '../test/generated-artifacts/SynthetixSampler.json';
 import * as TestERC20BridgeSampler from '../test/generated-artifacts/TestERC20BridgeSampler.json';
 import * as TestNativeOrderSampler from '../test/generated-artifacts/TestNativeOrderSampler.json';
 import * as TwoHopSampler from '../test/generated-artifacts/TwoHopSampler.json';
@@ -42,7 +44,6 @@ export const artifacts = {
     CurveSampler: CurveSampler as ContractArtifact,
     ERC20BridgeSampler: ERC20BridgeSampler as ContractArtifact,
     Eth2DaiSampler: Eth2DaiSampler as ContractArtifact,
-    IMooniswap: IMooniswap as ContractArtifact,
     KyberSampler: KyberSampler as ContractArtifact,
     LiquidityProviderSampler: LiquidityProviderSampler as ContractArtifact,
     MStableSampler: MStableSampler as ContractArtifact,
@@ -51,6 +52,7 @@ export const artifacts = {
     NativeOrderSampler: NativeOrderSampler as ContractArtifact,
     SamplerUtils: SamplerUtils as ContractArtifact,
     SushiSwapSampler: SushiSwapSampler as ContractArtifact,
+    SynthetixSampler: SynthetixSampler as ContractArtifact,
     TwoHopSampler: TwoHopSampler as ContractArtifact,
     UniswapSampler: UniswapSampler as ContractArtifact,
     UniswapV2Sampler: UniswapV2Sampler as ContractArtifact,
@@ -61,7 +63,9 @@ export const artifacts = {
     ILiquidityProvider: ILiquidityProvider as ContractArtifact,
     ILiquidityProviderRegistry: ILiquidityProviderRegistry as ContractArtifact,
     IMStable: IMStable as ContractArtifact,
+    IMooniswap: IMooniswap as ContractArtifact,
     IMultiBridge: IMultiBridge as ContractArtifact,
+    ISynthetix: ISynthetix as ContractArtifact,
     IUniswapExchangeQuotes: IUniswapExchangeQuotes as ContractArtifact,
     IUniswapV2Router01: IUniswapV2Router01 as ContractArtifact,
     DummyLiquidityProvider: DummyLiquidityProvider as ContractArtifact,

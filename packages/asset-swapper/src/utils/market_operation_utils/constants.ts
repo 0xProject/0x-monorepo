@@ -19,6 +19,7 @@ export const SELL_SOURCES = [
     ERC20BridgeSource.Mooniswap,
     ERC20BridgeSource.Swerve,
     ERC20BridgeSource.SushiSwap,
+    ERC20BridgeSource.Synthetix,
 ];
 
 /**

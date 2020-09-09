@@ -30,6 +30,7 @@ import {
     SushiSwapFillData,
     SwerveFillData,
     SwerveInfo,
+    SynthetixFillData,
     TokenAdjacencyGraph,
     UniswapV2FillData,
 } from './types';
@@ -706,6 +707,28 @@ export class SamplerOperations {
         });
     }
 
+    public getSynthetixSellQuotes(
+        makerToken: string,
+        takerToken: string,
+        takerFillAmounts: BigNumber[],
+    ): SourceQuoteOperation<SynthetixFillData> {
+        return new SamplerContractOperation({
+            source: ERC20BridgeSource.Synthetix,
+            contract: this._samplerContract,
+            function: this._samplerContract.sampleSellsFromSynthetix,
+            params: [takerToken, makerToken, takerFillAmounts],
+            callback: (result: string, fillData: SynthetixFillData) => {
+                const [takerCurrencyKey, makerCurrencyKey, samples] = this._samplerContract.getABIDecodedReturnData<
+                    [string, string, BigNumber[]]
+                >('sampleSellsFromSynthetix', result);
+                fillData.takerCurrencyKey = takerCurrencyKey;
+                fillData.makerCurrencyKey = makerCurrencyKey;
+                console.log({ source: ERC20BridgeSource.Synthetix, samples, fillData });
+                return samples;
+            },
+        });
+    }
+
     public getMedianSellRate(
         sources: ERC20BridgeSource[],
         makerToken: string,
@@ -938,6 +961,8 @@ export class SamplerOperations {
                                 .map(poolAddress =>
                                     this.getBalancerSellQuotes(poolAddress, makerToken, takerToken, takerFillAmounts),
                                 );
+                        case ERC20BridgeSource.Synthetix:
+                            return this.getSynthetixSellQuotes(makerToken, takerToken, takerFillAmounts);
                         default:
                             throw new Error(`Unsupported sell sample source: ${source}`);
                     }

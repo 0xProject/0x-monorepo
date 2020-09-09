@@ -32,6 +32,7 @@ import * as IGasToken from '../test/generated-artifacts/IGasToken.json';
 import * as IKyberNetworkProxy from '../test/generated-artifacts/IKyberNetworkProxy.json';
 import * as IMooniswap from '../test/generated-artifacts/IMooniswap.json';
 import * as IMStable from '../test/generated-artifacts/IMStable.json';
+import * as ISynthetix from '../test/generated-artifacts/ISynthetix.json';
 import * as IUniswapExchange from '../test/generated-artifacts/IUniswapExchange.json';
 import * as IUniswapExchangeFactory from '../test/generated-artifacts/IUniswapExchangeFactory.json';
 import * as IUniswapV2Router01 from '../test/generated-artifacts/IUniswapV2Router01.json';
@@ -45,6 +46,7 @@ import * as MultiAssetProxy from '../test/generated-artifacts/MultiAssetProxy.js
 import * as Ownable from '../test/generated-artifacts/Ownable.json';
 import * as StaticCallProxy from '../test/generated-artifacts/StaticCallProxy.json';
 import * as SushiSwapBridge from '../test/generated-artifacts/SushiSwapBridge.json';
+import * as SynthetixBridge from '../test/generated-artifacts/SynthetixBridge.json';
 import * as TestBancorBridge from '../test/generated-artifacts/TestBancorBridge.json';
 import * as TestChaiBridge from '../test/generated-artifacts/TestChaiBridge.json';
 import * as TestDexForwarderBridge from '../test/generated-artifacts/TestDexForwarderBridge.json';
@@ -79,6 +81,7 @@ export const artifacts = {
     MixinGasToken: MixinGasToken as ContractArtifact,
     MooniswapBridge: MooniswapBridge as ContractArtifact,
     SushiSwapBridge: SushiSwapBridge as ContractArtifact,
+    SynthetixBridge: SynthetixBridge as ContractArtifact,
     UniswapBridge: UniswapBridge as ContractArtifact,
     UniswapV2Bridge: UniswapV2Bridge as ContractArtifact,
     IAssetData: IAssetData as ContractArtifact,
@@ -97,6 +100,7 @@ export const artifacts = {
     IKyberNetworkProxy: IKyberNetworkProxy as ContractArtifact,
     IMStable: IMStable as ContractArtifact,
     IMooniswap: IMooniswap as ContractArtifact,
+    ISynthetix: ISynthetix as ContractArtifact,
     IUniswapExchange: IUniswapExchange as ContractArtifact,
     IUniswapExchangeFactory: IUniswapExchangeFactory as ContractArtifact,
     IUniswapV2Router01: IUniswapV2Router01 as ContractArtifact,

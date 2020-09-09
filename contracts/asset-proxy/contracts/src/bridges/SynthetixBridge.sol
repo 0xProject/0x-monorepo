@@ -1,0 +1,130 @@
+/*
+
+  Copyright 2020 ZeroEx Intl.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+*/
+
+pragma solidity ^0.5.9;
+pragma experimental ABIEncoderV2;
+
+import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
+import "@0x/contracts-erc20/contracts/src/interfaces/IEtherToken.sol";
+import "@0x/contracts-erc20/contracts/src/LibERC20Token.sol";
+import "@0x/contracts-exchange-libs/contracts/src/IWallet.sol";
+import "@0x/contracts-utils/contracts/src/DeploymentConstants.sol";
+import "../interfaces/ISynthetix.sol";
+import "../interfaces/IERC20Bridge.sol";
+
+
+// solhint-disable space-after-comma
+// solhint-disable not-rely-on-time
+contract SynthetixBridge is
+    IERC20Bridge,
+    IWallet,
+    DeploymentConstants
+{
+    struct TransferState {
+        address fromTokenAddress;
+        uint256 fromTokenBalance;
+        bytes32 takerCurrencyKey;
+        bytes32 makerCurrencyKey;
+    }
+
+    /// @dev Callback for `IERC20Bridge`. Tries to buy `amount` of
+    ///      `toTokenAddress` tokens by selling the entirety of the `fromTokenAddress`
+    ///      token encoded in the bridge data.
+    /// @param toTokenAddress The token to buy and transfer to `to`.
+    /// @param from The maker (this contract).
+    /// @param to The recipient of the bought tokens.
+    /// @param amount Minimum amount of `toTokenAddress` tokens to buy.
+    /// @param bridgeData The abi-encoded path of token addresses. Last element must be toTokenAddress
+    /// @return success The magic bytes if successful.
+    function bridgeTransferFrom(
+        address toTokenAddress,
+        address from,
+        address to,
+        uint256 amount,
+        bytes calldata bridgeData
+    )
+        external
+        returns (bytes4 success)
+    {
+        // hold variables to get around stack depth limitations
+        TransferState memory state;
+
+        // Decode the bridge data to get the `fromTokenAddress`.
+        // solhint-disable indent
+        (state.fromTokenAddress, state.takerCurrencyKey, state.makerCurrencyKey) = abi.decode(bridgeData, (address, bytes32, bytes32));
+        // solhint-enable indent
+
+        require(state.takerCurrencyKey != bytes32(0), "SynthetixBridge/INVALID_CURRENCY_KEY");
+        require(state.makerCurrencyKey != bytes32(0), "SynthetixBridge/INVALID_CURRENCY_KEY");
+
+        // Get our balance of `fromTokenAddress` token.
+        state.fromTokenBalance = IERC20Token(state.fromTokenAddress).balanceOf(address(this));
+
+        //// Grant the SNX Proxy router an allowance.
+        //LibERC20Token.approveIfBelow(
+        //    state.fromTokenAddress,
+        //    0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F,
+        //    state.fromTokenBalance
+        //);
+
+        // Buy as much `toTokenAddress` token with `fromTokenAddress` token
+        // and transfer it to `to`.
+        IExchanger exchange = IExchanger(0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F);
+        uint256 boughtAmount = exchange.exchange(
+            // source currency key
+            state.takerCurrencyKey,
+            // Sell all tokens we hold.
+            state.fromTokenBalance,
+            // dest currency key
+            state.makerCurrencyKey
+        );
+
+        uint256 toTokenBalance = IERC20Token(toTokenAddress).balanceOf(address(this));
+        // Transfer the converted `toToken`s to `to`.
+        LibERC20Token.transfer(toTokenAddress, to, toTokenBalance);
+
+        emit ERC20BridgeTransfer(
+            // input token
+            state.fromTokenAddress,
+            // output token
+            toTokenAddress,
+            // input token amount
+            state.fromTokenBalance,
+            // output token amount
+            boughtAmount,
+            from,
+            to
+        );
+
+        return BRIDGE_SUCCESS;
+    }
+
+    /// @dev `SignatureType.Wallet` callback, so that this bridge can be the maker
+    ///      and sign for itself in orders. Always succeeds.
+    /// @return magicValue Success bytes, always.
+    function isValidSignature(
+        bytes32,
+        bytes calldata
+    )
+        external
+        view
+        returns (bytes4 magicValue)
+    {
+        return LEGACY_WALLET_MAGIC_VALUE;
+    }
+}

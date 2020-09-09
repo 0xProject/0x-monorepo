@@ -37,6 +37,7 @@ import {
     OrderDomain,
     SushiSwapFillData,
     SwerveFillData,
+    SynthetixFillData,
     UniswapV2FillData,
 } from './types';
 
@@ -226,6 +227,8 @@ function getBridgeAddressFromFill(fill: CollapsedFill, opts: CreateOrderFromPath
             return opts.contractAddresses.uniswapV2Bridge;
         case ERC20BridgeSource.SushiSwap:
             return '0xaaaaaa1111111111111111111111111111111111';
+        case ERC20BridgeSource.Synthetix:
+            return '0xbbbbbb1111111111111111111111111111111111';
         // return opts.contractAddresses.sushiswapBridge;
         case ERC20BridgeSource.Curve:
             return opts.contractAddresses.curveBridge;
@@ -340,6 +343,18 @@ function createBridgeOrder(
                 makerToken,
                 bridgeAddress,
                 createMooniswapBridgeData(takerToken, mooniswapFillData.poolAddress),
+            );
+            break;
+        case ERC20BridgeSource.Synthetix:
+            const synthetixFillData = (fill as CollapsedFill<SynthetixFillData>).fillData!; // tslint:disable-line:no-non-null-assertion
+            makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
+                makerToken,
+                bridgeAddress,
+                createSynthetixBridgeData(
+                    takerToken,
+                    synthetixFillData.takerCurrencyKey,
+                    synthetixFillData.makerCurrencyKey,
+                ),
             );
             break;
         default:
@@ -478,6 +493,15 @@ function createUniswapV2BridgeData(tokenAddressPath: string[]): string {
 function createSushiSwapBridgeData(tokenAddressPath: string[], router: string): string {
     const encoder = AbiEncoder.create('(address[],address)');
     return encoder.encode([tokenAddressPath, router]);
+}
+
+function createSynthetixBridgeData(takerToken: string, takerCurrencyKey: string, makerCurrencyKey: string): string {
+    const encoder = AbiEncoder.create([
+        { name: 'takerToken', type: 'address' },
+        { name: 'takerCurrencyKey', type: 'bytes32' },
+        { name: 'makerCurrencyKey', type: 'bytes32' },
+    ]);
+    return encoder.encode({ takerToken, takerCurrencyKey, makerCurrencyKey });
 }
 
 function getSlippedBridgeAssetAmounts(fill: CollapsedFill, opts: CreateOrderFromPathOpts): [BigNumber, BigNumber] {
