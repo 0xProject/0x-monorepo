@@ -35,6 +35,7 @@ const DEFAULT_EXCLUDED = [
     ERC20BridgeSource.Mooniswap,
     ERC20BridgeSource.Bancor,
     ERC20BridgeSource.Swerve,
+    ERC20BridgeSource.SushiSwap,
 ];
 
 // tslint:disable: custom-no-magic-numbers promise-function-async
@@ -89,6 +90,8 @@ describe('MarketOperationUtils tests', () => {
                 return ERC20BridgeSource.MStable;
             case contractAddresses.mooniswapBridge.toLowerCase():
                 return ERC20BridgeSource.Mooniswap;
+            case contractAddresses.sushiswapBridge.toLowerCase():
+                return ERC20BridgeSource.SushiSwap;
             default:
                 break;
         }
@@ -261,6 +264,7 @@ describe('MarketOperationUtils tests', () => {
         [ERC20BridgeSource.MStable]: _.times(NUM_SAMPLES, () => 0),
         [ERC20BridgeSource.Mooniswap]: _.times(NUM_SAMPLES, () => 0),
         [ERC20BridgeSource.Swerve]: _.times(NUM_SAMPLES, () => 0),
+        [ERC20BridgeSource.SushiSwap]: _.times(NUM_SAMPLES, () => 0),
     };
 
     const DEFAULT_RATES: RatesBySource = {
