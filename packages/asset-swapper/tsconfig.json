@@ -33,6 +33,7 @@
         "test/generated-artifacts/MultiBridgeSampler.json",
         "test/generated-artifacts/NativeOrderSampler.json",
         "test/generated-artifacts/SamplerUtils.json",
+        "test/generated-artifacts/SushiSwapSampler.json",
         "test/generated-artifacts/TestERC20BridgeSampler.json",
         "test/generated-artifacts/TestNativeOrderSampler.json",
         "test/generated-artifacts/TwoHopSampler.json",

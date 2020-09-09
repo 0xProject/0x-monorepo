@@ -35,6 +35,7 @@ import {
     NativeCollapsedFill,
     OptimizedMarketOrder,
     OrderDomain,
+    SushiSwapFillData,
     SwerveFillData,
     UniswapV2FillData,
 } from './types';
@@ -223,6 +224,9 @@ function getBridgeAddressFromFill(fill: CollapsedFill, opts: CreateOrderFromPath
             return opts.contractAddresses.uniswapBridge;
         case ERC20BridgeSource.UniswapV2:
             return opts.contractAddresses.uniswapV2Bridge;
+        case ERC20BridgeSource.SushiSwap:
+            return '0xaaaaaa1111111111111111111111111111111111';
+        // return opts.contractAddresses.uniswapV2Bridge;
         case ERC20BridgeSource.Curve:
             return opts.contractAddresses.curveBridge;
         case ERC20BridgeSource.Swerve:
@@ -305,6 +309,14 @@ function createBridgeOrder(
                 makerToken,
                 bridgeAddress,
                 createUniswapV2BridgeData(uniswapV2FillData.tokenAddressPath),
+            );
+            break;
+        case ERC20BridgeSource.SushiSwap:
+            const sushiSwapFillData = (fill as CollapsedFill<SushiSwapFillData>).fillData!; // tslint:disable-line:no-non-null-assertion
+            makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
+                makerToken,
+                bridgeAddress,
+                createSushiSwapBridgeData(sushiSwapFillData.tokenAddressPath, sushiSwapFillData.router),
             );
             break;
         case ERC20BridgeSource.MultiBridge:
@@ -467,6 +479,11 @@ function createCurveBridgeData(
 function createUniswapV2BridgeData(tokenAddressPath: string[]): string {
     const uniswapV2BridgeDataEncoder = AbiEncoder.create('(address[])');
     return uniswapV2BridgeDataEncoder.encode([tokenAddressPath]);
+}
+
+function createSushiSwapBridgeData(tokenAddressPath: string[], router: string): string {
+    const uniswapV2BridgeDataEncoder = AbiEncoder.create('(address[],address)');
+    return uniswapV2BridgeDataEncoder.encode([tokenAddressPath, router]);
 }
 
 function getSlippedBridgeAssetAmounts(fill: CollapsedFill, opts: CreateOrderFromPathOpts): [BigNumber, BigNumber] {

@@ -42,6 +42,7 @@
         "exchangeProxyFlashWallet": "0x22f9dcf4647084d6c31b2765f6910cd85c178c18",
         "mStableBridge": "0x2bf04fcea05f0989a14d9afa37aa376baca6b2b3",
         "mooniswapBridge": "0x02b7eca484ad960fca3f7709e0b2ac81eec3069c",
+        "sushiswapBridge": "0x0000000000000000000000000000000000000000",
         "transformers": {
             "wethTransformer": "0x68c0bb685099dc7cb5c5ce2b26185945b357383e",
             "payTakerTransformer": "0x49b9df2c58491764cf40cb052dd4243df63622c7",
@@ -92,6 +93,7 @@
         "exchangeProxyFlashWallet": "0x22f9dcf4647084d6c31b2765f6910cd85c178c18",
         "mStableBridge": "0x0000000000000000000000000000000000000000",
         "mooniswapBridge": "0x0000000000000000000000000000000000000000",
+        "sushiswapBridge": "0x0000000000000000000000000000000000000000",
         "transformers": {
             "wethTransformer": "0x8d822fe2b42f60531203e288f5f357fa79474437",
             "payTakerTransformer": "0x150652244723102faeaefa4c79597d097ffa26c6",
@@ -142,6 +144,7 @@
         "exchangeProxyFlashWallet": "0x22f9dcf4647084d6c31b2765f6910cd85c178c18",
         "mStableBridge": "0x0000000000000000000000000000000000000000",
         "mooniswapBridge": "0x0000000000000000000000000000000000000000",
+        "sushiswapBridge": "0x0000000000000000000000000000000000000000",
         "transformers": {
             "wethTransformer": "0x8d822fe2b42f60531203e288f5f357fa79474437",
             "payTakerTransformer": "0x150652244723102faeaefa4c79597d097ffa26c6",
@@ -192,6 +195,7 @@
         "exchangeProxyFlashWallet": "0x22f9dcf4647084d6c31b2765f6910cd85c178c18",
         "mStableBridge": "0x0000000000000000000000000000000000000000",
         "mooniswapBridge": "0x0000000000000000000000000000000000000000",
+        "sushiswapBridge": "0x0000000000000000000000000000000000000000",
         "transformers": {
             "wethTransformer": "0x9ce35b5ee9e710535e3988e3f8731d9ca9dba17d",
             "payTakerTransformer": "0x5a53e7b02a83aa9f60ccf4e424f0442c255bc977",
@@ -242,6 +246,7 @@
         "exchangeProxyFlashWallet": "0xb9682a8e7920b431f1d412b8510f0077410c8faa",
         "mStableBridge": "0x0000000000000000000000000000000000000000",
         "mooniswapBridge": "0x0000000000000000000000000000000000000000",
+        "sushiswapBridge": "0x0000000000000000000000000000000000000000",
         "transformers": {
             "wethTransformer": "0xc6b0d3c45a6b5092808196cb00df5c357d55e1d5",
             "payTakerTransformer": "0x7209185959d7227fb77274e1e88151d7c4c368d3",
