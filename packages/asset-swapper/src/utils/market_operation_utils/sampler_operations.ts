@@ -412,7 +412,7 @@ export class SamplerOperations {
             throw new Error('Cannot sample liquidity from Bancor; no Bancor service instantiated.');
         }
         try {
-            const quotes = await this.bancorService!.getQuotesAsync(takerToken, makerToken, takerFillAmounts);
+            const quotes = await this.bancorService.getQuotesAsync(takerToken, makerToken, takerFillAmounts);
             return quotes.map((quote, i) => ({
                 source: ERC20BridgeSource.Bancor,
                 output: quote.amount,

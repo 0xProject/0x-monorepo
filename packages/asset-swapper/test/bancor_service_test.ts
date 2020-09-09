@@ -1,4 +1,7 @@
 import { web3Factory, Web3ProviderEngine } from '@0x/dev-utils';
+import { Ethereum, getDecimals } from '@bancor/sdk/dist/blockchains/ethereum';
+import { fromWei, toWei } from '@bancor/sdk/dist/helpers';
+import { BlockchainType } from '@bancor/sdk/dist/types';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 import 'mocha';
@@ -27,20 +30,27 @@ describe.skip('Bancor Service', () => {
         const networkAddress = await bancorService.getBancorNetworkAddressAsync();
         expect(networkAddress).to.match(ADDRESS_REGEX);
     });
-    it('should retrieve a quote', async () => {
-        const amt = new BigNumber(2);
+    it.only('should retrieve a quote', async () => {
+        const amt = new BigNumber(10e18);
         const quotes = await bancorService.getQuotesAsync(eth, bnt, [amt]);
         const fillData = quotes[0].fillData as BancorFillData;
 
         // get rate from the bancor sdk
         const sdk = await bancorService.getSDKAsync();
-        const expectedAmt = await sdk.pricing.getRateByPath(fillData.path.map(s => token(s)), amt.toString());
+        const blockchain = sdk._core.blockchains[BlockchainType.Ethereum] as Ethereum;
+        const sourceDecimals = await getDecimals(blockchain, token(eth));
+        const rate = await sdk.pricing.getRateByPath(
+            fillData.path.map(p => token(p)),
+            fromWei(amt.toString(), sourceDecimals),
+        );
+        const expectedRate = toWei(rate, await getDecimals(blockchain, token(bnt)));
 
         expect(fillData.networkAddress).to.match(ADDRESS_REGEX);
-        expect(fillData.path).to.be.an.instanceOf(Array);
-        expect(fillData.path).to.have.lengthOf(3);
+        expect(fillData.path[0].toLowerCase()).to.eq(eth);
+        expect(fillData.path[2].toLowerCase()).to.eq(bnt);
+        expect(fillData.path.length).to.eq(3); // eth -> bnt should be single hop!
         expect(quotes[0].amount.dp(0)).to.bignumber.eq(
-            new BigNumber(expectedAmt).multipliedBy(bancorService.minReturnAmountBufferPercentage).dp(0),
+            new BigNumber(expectedRate).multipliedBy(bancorService.minReturnAmountBufferPercentage).dp(0),
         );
     });
     // HACK (xianny): for exploring SDK results
@@ -51,7 +61,7 @@ describe.skip('Bancor Service', () => {
             // tslint:disable:no-console
             const fillData = q.fillData as BancorFillData;
             console.log(
-                `Input ${amts[i].toExponential()}; Output: ${q.amount}; Path: ${
+                `Input ${amts[i].toExponential()}; Output: ${q.amount}; Ratio: ${q.amount.dividedBy(amts[i])}, Path: ${
                     fillData.path.length
                 }\nPath: ${JSON.stringify(fillData.path)}`,
             );

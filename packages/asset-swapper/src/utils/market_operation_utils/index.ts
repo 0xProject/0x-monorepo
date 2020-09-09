@@ -3,7 +3,6 @@ import { RFQTIndicativeQuote } from '@0x/quote-server';
 import { SignedOrder } from '@0x/types';
 import { BigNumber, NULL_ADDRESS } from '@0x/utils';
 import * as _ from 'lodash';
-import { sample } from 'lodash';
 
 import { MarketOperation } from '../../types';
 import { QuoteRequestor } from '../quote_requestor';
@@ -178,7 +177,8 @@ export class MarketOperationUtils {
             : Promise.resolve([]);
 
         const bntToken =
-            this._sampler.bancorService && await this._sampler.bancorService.getBancorTokenAddressAsync();
+            this._sampler.bancorService &&
+            (await this._sampler.bancorService.getBancorTokenAddressAsync()).toLowerCase();
         const shouldSampleBancor =
             !_opts.excludedSources.includes(ERC20BridgeSource.Bancor) &&
             bntToken !== undefined &&
