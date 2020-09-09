@@ -28,6 +28,7 @@ export * from '../test/generated-wrappers/mooniswap_sampler';
 export * from '../test/generated-wrappers/multi_bridge_sampler';
 export * from '../test/generated-wrappers/native_order_sampler';
 export * from '../test/generated-wrappers/sampler_utils';
+export * from '../test/generated-wrappers/sushi_swap_sampler';
 export * from '../test/generated-wrappers/test_erc20_bridge_sampler';
 export * from '../test/generated-wrappers/test_native_order_sampler';
 export * from '../test/generated-wrappers/two_hop_sampler';

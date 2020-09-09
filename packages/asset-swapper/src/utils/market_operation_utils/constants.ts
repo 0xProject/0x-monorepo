@@ -18,6 +18,7 @@ export const SELL_SOURCES = [
     ERC20BridgeSource.MStable,
     ERC20BridgeSource.Mooniswap,
     ERC20BridgeSource.Swerve,
+    ERC20BridgeSource.SushiSwap,
 ];
 
 /**
@@ -34,6 +35,7 @@ export const BUY_SOURCES = [
     ERC20BridgeSource.MStable,
     ERC20BridgeSource.Mooniswap,
     ERC20BridgeSource.Swerve,
+    ERC20BridgeSource.SushiSwap,
 ];
 
 export const DEFAULT_GET_MARKET_ORDERS_OPTS: GetMarketOrdersOpts = {
@@ -184,6 +186,8 @@ export const MAINNET_KYBER_TOKEN_RESERVE_IDS: { [token: string]: string } = {
     ['0xba11d00c5f74255f56a5e366f4f77f5a186d7f55']:
         '0xaa42414e44000000000000000000000000000000000000000000000000000000',
 };
+
+export const MAINNET_SUSHI_SWAP_ROUTER = '0xd9e1cE17f2641f24aE83637ab66a2cca9C378B9F';
 
 export const ERC20_PROXY_ID = '0xf47261b0';
 export const WALLET_SIGNATURE = '0x04';

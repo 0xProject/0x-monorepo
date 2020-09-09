@@ -42,6 +42,7 @@ export * from '../test/generated-wrappers/mooniswap_bridge';
 export * from '../test/generated-wrappers/multi_asset_proxy';
 export * from '../test/generated-wrappers/ownable';
 export * from '../test/generated-wrappers/static_call_proxy';
+export * from '../test/generated-wrappers/sushi_swap_bridge';
 export * from '../test/generated-wrappers/test_bancor_bridge';
 export * from '../test/generated-wrappers/test_chai_bridge';
 export * from '../test/generated-wrappers/test_dex_forwarder_bridge';

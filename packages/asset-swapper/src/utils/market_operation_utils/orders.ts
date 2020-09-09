@@ -35,6 +35,7 @@ import {
     NativeCollapsedFill,
     OptimizedMarketOrder,
     OrderDomain,
+    SushiSwapFillData,
     SwerveFillData,
     UniswapV2FillData,
 } from './types';
@@ -223,6 +224,8 @@ function getBridgeAddressFromFill(fill: CollapsedFill, opts: CreateOrderFromPath
             return opts.contractAddresses.uniswapBridge;
         case ERC20BridgeSource.UniswapV2:
             return opts.contractAddresses.uniswapV2Bridge;
+        case ERC20BridgeSource.SushiSwap:
+            return opts.contractAddresses.sushiswapBridge;
         case ERC20BridgeSource.Curve:
             return opts.contractAddresses.curveBridge;
         case ERC20BridgeSource.Swerve:
@@ -305,6 +308,14 @@ function createBridgeOrder(
                 makerToken,
                 bridgeAddress,
                 createUniswapV2BridgeData(uniswapV2FillData.tokenAddressPath),
+            );
+            break;
+        case ERC20BridgeSource.SushiSwap:
+            const sushiSwapFillData = (fill as CollapsedFill<SushiSwapFillData>).fillData!; // tslint:disable-line:no-non-null-assertion
+            makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
+                makerToken,
+                bridgeAddress,
+                createSushiSwapBridgeData(sushiSwapFillData.tokenAddressPath, sushiSwapFillData.router),
             );
             break;
         case ERC20BridgeSource.MultiBridge:
@@ -448,25 +459,24 @@ function createCurveBridgeData(
     fromTokenIdx: number,
     toTokenIdx: number,
 ): string {
-    const curveBridgeDataEncoder = AbiEncoder.create([
+    const encoder = AbiEncoder.create([
         { name: 'curveAddress', type: 'address' },
         { name: 'exchangeFunctionSelector', type: 'bytes4' },
         { name: 'fromTokenAddress', type: 'address' },
         { name: 'fromTokenIdx', type: 'int128' },
         { name: 'toTokenIdx', type: 'int128' },
     ]);
-    return curveBridgeDataEncoder.encode([
-        curveAddress,
-        exchangeFunctionSelector,
-        takerToken,
-        fromTokenIdx,
-        toTokenIdx,
-    ]);
+    return encoder.encode([curveAddress, exchangeFunctionSelector, takerToken, fromTokenIdx, toTokenIdx]);
 }
 
 function createUniswapV2BridgeData(tokenAddressPath: string[]): string {
-    const uniswapV2BridgeDataEncoder = AbiEncoder.create('(address[])');
-    return uniswapV2BridgeDataEncoder.encode([tokenAddressPath]);
+    const encoder = AbiEncoder.create('(address[])');
+    return encoder.encode([tokenAddressPath]);
+}
+
+function createSushiSwapBridgeData(tokenAddressPath: string[], router: string): string {
+    const encoder = AbiEncoder.create('(address[],address)');
+    return encoder.encode([tokenAddressPath, router]);
 }
 
 function getSlippedBridgeAssetAmounts(fill: CollapsedFill, opts: CreateOrderFromPathOpts): [BigNumber, BigNumber] {
