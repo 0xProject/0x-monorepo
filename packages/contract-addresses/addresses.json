@@ -42,7 +42,7 @@
         "exchangeProxyFlashWallet": "0x22f9dcf4647084d6c31b2765f6910cd85c178c18",
         "mStableBridge": "0x2bf04fcea05f0989a14d9afa37aa376baca6b2b3",
         "mooniswapBridge": "0x02b7eca484ad960fca3f7709e0b2ac81eec3069c",
-        "sushiswapBridge": "0x0000000000000000000000000000000000000000",
+        "sushiswapBridge": "0x47ed0262a0b688dcb836d254c6a2e96b6c48a9f5",
         "transformers": {
             "wethTransformer": "0x68c0bb685099dc7cb5c5ce2b26185945b357383e",
             "payTakerTransformer": "0x49b9df2c58491764cf40cb052dd4243df63622c7",

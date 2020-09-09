@@ -306,6 +306,7 @@ describe('MarketOperationUtils tests', () => {
             toTokenIdx: 1,
         },
         [ERC20BridgeSource.LiquidityProvider]: { poolAddress: randomAddress() },
+        [ERC20BridgeSource.SushiSwap]: { tokenAddressPath: [] },
     };
 
     const DEFAULT_OPS = {

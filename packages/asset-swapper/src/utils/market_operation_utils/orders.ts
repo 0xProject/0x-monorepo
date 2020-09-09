@@ -225,8 +225,7 @@ function getBridgeAddressFromFill(fill: CollapsedFill, opts: CreateOrderFromPath
         case ERC20BridgeSource.UniswapV2:
             return opts.contractAddresses.uniswapV2Bridge;
         case ERC20BridgeSource.SushiSwap:
-            return '0xaaaaaa1111111111111111111111111111111111';
-        // return opts.contractAddresses.sushiswapBridge;
+            return opts.contractAddresses.sushiswapBridge;
         case ERC20BridgeSource.Curve:
             return opts.contractAddresses.curveBridge;
         case ERC20BridgeSource.Swerve:
