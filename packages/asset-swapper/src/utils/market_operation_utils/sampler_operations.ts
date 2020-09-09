@@ -6,8 +6,8 @@ import { ERC20BridgeSamplerContract } from '../../wrappers';
 
 import { BalancerPoolsCache, computeBalancerBuyQuote, computeBalancerSellQuote } from './balancer_utils';
 import { BancorService } from './bancor_service';
-import { MAX_UINT256, NULL_BYTES, ZERO_AMOUNT } from './constants';
-import { getCurveInfosForPair } from './curve_utils';
+import { MAINNET_SUSHI_SWAP_ROUTER, MAX_UINT256, NULL_BYTES, ZERO_AMOUNT } from './constants';
+import { getCurveInfosForPair, getSwerveInfosForPair } from './curve_utils';
 import { getKyberReserveIdsForPair } from './kyber_utils';
 import { getMultiBridgeIntermediateToken } from './multibridge_utils';
 import { getIntermediateTokens } from './multihop_utils';
@@ -27,6 +27,9 @@ import {
     MultiBridgeFillData,
     MultiHopFillData,
     SourceQuoteOperation,
+    SushiSwapFillData,
+    SwerveFillData,
+    SwerveInfo,
     TokenAdjacencyGraph,
     UniswapV2FillData,
 } from './types';
@@ -307,6 +310,62 @@ export class SamplerOperations {
                     poolAddress: curve.poolAddress,
                     sellQuoteFunctionSelector: curve.sellQuoteFunctionSelector,
                     buyQuoteFunctionSelector: curve.buyQuoteFunctionSelector,
+                },
+                new BigNumber(fromTokenIdx),
+                new BigNumber(toTokenIdx),
+                makerFillAmounts,
+            ],
+        });
+    }
+
+    public getSwerveSellQuotes(
+        pool: SwerveInfo,
+        fromTokenIdx: number,
+        toTokenIdx: number,
+        takerFillAmounts: BigNumber[],
+    ): SourceQuoteOperation<SwerveFillData> {
+        return new SamplerContractOperation({
+            source: ERC20BridgeSource.Swerve,
+            fillData: {
+                pool,
+                fromTokenIdx,
+                toTokenIdx,
+            },
+            contract: this._samplerContract,
+            function: this._samplerContract.sampleSellsFromCurve,
+            params: [
+                {
+                    poolAddress: pool.poolAddress,
+                    sellQuoteFunctionSelector: pool.sellQuoteFunctionSelector,
+                    buyQuoteFunctionSelector: pool.buyQuoteFunctionSelector,
+                },
+                new BigNumber(fromTokenIdx),
+                new BigNumber(toTokenIdx),
+                takerFillAmounts,
+            ],
+        });
+    }
+
+    public getSwerveBuyQuotes(
+        pool: SwerveInfo,
+        fromTokenIdx: number,
+        toTokenIdx: number,
+        makerFillAmounts: BigNumber[],
+    ): SourceQuoteOperation<SwerveFillData> {
+        return new SamplerContractOperation({
+            source: ERC20BridgeSource.Swerve,
+            fillData: {
+                pool,
+                fromTokenIdx,
+                toTokenIdx,
+            },
+            contract: this._samplerContract,
+            function: this._samplerContract.sampleBuysFromCurve,
+            params: [
+                {
+                    poolAddress: pool.poolAddress,
+                    sellQuoteFunctionSelector: pool.sellQuoteFunctionSelector,
+                    buyQuoteFunctionSelector: pool.buyQuoteFunctionSelector,
                 },
                 new BigNumber(fromTokenIdx),
                 new BigNumber(toTokenIdx),
@@ -621,6 +680,32 @@ export class SamplerOperations {
         };
     }
 
+    public getSushiSwapSellQuotes(
+        tokenAddressPath: string[],
+        takerFillAmounts: BigNumber[],
+    ): SourceQuoteOperation<SushiSwapFillData> {
+        return new SamplerContractOperation({
+            source: ERC20BridgeSource.SushiSwap,
+            fillData: { tokenAddressPath, router: MAINNET_SUSHI_SWAP_ROUTER },
+            contract: this._samplerContract,
+            function: this._samplerContract.sampleSellsFromSushiSwap,
+            params: [MAINNET_SUSHI_SWAP_ROUTER, tokenAddressPath, takerFillAmounts],
+        });
+    }
+
+    public getSushiSwapBuyQuotes(
+        tokenAddressPath: string[],
+        makerFillAmounts: BigNumber[],
+    ): SourceQuoteOperation<SushiSwapFillData> {
+        return new SamplerContractOperation({
+            source: ERC20BridgeSource.SushiSwap,
+            fillData: { tokenAddressPath, router: MAINNET_SUSHI_SWAP_ROUTER },
+            contract: this._samplerContract,
+            function: this._samplerContract.sampleBuysFromSushiSwap,
+            params: [MAINNET_SUSHI_SWAP_ROUTER, tokenAddressPath, makerFillAmounts],
+        });
+    }
+
     public getMedianSellRate(
         sources: ERC20BridgeSource[],
         makerToken: string,
@@ -784,6 +869,17 @@ export class SamplerOperations {
                                 );
                             }
                             return ops;
+                        case ERC20BridgeSource.SushiSwap:
+                            const sushiOps = [this.getSushiSwapSellQuotes([takerToken, makerToken], takerFillAmounts)];
+                            if (takerToken !== wethAddress && makerToken !== wethAddress) {
+                                sushiOps.push(
+                                    this.getSushiSwapSellQuotes(
+                                        [takerToken, wethAddress, makerToken],
+                                        takerFillAmounts,
+                                    ),
+                                );
+                            }
+                            return sushiOps;
                         case ERC20BridgeSource.Kyber:
                             return getKyberReserveIdsForPair(takerToken, makerToken).map(reserveId =>
                                 this.getKyberSellQuotes(reserveId, makerToken, takerToken, takerFillAmounts),
@@ -794,6 +890,15 @@ export class SamplerOperations {
                                     curve,
                                     curve.tokens.indexOf(takerToken),
                                     curve.tokens.indexOf(makerToken),
+                                    takerFillAmounts,
+                                ),
+                            );
+                        case ERC20BridgeSource.Swerve:
+                            return getSwerveInfosForPair(takerToken, makerToken).map(pool =>
+                                this.getSwerveSellQuotes(
+                                    pool,
+                                    pool.tokens.indexOf(takerToken),
+                                    pool.tokens.indexOf(makerToken),
                                     takerFillAmounts,
                                 ),
                             );
@@ -865,6 +970,14 @@ export class SamplerOperations {
                                 );
                             }
                             return ops;
+                        case ERC20BridgeSource.SushiSwap:
+                            const sushiOps = [this.getSushiSwapBuyQuotes([takerToken, makerToken], makerFillAmounts)];
+                            if (takerToken !== wethAddress && makerToken !== wethAddress) {
+                                sushiOps.push(
+                                    this.getSushiSwapBuyQuotes([takerToken, wethAddress, makerToken], makerFillAmounts),
+                                );
+                            }
+                            return sushiOps;
                         case ERC20BridgeSource.Kyber:
                             return getKyberReserveIdsForPair(takerToken, makerToken).map(reserveId =>
                                 this.getKyberBuyQuotes(reserveId, makerToken, takerToken, makerFillAmounts),
@@ -875,6 +988,15 @@ export class SamplerOperations {
                                     curve,
                                     curve.tokens.indexOf(takerToken),
                                     curve.tokens.indexOf(makerToken),
+                                    makerFillAmounts,
+                                ),
+                            );
+                        case ERC20BridgeSource.Swerve:
+                            return getSwerveInfosForPair(takerToken, makerToken).map(pool =>
+                                this.getSwerveBuyQuotes(
+                                    pool,
+                                    pool.tokens.indexOf(takerToken),
+                                    pool.tokens.indexOf(makerToken),
                                     makerFillAmounts,
                                 ),
                             );

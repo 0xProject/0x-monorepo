@@ -288,11 +288,11 @@ contract DeploymentConstants {
     }
 
     /// @dev An overridable way to retrieve the Mooniswap registry address.
-    /// @return musd The Mooniswap registry address.
+    /// @return registry The Mooniswap registry address.
     function _getMooniswapAddress()
         internal
         view
-        returns (address registry)
+        returns (address)
     {
         return MOONISWAP_REGISTRY;
     }

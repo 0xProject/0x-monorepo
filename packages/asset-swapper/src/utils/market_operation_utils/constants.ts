@@ -17,6 +17,8 @@ export const SELL_SOURCES = [
     // ERC20BridgeSource.Bancor, // FIXME: Disabled until Bancor SDK supports batch requests
     ERC20BridgeSource.MStable,
     ERC20BridgeSource.Mooniswap,
+    ERC20BridgeSource.Swerve,
+    ERC20BridgeSource.SushiSwap,
 ];
 
 /**
@@ -32,6 +34,8 @@ export const BUY_SOURCES = [
     // ERC20BridgeSource.Bancor, // FIXME: Disabled until Bancor SDK supports buy quotes
     ERC20BridgeSource.MStable,
     ERC20BridgeSource.Mooniswap,
+    ERC20BridgeSource.Swerve,
+    ERC20BridgeSource.SushiSwap,
 ];
 
 export const DEFAULT_GET_MARKET_ORDERS_OPTS: GetMarketOrdersOpts = {
@@ -132,6 +136,20 @@ export const MAINNET_CURVE_INFOS: { [name: string]: CurveInfo } = {
         ],
     },
 };
+export const MAINNET_SWERVE_INFOS: { [name: string]: CurveInfo } = {
+    swUSD: {
+        exchangeFunctionSelector: CurveFunctionSelectors.exchange,
+        sellQuoteFunctionSelector: CurveFunctionSelectors.get_dy_underlying,
+        buyQuoteFunctionSelector: CurveFunctionSelectors.get_dx_underlying,
+        poolAddress: '0x329239599afB305DA0A2eC69c58F8a6697F9F88d',
+        tokens: [
+            '0x6b175474e89094c44da98b954eedeac495271d0f',
+            '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+            '0xdac17f958d2ee523a2206206994597c13d831ec7',
+            '0x0000000000085d4780b73119b644ae5ecd22b376',
+        ],
+    },
+};
 
 export const MAINNET_KYBER_RESERVE_IDS: { [name: string]: string } = {
     Reserve1: '0xff4b796265722046707200000000000000000000000000000000000000000000',
@@ -168,6 +186,8 @@ export const MAINNET_KYBER_TOKEN_RESERVE_IDS: { [token: string]: string } = {
     ['0xba11d00c5f74255f56a5e366f4f77f5a186d7f55']:
         '0xaa42414e44000000000000000000000000000000000000000000000000000000',
 };
+
+export const MAINNET_SUSHI_SWAP_ROUTER = '0xd9e1cE17f2641f24aE83637ab66a2cca9C378B9F';
 
 export const ERC20_PROXY_ID = '0xf47261b0';
 export const WALLET_SIGNATURE = '0x04';
