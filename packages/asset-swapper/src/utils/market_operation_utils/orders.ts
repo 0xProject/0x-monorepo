@@ -226,7 +226,7 @@ function getBridgeAddressFromFill(fill: CollapsedFill, opts: CreateOrderFromPath
             return opts.contractAddresses.uniswapV2Bridge;
         case ERC20BridgeSource.SushiSwap:
             return '0xaaaaaa1111111111111111111111111111111111';
-        // return opts.contractAddresses.uniswapV2Bridge;
+        // return opts.contractAddresses.sushiswapBridge;
         case ERC20BridgeSource.Curve:
             return opts.contractAddresses.curveBridge;
         case ERC20BridgeSource.Swerve:
@@ -460,30 +460,24 @@ function createCurveBridgeData(
     fromTokenIdx: number,
     toTokenIdx: number,
 ): string {
-    const curveBridgeDataEncoder = AbiEncoder.create([
+    const encoder = AbiEncoder.create([
         { name: 'curveAddress', type: 'address' },
         { name: 'exchangeFunctionSelector', type: 'bytes4' },
         { name: 'fromTokenAddress', type: 'address' },
         { name: 'fromTokenIdx', type: 'int128' },
         { name: 'toTokenIdx', type: 'int128' },
     ]);
-    return curveBridgeDataEncoder.encode([
-        curveAddress,
-        exchangeFunctionSelector,
-        takerToken,
-        fromTokenIdx,
-        toTokenIdx,
-    ]);
+    return encoder.encode([curveAddress, exchangeFunctionSelector, takerToken, fromTokenIdx, toTokenIdx]);
 }
 
 function createUniswapV2BridgeData(tokenAddressPath: string[]): string {
-    const uniswapV2BridgeDataEncoder = AbiEncoder.create('(address[])');
-    return uniswapV2BridgeDataEncoder.encode([tokenAddressPath]);
+    const encoder = AbiEncoder.create('(address[])');
+    return encoder.encode([tokenAddressPath]);
 }
 
 function createSushiSwapBridgeData(tokenAddressPath: string[], router: string): string {
-    const uniswapV2BridgeDataEncoder = AbiEncoder.create('(address[],address)');
-    return uniswapV2BridgeDataEncoder.encode([tokenAddressPath, router]);
+    const encoder = AbiEncoder.create('(address[],address)');
+    return encoder.encode([tokenAddressPath, router]);
 }
 
 function getSlippedBridgeAssetAmounts(fill: CollapsedFill, opts: CreateOrderFromPathOpts): [BigNumber, BigNumber] {

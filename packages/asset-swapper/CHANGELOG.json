@@ -105,6 +105,10 @@
             {
                 "note": "Added `Swerve`",
                 "pr": 2698
+            },
+            {
+                "note": "Added `SushiSwap`",
+                "pr": 2698
             }
         ]
     },
