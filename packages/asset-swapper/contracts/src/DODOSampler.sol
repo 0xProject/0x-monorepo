@@ -51,7 +51,7 @@ contract DODOSampler is
     )
         public
         view
-        returns (address pool, uint256[] memory makerTokenAmounts)
+        returns (bool sellBase, address pool, uint256[] memory makerTokenAmounts)
     {
         _assertValidPair(makerToken, takerToken);
         uint256 numSamples = takerTokenAmounts.length;
@@ -60,6 +60,7 @@ contract DODOSampler is
         pool = IDODOZoo(0x3A97247DF274a17C59A3bd12735ea3FcDFb49950).getDODO(takerToken, makerToken);
         // If pool exists we have the correct Base/Quote
         if (pool != address(0)) {
+            sellBase = true;
             for (uint256 i = 0; i < numSamples; i++) {
                 (bool didSucceed, bytes memory resultData) =
                     pool.staticcall.gas(DODO_CALL_GAS)(
@@ -81,8 +82,9 @@ contract DODOSampler is
             pool = IDODOZoo(0x3A97247DF274a17C59A3bd12735ea3FcDFb49950).getDODO(makerToken, takerToken);
             // No pool either direction
             if (address(pool) == address(0)) {
-                return (pool, makerTokenAmounts);
+                return (sellBase, pool, makerTokenAmounts);
             }
+            sellBase = false;
             // We are Selling the Quote, need to do some hackery
             for (uint256 i = 0; i < numSamples; i++) {
                 uint256 buyAmount = this.querySellQuoteToken(pool, takerTokenAmounts[i]);

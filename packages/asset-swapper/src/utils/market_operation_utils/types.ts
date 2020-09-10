@@ -134,6 +134,11 @@ export interface MooniswapFillData extends FillData {
     poolAddress: string;
 }
 
+export interface DODOFillData extends FillData {
+    poolAddress: string;
+    sellBase: boolean;
+}
+
 export interface Quote<TFillData = FillData> {
     amount: BigNumber;
     fillData?: TFillData;

@@ -21,6 +21,7 @@ import {
     CurveFillData,
     CurveInfo,
     DexSample,
+    DODOFillData,
     ERC20BridgeSource,
     HopInfo,
     KyberFillData,
@@ -764,18 +765,19 @@ export class SamplerOperations {
         makerToken: string,
         takerToken: string,
         takerFillAmounts: BigNumber[],
-    ): SourceQuoteOperation {
+    ): SourceQuoteOperation<DODOFillData> {
         return new SamplerContractOperation({
             source: ERC20BridgeSource.Dodo,
             contract: this._samplerContract,
             function: this._samplerContract.sampleSellsFromDODO,
             params: [takerToken, makerToken, takerFillAmounts],
-            callback: (callResults: string): BigNumber[] => {
-                const [pool, samples] = this._samplerContract.getABIDecodedReturnData<[string, BigNumber[]]>(
-                    'sampleSellsFromDODO',
-                    callResults,
-                );
-                console.log({ source: ERC20BridgeSource.Dodo, pool, samples });
+            callback: (callResults: string, fillData: DODOFillData): BigNumber[] => {
+                const [sellBase, pool, samples] = this._samplerContract.getABIDecodedReturnData<
+                    [boolean, string, BigNumber[]]
+                >('sampleSellsFromDODO', callResults);
+                fillData.sellBase = sellBase;
+                fillData.poolAddress = pool;
+                console.log({ source: ERC20BridgeSource.Dodo, pool, samples, sellBase });
                 return samples;
             },
         });
