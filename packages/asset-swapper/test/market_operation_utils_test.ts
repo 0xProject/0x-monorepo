@@ -22,6 +22,7 @@ import {
     BUY_SOURCE_FILTER,
     POSITIVE_INF,
     SELL_SOURCE_FILTER,
+    SOURCE_FLAGS,
     ZERO_AMOUNT,
 } from '../src/utils/market_operation_utils/constants';
 import { createFills } from '../src/utils/market_operation_utils/fills';
@@ -930,6 +931,49 @@ describe('MarketOperationUtils tests', () => {
                     [ERC20BridgeSource.Eth2Dai, ERC20BridgeSource.Curve],
                 ]);
             });
+            it('factors in exchange proxy gas overhead', async () => {
+                // Uniswap has a slightly better rate than LiquidityProvider,
+                // but LiquidityProvider is better accounting for the EP gas overhead.
+                const rates: RatesBySource = {
+                    [ERC20BridgeSource.Native]: [0.01, 0.01, 0.01, 0.01],
+                    [ERC20BridgeSource.Uniswap]: [1, 1, 1, 1],
+                    [ERC20BridgeSource.LiquidityProvider]: [0.9999, 0.9999, 0.9999, 0.9999],
+                };
+                replaceSamplerOps({
+                    getSellQuotes: createGetMultipleSellQuotesOperationFromRates(rates),
+                    getMedianSellRate: createGetMedianSellRate(ETH_TO_MAKER_RATE),
+                });
+                const optimizer = new MarketOperationUtils(
+                    MOCK_SAMPLER,
+                    contractAddresses,
+                    ORDER_DOMAIN,
+                    randomAddress(), // liquidity provider registry
+                );
+                const gasPrice = 100e9; // 100 gwei
+                const exchangeProxyOverhead = (sourceFlags: number) =>
+                    sourceFlags === SOURCE_FLAGS.LiquidityProvider
+                        ? new BigNumber(3e4).times(gasPrice)
+                        : new BigNumber(1.3e5).times(gasPrice);
+                const improvedOrdersResponse = await optimizer.getMarketSellOrdersAsync(
+                    createOrdersFromSellRates(FILL_AMOUNT, rates[ERC20BridgeSource.Native]),
+                    FILL_AMOUNT,
+                    {
+                        ...DEFAULT_OPTS,
+                        numSamples: 4,
+                        excludedSources: [
+                            ...DEFAULT_OPTS.excludedSources,
+                            ERC20BridgeSource.Eth2Dai,
+                            ERC20BridgeSource.Kyber,
+                            ERC20BridgeSource.Bancor,
+                        ],
+                        exchangeProxyOverhead,
+                    },
+                );
+                const improvedOrders = improvedOrdersResponse.optimizedOrders;
+                const orderSources = improvedOrders.map(o => o.fills[0].source);
+                const expectedSources = [ERC20BridgeSource.LiquidityProvider];
+                expect(orderSources).to.deep.eq(expectedSources);
+            });
         });
 
         describe('getMarketBuyOrdersAsync()', () => {
@@ -1321,6 +1365,48 @@ describe('MarketOperationUtils tests', () => {
                     [ERC20BridgeSource.Eth2Dai, ERC20BridgeSource.Uniswap],
                     [ERC20BridgeSource.Native],
                 ]);
+            });
+            it('factors in exchange proxy gas overhead', async () => {
+                // Uniswap has a slightly better rate than LiquidityProvider,
+                // but LiquidityProvider is better accounting for the EP gas overhead.
+                const rates: RatesBySource = {
+                    [ERC20BridgeSource.Native]: [0.01, 0.01, 0.01, 0.01],
+                    [ERC20BridgeSource.Uniswap]: [1, 1, 1, 1],
+                    [ERC20BridgeSource.LiquidityProvider]: [0.9999, 0.9999, 0.9999, 0.9999],
+                };
+                replaceSamplerOps({
+                    getBuyQuotes: createGetMultipleBuyQuotesOperationFromRates(rates),
+                    getMedianSellRate: createGetMedianSellRate(ETH_TO_TAKER_RATE),
+                });
+                const optimizer = new MarketOperationUtils(
+                    MOCK_SAMPLER,
+                    contractAddresses,
+                    ORDER_DOMAIN,
+                    randomAddress(), // liquidity provider registry
+                );
+                const gasPrice = 100e9; // 100 gwei
+                const exchangeProxyOverhead = (sourceFlags: number) =>
+                    sourceFlags === SOURCE_FLAGS.LiquidityProvider
+                        ? new BigNumber(3e4).times(gasPrice)
+                        : new BigNumber(1.3e5).times(gasPrice);
+                const improvedOrdersResponse = await optimizer.getMarketBuyOrdersAsync(
+                    createOrdersFromSellRates(FILL_AMOUNT, rates[ERC20BridgeSource.Native]),
+                    FILL_AMOUNT,
+                    {
+                        ...DEFAULT_OPTS,
+                        numSamples: 4,
+                        excludedSources: [
+                            ...DEFAULT_OPTS.excludedSources,
+                            ERC20BridgeSource.Eth2Dai,
+                            ERC20BridgeSource.Kyber,
+                        ],
+                        exchangeProxyOverhead,
+                    },
+                );
+                const improvedOrders = improvedOrdersResponse.optimizedOrders;
+                const orderSources = improvedOrders.map(o => o.fills[0].source);
+                const expectedSources = [ERC20BridgeSource.LiquidityProvider];
+                expect(orderSources).to.deep.eq(expectedSources);
             });
         });
     });

@@ -367,6 +367,7 @@ export class MarketOperationUtils {
             maxFallbackSlippage: _opts.maxFallbackSlippage,
             excludedSources: _opts.excludedSources,
             feeSchedule: _opts.feeSchedule,
+            exchangeProxyOverhead: _opts.exchangeProxyOverhead,
             allowFallback: _opts.allowFallback,
             shouldBatchBridgeOrders: _opts.shouldBatchBridgeOrders,
         });
@@ -404,6 +405,7 @@ export class MarketOperationUtils {
             maxFallbackSlippage: _opts.maxFallbackSlippage,
             excludedSources: _opts.excludedSources,
             feeSchedule: _opts.feeSchedule,
+            exchangeProxyOverhead: _opts.exchangeProxyOverhead,
             allowFallback: _opts.allowFallback,
             shouldBatchBridgeOrders: _opts.shouldBatchBridgeOrders,
         });
