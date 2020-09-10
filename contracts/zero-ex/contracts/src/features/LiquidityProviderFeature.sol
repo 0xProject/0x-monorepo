@@ -28,29 +28,11 @@ import "../errors/LibLiquidityProviderRichErrors.sol";
 import "../fixins/FixinCommon.sol";
 import "../migrations/LibMigrate.sol";
 import "../storage/LibLiquidityProviderStorage.sol";
+import "../vendor/v3/IERC20Bridge.sol";
 import "./IFeature.sol";
 import "./ILiquidityProviderFeature.sol";
 import "./ITokenSpenderFeature.sol";
 
-
-interface IERC20Bridge {
-    /// @dev Transfers `amount` of the ERC20 `tokenAddress` from `from` to `to`.
-    /// @param tokenAddress The address of the ERC20 token to transfer.
-    /// @param from Address to transfer asset from.
-    /// @param to Address to transfer asset to.
-    /// @param amount Amount of asset to transfer.
-    /// @param bridgeData Arbitrary asset data needed by the bridge contract.
-    /// @return success The magic bytes `0xdc1600f3` if successful.
-    function bridgeTransferFrom(
-        address tokenAddress,
-        address from,
-        address to,
-        uint256 amount,
-        bytes calldata bridgeData
-    )
-        external
-        returns (bytes4 success);
-}
 
 contract LiquidityProviderFeature is
     IFeature,

@@ -97,6 +97,7 @@
         "test/generated-artifacts/PayTakerTransformer.json",
         "test/generated-artifacts/SignatureValidatorFeature.json",
         "test/generated-artifacts/SimpleFunctionRegistryFeature.json",
+        "test/generated-artifacts/TestBridge.json",
         "test/generated-artifacts/TestCallTarget.json",
         "test/generated-artifacts/TestDelegateCaller.json",
         "test/generated-artifacts/TestFillQuoteTransformerBridge.json",
