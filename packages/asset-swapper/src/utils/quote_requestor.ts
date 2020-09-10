@@ -11,6 +11,7 @@ import { constants } from '../constants';
 import { MarketOperation, RfqtMakerAssetOfferings, RfqtRequestOpts } from '../types';
 
 import { ONE_SECOND_MS } from './market_operation_utils/constants';
+import { RfqMakerBlacklist } from './rfq_maker_blacklist';
 
 // tslint:disable-next-line: custom-no-magic-numbers
 const KEEP_ALIVE_TTL = 5 * 60 * ONE_SECOND_MS;
@@ -19,6 +20,10 @@ export const quoteRequestorHttpClient: AxiosInstance = Axios.create({
     httpAgent: new HttpAgent({ keepAlive: true, timeout: KEEP_ALIVE_TTL }),
     httpsAgent: new HttpsAgent({ keepAlive: true, timeout: KEEP_ALIVE_TTL }),
 });
+
+const MAKER_TIMEOUT_STREAK_LENGTH = 10;
+const MAKER_TIMEOUT_BLACKLIST_DURATION_MINUTES = 10;
+const rfqMakerBlacklist = new RfqMakerBlacklist(MAKER_TIMEOUT_STREAK_LENGTH, MAKER_TIMEOUT_BLACKLIST_DURATION_MINUTES);
 
 /**
  * Request quotes from RFQ-T providers
@@ -334,7 +339,10 @@ export class QuoteRequestor {
         const result: Array<{ response: ResponseT; makerUri: string }> = [];
         await Promise.all(
             Object.keys(this._rfqtAssetOfferings).map(async url => {
-                if (this._makerSupportsPair(url, makerAssetData, takerAssetData)) {
+                if (
+                    this._makerSupportsPair(url, makerAssetData, takerAssetData) &&
+                    !rfqMakerBlacklist.isMakerBlacklisted(url)
+                ) {
                     const requestParamsWithBigNumbers = {
                         takerAddress: options.takerAddress,
                         ...inferQueryParams(marketOperation, makerAssetData, takerAssetData, assetFillAmount),
@@ -354,6 +362,10 @@ export class QuoteRequestor {
 
                     const partialLogEntry = { url, quoteType, requestParams };
                     const timeBeforeAwait = Date.now();
+                    const maxResponseTimeMs =
+                        options.makerEndpointMaxResponseTimeMs === undefined
+                            ? constants.DEFAULT_RFQT_REQUEST_OPTS.makerEndpointMaxResponseTimeMs!
+                            : options.makerEndpointMaxResponseTimeMs;
                     try {
                         const quotePath = (() => {
                             switch (quoteType) {
@@ -368,8 +380,9 @@ export class QuoteRequestor {
                         const response = await quoteRequestorHttpClient.get<ResponseT>(`${url}/${quotePath}`, {
                             headers: { '0x-api-key': options.apiKey },
                             params: requestParams,
-                            timeout: options.makerEndpointMaxResponseTimeMs,
+                            timeout: maxResponseTimeMs,
                         });
+                        const latencyMs = Date.now() - timeBeforeAwait;
                         this._infoLogger({
                             rfqtMakerInteraction: {
                                 ...partialLogEntry,
@@ -378,12 +391,14 @@ export class QuoteRequestor {
                                     apiKey: options.apiKey,
                                     takerAddress: requestParams.takerAddress,
                                     statusCode: response.status,
-                                    latencyMs: Date.now() - timeBeforeAwait,
+                                    latencyMs,
                                 },
                             },
                         });
+                        rfqMakerBlacklist.logTimeoutOrLackThereof(url, latencyMs > maxResponseTimeMs);
                         result.push({ response: response.data, makerUri: url });
                     } catch (err) {
+                        const latencyMs = Date.now() - timeBeforeAwait;
                         this._infoLogger({
                             rfqtMakerInteraction: {
                                 ...partialLogEntry,
@@ -392,10 +407,11 @@ export class QuoteRequestor {
                                     apiKey: options.apiKey,
                                     takerAddress: requestParams.takerAddress,
                                     statusCode: err.response ? err.response.status : undefined,
-                                    latencyMs: Date.now() - timeBeforeAwait,
+                                    latencyMs,
                                 },
                             },
                         });
+                        rfqMakerBlacklist.logTimeoutOrLackThereof(url, latencyMs > maxResponseTimeMs);
                         this._warningLogger(
                             convertIfAxiosError(err),
                             `Failed to get RFQ-T ${quoteType} quote from market maker endpoint ${url} for API key ${
