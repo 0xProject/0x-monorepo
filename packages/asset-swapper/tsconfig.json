@@ -11,6 +11,8 @@
         "test/generated-artifacts/ApproximateBuys.json",
         "test/generated-artifacts/BalancerSampler.json",
         "test/generated-artifacts/CurveSampler.json",
+        "test/generated-artifacts/DODOHelper.json",
+        "test/generated-artifacts/DODOSampler.json",
         "test/generated-artifacts/DummyLiquidityProvider.json",
         "test/generated-artifacts/DummyLiquidityProviderRegistry.json",
         "test/generated-artifacts/ERC20BridgeSampler.json",

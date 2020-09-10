@@ -44,6 +44,7 @@ export enum ERC20BridgeSource {
     Shell = 'Shell',
     Swerve = 'Swerve',
     SushiSwap = 'SushiSwap',
+    Dodo = 'DODO',
 }
 
 // tslint:disable: enum-naming

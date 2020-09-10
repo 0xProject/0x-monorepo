@@ -520,7 +520,7 @@ export class SamplerOperations {
         makerToken: string,
         takerToken: string,
         takerFillAmounts: BigNumber[],
-    ): SourceQuoteOperation {
+    ): SourceQuoteOperation<MooniswapFillData> {
         return new SamplerContractOperation({
             source: ERC20BridgeSource.Mooniswap,
             contract: this._samplerContract,
@@ -541,7 +541,7 @@ export class SamplerOperations {
         makerToken: string,
         takerToken: string,
         makerFillAmounts: BigNumber[],
-    ): SourceQuoteOperation {
+    ): SourceQuoteOperation<MooniswapFillData> {
         return new SamplerContractOperation({
             source: ERC20BridgeSource.Mooniswap,
             contract: this._samplerContract,
@@ -757,6 +757,27 @@ export class SamplerOperations {
             contract: this._samplerContract,
             function: this._samplerContract.sampleBuysFromShell,
             params: [takerToken, makerToken, makerFillAmounts],
+        });
+    }
+
+    public getDODOSellQuotes(
+        makerToken: string,
+        takerToken: string,
+        takerFillAmounts: BigNumber[],
+    ): SourceQuoteOperation {
+        return new SamplerContractOperation({
+            source: ERC20BridgeSource.Dodo,
+            contract: this._samplerContract,
+            function: this._samplerContract.sampleSellsFromDODO,
+            params: [takerToken, makerToken, takerFillAmounts],
+            callback: (callResults: string): BigNumber[] => {
+                const [pool, samples] = this._samplerContract.getABIDecodedReturnData<[string, BigNumber[]]>(
+                    'sampleSellsFromDODO',
+                    callResults,
+                );
+                console.log({ source: ERC20BridgeSource.Dodo, pool, samples });
+                return samples;
+            },
         });
     }
 
@@ -999,6 +1020,8 @@ export class SamplerOperations {
                                 );
                         case ERC20BridgeSource.Shell:
                             return this.getShellSellQuotes(makerToken, takerToken, takerFillAmounts);
+                        case ERC20BridgeSource.Dodo:
+                            return this.getDODOSellQuotes(makerToken, takerToken, takerFillAmounts);
                         default:
                             throw new Error(`Unsupported sell sample source: ${source}`);
                     }
