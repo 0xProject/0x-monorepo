@@ -1,3 +1,4 @@
+import { SupportedProvider } from '@0x/dev-utils';
 import { BigNumber, NULL_BYTES } from '@0x/utils';
 
 import { SamplerOverrides } from '../../types';
@@ -34,10 +35,11 @@ export class DexOrderSampler extends SamplerOperations {
     constructor(
         _samplerContract: ERC20BridgeSamplerContract,
         private readonly _samplerOverrides?: SamplerOverrides,
-        bancorService?: BancorService,
+        provider?: SupportedProvider,
         balancerPoolsCache?: BalancerPoolsCache,
+        getBancorServiceFn?: () => BancorService,
     ) {
-        super(_samplerContract, bancorService, balancerPoolsCache);
+        super(_samplerContract, provider, balancerPoolsCache, getBancorServiceFn);
     }
 
     /* Type overloads for `executeAsync()`. Could skip this if we would upgrade TS. */

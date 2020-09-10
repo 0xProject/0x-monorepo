@@ -1,3 +1,4 @@
+import { SupportedProvider } from '@0x/dev-utils';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
@@ -38,6 +39,7 @@ import {
  * for use with `DexOrderSampler.executeAsync()`.
  */
 export class SamplerOperations {
+    protected _bancorService?: BancorService;
     public static constant<T>(result: T): BatchedOperation<T> {
         return {
             encodeCall: () => {
@@ -51,9 +53,23 @@ export class SamplerOperations {
 
     constructor(
         protected readonly _samplerContract: ERC20BridgeSamplerContract,
-        public readonly bancorService?: BancorService,
+        public readonly provider?: SupportedProvider,
         public readonly balancerPoolsCache: BalancerPoolsCache = new BalancerPoolsCache(),
+        protected readonly getBancorServiceFn?: () => BancorService,
     ) {}
+
+    public async getBancorServiceAsync(): Promise<BancorService> {
+        if (this.getBancorServiceFn !== undefined) {
+            return this.getBancorServiceFn();
+        }
+        if (this.provider === undefined) {
+            throw new Error('Cannot sample liquidity from Bancor; no provider supplied.');
+        }
+        if (this._bancorService === undefined) {
+            this._bancorService = await BancorService.createAsync(this.provider);
+        }
+        return this._bancorService;
+    }
 
     public getOrderFillableTakerAmounts(orders: SignedOrder[], exchangeAddress: string): BatchedOperation<BigNumber[]> {
         return new SamplerContractOperation({
@@ -408,11 +424,9 @@ export class SamplerOperations {
         takerToken: string,
         takerFillAmounts: BigNumber[],
     ): Promise<Array<DexSample<BancorFillData>>> {
-        if (this.bancorService === undefined) {
-            throw new Error('Cannot sample liquidity from Bancor; no Bancor service instantiated.');
-        }
+        const bancorService = await this.getBancorServiceAsync();
         try {
-            const quotes = await this.bancorService.getQuotesAsync(takerToken, makerToken, takerFillAmounts);
+            const quotes = await bancorService.getQuotesAsync(takerToken, makerToken, takerFillAmounts);
             return quotes.map((quote, i) => ({
                 source: ERC20BridgeSource.Bancor,
                 output: quote.amount,

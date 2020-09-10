@@ -1,6 +1,6 @@
 import { BigNumber } from '@0x/utils';
+import { SDK } from '@bancor/sdk';
 
-import { SupportedProvider } from '../../src';
 import { BancorService } from '../../src/utils/market_operation_utils/bancor_service';
 import { BancorFillData, Quote } from '../../src/utils/market_operation_utils/types';
 
@@ -12,8 +12,13 @@ export class MockBancorService extends BancorService {
     // Bancor recommends setting this value to 2% under the expected return amount
     public minReturnAmountBufferPercentage = 0.98;
 
-    constructor(provider: SupportedProvider, public handlers: Partial<Handlers>) {
-        super(provider);
+    public static async createMockAsync(handlers: Partial<Handlers>): Promise<MockBancorService> {
+        const sdk = new SDK();
+        return new MockBancorService(sdk, handlers);
+    }
+
+    constructor(sdk: SDK, public handlers: Partial<Handlers>) {
+        super(sdk);
     }
 
     public async getQuotesAsync(

@@ -20,26 +20,27 @@ const RPC_URL = `https://mainnet.infura.io/v3/${process.env.INFURA_PROJECT_ID}`;
 const provider: Web3ProviderEngine = web3Factory.getRpcProvider({ rpcUrl: RPC_URL });
 // tslint:disable:custom-no-magic-numbers
 
+let bancorService: BancorService;
+
 // These tests test the bancor SDK against mainnet
 // TODO (xianny): After we move asset-swapper out of the monorepo, we should add an env variable to circle CI to run this test
 describe.skip('Bancor Service', () => {
-    const bancorService = new BancorService(provider);
     const eth = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
     const bnt = '0x1f573d6fb3f13d689ff844b4ce37794d79a7ff1c';
     it('should retrieve the bancor network address', async () => {
-        const networkAddress = await bancorService.getBancorNetworkAddressAsync();
+        bancorService = await BancorService.createAsync(provider);
+        const networkAddress = bancorService.getBancorNetworkAddress();
         expect(networkAddress).to.match(ADDRESS_REGEX);
     });
-    it.only('should retrieve a quote', async () => {
+    it('should retrieve a quote', async () => {
         const amt = new BigNumber(10e18);
         const quotes = await bancorService.getQuotesAsync(eth, bnt, [amt]);
         const fillData = quotes[0].fillData as BancorFillData;
 
         // get rate from the bancor sdk
-        const sdk = await bancorService.getSDKAsync();
-        const blockchain = sdk._core.blockchains[BlockchainType.Ethereum] as Ethereum;
+        const blockchain = bancorService.sdk._core.blockchains[BlockchainType.Ethereum] as Ethereum;
         const sourceDecimals = await getDecimals(blockchain, token(eth));
-        const rate = await sdk.pricing.getRateByPath(
+        const rate = await bancorService.sdk.pricing.getRateByPath(
             fillData.path.map(p => token(p)),
             fromWei(amt.toString(), sourceDecimals),
         );

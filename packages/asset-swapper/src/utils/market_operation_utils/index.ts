@@ -176,17 +176,9 @@ export class MarketOperationUtils {
             ? this._sampler.getBalancerSellQuotesOffChainAsync(makerToken, takerToken, sampleAmounts)
             : Promise.resolve([]);
 
-        const bntToken =
-            this._sampler.bancorService &&
-            (await this._sampler.bancorService.getBancorTokenAddressAsync()).toLowerCase();
-        const shouldSampleBancor =
-            !_opts.excludedSources.includes(ERC20BridgeSource.Bancor) &&
-            bntToken !== undefined &&
-            (makerToken === bntToken || takerToken === bntToken);
-
-        const offChainBancorPromise = shouldSampleBancor
-            ? this._sampler.getBancorSellQuotesOffChainAsync(makerToken, takerToken, sampleAmounts)
-            : Promise.resolve([]);
+        const offChainBancorPromise = _opts.excludedSources.includes(ERC20BridgeSource.Bancor)
+            ? Promise.resolve([])
+            : this._sampler.getBancorSellQuotesOffChainAsync(makerToken, takerToken, sampleAmounts);
 
         const [
             [orderFillableAmounts, ethToMakerAssetRate, ethToTakerAssetRate, dexQuotes, twoHopQuotes],
