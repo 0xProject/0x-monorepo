@@ -20,7 +20,7 @@ import { constants } from '../src/constants';
 import { ExchangeProxySwapQuoteConsumer } from '../src/quote_consumers/exchange_proxy_swap_quote_consumer';
 import { getSwapMinBuyAmount } from '../src/quote_consumers/utils';
 import { MarketBuySwapQuote, MarketOperation, MarketSellSwapQuote } from '../src/types';
-import { OptimizedMarketOrder } from '../src/utils/market_operation_utils/types';
+import { ERC20BridgeSource, OptimizedMarketOrder } from '../src/utils/market_operation_utils/types';
 
 import { chaiSetup } from './utils/chai_setup';
 
@@ -161,7 +161,7 @@ describe('ExchangeProxySwapQuoteConsumer', () => {
         );
     }
 
-    const callDataEncoder = AbiEncoder.createMethod('transformERC20', [
+    const transformERC20Encoder = AbiEncoder.createMethod('transformERC20', [
         { type: 'address', name: 'inputToken' },
         { type: 'address', name: 'outputToken' },
         { type: 'uint256', name: 'inputTokenAmount' },
@@ -173,7 +173,7 @@ describe('ExchangeProxySwapQuoteConsumer', () => {
         },
     ]);
 
-    interface CallArgs {
+    interface TransformERC20Args {
         inputToken: string;
         outputToken: string;
         inputTokenAmount: BigNumber;
@@ -184,11 +184,27 @@ describe('ExchangeProxySwapQuoteConsumer', () => {
         }>;
     }
 
+    const liquidityProviderEncoder = AbiEncoder.createMethod('sellToLiquidityProvider', [
+        { type: 'address', name: 'makerToken' },
+        { type: 'address', name: 'takerToken' },
+        { type: 'address', name: 'recipient' },
+        { type: 'uint256', name: 'sellAmount' },
+        { type: 'uint256', name: 'minBuyAmount' },
+    ]);
+
+    interface LiquidityProviderArgs {
+        makerToken: string;
+        takerToken: string;
+        recipient: string;
+        sellAmount: BigNumber;
+        minBuyAmount: BigNumber;
+    }
+
     describe('getCalldataOrThrow()', () => {
         it('can produce a sell quote', async () => {
             const quote = getRandomSellQuote();
             const callInfo = await consumer.getCalldataOrThrowAsync(quote);
-            const callArgs = callDataEncoder.decode(callInfo.calldataHexString) as CallArgs;
+            const callArgs = transformERC20Encoder.decode(callInfo.calldataHexString) as TransformERC20Args;
             expect(callArgs.inputToken).to.eq(TAKER_TOKEN);
             expect(callArgs.outputToken).to.eq(MAKER_TOKEN);
             expect(callArgs.inputTokenAmount).to.bignumber.eq(quote.worstCaseQuoteInfo.totalTakerAssetAmount);
@@ -217,7 +233,7 @@ describe('ExchangeProxySwapQuoteConsumer', () => {
         it('can produce a buy quote', async () => {
             const quote = getRandomBuyQuote();
             const callInfo = await consumer.getCalldataOrThrowAsync(quote);
-            const callArgs = callDataEncoder.decode(callInfo.calldataHexString) as CallArgs;
+            const callArgs = transformERC20Encoder.decode(callInfo.calldataHexString) as TransformERC20Args;
             expect(callArgs.inputToken).to.eq(TAKER_TOKEN);
             expect(callArgs.outputToken).to.eq(MAKER_TOKEN);
             expect(callArgs.inputTokenAmount).to.bignumber.eq(quote.worstCaseQuoteInfo.totalTakerAssetAmount);
@@ -246,7 +262,7 @@ describe('ExchangeProxySwapQuoteConsumer', () => {
         it('ERC20 -> ERC20 does not have a WETH transformer', async () => {
             const quote = getRandomSellQuote();
             const callInfo = await consumer.getCalldataOrThrowAsync(quote);
-            const callArgs = callDataEncoder.decode(callInfo.calldataHexString) as CallArgs;
+            const callArgs = transformERC20Encoder.decode(callInfo.calldataHexString) as TransformERC20Args;
             const nonces = callArgs.transformations.map(t => t.deploymentNonce);
             expect(nonces).to.not.include(consumer.transformerNonces.wethTransformer);
         });
@@ -256,7 +272,7 @@ describe('ExchangeProxySwapQuoteConsumer', () => {
             const callInfo = await consumer.getCalldataOrThrowAsync(quote, {
                 extensionContractOpts: { isFromETH: true },
             });
-            const callArgs = callDataEncoder.decode(callInfo.calldataHexString) as CallArgs;
+            const callArgs = transformERC20Encoder.decode(callInfo.calldataHexString) as TransformERC20Args;
             expect(callArgs.transformations[0].deploymentNonce.toNumber()).to.eq(
                 consumer.transformerNonces.wethTransformer,
             );
@@ -270,7 +286,7 @@ describe('ExchangeProxySwapQuoteConsumer', () => {
             const callInfo = await consumer.getCalldataOrThrowAsync(quote, {
                 extensionContractOpts: { isToETH: true },
             });
-            const callArgs = callDataEncoder.decode(callInfo.calldataHexString) as CallArgs;
+            const callArgs = transformERC20Encoder.decode(callInfo.calldataHexString) as TransformERC20Args;
             expect(callArgs.transformations[1].deploymentNonce.toNumber()).to.eq(
                 consumer.transformerNonces.wethTransformer,
             );
@@ -288,7 +304,7 @@ describe('ExchangeProxySwapQuoteConsumer', () => {
             const callInfo = await consumer.getCalldataOrThrowAsync(quote, {
                 extensionContractOpts: { affiliateFee },
             });
-            const callArgs = callDataEncoder.decode(callInfo.calldataHexString) as CallArgs;
+            const callArgs = transformERC20Encoder.decode(callInfo.calldataHexString) as TransformERC20Args;
             expect(callArgs.transformations[1].deploymentNonce.toNumber()).to.eq(
                 consumer.transformerNonces.affiliateFeeTransformer,
             );
@@ -315,7 +331,7 @@ describe('ExchangeProxySwapQuoteConsumer', () => {
             const callInfo = await consumer.getCalldataOrThrowAsync(quote, {
                 extensionContractOpts: { isTwoHop: true },
             });
-            const callArgs = callDataEncoder.decode(callInfo.calldataHexString) as CallArgs;
+            const callArgs = transformERC20Encoder.decode(callInfo.calldataHexString) as TransformERC20Args;
             expect(callArgs.inputToken).to.eq(TAKER_TOKEN);
             expect(callArgs.outputToken).to.eq(MAKER_TOKEN);
             expect(callArgs.inputTokenAmount).to.bignumber.eq(quote.worstCaseQuoteInfo.totalTakerAssetAmount);
@@ -356,6 +372,34 @@ describe('ExchangeProxySwapQuoteConsumer', () => {
                 ETH_TOKEN_ADDRESS,
                 INTERMEDIATE_TOKEN,
             ]);
+        });
+        it('Uses the `LiquidityProvicderFeature` if given a single LiquidityProvider order', async () => {
+            const quote = {
+                ...getRandomSellQuote(),
+                orders: [
+                    {
+                        ...getRandomOrder(),
+                        fills: [
+                            {
+                                source: ERC20BridgeSource.LiquidityProvider,
+                                sourcePathId: '',
+                                input: constants.ZERO_AMOUNT,
+                                output: constants.ZERO_AMOUNT,
+                                subFills: [],
+                            },
+                        ],
+                    },
+                ],
+            };
+            const callInfo = await consumer.getCalldataOrThrowAsync(quote);
+            const callArgs = liquidityProviderEncoder.decode(callInfo.calldataHexString) as LiquidityProviderArgs;
+            expect(callArgs).to.deep.equal({
+                makerToken: MAKER_TOKEN,
+                takerToken: TAKER_TOKEN,
+                recipient: constants.NULL_ADDRESS,
+                sellAmount: quote.worstCaseQuoteInfo.totalTakerAssetAmount,
+                minBuyAmount: BigNumber.max(0, quote.worstCaseQuoteInfo.makerAssetAmount),
+            });
         });
     });
 });

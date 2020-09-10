@@ -15,7 +15,6 @@ import * as _ from 'lodash';
 
 import { constants } from '../constants';
 import {
-    AffiliateFee,
     CalldataInfo,
     ExchangeProxyContractOpts,
     MarketBuySwapQuote,
