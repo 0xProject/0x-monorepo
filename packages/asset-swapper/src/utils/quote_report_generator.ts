@@ -8,6 +8,7 @@ import {
     CollapsedFill,
     DexSample,
     ERC20BridgeSource,
+    FillData,
     MultiHopFillData,
     NativeCollapsedFill,
 } from './market_operation_utils/types';
@@ -17,6 +18,7 @@ export interface BridgeReportSource {
     liquiditySource: Exclude<ERC20BridgeSource, ERC20BridgeSource.Native>;
     makerAmount: BigNumber;
     takerAmount: BigNumber;
+    fillData?: FillData;
 }
 
 export interface MultiHopReportSource {
@@ -120,12 +122,14 @@ function _dexSampleToReportSource(ds: DexSample, marketOperation: MarketOperatio
             makerAmount: ds.input,
             takerAmount: ds.output,
             liquiditySource,
+            fillData: ds.fillData,
         };
     } else if (marketOperation === MarketOperation.Sell) {
         return {
             makerAmount: ds.output,
             takerAmount: ds.input,
             liquiditySource,
+            fillData: ds.fillData,
         };
     } else {
         throw new Error(`Unexpected marketOperation ${marketOperation}`);
