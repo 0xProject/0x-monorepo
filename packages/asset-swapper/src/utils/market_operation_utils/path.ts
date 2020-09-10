@@ -46,13 +46,6 @@ export class Path {
     protected _size: PathSize = { input: ZERO_AMOUNT, output: ZERO_AMOUNT };
     protected _adjustedSize: PathSize = { input: ZERO_AMOUNT, output: ZERO_AMOUNT };
 
-    protected constructor(
-        protected readonly side: MarketOperation,
-        public fills: ReadonlyArray<Fill>,
-        protected readonly targetInput: BigNumber,
-        public readonly pathPenaltyOpts: PathPenaltyOpts,
-    ) {}
-
     public static create(
         side: MarketOperation,
         fills: ReadonlyArray<Fill>,
@@ -76,6 +69,13 @@ export class Path {
         clonedPath.orders = base.orders === undefined ? undefined : base.orders.slice();
         return clonedPath;
     }
+
+    protected constructor(
+        protected readonly side: MarketOperation,
+        public fills: ReadonlyArray<Fill>,
+        protected readonly targetInput: BigNumber,
+        public readonly pathPenaltyOpts: PathPenaltyOpts,
+    ) {}
 
     public append(fill: Fill): this {
         (this.fills as Fill[]).push(fill);
@@ -101,7 +101,7 @@ export class Path {
         const nativeFills = this.fills.filter(f => f.source === ERC20BridgeSource.Native);
         this.fills = [...nativeFills.filter(f => f !== lastNativeFillIfExists), ...fallback.fills];
         // Recompute the source flags
-        this.sourceFlags = this.fills.reduce((flags, fill) => (flags |= fill.flags), 0);
+        this.sourceFlags = this.fills.reduce((flags, fill) => flags | fill.flags, 0);
         return this;
     }
 

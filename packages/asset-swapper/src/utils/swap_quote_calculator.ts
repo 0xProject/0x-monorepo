@@ -139,7 +139,7 @@ export class SwapQuoteCalculator {
             feeSchedule: _.mapValues(opts.feeSchedule, gasCost => (fillData?: FillData) =>
                 gasCost === undefined ? 0 : gasPrice.times(gasCost(fillData)),
             ),
-            exchangeProxyOverhead: (sourceFlags: number) => gasPrice.times(opts.exchangeProxyOverhead!(sourceFlags)),
+            exchangeProxyOverhead: flags => gasPrice.times(opts.exchangeProxyOverhead(flags)),
         };
 
         const firstOrderMakerAssetData = !!prunedOrders[0]

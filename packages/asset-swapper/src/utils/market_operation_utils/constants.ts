@@ -3,7 +3,7 @@ import { BigNumber } from '@0x/utils';
 import { SourceFilters } from './source_filters';
 import { CurveFunctionSelectors, CurveInfo, ERC20BridgeSource, GetMarketOrdersOpts } from './types';
 
-// tslint:disable: custom-no-magic-numbers
+// tslint:disable: custom-no-magic-numbers no-bitwise
 
 /**
  * Valid sources for market sell.

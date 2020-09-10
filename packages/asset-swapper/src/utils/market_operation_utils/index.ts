@@ -579,7 +579,7 @@ export class MarketOperationUtils {
             ethToInputRate,
             exchangeProxyOverhead: opts.exchangeProxyOverhead || (() => ZERO_AMOUNT),
         };
-        let optimalPath = await findOptimalPathAsync(side, fills, inputAmount, opts.runLimit, optimizerOpts);
+        const optimalPath = await findOptimalPathAsync(side, fills, inputAmount, opts.runLimit, optimizerOpts);
         if (optimalPath === undefined) {
             throw new Error(AggregationError.NoOptimalPath);
         }

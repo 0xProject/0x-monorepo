@@ -143,10 +143,10 @@ function dexSamplesToFills(
     // We need not worry about Kyber fills going to UniswapReserve as the input amount
     // we fill is the same as we sampled. I.e we received [0,20,30] output from [1,2,3] input
     // and we only fill [2,3] on Kyber (as 1 returns 0 output)
-    samples = samples.filter(q => !q.output.isZero());
-    for (let i = 0; i < samples.length; i++) {
-        const sample = samples[i];
-        const prevSample = i === 0 ? undefined : samples[i - 1];
+    const nonzeroSamples = samples.filter(q => !q.output.isZero());
+    for (let i = 0; i < nonzeroSamples.length; i++) {
+        const sample = nonzeroSamples[i];
+        const prevSample = i === 0 ? undefined : nonzeroSamples[i - 1];
         const { source, fillData } = sample;
         const input = sample.input.minus(prevSample ? prevSample.input : 0);
         const output = sample.output.minus(prevSample ? prevSample.output : 0);

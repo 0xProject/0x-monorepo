@@ -43,7 +43,7 @@ function mixPaths(
     pathB: Path,
     targetInput: BigNumber,
     maxSteps: number,
-    rateBySourcePathId: { [id: string]: BigNumber },
+    rates: { [id: string]: BigNumber },
 ): Path {
     const _maxSteps = Math.max(maxSteps, 32);
     let steps = 0;
@@ -76,7 +76,7 @@ function mixPaths(
     // chances of walking ideal, valid paths first.
     const sortedFills = allFills.sort((a, b) => {
         if (a.sourcePathId !== b.sourcePathId) {
-            return rateBySourcePathId[b.sourcePathId].comparedTo(rateBySourcePathId[a.sourcePathId]);
+            return rates[b.sourcePathId].comparedTo(rates[a.sourcePathId]);
         }
         return a.index - b.index;
     });
