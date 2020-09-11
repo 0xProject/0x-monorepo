@@ -20,40 +20,46 @@ export function token(address: string, blockchainType: BlockchainType = Blockcha
 export class BancorService {
     // Bancor recommends setting this value to 2% under the expected return amount
     public minReturnAmountBufferPercentage = 0.99;
-    private _sdk?: SDK;
 
-    constructor(public provider: SupportedProvider) {}
-
-    public async getSDKAsync(): Promise<SDK> {
-        if (!this._sdk) {
-            this._sdk = await SDK.create({ ethereumNodeEndpoint: this.provider });
-        }
-        return this._sdk;
+    public static async createAsync(provider: SupportedProvider): Promise<BancorService> {
+        const sdk = await SDK.create({ ethereumNodeEndpoint: provider });
+        const service = new BancorService(sdk);
+        return service;
     }
 
-    public async getQuoteAsync(fromToken: string, toToken: string, amount: BigNumber): Promise<Quote<BancorFillData>> {
-        const sdk = await this.getSDKAsync();
+    constructor(public sdk: SDK) {}
+
+    public async getQuotesAsync(
+        fromToken: string,
+        toToken: string,
+        amounts: BigNumber[],
+    ): Promise<Array<Quote<BancorFillData>>> {
+        const sdk = this.sdk;
         const blockchain = sdk._core.blockchains[BlockchainType.Ethereum] as Ethereum;
         const sourceDecimals = await getDecimals(blockchain, fromToken);
-        const { path, rate } = await sdk.pricing.getPathAndRate(
+        const quotes = await sdk.pricing.getPathAndRates(
             token(fromToken),
             token(toToken),
-            fromWei(amount.toString(), sourceDecimals),
+            amounts.map(amt => fromWei(amt.toString(), sourceDecimals)),
         );
         const targetDecimals = await getDecimals(blockchain, toToken);
-        const output = toWei(rate, targetDecimals);
-        return {
-            amount: new BigNumber(output).multipliedBy(this.minReturnAmountBufferPercentage).dp(0),
-            fillData: {
-                path: path.map(p => p.blockchainId),
-                networkAddress: await this.getBancorNetworkAddressAsync(),
-            },
-        };
+        const networkAddress = this.getBancorNetworkAddress();
+
+        return quotes.map(quote => {
+            const { path, rate } = quote;
+            const output = toWei(rate, targetDecimals);
+            return {
+                amount: new BigNumber(output).multipliedBy(this.minReturnAmountBufferPercentage).dp(0),
+                fillData: {
+                    path: path.map(p => p.blockchainId),
+                    networkAddress,
+                },
+            };
+        });
     }
 
-    public async getBancorNetworkAddressAsync(): Promise<string> {
-        const sdk = await this.getSDKAsync();
-        const blockchain = sdk._core.blockchains[BlockchainType.Ethereum] as Ethereum;
+    public getBancorNetworkAddress(): string {
+        const blockchain = this.sdk._core.blockchains[BlockchainType.Ethereum] as Ethereum;
         return blockchain.bancorNetwork._address;
     }
 }

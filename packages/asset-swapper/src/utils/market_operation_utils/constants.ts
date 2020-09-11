@@ -14,7 +14,7 @@ export const SELL_SOURCES = [
     ERC20BridgeSource.Kyber,
     ERC20BridgeSource.Curve,
     ERC20BridgeSource.Balancer,
-    // ERC20BridgeSource.Bancor, // FIXME: Disabled until Bancor SDK supports batch requests
+    ERC20BridgeSource.Bancor,
     ERC20BridgeSource.MStable,
     ERC20BridgeSource.Mooniswap,
     ERC20BridgeSource.Swerve,

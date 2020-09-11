@@ -34,7 +34,7 @@
         "dexForwarderBridge": "0xc47b7094f378e54347e281aab170e8cca69d880a",
         "multiBridge": "0xc03117a8c9bde203f70aa911cb64a7a0df5ba1e1",
         "balancerBridge": "0xfe01821ca163844203220cd08e4f2b2fb43ae4e4",
-        "bancorBridge": "0x0000000000000000000000000000000000000000",
+        "bancorBridge": "0x259897d9699553edbdf8538599242354e957fb94",
         "exchangeProxyGovernor": "0x618f9c67ce7bf1a50afa1e7e0238422601b0ff6e",
         "exchangeProxy": "0xdef1c0ded9bec7f1a1670819833240f027b25eff",
         "exchangeProxyAllowanceTarget": "0xf740b67da229f2f10bcbd38a7979992fcc71b8eb",

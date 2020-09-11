@@ -178,7 +178,7 @@ export class MarketOperationUtils {
 
         const offChainBancorPromise = _opts.excludedSources.includes(ERC20BridgeSource.Bancor)
             ? Promise.resolve([])
-            : this._sampler.getBancorSellQuotesOffChainAsync(makerToken, takerToken, [takerAmount]);
+            : this._sampler.getBancorSellQuotesOffChainAsync(makerToken, takerToken, sampleAmounts);
 
         const [
             [orderFillableAmounts, ethToMakerAssetRate, ethToTakerAssetRate, dexQuotes, twoHopQuotes],

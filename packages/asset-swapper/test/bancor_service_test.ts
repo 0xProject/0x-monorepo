@@ -1,4 +1,7 @@
 import { web3Factory, Web3ProviderEngine } from '@0x/dev-utils';
+import { Ethereum, getDecimals } from '@bancor/sdk/dist/blockchains/ethereum';
+import { fromWei, toWei } from '@bancor/sdk/dist/helpers';
+import { BlockchainType } from '@bancor/sdk/dist/types';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 import 'mocha';
@@ -17,41 +20,49 @@ const RPC_URL = `https://mainnet.infura.io/v3/${process.env.INFURA_PROJECT_ID}`;
 const provider: Web3ProviderEngine = web3Factory.getRpcProvider({ rpcUrl: RPC_URL });
 // tslint:disable:custom-no-magic-numbers
 
+let bancorService: BancorService;
+
 // These tests test the bancor SDK against mainnet
 // TODO (xianny): After we move asset-swapper out of the monorepo, we should add an env variable to circle CI to run this test
 describe.skip('Bancor Service', () => {
-    const bancorService = new BancorService(provider);
     const eth = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
     const bnt = '0x1f573d6fb3f13d689ff844b4ce37794d79a7ff1c';
     it('should retrieve the bancor network address', async () => {
-        const networkAddress = await bancorService.getBancorNetworkAddressAsync();
+        bancorService = await BancorService.createAsync(provider);
+        const networkAddress = bancorService.getBancorNetworkAddress();
         expect(networkAddress).to.match(ADDRESS_REGEX);
     });
     it('should retrieve a quote', async () => {
-        const amt = new BigNumber(2);
-        const quote = await bancorService.getQuoteAsync(eth, bnt, amt);
-        const fillData = quote.fillData as BancorFillData;
+        const amt = new BigNumber(10e18);
+        const quotes = await bancorService.getQuotesAsync(eth, bnt, [amt]);
+        const fillData = quotes[0].fillData as BancorFillData;
 
         // get rate from the bancor sdk
-        const sdk = await bancorService.getSDKAsync();
-        const expectedAmt = await sdk.pricing.getRateByPath(fillData.path.map(s => token(s)), amt.toString());
+        const blockchain = bancorService.sdk._core.blockchains[BlockchainType.Ethereum] as Ethereum;
+        const sourceDecimals = await getDecimals(blockchain, token(eth));
+        const rate = await bancorService.sdk.pricing.getRateByPath(
+            fillData.path.map(p => token(p)),
+            fromWei(amt.toString(), sourceDecimals),
+        );
+        const expectedRate = toWei(rate, await getDecimals(blockchain, token(bnt)));
 
         expect(fillData.networkAddress).to.match(ADDRESS_REGEX);
-        expect(fillData.path).to.be.an.instanceOf(Array);
-        expect(fillData.path).to.have.lengthOf(3);
-        expect(quote.amount.dp(0)).to.bignumber.eq(
-            new BigNumber(expectedAmt).multipliedBy(bancorService.minReturnAmountBufferPercentage).dp(0),
+        expect(fillData.path[0].toLowerCase()).to.eq(eth);
+        expect(fillData.path[2].toLowerCase()).to.eq(bnt);
+        expect(fillData.path.length).to.eq(3); // eth -> bnt should be single hop!
+        expect(quotes[0].amount.dp(0)).to.bignumber.eq(
+            new BigNumber(expectedRate).multipliedBy(bancorService.minReturnAmountBufferPercentage).dp(0),
         );
     });
     // HACK (xianny): for exploring SDK results
     it('should retrieve multiple quotes', async () => {
         const amts = [1, 10, 100, 1000].map(a => new BigNumber(a).multipliedBy(10e18));
-        const quotes = await Promise.all(amts.map(async amount => bancorService.getQuoteAsync(eth, bnt, amount)));
+        const quotes = await bancorService.getQuotesAsync(eth, bnt, amts);
         quotes.map((q, i) => {
             // tslint:disable:no-console
             const fillData = q.fillData as BancorFillData;
             console.log(
-                `Input ${amts[i].toExponential()}; Output: ${q.amount}; Path: ${
+                `Input ${amts[i].toExponential()}; Output: ${q.amount}; Ratio: ${q.amount.dividedBy(amts[i])}, Path: ${
                     fillData.path.length
                 }\nPath: ${JSON.stringify(fillData.path)}`,
             );

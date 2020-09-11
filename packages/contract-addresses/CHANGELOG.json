@@ -45,6 +45,10 @@
             {
                 "note": "Update transformer deployer and transformers for champagne-problems deployment",
                 "pr": 2693
+            },
+            {
+                "note": "Deploy `BancorBridge` on Mainnet",
+                "pr": 2699
             }
         ]
     },
