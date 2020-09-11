@@ -68,10 +68,12 @@ export class SourceFilters {
     }
 
     public merge(other: SourceFilters): SourceFilters {
-        const validSources =
-            this._validSources.length === 0
-                ? other._validSources
-                : this._validSources.filter(s => other._validSources.includes(s));
+        let validSources = this._validSources;
+        if (validSources.length === 0) {
+            validSources = other._validSources;
+        } else if (other._validSources.length !== 0) {
+            validSources = validSources.filter(s => other._validSources.includes(s));
+        }
         return new SourceFilters(
             validSources,
             [...this._excludedSources, ...other._excludedSources],

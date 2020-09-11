@@ -20,6 +20,7 @@ export const SELL_SOURCES = [
     ERC20BridgeSource.Mooniswap,
     ERC20BridgeSource.Swerve,
     ERC20BridgeSource.SushiSwap,
+    ERC20BridgeSource.MultiHop,
 ];
 
 /**
@@ -37,6 +38,7 @@ export const BUY_SOURCES = [
     ERC20BridgeSource.Mooniswap,
     ERC20BridgeSource.Swerve,
     ERC20BridgeSource.SushiSwap,
+    ERC20BridgeSource.MultiHop,
 ];
 
 export const DEFAULT_GET_MARKET_ORDERS_OPTS: GetMarketOrdersOpts = {

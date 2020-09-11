@@ -36,6 +36,7 @@ const DEFAULT_EXCLUDED = [
     ERC20BridgeSource.Bancor,
     ERC20BridgeSource.Swerve,
     ERC20BridgeSource.SushiSwap,
+    ERC20BridgeSource.MultiHop,
 ];
 
 // tslint:disable: custom-no-magic-numbers promise-function-async
@@ -265,6 +266,7 @@ describe('MarketOperationUtils tests', () => {
         [ERC20BridgeSource.Mooniswap]: _.times(NUM_SAMPLES, () => 0),
         [ERC20BridgeSource.Swerve]: _.times(NUM_SAMPLES, () => 0),
         [ERC20BridgeSource.SushiSwap]: _.times(NUM_SAMPLES, () => 0),
+        [ERC20BridgeSource.MultiHop]: _.times(NUM_SAMPLES, () => 0),
     };
 
     const DEFAULT_RATES: RatesBySource = {
@@ -377,33 +379,7 @@ describe('MarketOperationUtils tests', () => {
             intentOnFilling: false,
         };
 
-        it('returns an empty array if native liquidity is excluded from the salad', async () => {
-            const requestor = TypeMoq.Mock.ofType(QuoteRequestor, TypeMoq.MockBehavior.Strict);
-            const result = await getRfqtIndicativeQuotesAsync(
-                MAKER_ASSET_DATA,
-                TAKER_ASSET_DATA,
-                MarketOperation.Sell,
-                new BigNumber('100e18'),
-                {
-                    rfqt: { quoteRequestor: requestor.object, ...partialRfqt },
-                    excludedSources: [ERC20BridgeSource.Native],
-                },
-            );
-            expect(result.length).to.eql(0);
-            requestor.verify(
-                r =>
-                    r.requestRfqtIndicativeQuotesAsync(
-                        TypeMoq.It.isAny(),
-                        TypeMoq.It.isAny(),
-                        TypeMoq.It.isAny(),
-                        TypeMoq.It.isAny(),
-                        TypeMoq.It.isAny(),
-                    ),
-                TypeMoq.Times.never(),
-            );
-        });
-
-        it('calls RFQT if Native source is not excluded', async () => {
+        it('calls RFQT', async () => {
             const requestor = TypeMoq.Mock.ofType(QuoteRequestor, TypeMoq.MockBehavior.Loose);
             requestor
                 .setup(r =>
@@ -424,7 +400,6 @@ describe('MarketOperationUtils tests', () => {
                 new BigNumber('100e18'),
                 {
                     rfqt: { quoteRequestor: requestor.object, ...partialRfqt },
-                    excludedSources: [],
                 },
             );
             requestor.verifyAll();
@@ -552,6 +527,31 @@ describe('MarketOperationUtils tests', () => {
                     excludedSources,
                 });
                 expect(sourcesPolled.sort()).to.deep.equals(_.without(SELL_SOURCES, ...excludedSources).sort());
+            });
+
+            it('only polls DEXes in `includedSources`', async () => {
+                const includedSources = _.sampleSize(SELL_SOURCES, _.random(1, SELL_SOURCES.length));
+                let sourcesPolled: ERC20BridgeSource[] = [];
+                replaceSamplerOps({
+                    getSellQuotes: (sources, makerToken, takerToken, amounts, wethAddress) => {
+                        sourcesPolled = sourcesPolled.concat(sources.slice());
+                        return DEFAULT_OPS.getSellQuotes(sources, makerToken, takerToken, amounts, wethAddress);
+                    },
+                    getBalancerSellQuotesOffChainAsync: (
+                        makerToken: string,
+                        takerToken: string,
+                        takerFillAmounts: BigNumber[],
+                    ) => {
+                        sourcesPolled = sourcesPolled.concat(ERC20BridgeSource.Balancer);
+                        return DEFAULT_OPS.getBalancerSellQuotesOffChainAsync(makerToken, takerToken, takerFillAmounts);
+                    },
+                });
+                await marketOperationUtils.getMarketSellOrdersAsync(ORDERS, FILL_AMOUNT, {
+                    ...DEFAULT_OPTS,
+                    excludedSources: [],
+                    includedSources,
+                });
+                expect(sourcesPolled.sort()).to.deep.equals(includedSources.sort());
             });
 
             it('generates bridge orders with correct asset data', async () => {
@@ -960,7 +960,7 @@ describe('MarketOperationUtils tests', () => {
             });
 
             it('does not poll DEXes in `excludedSources`', async () => {
-                const excludedSources = _.sampleSize(SELL_SOURCES, _.random(1, SELL_SOURCES.length));
+                const excludedSources = _.sampleSize(BUY_SOURCES, _.random(1, BUY_SOURCES.length));
                 let sourcesPolled: ERC20BridgeSource[] = [];
                 replaceSamplerOps({
                     getBuyQuotes: (sources, makerToken, takerToken, amounts, wethAddress) => {
@@ -981,6 +981,31 @@ describe('MarketOperationUtils tests', () => {
                     excludedSources,
                 });
                 expect(sourcesPolled.sort()).to.deep.eq(_.without(BUY_SOURCES, ...excludedSources).sort());
+            });
+
+            it('only polls DEXes in `includedSources`', async () => {
+                const includedSources = _.sampleSize(BUY_SOURCES, _.random(1, BUY_SOURCES.length));
+                let sourcesPolled: ERC20BridgeSource[] = [];
+                replaceSamplerOps({
+                    getBuyQuotes: (sources, makerToken, takerToken, amounts, wethAddress) => {
+                        sourcesPolled = sourcesPolled.concat(sources.slice());
+                        return DEFAULT_OPS.getBuyQuotes(sources, makerToken, takerToken, amounts, wethAddress);
+                    },
+                    getBalancerBuyQuotesOffChainAsync: (
+                        makerToken: string,
+                        takerToken: string,
+                        makerFillAmounts: BigNumber[],
+                    ) => {
+                        sourcesPolled = sourcesPolled.concat(ERC20BridgeSource.Balancer);
+                        return DEFAULT_OPS.getBalancerBuyQuotesOffChainAsync(makerToken, takerToken, makerFillAmounts);
+                    },
+                });
+                await marketOperationUtils.getMarketBuyOrdersAsync(ORDERS, FILL_AMOUNT, {
+                    ...DEFAULT_OPTS,
+                    excludedSources: [],
+                    includedSources,
+                });
+                expect(sourcesPolled.sort()).to.deep.eq(includedSources.sort());
             });
 
             it('generates bridge orders with correct asset data', async () => {

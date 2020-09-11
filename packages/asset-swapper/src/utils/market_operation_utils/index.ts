@@ -173,7 +173,7 @@ export class MarketOperationUtils {
                       this._wethAddress,
                       this._liquidityProviderRegistry,
                   )
-                : DexOrderSampler.constant([]),
+                : [],
         );
 
         const rfqtPromise = quoteSourceFilters.isAllowed(ERC20BridgeSource.Native)
@@ -290,7 +290,7 @@ export class MarketOperationUtils {
                       this._wethAddress,
                       this._liquidityProviderRegistry,
                   )
-                : DexOrderSampler.constant([]),
+                : [],
         );
 
         const rfqtPromise = quoteSourceFilters.isAllowed(ERC20BridgeSource.Native)

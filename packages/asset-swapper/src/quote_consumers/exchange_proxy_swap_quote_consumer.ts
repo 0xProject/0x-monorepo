@@ -101,7 +101,15 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
             return {
                 calldataHexString: this._exchangeProxy
                     .sellToUniswap(
-                        fillData.tokenAddressPath,
+                        fillData.tokenAddressPath.map((a, i) => {
+                            if (i === 0 && isFromETH) {
+                                return ETH_TOKEN_ADDRESS;
+                            }
+                            if (i === fillData.tokenAddressPath.length - 1 && isToETH) {
+                                return ETH_TOKEN_ADDRESS;
+                            }
+                            return a;
+                        }),
                         sellAmount,
                         quote.worstCaseQuoteInfo.makerAssetAmount,
                         source === ERC20BridgeSource.SushiSwap,
