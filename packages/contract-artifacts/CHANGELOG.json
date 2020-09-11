@@ -13,6 +13,10 @@
             {
                 "note": "Remove `ERC20BridgeSampler` artifact",
                 "pr": 2647
+            },
+            {
+                "note": "Regenerate artifacts",
+                "pr": 2703
             }
         ]
     },
