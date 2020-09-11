@@ -25,6 +25,7 @@ import "./features/ITokenSpenderFeature.sol";
 import "./features/ISignatureValidatorFeature.sol";
 import "./features/ITransformERC20Feature.sol";
 import "./features/IMetaTransactionsFeature.sol";
+import "./features/IUniswapFeature.sol";
 
 
 /// @dev Interface for a fully featured Exchange Proxy.
@@ -34,7 +35,8 @@ interface IZeroEx is
     ITokenSpenderFeature,
     ISignatureValidatorFeature,
     ITransformERC20Feature,
-    IMetaTransactionsFeature
+    IMetaTransactionsFeature,
+    IUniswapFeature
 {
     // solhint-disable state-visibility
 
