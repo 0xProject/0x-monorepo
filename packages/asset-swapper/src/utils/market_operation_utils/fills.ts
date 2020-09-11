@@ -166,7 +166,9 @@ export function getTwoHopAdjustedRate(
     if (input.isLessThan(targetInput) || output.isZero()) {
         return ZERO_AMOUNT;
     }
-    const penalty = ethToOutputRate.times(fees[ERC20BridgeSource.MultiHop]!(fillData));
+    const penalty = fees[ERC20BridgeSource.MultiHop]
+        ? ethToOutputRate.times(fees[ERC20BridgeSource.MultiHop]!(fillData))
+        : 0;
     const adjustedOutput = side === MarketOperation.Sell ? output.minus(penalty) : output.plus(penalty);
     return side === MarketOperation.Sell ? adjustedOutput.div(input) : input.div(adjustedOutput);
 }
