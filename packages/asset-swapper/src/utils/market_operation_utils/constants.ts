@@ -14,7 +14,8 @@ export const SELL_SOURCES = [
     ERC20BridgeSource.Kyber,
     ERC20BridgeSource.Curve,
     ERC20BridgeSource.Balancer,
-    ERC20BridgeSource.Bancor,
+    // Bancor is sampled off-chain, but this list should only include on-chain sources (used in ERC20BridgeSampler)
+    // ERC20BridgeSource.Bancor,
     ERC20BridgeSource.MStable,
     ERC20BridgeSource.Mooniswap,
     ERC20BridgeSource.Swerve,
