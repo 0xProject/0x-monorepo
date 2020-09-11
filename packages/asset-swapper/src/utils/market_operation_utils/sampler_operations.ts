@@ -55,7 +55,7 @@ export class SamplerOperations {
         protected readonly _samplerContract: ERC20BridgeSamplerContract,
         public readonly provider?: SupportedProvider,
         public readonly balancerPoolsCache: BalancerPoolsCache = new BalancerPoolsCache(),
-        protected readonly getBancorServiceFn?: () => BancorService,
+        protected readonly getBancorServiceFn?: () => BancorService, // for dependency injection in tests
     ) {}
 
     public async getBancorServiceAsync(): Promise<BancorService> {
