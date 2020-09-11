@@ -2,8 +2,6 @@ import { BigNumber } from '@0x/utils';
 import { bmath, getPoolsWithTokens, parsePoolData } from '@balancer-labs/sor';
 import { Decimal } from 'decimal.js';
 
-import { ERC20BridgeSource } from './types';
-
 // tslint:disable:boolean-naming
 
 export interface BalancerPool {

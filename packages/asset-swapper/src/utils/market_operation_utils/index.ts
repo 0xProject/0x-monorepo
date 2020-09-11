@@ -6,7 +6,6 @@ import * as _ from 'lodash';
 
 import { MarketOperation } from '../../types';
 import { QuoteRequestor } from '../quote_requestor';
-import { difference } from '../utils';
 
 import { generateQuoteReport } from './../quote_report_generator';
 import {

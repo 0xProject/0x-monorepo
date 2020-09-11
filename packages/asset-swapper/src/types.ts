@@ -382,5 +382,3 @@ export interface SamplerOverrides {
     overrides: GethCallOverrides;
     block: BlockParam;
 }
-
-export { ERC20BridgeSource } from './utils/market_operation_utils/types';

@@ -104,11 +104,11 @@ contract UniswapFeature is
             assembly {
                 // calldataload(mload(0xA00)) == first element of `tokens` array
                 mstore(0xA00, add(calldataload(0x04), 0x24))
-                // calldataload(mload(0xA20)) == isSushi
+                // mload(0xA20) == isSushi
                 mstore(0xA20, isSushi)
-                // calldataload(mload(0xA40)) == WETH
+                // mload(0xA40) == WETH
                 mstore(0xA40, weth)
-                // calldataload(mload(0xA60)) == ALLOWANCE_TARGET
+                // mload(0xA60) == ALLOWANCE_TARGET
                 mstore(0xA60, allowanceTarget)
             }
         }
@@ -124,9 +124,9 @@ contract UniswapFeature is
 
             for {let i := 0} lt(i, numPairs) {i := add(i, 1)} {
                 // sellToken = tokens[i]
-                let sellToken := loadAddressFromCalldataArray(i)
+                let sellToken := loadTokenAddress(i)
                 // buyToken = tokens[i+1]
-                buyToken := loadAddressFromCalldataArray(add(i, 1))
+                buyToken := loadTokenAddress(add(i, 1))
 
                 // Compute the pair address if it hasn't already been computed
                 // from the last iteration.
@@ -213,7 +213,7 @@ contract UniswapFeature is
                         // the next pair contract.
                         nextPair := computePairAddress(
                             buyToken,
-                            loadAddressFromCalldataArray(add(i, 2))
+                            loadTokenAddress(add(i, 2))
                         )
                         receiver := nextPair
                     }
@@ -262,7 +262,7 @@ contract UniswapFeature is
                 }
             }
 
-            function loadAddressFromCalldataArray(idx) -> addr {
+            function loadTokenAddress(idx) -> addr {
                 addr := and(ADDRESS_MASK, calldataload(add(mload(0xA00), mul(idx, 0x20))))
             }
 
