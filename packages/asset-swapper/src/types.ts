@@ -160,6 +160,7 @@ export interface ExchangeProxyContractOpts {
     isToETH: boolean;
     affiliateFee: AffiliateFee;
     refundReceiver: string | ExchangeProxyRefundReceiver;
+    isMetaTransaction: boolean;
 }
 
 export interface GetExtensionContractTypeOpts {
@@ -381,3 +382,5 @@ export interface SamplerOverrides {
     overrides: GethCallOverrides;
     block: BlockParam;
 }
+
+export { ERC20BridgeSource } from './utils/market_operation_utils/types';

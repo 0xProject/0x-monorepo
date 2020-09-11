@@ -244,6 +244,11 @@ export interface GetMarketOrdersOpts {
      */
     excludedSources: ERC20BridgeSource[];
     /**
+     * Liquidity sources to include. Default is none, which allows all supported
+     * sources that aren't excluded by `excludedSources`.
+     */
+    includedSources: ERC20BridgeSource[];
+    /**
      * Complexity limit on the search algorithm, i.e., maximum number of
      * nodes to visit. Default is 1024.
      */

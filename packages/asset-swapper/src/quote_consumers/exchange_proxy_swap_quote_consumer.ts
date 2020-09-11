@@ -27,11 +27,12 @@ import {
     SwapQuoteGetOutputOpts,
 } from '../types';
 import { assert } from '../utils/assert';
+import { ERC20BridgeSource, UniswapV2FillData } from '../utils/market_operation_utils/types';
 import { getTokenFromAssetData } from '../utils/utils';
 
 // tslint:disable-next-line:custom-no-magic-numbers
 const MAX_UINT256 = new BigNumber(2).pow(256).minus(1);
-const { NULL_ADDRESS } = constants;
+const { NULL_ADDRESS, ZERO_AMOUNT } = constants;
 
 export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
     public readonly provider: ZeroExProvider;
@@ -82,15 +83,35 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
         opts: Partial<SwapQuoteGetOutputOpts> = {},
     ): Promise<CalldataInfo> {
         assert.isValidSwapQuote('quote', quote);
-        // tslint:disable-next-line:no-object-literal-type-assertion
-        const { refundReceiver, affiliateFee, isFromETH, isToETH } = {
+        const optsWithDefaults: ExchangeProxyContractOpts = {
             ...constants.DEFAULT_EXCHANGE_PROXY_EXTENSION_CONTRACT_OPTS,
             ...opts.extensionContractOpts,
-        } as ExchangeProxyContractOpts;
+        };
+        // tslint:disable-next-line:no-object-literal-type-assertion
+        const { refundReceiver, affiliateFee, isFromETH, isToETH } = optsWithDefaults;
 
         const sellToken = getTokenFromAssetData(quote.takerAssetData);
         const buyToken = getTokenFromAssetData(quote.makerAssetData);
         const sellAmount = quote.worstCaseQuoteInfo.totalTakerAssetAmount;
+
+        // VIP routes.
+        if (isDirectUniswapCompatible(quote, optsWithDefaults)) {
+            const source = quote.orders[0].fills[0].source;
+            const fillData = quote.orders[0].fills[0].fillData as UniswapV2FillData;
+            return {
+                calldataHexString: this._exchangeProxy
+                    .sellToUniswap(
+                        fillData.tokenAddressPath,
+                        sellAmount,
+                        quote.worstCaseQuoteInfo.makerAssetAmount,
+                        source === ERC20BridgeSource.SushiSwap,
+                    )
+                    .getABIEncodedTransactionData(),
+                ethAmount: isFromETH ? sellAmount : ZERO_AMOUNT,
+                toAddress: this._exchangeProxy.address,
+                allowanceTarget: this.contractAddresses.exchangeProxyAllowanceTarget,
+            };
+        }
 
         // Build up the transforms.
         const transforms = [];
@@ -231,4 +252,30 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
 
 function isBuyQuote(quote: SwapQuote): quote is MarketBuySwapQuote {
     return quote.type === MarketOperation.Buy;
+}
+
+function isDirectUniswapCompatible(quote: SwapQuote, opts: ExchangeProxyContractOpts): boolean {
+    // Must not be a mtx.
+    if (opts.isMetaTransaction) {
+        return false;
+    }
+    // Must not have an affiliate fee.
+    if (!opts.affiliateFee.buyTokenFeeAmount.eq(0) || !opts.affiliateFee.sellTokenFeeAmount.eq(0)) {
+        return false;
+    }
+    // Must be a single order.
+    if (quote.orders.length !== 1) {
+        return false;
+    }
+    const order = quote.orders[0];
+    // With a single underlying fill/source.
+    if (order.fills.length !== 1) {
+        return false;
+    }
+    const fill = order.fills[0];
+    // And that fill must be uniswap v2 or sushiswap.
+    if (![ERC20BridgeSource.UniswapV2, ERC20BridgeSource.SushiSwap].includes(fill.source)) {
+        return false;
+    }
+    return true;
 }

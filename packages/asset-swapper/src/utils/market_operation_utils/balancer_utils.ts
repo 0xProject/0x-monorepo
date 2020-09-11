@@ -67,10 +67,10 @@ export class BalancerPoolsCache {
     public howToSampleBalancer(
         takerToken: string,
         makerToken: string,
-        excludedSources: ERC20BridgeSource[],
+        isAllowedSource: boolean,
     ): { onChain: boolean; offChain: boolean } {
         // If Balancer is excluded as a source, do not sample.
-        if (excludedSources.includes(ERC20BridgeSource.Balancer)) {
+        if (!isAllowedSource) {
             return { onChain: false, offChain: false };
         }
         const cachedBalancerPools = this.getCachedPoolAddressesForPair(takerToken, makerToken, ONE_DAY_MS);
