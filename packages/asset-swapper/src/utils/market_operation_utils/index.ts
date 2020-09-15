@@ -155,7 +155,9 @@ export class MarketOperationUtils {
             ),
             // Get sell quotes for taker -> maker.
             this._sampler.getSellQuotes(
-                quoteSourceFilters.exclude(sampleBalancerOnChain ? [] : ERC20BridgeSource.Balancer).sources,
+                quoteSourceFilters
+                    .exclude(sampleBalancerOnChain ? [] : ERC20BridgeSource.Balancer)
+                    .exclude(ERC20BridgeSource.MultiHop).sources,
                 makerToken,
                 takerToken,
                 sampleAmounts,
@@ -163,17 +165,17 @@ export class MarketOperationUtils {
                 this._liquidityProviderRegistry,
                 this._multiBridge,
             ),
-            quoteSourceFilters.isAllowed(ERC20BridgeSource.MultiHop)
-                ? this._sampler.getTwoHopSellQuotes(
-                      quoteSourceFilters.exclude(ERC20BridgeSource.MultiBridge).sources,
-                      makerToken,
-                      takerToken,
-                      takerAmount,
-                      this._tokenAdjacencyGraph,
-                      this._wethAddress,
-                      this._liquidityProviderRegistry,
-                  )
-                : [],
+            this._sampler.getTwoHopSellQuotes(
+                quoteSourceFilters.isAllowed(ERC20BridgeSource.MultiHop)
+                    ? quoteSourceFilters.exclude([ERC20BridgeSource.MultiBridge, ERC20BridgeSource.MultiHop]).sources
+                    : [],
+                makerToken,
+                takerToken,
+                takerAmount,
+                this._tokenAdjacencyGraph,
+                this._wethAddress,
+                this._liquidityProviderRegistry,
+            ),
         );
 
         const rfqtPromise = quoteSourceFilters.isAllowed(ERC20BridgeSource.Native)
@@ -201,6 +203,7 @@ export class MarketOperationUtils {
             offChainBancorQuotes,
         ] = await Promise.all([samplerPromise, rfqtPromise, offChainBalancerPromise, offChainBancorPromise]);
 
+        // console.log(await SamplerOperations.constant([]).handleCallResults(''), twoHopQuotes);
         return {
             side: MarketOperation.Sell,
             inputAmount: takerAmount,
@@ -273,24 +276,26 @@ export class MarketOperationUtils {
             ),
             // Get buy quotes for taker -> maker.
             this._sampler.getBuyQuotes(
-                quoteSourceFilters.exclude(sampleBalancerOnChain ? [] : ERC20BridgeSource.Balancer).sources,
+                quoteSourceFilters
+                    .exclude(sampleBalancerOnChain ? [] : ERC20BridgeSource.Balancer)
+                    .exclude(ERC20BridgeSource.MultiHop).sources,
                 makerToken,
                 takerToken,
                 sampleAmounts,
                 this._wethAddress,
                 this._liquidityProviderRegistry,
             ),
-            quoteSourceFilters.isAllowed(ERC20BridgeSource.MultiHop)
-                ? this._sampler.getTwoHopBuyQuotes(
-                      quoteSourceFilters.exclude(ERC20BridgeSource.MultiBridge).sources,
-                      makerToken,
-                      takerToken,
-                      makerAmount,
-                      this._tokenAdjacencyGraph,
-                      this._wethAddress,
-                      this._liquidityProviderRegistry,
-                  )
-                : [],
+            this._sampler.getTwoHopBuyQuotes(
+                quoteSourceFilters.isAllowed(ERC20BridgeSource.MultiHop)
+                    ? quoteSourceFilters.exclude([ERC20BridgeSource.MultiBridge, ERC20BridgeSource.MultiHop]).sources
+                    : [],
+                makerToken,
+                takerToken,
+                makerAmount,
+                this._tokenAdjacencyGraph,
+                this._wethAddress,
+                this._liquidityProviderRegistry,
+            ),
         );
 
         const rfqtPromise = quoteSourceFilters.isAllowed(ERC20BridgeSource.Native)
