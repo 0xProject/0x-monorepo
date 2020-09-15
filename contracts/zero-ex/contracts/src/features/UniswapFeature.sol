@@ -149,7 +149,7 @@ contract UniswapFeature is
                             mstore(0xB68, caller())
                             mstore(0xB88, pair)
                             mstore(0xBA8, sellAmount)
-                            if iszero(call(gas(), mload(0xA60), 0, 0xB00, 0xE4, 0x00, 0x0)) {
+                            if iszero(call(gas(), mload(0xA60), 0, 0xB00, 0xC8, 0x00, 0x0)) {
                                 bubbleRevert()
                             }
                         }
