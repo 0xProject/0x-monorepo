@@ -127,6 +127,8 @@ contract UniswapFeature is
                 let sellToken := loadTokenAddress(i)
                 // buyToken = tokens[i+1]
                 buyToken := loadTokenAddress(add(i, 1))
+                // The canonical ordering of this token pair.
+                let pairOrder := lt(normalizeToken(sellToken), normalizeToken(buyToken))
 
                 // Compute the pair address if it hasn't already been computed
                 // from the last iteration.
@@ -191,7 +193,7 @@ contract UniswapFeature is
                     let sellReserve := mload(0xC00)
                     let buyReserve := mload(0xC20)
                     // Transpose if pair order is different.
-                    if gt(sellToken, buyToken) {
+                    if iszero(pairOrder) {
                         sellReserve := mload(0xC20)
                         buyReserve := mload(0xC00)
                     }
@@ -231,14 +233,14 @@ contract UniswapFeature is
 
                 // Call pair.swap()
                 mstore(0xB00, UNISWAP_PAIR_SWAP_CALL_SELECTOR_32)
-                switch gt(sellToken, buyToken)
+                switch pairOrder
                     case 0 {
-                        mstore(0xB04, 0)
-                        mstore(0xB24, buyAmount)
-                    }
-                    default {
                         mstore(0xB04, buyAmount)
                         mstore(0xB24, 0)
+                    }
+                    default {
+                        mstore(0xB04, 0)
+                        mstore(0xB24, buyAmount)
                     }
                 mstore(0xB44, receiver)
                 mstore(0xB64, 0x80)
@@ -246,7 +248,7 @@ contract UniswapFeature is
                 if iszero(call(gas(), pair, 0, 0xB00, 0xA4, 0, 0)) {
                     bubbleRevert()
                 }
-            }
+            } // End for-loop.
 
             // If buying ETH, unwrap the WETH first
             if eq(buyToken, ETH_TOKEN_ADDRESS_32) {
@@ -262,19 +264,24 @@ contract UniswapFeature is
                 }
             }
 
+            // Functions ///////////////////////////////////////////////////////
+
             function loadTokenAddress(idx) -> addr {
                 addr := and(ADDRESS_MASK, calldataload(add(mload(0xA00), mul(idx, 0x20))))
             }
 
+            function normalizeToken(token) -> normalized {
+                normalized := token
+                // Translate ETH pseudo-tokens to WETH.
+                if eq(token, ETH_TOKEN_ADDRESS_32) {
+                    normalized := mload(0xA40)
+                }
+            }
+
             function computePairAddress(tokenA, tokenB) -> pair {
                 // Compute the UniswapV2Pair address
-                // Translate ETH pseudo-tokens to WETH.
-                if eq(tokenA, ETH_TOKEN_ADDRESS_32) {
-                    tokenA := mload(0xA40)
-                }
-                if eq(tokenB, ETH_TOKEN_ADDRESS_32) {
-                    tokenB := mload(0xA40)
-                }
+                tokenA := normalizeToken(tokenA)
+                tokenB := normalizeToken(tokenB)
                 // Correct order of tokens.
                 switch lt(tokenA, tokenB)
                     case 0 {
