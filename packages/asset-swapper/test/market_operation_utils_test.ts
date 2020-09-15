@@ -1261,8 +1261,8 @@ describe('MarketOperationUtils tests', () => {
             it('batches contiguous bridge sources', async () => {
                 const rates: RatesBySource = { ...ZERO_RATES };
                 rates[ERC20BridgeSource.Native] = [0.5, 0.01, 0.01, 0.01];
-                rates[ERC20BridgeSource.Eth2Dai] = [0.49, 0.02, 0.01, 0.01];
-                rates[ERC20BridgeSource.Uniswap] = [0.48, 0.01, 0.01, 0.01];
+                rates[ERC20BridgeSource.Eth2Dai] = [0.48, 0.02, 0.01, 0.01];
+                rates[ERC20BridgeSource.Uniswap] = [0.47, 0.01, 0.01, 0.01];
                 replaceSamplerOps({
                     getBuyQuotes: createGetMultipleBuyQuotesOperationFromRates(rates),
                 });
