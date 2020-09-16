@@ -60,6 +60,14 @@ export class SourceFilters {
         );
     }
 
+    public validate(sources: ERC20BridgeSource | ERC20BridgeSource[]): SourceFilters {
+        return new SourceFilters(
+            [...this._validSources, ...(Array.isArray(sources) ? sources : [sources])],
+            this._excludedSources,
+            this._includedSources,
+        );
+    }
+
     public include(sources: ERC20BridgeSource | ERC20BridgeSource[]): SourceFilters {
         return new SourceFilters(this._validSources, this._excludedSources, [
             ...this._includedSources,

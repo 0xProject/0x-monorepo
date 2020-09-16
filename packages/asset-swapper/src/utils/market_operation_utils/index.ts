@@ -9,11 +9,11 @@ import { QuoteRequestor } from '../quote_requestor';
 
 import { generateQuoteReport } from './../quote_report_generator';
 import {
-    BUY_SOURCES,
+    BUY_SOURCE_FILTER,
     DEFAULT_GET_MARKET_ORDERS_OPTS,
     FEE_QUOTE_SOURCES,
     ONE_ETHER,
-    SELL_SOURCES,
+    SELL_SOURCE_FILTER,
     ZERO_AMOUNT,
 } from './constants';
 import { createFillPaths, getPathAdjustedRate, getPathAdjustedSlippage } from './fills';
@@ -94,8 +94,8 @@ export class MarketOperationUtils {
         if (this._multiBridge !== NULL_ADDRESS) {
             optionalQuoteSources.push(ERC20BridgeSource.MultiBridge);
         }
-        this._buySources = new SourceFilters([...BUY_SOURCES, ...optionalQuoteSources]);
-        this._sellSources = new SourceFilters([...SELL_SOURCES, ...optionalQuoteSources]);
+        this._buySources = BUY_SOURCE_FILTER.validate(optionalQuoteSources);
+        this._sellSources = SELL_SOURCE_FILTER.validate(optionalQuoteSources);
     }
 
     /**
@@ -203,7 +203,6 @@ export class MarketOperationUtils {
             offChainBancorQuotes,
         ] = await Promise.all([samplerPromise, rfqtPromise, offChainBalancerPromise, offChainBancorPromise]);
 
-        // console.log(await SamplerOperations.constant([]).handleCallResults(''), twoHopQuotes);
         return {
             side: MarketOperation.Sell,
             inputAmount: takerAmount,

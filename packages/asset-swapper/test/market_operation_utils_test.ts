@@ -18,7 +18,12 @@ import * as TypeMoq from 'typemoq';
 import { MarketOperation, QuoteRequestor, RfqtRequestOpts, SignedOrderWithFillableAmounts } from '../src';
 import { getRfqtIndicativeQuotesAsync, MarketOperationUtils } from '../src/utils/market_operation_utils/';
 import { BalancerPoolsCache } from '../src/utils/market_operation_utils/balancer_utils';
-import { BUY_SOURCES, POSITIVE_INF, SELL_SOURCES, ZERO_AMOUNT } from '../src/utils/market_operation_utils/constants';
+import {
+    BUY_SOURCE_FILTER,
+    POSITIVE_INF,
+    SELL_SOURCE_FILTER,
+    ZERO_AMOUNT,
+} from '../src/utils/market_operation_utils/constants';
 import { createFillPaths } from '../src/utils/market_operation_utils/fills';
 import { DexOrderSampler } from '../src/utils/market_operation_utils/sampler';
 import {
@@ -44,9 +49,11 @@ const DEFAULT_EXCLUDED = [
     ERC20BridgeSource.SushiSwap,
     ERC20BridgeSource.MultiHop,
 ];
+const BUY_SOURCES = BUY_SOURCE_FILTER.sources;
+const SELL_SOURCES = SELL_SOURCE_FILTER.sources;
 
 // tslint:disable: custom-no-magic-numbers promise-function-async
-describe('MarketOperationUtils tests', () => {
+describe.only('MarketOperationUtils tests', () => {
     const CHAIN_ID = 1;
     const contractAddresses = { ...getContractAddressesForChainOrThrow(CHAIN_ID), multiBridge: NULL_ADDRESS };
 
