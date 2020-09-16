@@ -15,7 +15,7 @@ export class RfqMakerBlacklist {
         }
         if (didTimeout) {
             this._makerTimeoutStreakLength[makerUrl] += 1;
-            if (this._makerTimeoutStreakLength[makerUrl] > this._timeoutStreakThreshold) {
+            if (this._makerTimeoutStreakLength[makerUrl] === this._timeoutStreakThreshold) {
                 this._makerBlacklistedUntilDate[makerUrl] =
                     Date.now() + this._blacklistDurationMinutes * constants.ONE_MINUTE_MS;
             }
