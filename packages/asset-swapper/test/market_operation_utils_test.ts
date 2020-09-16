@@ -21,7 +21,13 @@ import { BalancerPoolsCache } from '../src/utils/market_operation_utils/balancer
 import { BUY_SOURCES, POSITIVE_INF, SELL_SOURCES, ZERO_AMOUNT } from '../src/utils/market_operation_utils/constants';
 import { createFillPaths } from '../src/utils/market_operation_utils/fills';
 import { DexOrderSampler } from '../src/utils/market_operation_utils/sampler';
-import { DexSample, ERC20BridgeSource, FillData, NativeFillData } from '../src/utils/market_operation_utils/types';
+import {
+    DexSample,
+    ERC20BridgeSource,
+    FillData,
+    NativeFillData,
+    OptimizedMarketOrder,
+} from '../src/utils/market_operation_utils/types';
 
 const MAKER_TOKEN = randomAddress();
 const TAKER_TOKEN = randomAddress();
@@ -243,6 +249,27 @@ describe('MarketOperationUtils tests', () => {
             rates.push(prevRate.times(r));
         });
         return rates;
+    }
+
+    function getSortedOrderSources(side: MarketOperation, orders: OptimizedMarketOrder[]): ERC20BridgeSource[][] {
+        return (
+            orders
+                // Sort orders by descending rate.
+                .sort((a, b) =>
+                    b.makerAssetAmount.div(b.takerAssetAmount).comparedTo(a.makerAssetAmount.div(a.takerAssetAmount)),
+                )
+                // Then sort fills by descending rate.
+                .map(o => {
+                    return o.fills
+                        .slice()
+                        .sort((a, b) =>
+                            side === MarketOperation.Sell
+                                ? b.output.div(b.input).comparedTo(a.output.div(a.input))
+                                : b.input.div(b.output).comparedTo(a.input.div(a.output)),
+                        )
+                        .map(f => f.source);
+                })
+        );
     }
 
     const NUM_SAMPLES = 3;
@@ -884,7 +911,7 @@ describe('MarketOperationUtils tests', () => {
                 );
                 const improvedOrders = improvedOrdersResponse.optimizedOrders;
                 expect(improvedOrders).to.be.length(3);
-                const orderFillSources = improvedOrders.map(o => o.fills.map(f => f.source));
+                const orderFillSources = getSortedOrderSources(MarketOperation.Sell, improvedOrders);
                 expect(orderFillSources).to.deep.eq([
                     [ERC20BridgeSource.Uniswap],
                     [ERC20BridgeSource.Native],
@@ -1261,8 +1288,8 @@ describe('MarketOperationUtils tests', () => {
             it('batches contiguous bridge sources', async () => {
                 const rates: RatesBySource = { ...ZERO_RATES };
                 rates[ERC20BridgeSource.Native] = [0.5, 0.01, 0.01, 0.01];
-                rates[ERC20BridgeSource.Eth2Dai] = [0.48, 0.02, 0.01, 0.01];
-                rates[ERC20BridgeSource.Uniswap] = [0.47, 0.01, 0.01, 0.01];
+                rates[ERC20BridgeSource.Eth2Dai] = [0.49, 0.02, 0.01, 0.01];
+                rates[ERC20BridgeSource.Uniswap] = [0.48, 0.01, 0.01, 0.01];
                 replaceSamplerOps({
                     getBuyQuotes: createGetMultipleBuyQuotesOperationFromRates(rates),
                 });
@@ -1277,7 +1304,7 @@ describe('MarketOperationUtils tests', () => {
                 );
                 const improvedOrders = improvedOrdersResponse.optimizedOrders;
                 expect(improvedOrders).to.be.length(2);
-                const orderFillSources = improvedOrders.map(o => o.fills.map(f => f.source));
+                const orderFillSources = getSortedOrderSources(MarketOperation.Sell, improvedOrders);
                 expect(orderFillSources).to.deep.eq([
                     [ERC20BridgeSource.Native],
                     [ERC20BridgeSource.Eth2Dai, ERC20BridgeSource.Uniswap],
