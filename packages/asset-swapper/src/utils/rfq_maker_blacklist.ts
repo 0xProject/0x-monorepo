@@ -24,15 +24,10 @@ export class RfqMakerBlacklist {
         }
     }
     public isMakerBlacklisted(makerUrl: string): boolean {
-        if (this._makerBlacklistedUntilDate.hasOwnProperty(makerUrl)) {
-            if (this._makerBlacklistedUntilDate[makerUrl] > Date.now()) {
-                delete this._makerBlacklistedUntilDate[makerUrl];
-                return false;
-            } else {
-                return true;
-            }
-        } else {
-            return false;
+        const now = Date.now();
+        if (now > this._makerBlacklistedUntilDate[makerUrl]) {
+            delete this._makerBlacklistedUntilDate[makerUrl];
         }
+        return this._makerBlacklistedUntilDate[makerUrl] > now;
     }
 }
