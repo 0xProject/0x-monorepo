@@ -39,6 +39,7 @@ import {
     OptimizerResult,
     OrderDomain,
     TokenAdjacencyGraph,
+    FillData,
 } from './types';
 
 // tslint:disable:boolean-naming
@@ -85,6 +86,33 @@ export class MarketOperationUtils {
     ) {
         this._wethAddress = contractAddresses.etherToken.toLowerCase();
         this._multiBridge = contractAddresses.multiBridge.toLowerCase();
+    }
+
+    public async getSampleAmountsAsync(
+        sampleAmounts: BigNumber[],
+        tokenPairs: [string, string][]
+    ): Promise<DexSample<FillData>[][][]> {
+        const _opts = DEFAULT_GET_MARKET_ORDERS_OPTS;
+        const quoteRequests = [];
+        for(const tokenPair of tokenPairs) {
+            const [makerToken, takerToken] = tokenPair;
+            const sellQuote = this._sampler.getSellQuotes(
+                difference(
+                    SELL_SOURCES.concat(this._optionalSources()),
+                    _opts.excludedSources,
+                ),
+                makerToken,
+                takerToken,
+                sampleAmounts,
+                this._wethAddress,
+                this._liquidityProviderRegistry,
+                this._multiBridge,
+            );
+            quoteRequests.push(sellQuote);
+        }
+        const samplerPromise = this._sampler.executeAsync(...quoteRequests);
+        const dexDatas = await samplerPromise;
+        return dexDatas;
     }
 
     /**

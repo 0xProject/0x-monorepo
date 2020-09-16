@@ -47,11 +47,12 @@ export class SwapQuoter {
     public readonly expiryBufferMs: number;
     public readonly chainId: number;
     public readonly permittedOrderFeeTypes: Set<OrderPrunerPermittedFeeTypes>;
+    public readonly marketOperationUtils: MarketOperationUtils;
+
     private readonly _contractAddresses: ContractAddresses;
     private readonly _protocolFeeUtils: ProtocolFeeUtils;
     private readonly _swapQuoteCalculator: SwapQuoteCalculator;
     private readonly _devUtilsContract: DevUtilsContract;
-    private readonly _marketOperationUtils: MarketOperationUtils;
     private readonly _orderStateUtils: OrderStateUtils;
     private readonly _rfqtOptions?: SwapQuoterRfqtOpts;
 
@@ -202,7 +203,7 @@ export class SwapQuoter {
                 gas: samplerGasLimit,
             },
         );
-        this._marketOperationUtils = new MarketOperationUtils(
+        this.marketOperationUtils = new MarketOperationUtils(
             new DexOrderSampler(samplerContract, samplerOverrides, provider),
             this._contractAddresses,
             {
@@ -212,7 +213,7 @@ export class SwapQuoter {
             liquidityProviderRegistryAddress,
             tokenAdjacencyGraph,
         );
-        this._swapQuoteCalculator = new SwapQuoteCalculator(this._marketOperationUtils);
+        this._swapQuoteCalculator = new SwapQuoteCalculator(this.marketOperationUtils);
     }
 
     /**
@@ -476,12 +477,12 @@ export class SwapQuoter {
             ];
         };
         const [bids, asks] = await Promise.all([
-            this._marketOperationUtils.getMarketBuyLiquidityAsync(
+            this.marketOperationUtils.getMarketBuyLiquidityAsync(
                 (buyOrders || []).map(o => o.order),
                 takerAssetAmount,
                 options,
             ),
-            this._marketOperationUtils.getMarketSellLiquidityAsync(
+            this.marketOperationUtils.getMarketSellLiquidityAsync(
                 (sellOrders || []).map(o => o.order),
                 takerAssetAmount,
                 options,
