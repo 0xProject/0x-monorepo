@@ -45,6 +45,7 @@ import * as MultiAssetProxy from '../test/generated-artifacts/MultiAssetProxy.js
 import * as Ownable from '../test/generated-artifacts/Ownable.json';
 import * as StaticCallProxy from '../test/generated-artifacts/StaticCallProxy.json';
 import * as SushiSwapBridge from '../test/generated-artifacts/SushiSwapBridge.json';
+import * as SwerveBridge from '../test/generated-artifacts/SwerveBridge.json';
 import * as TestBancorBridge from '../test/generated-artifacts/TestBancorBridge.json';
 import * as TestChaiBridge from '../test/generated-artifacts/TestChaiBridge.json';
 import * as TestDexForwarderBridge from '../test/generated-artifacts/TestDexForwarderBridge.json';
@@ -79,6 +80,7 @@ export const artifacts = {
     MixinGasToken: MixinGasToken as ContractArtifact,
     MooniswapBridge: MooniswapBridge as ContractArtifact,
     SushiSwapBridge: SushiSwapBridge as ContractArtifact,
+    SwerveBridge: SwerveBridge as ContractArtifact,
     UniswapBridge: UniswapBridge as ContractArtifact,
     UniswapV2Bridge: UniswapV2Bridge as ContractArtifact,
     IAssetData: IAssetData as ContractArtifact,

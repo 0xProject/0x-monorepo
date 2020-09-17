@@ -29,11 +29,14 @@ contract MixinAdapterAddresses
         address mooniswapBridge;
         address mStableBridge;
         address oasisBridge;
+        address swerveBridge;
+        address sushiswapBridge;
         address uniswapBridge;
         address uniswapV2Bridge;
         // Exchanges
         address kyberNetworkProxy;
         address oasis;
+        address sushiswapV2Router;
         address uniswapV2Router;
         address uniswapExchangeFactory;
         address mStable;

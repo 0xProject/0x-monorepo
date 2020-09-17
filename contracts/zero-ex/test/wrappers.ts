@@ -61,6 +61,7 @@ export * from '../test/generated-wrappers/mixin_kyber';
 export * from '../test/generated-wrappers/mixin_m_stable';
 export * from '../test/generated-wrappers/mixin_mooniswap';
 export * from '../test/generated-wrappers/mixin_oasis';
+export * from '../test/generated-wrappers/mixin_sushiswap';
 export * from '../test/generated-wrappers/mixin_uniswap';
 export * from '../test/generated-wrappers/mixin_uniswap_v2';
 export * from '../test/generated-wrappers/mixin_zero_ex_bridge';
