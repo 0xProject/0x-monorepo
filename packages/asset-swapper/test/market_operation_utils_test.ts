@@ -26,6 +26,7 @@ import {
 } from '../src/utils/market_operation_utils/constants';
 import { createFillPaths } from '../src/utils/market_operation_utils/fills';
 import { DexOrderSampler } from '../src/utils/market_operation_utils/sampler';
+import { BATCH_SOURCE_FILTERS } from '../src/utils/market_operation_utils/sampler_operations';
 import {
     DexSample,
     ERC20BridgeSource,
@@ -53,7 +54,7 @@ const BUY_SOURCES = BUY_SOURCE_FILTER.sources;
 const SELL_SOURCES = SELL_SOURCE_FILTER.sources;
 
 // tslint:disable: custom-no-magic-numbers promise-function-async
-describe.only('MarketOperationUtils tests', () => {
+describe('MarketOperationUtils tests', () => {
     const CHAIN_ID = 1;
     const contractAddresses = { ...getContractAddressesForChainOrThrow(CHAIN_ID), multiBridge: NULL_ADDRESS };
 
@@ -181,7 +182,7 @@ describe.only('MarketOperationUtils tests', () => {
             fillAmounts: BigNumber[],
             _wethAddress: string,
         ) => {
-            return sources.map(s => createSamplesFromRates(s, fillAmounts, rates[s]));
+            return BATCH_SOURCE_FILTERS.getAllowed(sources).map(s => createSamplesFromRates(s, fillAmounts, rates[s]));
         };
     }
 
@@ -223,7 +224,9 @@ describe.only('MarketOperationUtils tests', () => {
             fillAmounts: BigNumber[],
             _wethAddress: string,
         ) => {
-            return sources.map(s => createSamplesFromRates(s, fillAmounts, rates[s].map(r => new BigNumber(1).div(r))));
+            return BATCH_SOURCE_FILTERS.getAllowed(sources).map(s =>
+                createSamplesFromRates(s, fillAmounts, rates[s].map(r => new BigNumber(1).div(r))),
+            );
         };
     }
 
@@ -344,6 +347,8 @@ describe.only('MarketOperationUtils tests', () => {
         [ERC20BridgeSource.LiquidityProvider]: { poolAddress: randomAddress() },
         [ERC20BridgeSource.SushiSwap]: { tokenAddressPath: [] },
         [ERC20BridgeSource.Mooniswap]: { poolAddress: randomAddress() },
+        [ERC20BridgeSource.Native]: { order: createOrder() },
+        [ERC20BridgeSource.MultiHop]: {},
     };
 
     const DEFAULT_OPS = {
@@ -508,7 +513,7 @@ describe.only('MarketOperationUtils tests', () => {
                     ...DEFAULT_OPTS,
                     excludedSources: [],
                 });
-                expect(sourcesPolled.sort()).to.deep.equals(SELL_SOURCES.slice().sort());
+                expect(_.uniq(sourcesPolled).sort()).to.deep.equals(SELL_SOURCES.slice().sort());
             });
 
             it('polls the liquidity provider when the registry is provided in the arguments', async () => {

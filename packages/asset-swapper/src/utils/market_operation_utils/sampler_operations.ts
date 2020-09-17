@@ -13,6 +13,7 @@ import { getKyberReserveIdsForPair } from './kyber_utils';
 import { getMultiBridgeIntermediateToken } from './multibridge_utils';
 import { getIntermediateTokens } from './multihop_utils';
 import { SamplerContractOperation } from './sampler_contract_operation';
+import { SourceFilters } from './source_filters';
 import {
     BalancerFillData,
     BancorFillData,
@@ -34,6 +35,19 @@ import {
     TokenAdjacencyGraph,
     UniswapV2FillData,
 } from './types';
+
+/**
+ * Source filters for `getTwoHopBuyQuotes()` and `getTwoHopSellQuotes()`.
+ */
+export const TWO_HOP_SOURCE_FILTERS = SourceFilters.all().exclude([
+    ERC20BridgeSource.MultiHop,
+    ERC20BridgeSource.MultiBridge,
+    ERC20BridgeSource.Native,
+]);
+/**
+ * Source filters for `getSellQuotes()` and `getBuyQuotes()`.
+ */
+export const BATCH_SOURCE_FILTERS = SourceFilters.all().exclude([ERC20BridgeSource.MultiHop, ERC20BridgeSource.Native]);
 
 // tslint:disable:no-inferred-empty-object-type no-unbound-method
 
@@ -553,10 +567,14 @@ export class SamplerOperations {
         wethAddress: string,
         liquidityProviderRegistryAddress?: string,
     ): BatchedOperation<Array<DexSample<MultiHopFillData>>> {
+        const _sources = TWO_HOP_SOURCE_FILTERS.getAllowed(sources);
+        if (_sources.length === 0) {
+            return SamplerOperations.constant([]);
+        }
         const intermediateTokens = getIntermediateTokens(makerToken, takerToken, tokenAdjacencyGraph, wethAddress);
         const subOps = intermediateTokens.map(intermediateToken => {
             const firstHopOps = this._getSellQuoteOperations(
-                sources,
+                _sources,
                 intermediateToken,
                 takerToken,
                 [ZERO_AMOUNT],
@@ -564,7 +582,7 @@ export class SamplerOperations {
                 liquidityProviderRegistryAddress,
             );
             const secondHopOps = this._getSellQuoteOperations(
-                sources,
+                _sources,
                 makerToken,
                 intermediateToken,
                 [ZERO_AMOUNT],
@@ -624,10 +642,14 @@ export class SamplerOperations {
         wethAddress: string,
         liquidityProviderRegistryAddress?: string,
     ): BatchedOperation<Array<DexSample<MultiHopFillData>>> {
+        const _sources = TWO_HOP_SOURCE_FILTERS.getAllowed(sources);
+        if (_sources.length === 0) {
+            return SamplerOperations.constant([]);
+        }
         const intermediateTokens = getIntermediateTokens(makerToken, takerToken, tokenAdjacencyGraph, wethAddress);
         const subOps = intermediateTokens.map(intermediateToken => {
             const firstHopOps = this._getBuyQuoteOperations(
-                sources,
+                _sources,
                 intermediateToken,
                 takerToken,
                 [new BigNumber(0)],
@@ -635,7 +657,7 @@ export class SamplerOperations {
                 liquidityProviderRegistryAddress,
             );
             const secondHopOps = this._getBuyQuoteOperations(
-                sources,
+                _sources,
                 makerToken,
                 intermediateToken,
                 [new BigNumber(0)],
@@ -776,8 +798,9 @@ export class SamplerOperations {
         liquidityProviderRegistryAddress?: string,
         multiBridgeAddress?: string,
     ): BatchedOperation<DexSample[][]> {
+        const _sources = BATCH_SOURCE_FILTERS.getAllowed(sources);
         const subOps = this._getSellQuoteOperations(
-            sources,
+            _sources,
             makerToken,
             takerToken,
             takerFillAmounts,
@@ -816,8 +839,9 @@ export class SamplerOperations {
         wethAddress: string,
         liquidityProviderRegistryAddress?: string,
     ): BatchedOperation<DexSample[][]> {
+        const _sources = BATCH_SOURCE_FILTERS.getAllowed(sources);
         const subOps = this._getBuyQuoteOperations(
-            sources,
+            _sources,
             makerToken,
             takerToken,
             makerFillAmounts,

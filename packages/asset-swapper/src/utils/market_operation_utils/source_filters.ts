@@ -10,6 +10,10 @@ export class SourceFilters {
     // Sources in `_validSources` that are only allowed.
     private readonly _includedSources: ERC20BridgeSource[];
 
+    public static all(): SourceFilters {
+        return new SourceFilters(Object.values(ERC20BridgeSource));
+    }
+
     constructor(
         validSources: ERC20BridgeSource[] = [],
         excludedSources: ERC20BridgeSource[] = [],

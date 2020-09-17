@@ -155,9 +155,7 @@ export class MarketOperationUtils {
             ),
             // Get sell quotes for taker -> maker.
             this._sampler.getSellQuotes(
-                quoteSourceFilters
-                    .exclude(sampleBalancerOnChain ? [] : ERC20BridgeSource.Balancer)
-                    .exclude(ERC20BridgeSource.MultiHop).sources,
+                quoteSourceFilters.exclude(sampleBalancerOnChain ? [] : ERC20BridgeSource.Balancer).sources,
                 makerToken,
                 takerToken,
                 sampleAmounts,
@@ -166,9 +164,7 @@ export class MarketOperationUtils {
                 this._multiBridge,
             ),
             this._sampler.getTwoHopSellQuotes(
-                quoteSourceFilters.isAllowed(ERC20BridgeSource.MultiHop)
-                    ? quoteSourceFilters.exclude([ERC20BridgeSource.MultiBridge, ERC20BridgeSource.MultiHop]).sources
-                    : [],
+                quoteSourceFilters.isAllowed(ERC20BridgeSource.MultiHop) ? quoteSourceFilters.sources : [],
                 makerToken,
                 takerToken,
                 takerAmount,
@@ -275,9 +271,7 @@ export class MarketOperationUtils {
             ),
             // Get buy quotes for taker -> maker.
             this._sampler.getBuyQuotes(
-                quoteSourceFilters
-                    .exclude(sampleBalancerOnChain ? [] : ERC20BridgeSource.Balancer)
-                    .exclude(ERC20BridgeSource.MultiHop).sources,
+                quoteSourceFilters.exclude(sampleBalancerOnChain ? [] : ERC20BridgeSource.Balancer).sources,
                 makerToken,
                 takerToken,
                 sampleAmounts,
@@ -285,9 +279,7 @@ export class MarketOperationUtils {
                 this._liquidityProviderRegistry,
             ),
             this._sampler.getTwoHopBuyQuotes(
-                quoteSourceFilters.isAllowed(ERC20BridgeSource.MultiHop)
-                    ? quoteSourceFilters.exclude([ERC20BridgeSource.MultiBridge, ERC20BridgeSource.MultiHop]).sources
-                    : [],
+                quoteSourceFilters.isAllowed(ERC20BridgeSource.MultiHop) ? quoteSourceFilters.sources : [],
                 makerToken,
                 takerToken,
                 makerAmount,

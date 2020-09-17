@@ -9,6 +9,7 @@ import { CurveFunctionSelectors, CurveInfo, ERC20BridgeSource, GetMarketOrdersOp
  * Valid sources for market sell.
  */
 export const SELL_SOURCE_FILTER = new SourceFilters([
+    ERC20BridgeSource.Native,
     ERC20BridgeSource.Uniswap,
     ERC20BridgeSource.UniswapV2,
     ERC20BridgeSource.Eth2Dai,
@@ -29,6 +30,7 @@ export const SELL_SOURCE_FILTER = new SourceFilters([
  */
 export const BUY_SOURCE_FILTER = new SourceFilters(
     [
+        ERC20BridgeSource.Native,
         ERC20BridgeSource.Uniswap,
         ERC20BridgeSource.UniswapV2,
         ERC20BridgeSource.Eth2Dai,
