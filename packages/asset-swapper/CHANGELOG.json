@@ -117,6 +117,10 @@
             {
                 "note": "Add `includedSources` support",
                 "pr": 2703
+            },
+            {
+                "note": "Added `Curve` Tripool",
+                "pr": 2708
             }
         ]
     },

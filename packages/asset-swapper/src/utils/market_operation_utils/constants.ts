@@ -118,7 +118,7 @@ export const MAINNET_CURVE_INFOS: { [name: string]: CurveInfo } = {
     DaiUsdcUsdtSusd: {
         exchangeFunctionSelector: CurveFunctionSelectors.exchange_underlying,
         sellQuoteFunctionSelector: CurveFunctionSelectors.get_dy_underlying,
-        buyQuoteFunctionSelector: CurveFunctionSelectors.get_dx_underlying,
+        buyQuoteFunctionSelector: CurveFunctionSelectors.None,
         poolAddress: '0xa5407eae9ba41422680e2e00537571bcc53efbfd',
         tokens: [
             '0x6b175474e89094c44da98b954eedeac495271d0f',
@@ -143,6 +143,17 @@ export const MAINNET_CURVE_INFOS: { [name: string]: CurveInfo } = {
             '0xeb4c2781e4eba804ce9a9803c67d0893436bb27d',
             '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
             '0xfe18be6b3bd88a2d2a7f928d00292e7a9963cfc6',
+        ],
+    },
+    TriPool: {
+        exchangeFunctionSelector: CurveFunctionSelectors.exchange,
+        sellQuoteFunctionSelector: CurveFunctionSelectors.get_dy,
+        buyQuoteFunctionSelector: CurveFunctionSelectors.None,
+        poolAddress: '0xbebc44782c7db0a1a60cb6fe97d0b483032ff1c7',
+        tokens: [
+            '0x6b175474e89094c44da98b954eedeac495271d0f',
+            '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+            '0xdac17f958d2ee523a2206206994597c13d831ec7',
         ],
     },
 };
