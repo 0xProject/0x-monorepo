@@ -43,19 +43,34 @@ contract UniswapFeature is
     /// @dev AllowanceTarget instance.
     IAllowanceTarget private immutable ALLOWANCE_TARGET;
 
+    // 0xFF + address of the UniswapV2Factory contract.
     uint256 constant private FF_UNISWAP_FACTORY = 0xFF5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f0000000000000000000000;
+    // 0xFF + address of the (Sushiswap) UniswapV2Factory contract.
     uint256 constant private FF_SUSHISWAP_FACTORY = 0xFFC0AEe478e3658e2610c5F7A4A2E1777cE9e4f2Ac0000000000000000000000;
+    // Init code hash of the UniswapV2Pair contract.
     uint256 constant private UNISWAP_PAIR_INIT_CODE_HASH = 0x96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f;
+    // Init code hash of the (Sushiswap) UniswapV2Pair contract.
     uint256 constant private SUSHISWAP_PAIR_INIT_CODE_HASH = 0xe18a34eb0e04b04f7a0ac29a6e80748dca96319b42c54d679cb821dca90c6303;
+    // Mask of the lower 20 bytes of a bytes32.
     uint256 constant private ADDRESS_MASK = 0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff;
+    // ETH pseudo-token address.
     uint256 constant private ETH_TOKEN_ADDRESS_32 = 0x000000000000000000000000eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee;
+    // Maximum token quantity that can be swapped against the UniswapV2Pair contract.
+    uint256 constant private MAX_SWAP_AMOUNT = 2**112;
 
+    // bytes4(keccak256("executeCall(address,bytes)"))
     uint256 constant private ALLOWANCE_TARGET_EXECUTE_CALL_SELECTOR_32 = 0xbca8c7b500000000000000000000000000000000000000000000000000000000;
+    // bytes4(keccak256("getReserves()"))
     uint256 constant private UNISWAP_PAIR_RESERVES_CALL_SELECTOR_32 = 0x0902f1ac00000000000000000000000000000000000000000000000000000000;
+    // bytes4(keccak256("swap(uint256,uint256,address,bytes)"))
     uint256 constant private UNISWAP_PAIR_SWAP_CALL_SELECTOR_32 = 0x022c0d9f00000000000000000000000000000000000000000000000000000000;
+    // bytes4(keccak256("transferFrom(address,address,uint256)"))
     uint256 constant private TRANSFER_FROM_CALL_SELECTOR_32 = 0x23b872dd00000000000000000000000000000000000000000000000000000000;
+    // bytes4(keccak256("withdraw(uint256)"))
     uint256 constant private WETH_WITHDRAW_CALL_SELECTOR_32 = 0x2e1a7d4d00000000000000000000000000000000000000000000000000000000;
+    // bytes4(keccak256("deposit()"))
     uint256 constant private WETH_DEPOSIT_CALL_SELECTOR_32 = 0xd0e30db000000000000000000000000000000000000000000000000000000000;
+    // bytes4(keccak256("transfer(address,uint256)"))
     uint256 constant private ERC20_TRANSFER_CALL_SELECTOR_32 = 0xa9059cbb00000000000000000000000000000000000000000000000000000000;
 
     /// @dev Construct this contract.
@@ -182,7 +197,7 @@ contract UniswapFeature is
 
                 // Call pair.getReserves(), store the results at `0xC00`
                 mstore(0xB00, UNISWAP_PAIR_RESERVES_CALL_SELECTOR_32)
-                if iszero(call(gas(), pair, 0, 0xB00, 0x4, 0xC00, 0x40)) {
+                if iszero(staticcall(gas(), pair, 0xB00, 0x4, 0xC00, 0x40)) {
                     bubbleRevert()
                 }
 
@@ -190,12 +205,21 @@ contract UniswapFeature is
                 let pairSellAmount := buyAmount
                 // Compute the buy amount based on the pair reserves.
                 {
-                    let sellReserve := mload(0xC00)
-                    let buyReserve := mload(0xC20)
-                    // Transpose if pair order is different.
-                    if iszero(pairOrder) {
-                        sellReserve := mload(0xC20)
-                        buyReserve := mload(0xC00)
+                    let sellReserve
+                    let buyReserve
+                    switch iszero(pairOrder)
+                        case 0 {
+                            // Transpose if pair order is different.
+                            sellReserve := mload(0xC00)
+                            buyReserve := mload(0xC20)
+                        }
+                        default {
+                            sellReserve := mload(0xC20)
+                            buyReserve := mload(0xC00)
+                        }
+                    // Ensure that the sellAmount is < 2¹¹².
+                    if gt(pairSellAmount, MAX_SWAP_AMOUNT) {
+                        revert(0, 0)
                     }
                     // Pairs are in the range (0, 2¹¹²) so this shouldn't overflow.
                     // buyAmount = (pairSellAmount * 997 * buyReserve) /
@@ -259,17 +283,19 @@ contract UniswapFeature is
                     bubbleRevert()
                 }
                 // Transfer ETH to the caller.
-                if iszero(call(2300, caller(), buyAmount, 0xB00, 0x0, 0x00, 0x0)) {
+                if iszero(call(gas(), caller(), buyAmount, 0xB00, 0x0, 0x00, 0x0)) {
                     bubbleRevert()
                 }
             }
 
             // Functions ///////////////////////////////////////////////////////
 
+            // Load a token address from the `tokens` calldata argument.
             function loadTokenAddress(idx) -> addr {
                 addr := and(ADDRESS_MASK, calldataload(add(mload(0xA00), mul(idx, 0x20))))
             }
 
+            // Convert ETH pseudo-token addresses to WETH.
             function normalizeToken(token) -> normalized {
                 normalized := token
                 // Translate ETH pseudo-tokens to WETH.
@@ -278,11 +304,29 @@ contract UniswapFeature is
                 }
             }
 
+            // Compute the address of the UniswapV2Pair contract given two
+            // tokens.
             function computePairAddress(tokenA, tokenB) -> pair {
-                // Compute the UniswapV2Pair address
+                // Convert ETH pseudo-token addresses to WETH.
                 tokenA := normalizeToken(tokenA)
                 tokenB := normalizeToken(tokenB)
-                // Correct order of tokens.
+                // There is one contract for every combination of tokens,
+                // which is deployed using CREATE2.
+                // The derivation of this address is given by:
+                //   address(keccak256(abi.encodePacked(
+                //       bytes(0xFF),
+                //       address(UNISWAP_FACTORY_ADDRESS),
+                //       keccak256(abi.encodePacked(
+                //           tokenA < tokenB ? tokenA : tokenB,
+                //           tokenA < tokenB ? tokenB : tokenA,
+                //       )),
+                //       bytes32(UNISWAP_PAIR_INIT_CODE_HASH),
+                //   )));
+
+                // Compute the salt (the hash of the sorted tokens).
+                // Tokens are written in reverse memory order to packed encode
+                // them as two 20-byte values in a 40-byte chunk of memory
+                // starting at 0xB0C.
                 switch lt(tokenA, tokenB)
                     case 0 {
                         mstore(0xB14, tokenA)
@@ -293,6 +337,7 @@ contract UniswapFeature is
                         mstore(0xB00, tokenA)
                     }
                 let salt := keccak256(0xB0C, 0x28)
+                // Compute the pair address by hashing all the components together.
                 switch mload(0xA20) // isSushi
                     case 0 {
                         mstore(0xB00, FF_UNISWAP_FACTORY)
@@ -307,6 +352,7 @@ contract UniswapFeature is
                 pair := and(ADDRESS_MASK, keccak256(0xB00, 0x55))
             }
 
+            // Revert with the return data from the most recent call.
             function bubbleRevert() {
                 returndatacopy(0, 0, returndatasize())
                 revert(0, returndatasize())
