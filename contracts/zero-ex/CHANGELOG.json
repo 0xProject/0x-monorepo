@@ -53,6 +53,10 @@
             {
                 "note": "Add `UniswapFeature`",
                 "pr": 2703
+            },
+            {
+                "note": "Fix versioning (`_encodeVersion()`) bug",
+                "pr": 2703
             }
         ]
     },
