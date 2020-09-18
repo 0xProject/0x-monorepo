@@ -95,16 +95,14 @@ contract EfficientFill {
         ));
         // Unpack signature S and V
         // NOTE: The signature S parameter has one bit of maleability, which
-        // we can use to always force it to an even number. The signature V
+        // we can use to force it to an even or odd number. The signature V
         // parameter can have only two values for a given chain. We use this
         // to pack S and V together in a single `uint256`.
-        uint256 makerSignatureS = makerSignatureSV - (makerSignatureSV & 1);
-        uint256 makerSignatureSV = V_OFFSET + (makerSignatureSV & 1);
         address maker = ecrecover(
             orderHash,
-            makerSignatureV + V_OFFSET,
+            (makerSignatureSV & 1) + V_OFFSET,
             makerSignatureR,
-            makerSignatureS);
+            makerSignatureSV);
         // NOTE: when the signature is invalid, this will (with cryptographic certainty)
         // produce a non-existing address. In that case, the token transferFrom call is
         // expected to fail.
