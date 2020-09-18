@@ -26,6 +26,7 @@ export interface MultiHopReportSource {
     makerAmount: BigNumber;
     takerAmount: BigNumber;
     hopSources: ERC20BridgeSource[];
+    fillData?: FillData;
 }
 
 interface NativeReportSourceBase {
@@ -148,6 +149,7 @@ function _multiHopSampleToReportSource(
             liquiditySource: ERC20BridgeSource.MultiHop,
             makerAmount: ds.input,
             takerAmount: ds.output,
+            fillData: ds.fillData,
             hopSources: [firstHop.source, secondHop.source],
         };
     } else if (marketOperation === MarketOperation.Sell) {
@@ -155,6 +157,7 @@ function _multiHopSampleToReportSource(
             liquiditySource: ERC20BridgeSource.MultiHop,
             makerAmount: ds.output,
             takerAmount: ds.input,
+            fillData: ds.fillData,
             hopSources: [firstHop.source, secondHop.source],
         };
     } else {
