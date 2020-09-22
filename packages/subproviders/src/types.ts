@@ -175,3 +175,9 @@ export interface TrezorConnectResponse {
     id: number;
     success: boolean;
 }
+
+export interface LatticeSubproviderConfig {
+    latticeConnectClient: any;
+    networkId: number;
+    appName: string;
+}

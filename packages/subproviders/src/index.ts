@@ -53,6 +53,7 @@ export {
     MnemonicWalletSubproviderConfigs,
     LedgerGetAddressResult,
     TrezorSubproviderConfig,
+    LatticeSubproviderConfig,
 } from './types';
 
 export { ECSignature, EIP712Object, EIP712ObjectValue, EIP712TypedData, EIP712Types, EIP712Parameter } from '@0x/types';
