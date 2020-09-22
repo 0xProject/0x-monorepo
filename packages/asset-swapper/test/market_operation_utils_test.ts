@@ -557,7 +557,7 @@ describe('MarketOperationUtils tests', () => {
             });
 
             it('does not poll DEXes in `excludedSources`', async () => {
-                const excludedSources = _.sampleSize(SELL_SOURCES, _.random(1, SELL_SOURCES.length));
+                const excludedSources = [ERC20BridgeSource.Uniswap, ERC20BridgeSource.Eth2Dai];
                 let sourcesPolled: ERC20BridgeSource[] = [];
                 replaceSamplerOps({
                     getSellQuotes: (sources, makerToken, takerToken, amounts, wethAddress) => {
@@ -588,7 +588,7 @@ describe('MarketOperationUtils tests', () => {
             });
 
             it('only polls DEXes in `includedSources`', async () => {
-                const includedSources = _.sampleSize(SELL_SOURCES, _.random(1, SELL_SOURCES.length));
+                const includedSources = [ERC20BridgeSource.Uniswap, ERC20BridgeSource.Eth2Dai];
                 let sourcesPolled: ERC20BridgeSource[] = [];
                 replaceSamplerOps({
                     getSellQuotes: (sources, makerToken, takerToken, amounts, wethAddress) => {
@@ -1039,7 +1039,7 @@ describe('MarketOperationUtils tests', () => {
             });
 
             it('does not poll DEXes in `excludedSources`', async () => {
-                const excludedSources = _.sampleSize(BUY_SOURCES, _.random(1, BUY_SOURCES.length));
+                const excludedSources = [ERC20BridgeSource.Uniswap, ERC20BridgeSource.Eth2Dai];
                 let sourcesPolled: ERC20BridgeSource[] = [];
                 replaceSamplerOps({
                     getBuyQuotes: (sources, makerToken, takerToken, amounts, wethAddress) => {
@@ -1070,7 +1070,7 @@ describe('MarketOperationUtils tests', () => {
             });
 
             it('only polls DEXes in `includedSources`', async () => {
-                const includedSources = _.sampleSize(BUY_SOURCES, _.random(1, BUY_SOURCES.length));
+                const includedSources = [ERC20BridgeSource.Uniswap, ERC20BridgeSource.Eth2Dai];
                 let sourcesPolled: ERC20BridgeSource[] = [];
                 replaceSamplerOps({
                     getBuyQuotes: (sources, makerToken, takerToken, amounts, wethAddress) => {
