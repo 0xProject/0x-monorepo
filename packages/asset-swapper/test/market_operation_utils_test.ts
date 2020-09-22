@@ -265,11 +265,7 @@ describe('MarketOperationUtils tests', () => {
     function getSortedOrderSources(side: MarketOperation, orders: OptimizedMarketOrder[]): ERC20BridgeSource[][] {
         return (
             orders
-                // Sort orders by descending rate.
-                .sort((a, b) =>
-                    b.makerAssetAmount.div(b.takerAssetAmount).comparedTo(a.makerAssetAmount.div(a.takerAssetAmount)),
-                )
-                // Then sort fills by descending rate.
+                // Sort fills by descending rate.
                 .map(o => {
                     return o.fills
                         .slice()
