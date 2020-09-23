@@ -129,6 +129,10 @@
             {
                 "note": "Fix Balancer sampling",
                 "pr": 2711
+            },
+            {
+                "note": "Respect max slippage in EP consumer",
+                "pr": 2712
             }
         ]
     },
