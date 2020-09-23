@@ -16,7 +16,7 @@ export function getMinBuyAmount(quote: SwapQuote): BigNumber {
         quote.type === MarketOperation.Sell
             ? BigNumber.sum(...quote.orders.map(o => BigNumber.sum(0, ...o.fills.map(f => f.output))))
             : BigNumber.sum(...quote.orders.map(o => BigNumber.sum(0, ...o.fills.map(f => f.input))));
-    if (totalFillMakerAssetAmount.eq(0)) {
+    if (quote.isTwoHop || totalFillMakerAssetAmount.eq(0)) {
         return quote.worstCaseQuoteInfo.makerAssetAmount;
     }
     if (totalOrderMakerAssetAmount.eq(totalFillMakerAssetAmount)) {
