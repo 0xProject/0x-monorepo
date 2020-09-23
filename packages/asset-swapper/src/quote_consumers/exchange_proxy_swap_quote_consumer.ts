@@ -30,7 +30,7 @@ import { assert } from '../utils/assert';
 import { ERC20BridgeSource, UniswapV2FillData } from '../utils/market_operation_utils/types';
 import { getTokenFromAssetData } from '../utils/utils';
 
-import { getMinBuyAmount } from './utils';
+import { getSwapMinBuyAmount } from './utils';
 
 // tslint:disable-next-line:custom-no-magic-numbers
 const MAX_UINT256 = new BigNumber(2).pow(256).minus(1);
@@ -95,7 +95,7 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
         const sellToken = getTokenFromAssetData(quote.takerAssetData);
         const buyToken = getTokenFromAssetData(quote.makerAssetData);
         const sellAmount = quote.worstCaseQuoteInfo.totalTakerAssetAmount;
-        let minBuyAmount = getMinBuyAmount(quote);
+        let minBuyAmount = getSwapMinBuyAmount(quote);
 
         // VIP routes.
         if (isDirectUniswapCompatible(quote, optsWithDefaults)) {
