@@ -9,7 +9,7 @@ import { MarketOperation, SwapQuote } from '../types';
  * `worstCaseQuoteInfo.makerAssetAmount` because that does not stop at
  * maximum slippage.
  */
-export function getMinBuyAmount(quote: SwapQuote): BigNumber {
+export function getSwapMinBuyAmount(quote: SwapQuote): BigNumber {
     // Infer the allowed maker asset slippage from the orders.
     const totalOrderMakerAssetAmount = BigNumber.sum(...quote.orders.map(o => o.makerAssetAmount));
     const totalFillMakerAssetAmount =
