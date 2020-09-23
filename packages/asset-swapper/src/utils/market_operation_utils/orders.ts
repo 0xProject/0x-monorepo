@@ -291,7 +291,7 @@ function createBridgeOrder(
             makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
                 makerToken,
                 bridgeAddress,
-                createBalancerBridgeData(takerToken, balancerFillData.poolAddress),
+                createBalancerBridgeData(takerToken, makerToken),
             );
             break;
         case ERC20BridgeSource.Bancor:

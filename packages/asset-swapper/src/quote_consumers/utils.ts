@@ -2,6 +2,10 @@ import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { MarketOperation, SwapQuote } from '../types';
+import { ERC20BridgeSource } from '../utils/market_operation_utils/types';
+import { constants } from '../constants';
+
+const { ZERO_AMOUNT } = constants;
 
 /**
  * Compute the mminimum buy token amount for market operations by inferring
@@ -10,19 +14,25 @@ import { MarketOperation, SwapQuote } from '../types';
  * maximum slippage.
  */
 export function getSwapMinBuyAmount(quote: SwapQuote): BigNumber {
-    // Infer the allowed maker asset slippage from the orders.
-    const totalOrderMakerAssetAmount = BigNumber.sum(...quote.orders.map(o => o.makerAssetAmount));
-    const totalFillMakerAssetAmount =
-        quote.type === MarketOperation.Sell
-            ? BigNumber.sum(...quote.orders.map(o => BigNumber.sum(0, ...o.fills.map(f => f.output))))
-            : BigNumber.sum(...quote.orders.map(o => BigNumber.sum(0, ...o.fills.map(f => f.input))));
-    if (quote.isTwoHop || totalFillMakerAssetAmount.eq(0)) {
+    if (quote.type === MarketOperation.Buy || quote.isTwoHop) {
         return quote.worstCaseQuoteInfo.makerAssetAmount;
     }
+    // Infer the allowed maker asset slippage from the orders.
+    const totalOrderMakerAssetAmount = BigNumber.sum(...quote.orders.map(o => o.fillableMakerAssetAmount));
+    let totalFillMakerAssetAmount = ZERO_AMOUNT;
+    for (const o of quote.orders) {
+        if (o.fills.length === 0 || o.fills[0].source === ERC20BridgeSource.Native) {
+            // No slippage on natuve orders.
+            totalFillMakerAssetAmount = totalFillMakerAssetAmount.plus(o.fillableMakerAssetAmount);
+        } else {
+            totalFillMakerAssetAmount = totalFillMakerAssetAmount.plus(BigNumber.sum(...o.fills.map(f => f.output)));
+        }
+    }
     if (totalOrderMakerAssetAmount.eq(totalFillMakerAssetAmount)) {
-        // No slippage allowed on bought tokens.
+        // No slippage allowed across all orders.
         return quote.bestCaseQuoteInfo.makerAssetAmount;
     }
     const slipRatio = totalOrderMakerAssetAmount.div(totalFillMakerAssetAmount);
+    console.log(slipRatio);
     return quote.bestCaseQuoteInfo.makerAssetAmount.times(slipRatio).integerValue(BigNumber.ROUND_DOWN);
 }
