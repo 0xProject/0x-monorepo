@@ -95,7 +95,7 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
         const sellToken = getTokenFromAssetData(quote.takerAssetData);
         const buyToken = getTokenFromAssetData(quote.makerAssetData);
         const sellAmount = quote.worstCaseQuoteInfo.totalTakerAssetAmount;
-        const minBuyAmount = getMinBuyAmount(quote);
+        let minBuyAmount = getMinBuyAmount(quote);
 
         // VIP routes.
         if (isDirectUniswapCompatible(quote, optsWithDefaults)) {
@@ -213,6 +213,8 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
                     ],
                 }),
             });
+            // Adjust the minimum buy amount by the fee.
+            minBuyAmount = BigNumber.max(0, minBuyAmount.minus(buyTokenFeeAmount));
         }
 
         if (sellTokenFeeAmount.isGreaterThan(0) && feeRecipient !== NULL_ADDRESS) {
