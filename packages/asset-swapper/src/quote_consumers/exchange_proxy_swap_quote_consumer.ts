@@ -30,6 +30,8 @@ import { assert } from '../utils/assert';
 import { ERC20BridgeSource, UniswapV2FillData } from '../utils/market_operation_utils/types';
 import { getTokenFromAssetData } from '../utils/utils';
 
+import { getMinBuyAmount } from './utils';
+
 // tslint:disable-next-line:custom-no-magic-numbers
 const MAX_UINT256 = new BigNumber(2).pow(256).minus(1);
 const { NULL_ADDRESS, ZERO_AMOUNT } = constants;
@@ -93,6 +95,7 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
         const sellToken = getTokenFromAssetData(quote.takerAssetData);
         const buyToken = getTokenFromAssetData(quote.makerAssetData);
         const sellAmount = quote.worstCaseQuoteInfo.totalTakerAssetAmount;
+        const minBuyAmount = getMinBuyAmount(quote);
 
         // VIP routes.
         if (isDirectUniswapCompatible(quote, optsWithDefaults)) {
@@ -111,7 +114,7 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
                             return a;
                         }),
                         sellAmount,
-                        quote.worstCaseQuoteInfo.makerAssetAmount,
+                        minBuyAmount,
                         source === ERC20BridgeSource.SushiSwap,
                     )
                     .getABIEncodedTransactionData(),
@@ -225,7 +228,6 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
             }),
         });
 
-        const minBuyAmount = BigNumber.max(0, quote.worstCaseQuoteInfo.makerAssetAmount.minus(buyTokenFeeAmount));
         const calldataHexString = this._exchangeProxy
             .transformERC20(
                 isFromETH ? ETH_TOKEN_ADDRESS : sellToken,
