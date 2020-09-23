@@ -13,6 +13,10 @@
             {
                 "note": "Add `exchangeProxy` to `ContractWrappers` type.",
                 "pr": 2649
+            },
+            {
+                "note": "Regenerate wrappers",
+                "pr": 2703
             }
         ]
     },

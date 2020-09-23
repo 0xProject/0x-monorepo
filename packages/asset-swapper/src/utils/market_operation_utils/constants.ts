@@ -1,5 +1,6 @@
 import { BigNumber } from '@0x/utils';
 
+import { SourceFilters } from './source_filters';
 import { CurveFunctionSelectors, CurveInfo, ERC20BridgeSource, GetMarketOrdersOpts } from './types';
 
 // tslint:disable: custom-no-magic-numbers
@@ -7,7 +8,8 @@ import { CurveFunctionSelectors, CurveInfo, ERC20BridgeSource, GetMarketOrdersOp
 /**
  * Valid sources for market sell.
  */
-export const SELL_SOURCES = [
+export const SELL_SOURCE_FILTER = new SourceFilters([
+    ERC20BridgeSource.Native,
     ERC20BridgeSource.Uniswap,
     ERC20BridgeSource.UniswapV2,
     ERC20BridgeSource.Eth2Dai,
@@ -20,29 +22,36 @@ export const SELL_SOURCES = [
     ERC20BridgeSource.Mooniswap,
     ERC20BridgeSource.Swerve,
     ERC20BridgeSource.SushiSwap,
-];
+    ERC20BridgeSource.MultiHop,
+]);
 
 /**
  * Valid sources for market buy.
  */
-export const BUY_SOURCES = [
-    ERC20BridgeSource.Uniswap,
-    ERC20BridgeSource.UniswapV2,
-    ERC20BridgeSource.Eth2Dai,
-    ERC20BridgeSource.Kyber,
-    ERC20BridgeSource.Curve,
-    ERC20BridgeSource.Balancer,
-    // ERC20BridgeSource.Bancor, // FIXME: Disabled until Bancor SDK supports buy quotes
-    ERC20BridgeSource.MStable,
-    ERC20BridgeSource.Mooniswap,
-    ERC20BridgeSource.Swerve,
-    ERC20BridgeSource.SushiSwap,
-];
+export const BUY_SOURCE_FILTER = new SourceFilters(
+    [
+        ERC20BridgeSource.Native,
+        ERC20BridgeSource.Uniswap,
+        ERC20BridgeSource.UniswapV2,
+        ERC20BridgeSource.Eth2Dai,
+        ERC20BridgeSource.Kyber,
+        ERC20BridgeSource.Curve,
+        ERC20BridgeSource.Balancer,
+        // ERC20BridgeSource.Bancor, // FIXME: Disabled until Bancor SDK supports buy quotes
+        ERC20BridgeSource.MStable,
+        ERC20BridgeSource.Mooniswap,
+        ERC20BridgeSource.Swerve,
+        ERC20BridgeSource.SushiSwap,
+        ERC20BridgeSource.MultiHop,
+    ],
+    [ERC20BridgeSource.MultiBridge],
+);
 
 export const DEFAULT_GET_MARKET_ORDERS_OPTS: GetMarketOrdersOpts = {
     // tslint:disable-next-line: custom-no-magic-numbers
     runLimit: 2 ** 15,
     excludedSources: [],
+    includedSources: [],
     bridgeSlippage: 0.005,
     maxFallbackSlippage: 0.05,
     numSamples: 13,

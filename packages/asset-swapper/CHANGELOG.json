@@ -109,6 +109,14 @@
             {
                 "note": "Added `SushiSwap`",
                 "pr": 2698
+            },
+            {
+                "note": "Add uniswap VIP support",
+                "pr": 2703
+            },
+            {
+                "note": "Add `includedSources` support",
+                "pr": 2703
             }
         ]
     },

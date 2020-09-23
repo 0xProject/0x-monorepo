@@ -81,6 +81,6 @@ abstract contract FixinCommon {
         pure
         returns (uint256 encodedVersion)
     {
-        return (major << 64) | (minor << 32) | revision;
+        return (uint256(major) << 64) | (uint256(minor) << 32) | uint256(revision);
     }
 }

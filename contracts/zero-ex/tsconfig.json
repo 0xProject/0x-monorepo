@@ -52,6 +52,7 @@
         "test/generated-artifacts/ITestSimpleFunctionRegistryFeature.json",
         "test/generated-artifacts/ITokenSpenderFeature.json",
         "test/generated-artifacts/ITransformERC20Feature.json",
+        "test/generated-artifacts/IUniswapFeature.json",
         "test/generated-artifacts/IZeroEx.json",
         "test/generated-artifacts/InitialMigration.json",
         "test/generated-artifacts/LibBootstrap.json",
@@ -117,6 +118,7 @@
         "test/generated-artifacts/TransformERC20Feature.json",
         "test/generated-artifacts/Transformer.json",
         "test/generated-artifacts/TransformerDeployer.json",
+        "test/generated-artifacts/UniswapFeature.json",
         "test/generated-artifacts/WethTransformer.json",
         "test/generated-artifacts/ZeroEx.json"
     ],

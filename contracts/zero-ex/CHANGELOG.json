@@ -49,6 +49,14 @@
             {
                 "note": "Add updated Kyber and Mooniswap rollup to FQT",
                 "pr": 2692
+            },
+            {
+                "note": "Add `UniswapFeature`",
+                "pr": 2703
+            },
+            {
+                "note": "Fix versioning (`_encodeVersion()`) bug",
+                "pr": 2703
             }
         ]
     },

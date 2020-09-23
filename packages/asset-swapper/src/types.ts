@@ -160,6 +160,7 @@ export interface ExchangeProxyContractOpts {
     isToETH: boolean;
     affiliateFee: AffiliateFee;
     refundReceiver: string | ExchangeProxyRefundReceiver;
+    isMetaTransaction: boolean;
 }
 
 export interface GetExtensionContractTypeOpts {

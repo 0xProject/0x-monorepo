@@ -2,8 +2,6 @@ import { BigNumber } from '@0x/utils';
 import { bmath, getPoolsWithTokens, parsePoolData } from '@balancer-labs/sor';
 import { Decimal } from 'decimal.js';
 
-import { ERC20BridgeSource } from './types';
-
 // tslint:disable:boolean-naming
 
 export interface BalancerPool {
@@ -67,10 +65,10 @@ export class BalancerPoolsCache {
     public howToSampleBalancer(
         takerToken: string,
         makerToken: string,
-        excludedSources: ERC20BridgeSource[],
+        isAllowedSource: boolean,
     ): { onChain: boolean; offChain: boolean } {
         // If Balancer is excluded as a source, do not sample.
-        if (excludedSources.includes(ERC20BridgeSource.Balancer)) {
+        if (!isAllowedSource) {
             return { onChain: false, offChain: false };
         }
         const cachedBalancerPools = this.getCachedPoolAddressesForPair(takerToken, makerToken, ONE_DAY_MS);

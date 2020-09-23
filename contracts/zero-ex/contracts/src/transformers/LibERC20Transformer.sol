@@ -29,6 +29,8 @@ library LibERC20Transformer {
 
     /// @dev ETH pseudo-token address.
     address constant internal ETH_TOKEN_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
+    /// @dev ETH pseudo-token.
+    IERC20TokenV06 constant internal ETH_TOKEN = IERC20TokenV06(ETH_TOKEN_ADDRESS);
     /// @dev Return value indicating success in `IERC20Transformer.transform()`.
     ///      This is just `keccak256('TRANSFORMER_SUCCESS')`.
     bytes4 constant internal TRANSFORMER_SUCCESS = 0x13c9929e;

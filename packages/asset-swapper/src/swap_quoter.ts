@@ -27,6 +27,7 @@ import { calculateLiquidity } from './utils/calculate_liquidity';
 import { MarketOperationUtils } from './utils/market_operation_utils';
 import { createDummyOrderForSampler } from './utils/market_operation_utils/orders';
 import { DexOrderSampler } from './utils/market_operation_utils/sampler';
+import { SourceFilters } from './utils/market_operation_utils/source_filters';
 import {
     ERC20BridgeSource,
     MarketDepth,
@@ -421,13 +422,13 @@ export class SwapQuoter {
         assert.isString('takerTokenAddress', takerTokenAddress);
         const makerAssetData = assetDataUtils.encodeERC20AssetData(makerTokenAddress);
         const takerAssetData = assetDataUtils.encodeERC20AssetData(takerTokenAddress);
-        let [sellOrders, buyOrders] =
-            options.excludedSources && options.excludedSources.includes(ERC20BridgeSource.Native)
-                ? [[], []]
-                : await Promise.all([
-                      this.orderbook.getOrdersAsync(makerAssetData, takerAssetData),
-                      this.orderbook.getOrdersAsync(takerAssetData, makerAssetData),
-                  ]);
+        const sourceFilters = new SourceFilters([], options.excludedSources, options.includedSources);
+        let [sellOrders, buyOrders] = !sourceFilters.isAllowed(ERC20BridgeSource.Native)
+            ? [[], []]
+            : await Promise.all([
+                  this.orderbook.getOrdersAsync(makerAssetData, takerAssetData),
+                  this.orderbook.getOrdersAsync(takerAssetData, makerAssetData),
+              ]);
         if (!sellOrders || sellOrders.length === 0) {
             sellOrders = [
                 {
@@ -652,12 +653,14 @@ export class SwapQuoter {
             gasPrice = await this.getGasPriceEstimationOrThrowAsync();
         }
 
+        const sourceFilters = new SourceFilters([], opts.excludedSources, opts.includedSources);
+
         // If RFQT is enabled and `nativeExclusivelyRFQT` is set, then `ERC20BridgeSource.Native` should
         // never be excluded.
         if (
             opts.rfqt &&
             opts.rfqt.nativeExclusivelyRFQT === true &&
-            opts.excludedSources.includes(ERC20BridgeSource.Native)
+            !sourceFilters.isAllowed(ERC20BridgeSource.Native)
         ) {
             throw new Error('Native liquidity cannot be excluded if "rfqt.nativeExclusivelyRFQT" is set');
         }
@@ -666,7 +669,7 @@ export class SwapQuoter {
         const orderBatchPromises: Array<Promise<SignedOrder[]>> = [];
 
         const skipOpenOrderbook =
-            opts.excludedSources.includes(ERC20BridgeSource.Native) ||
+            !sourceFilters.isAllowed(ERC20BridgeSource.Native) ||
             (opts.rfqt && opts.rfqt.nativeExclusivelyRFQT === true);
         if (!skipOpenOrderbook) {
             orderBatchPromises.push(this._getSignedOrdersAsync(makerAssetData, takerAssetData)); // order book
@@ -685,7 +688,7 @@ export class SwapQuoter {
             opts.rfqt.intentOnFilling && // The requestor is asking for a firm quote
             opts.rfqt.apiKey &&
             this._isApiKeyWhitelisted(opts.rfqt.apiKey) && // A valid API key was provided
-            !opts.excludedSources.includes(ERC20BridgeSource.Native) // Native liquidity is not excluded
+            sourceFilters.isAllowed(ERC20BridgeSource.Native) // Native liquidity is not excluded
         ) {
             if (!opts.rfqt.takerAddress || opts.rfqt.takerAddress === constants.NULL_ADDRESS) {
                 throw new Error('RFQ-T requests must specify a taker address');
