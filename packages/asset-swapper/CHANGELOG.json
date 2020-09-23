@@ -121,6 +121,10 @@
             {
                 "note": "Added `Curve` Tripool",
                 "pr": 2708
+            },
+            {
+                "note": "Fix Balancer sampling",
+                "pr": 2711
             }
         ]
     },
