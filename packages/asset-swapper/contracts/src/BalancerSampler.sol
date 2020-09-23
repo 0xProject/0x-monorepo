@@ -27,6 +27,12 @@ contract BalancerSampler {
     /// @dev Base gas limit for Balancer calls.
     uint256 constant private BALANCER_CALL_GAS = 300e3; // 300k
 
+    // Balancer math constants
+    // https://github.com/balancer-labs/balancer-core/blob/master/contracts/BConst.sol
+    uint256 constant private BONE = 10 ** 18;
+    uint256 constant private MAX_IN_RATIO = BONE / 2;
+    uint256 constant private MAX_OUT_RATIO = (BONE / 3) + 1 wei;
+
     struct BalancerState {
         uint256 takerTokenBalance;
         uint256 makerTokenBalance;
@@ -67,6 +73,11 @@ contract BalancerSampler {
         poolState.swapFee = pool.getSwapFee();
 
         for (uint256 i = 0; i < numSamples; i++) {
+            // Handles this revert scenario:
+            // https://github.com/balancer-labs/balancer-core/blob/master/contracts/BPool.sol#L443
+            if (takerTokenAmounts[i] > _bmul(poolState.takerTokenBalance, MAX_IN_RATIO)) {
+                break;
+            }
             (bool didSucceed, bytes memory resultData) =
                 poolAddress.staticcall.gas(BALANCER_CALL_GAS)(
                     abi.encodeWithSelector(
@@ -120,6 +131,11 @@ contract BalancerSampler {
         poolState.swapFee = pool.getSwapFee();
 
         for (uint256 i = 0; i < numSamples; i++) {
+            // Handles this revert scenario:
+            // https://github.com/balancer-labs/balancer-core/blob/master/contracts/BPool.sol#L505
+            if (makerTokenAmounts[i] > _bmul(poolState.makerTokenBalance, MAX_OUT_RATIO)) {
+                break;
+            }
             (bool didSucceed, bytes memory resultData) =
                 poolAddress.staticcall.gas(BALANCER_CALL_GAS)(
                     abi.encodeWithSelector(
@@ -139,5 +155,28 @@ contract BalancerSampler {
             }
             takerTokenAmounts[i] = sellAmount;
         }
+    }
+
+    /// @dev Hacked version of Balancer's `bmul` function, returning 0 instead
+    ///      of reverting.
+    ///      https://github.com/balancer-labs/balancer-core/blob/master/contracts/BNum.sol#L63-L73
+    /// @param a The first operand.
+    /// @param b The second operand.
+    /// @param c The result of the multiplication, or 0 if `bmul` would've reverted.
+    function _bmul(uint256 a, uint256 b)
+        private
+        pure
+        returns (uint256 c)
+    {
+        uint c0 = a * b;
+        if (a != 0 && c0 / a != b) {
+            return 0;
+        }
+        uint c1 = c0 + (BONE / 2);
+        if (c1 < c0) {
+            return 0;
+        }
+        uint c2 = c1 / BONE;
+        return c2;
     }
 }
