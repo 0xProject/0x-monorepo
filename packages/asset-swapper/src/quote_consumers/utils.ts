@@ -1,9 +1,9 @@
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
+import { constants } from '../constants';
 import { MarketOperation, SwapQuote } from '../types';
 import { ERC20BridgeSource } from '../utils/market_operation_utils/types';
-import { constants } from '../constants';
 
 const { ZERO_AMOUNT } = constants;
 
@@ -19,6 +19,7 @@ export function getSwapMinBuyAmount(quote: SwapQuote): BigNumber {
     }
     // Infer the allowed maker asset slippage from the orders.
     const totalOrderMakerAssetAmount = BigNumber.sum(...quote.orders.map(o => o.fillableMakerAssetAmount));
+    // tslint:disable: prefer-conditional-expression
     let totalFillMakerAssetAmount = ZERO_AMOUNT;
     for (const o of quote.orders) {
         if (o.fills.length === 0 || o.fills[0].source === ERC20BridgeSource.Native) {
@@ -28,11 +29,11 @@ export function getSwapMinBuyAmount(quote: SwapQuote): BigNumber {
             totalFillMakerAssetAmount = totalFillMakerAssetAmount.plus(BigNumber.sum(...o.fills.map(f => f.output)));
         }
     }
+    // tslint:enable: prefer-conditional-expression
     if (totalOrderMakerAssetAmount.eq(totalFillMakerAssetAmount)) {
         // No slippage allowed across all orders.
         return quote.bestCaseQuoteInfo.makerAssetAmount;
     }
     const slipRatio = totalOrderMakerAssetAmount.div(totalFillMakerAssetAmount);
-    console.log(slipRatio);
     return quote.bestCaseQuoteInfo.makerAssetAmount.times(slipRatio).integerValue(BigNumber.ROUND_DOWN);
 }
