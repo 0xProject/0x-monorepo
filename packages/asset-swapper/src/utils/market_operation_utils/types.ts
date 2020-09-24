@@ -4,7 +4,6 @@ import { BigNumber } from '@0x/utils';
 
 import { RfqtRequestOpts, SignedOrderWithFillableAmounts } from '../../types';
 import { QuoteRequestor } from '../../utils/quote_requestor';
-import { QuoteReport } from '../quote_report_generator';
 
 /**
  * Order domain keys: chainId and exchange
@@ -322,7 +321,7 @@ export interface SourceQuoteOperation<TFillData extends FillData = FillData>
 export interface OptimizerResult {
     optimizedOrders: OptimizedMarketOrder[];
     isTwoHop: boolean;
-    quoteReport?: QuoteReport;
+    liquidityDelivered: CollapsedFill[] | DexSample<MultiHopFillData>;
 }
 
 export type MarketDepthSide = Array<Array<DexSample<FillData>>>;
