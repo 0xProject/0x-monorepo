@@ -56,21 +56,25 @@ describe('generateQuoteReport', async () => {
             source: ERC20BridgeSource.Kyber,
             input: new BigNumber(10000),
             output: new BigNumber(10001),
+            fillData: {},
         };
         const kyberSample2: DexSample = {
             source: ERC20BridgeSource.Kyber,
             input: new BigNumber(10003),
             output: new BigNumber(10004),
+            fillData: {},
         };
         const uniswapSample1: DexSample = {
             source: ERC20BridgeSource.UniswapV2,
             input: new BigNumber(10003),
             output: new BigNumber(10004),
+            fillData: {},
         };
         const uniswapSample2: DexSample = {
             source: ERC20BridgeSource.UniswapV2,
             input: new BigNumber(10005),
             output: new BigNumber(10006),
+            fillData: {},
         };
         const dexQuotes: DexSample[] = [kyberSample1, kyberSample2, uniswapSample1, uniswapSample2];
 
@@ -178,21 +182,25 @@ describe('generateQuoteReport', async () => {
             liquiditySource: ERC20BridgeSource.UniswapV2,
             makerAmount: uniswapSample1.output,
             takerAmount: uniswapSample1.input,
+            fillData: {},
         };
         const uniswap2Source: BridgeReportSource = {
             liquiditySource: ERC20BridgeSource.UniswapV2,
             makerAmount: uniswapSample2.output,
             takerAmount: uniswapSample2.input,
+            fillData: {},
         };
         const kyber1Source: BridgeReportSource = {
             liquiditySource: ERC20BridgeSource.Kyber,
             makerAmount: kyberSample1.output,
             takerAmount: kyberSample1.input,
+            fillData: {},
         };
         const kyber2Source: BridgeReportSource = {
             liquiditySource: ERC20BridgeSource.Kyber,
             makerAmount: kyberSample2.output,
             takerAmount: kyberSample2.input,
+            fillData: {},
         };
 
         const expectedSourcesConsidered: QuoteReportSource[] = [
@@ -246,11 +254,13 @@ describe('generateQuoteReport', async () => {
             source: ERC20BridgeSource.Kyber,
             input: new BigNumber(10000),
             output: new BigNumber(10001),
+            fillData: {},
         };
         const uniswapSample1: DexSample = {
             source: ERC20BridgeSource.UniswapV2,
             input: new BigNumber(10003),
             output: new BigNumber(10004),
+            fillData: {},
         };
         const dexQuotes: DexSample[] = [kyberSample1, uniswapSample1];
 
@@ -302,11 +312,13 @@ describe('generateQuoteReport', async () => {
             liquiditySource: ERC20BridgeSource.UniswapV2,
             makerAmount: uniswapSample1.input,
             takerAmount: uniswapSample1.output,
+            fillData: {},
         };
         const kyber1Source: BridgeReportSource = {
             liquiditySource: ERC20BridgeSource.Kyber,
             makerAmount: kyberSample1.input,
             takerAmount: kyberSample1.output,
+            fillData: {},
         };
 
         const expectedSourcesConsidered: QuoteReportSource[] = [
@@ -347,6 +359,7 @@ describe('generateQuoteReport', async () => {
             source: ERC20BridgeSource.Kyber,
             input: new BigNumber(10000),
             output: new BigNumber(10001),
+            fillData: {},
         };
 
         const orderbookOrder1FillableAmount = new BigNumber(1000);
@@ -355,23 +368,25 @@ describe('generateQuoteReport', async () => {
             takerAssetAmount: orderbookOrder1FillableAmount.plus(101),
         });
 
+        const twoHopFillData: MultiHopFillData = {
+            intermediateToken: hexUtils.random(20),
+            firstHopSource: {
+                source: ERC20BridgeSource.Balancer,
+                encodeCall: () => '',
+                handleCallResults: _callResults => [new BigNumber(1337)],
+            },
+            secondHopSource: {
+                source: ERC20BridgeSource.Curve,
+                encodeCall: () => '',
+                handleCallResults: _callResults => [new BigNumber(1337)],
+            },
+        };
+
         const twoHopSample: DexSample<MultiHopFillData> = {
             source: ERC20BridgeSource.MultiHop,
             input: new BigNumber(3005),
             output: new BigNumber(3006),
-            fillData: {
-                intermediateToken: hexUtils.random(20),
-                firstHopSource: {
-                    source: ERC20BridgeSource.Balancer,
-                    encodeCall: () => '',
-                    handleCallResults: _callResults => [new BigNumber(1337)],
-                },
-                secondHopSource: {
-                    source: ERC20BridgeSource.Curve,
-                    encodeCall: () => '',
-                    handleCallResults: _callResults => [new BigNumber(1337)],
-                },
-            },
+            fillData: twoHopFillData,
         };
 
         const orderReport = generateQuoteReport(
@@ -394,12 +409,14 @@ describe('generateQuoteReport', async () => {
             liquiditySource: ERC20BridgeSource.Kyber,
             makerAmount: kyberSample1.output,
             takerAmount: kyberSample1.input,
+            fillData: {},
         };
         const twoHopSource: MultiHopReportSource = {
             liquiditySource: ERC20BridgeSource.MultiHop,
             makerAmount: twoHopSample.output,
             takerAmount: twoHopSample.input,
             hopSources: [ERC20BridgeSource.Balancer, ERC20BridgeSource.Curve],
+            fillData: twoHopFillData,
         };
 
         const expectedSourcesConsidered: QuoteReportSource[] = [kyber1Source, orderbookOrder1Source, twoHopSource];

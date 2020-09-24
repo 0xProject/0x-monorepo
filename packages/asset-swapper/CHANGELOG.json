@@ -121,6 +121,10 @@
             {
                 "note": "Added `Curve` Tripool",
                 "pr": 2708
+            },
+            {
+                "note": "Pass back fillData from quote reporter",
+                "pr": 2702
             }
         ]
     },
