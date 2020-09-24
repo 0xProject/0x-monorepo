@@ -7,7 +7,7 @@ import * as _ from 'lodash';
 import { MarketOperation } from '../../types';
 import { QuoteRequestor } from '../quote_requestor';
 
-import { generateQuoteReport } from './../quote_report_generator';
+import { generateQuoteReport, QuoteReport } from './../quote_report_generator';
 import {
     BUY_SOURCE_FILTER,
     DEFAULT_GET_MARKET_ORDERS_OPTS,
@@ -40,6 +40,7 @@ import {
     OptimizerResult,
     OrderDomain,
     TokenAdjacencyGraph,
+    OptimizerResultWithReport,
 } from './types';
 
 // tslint:disable:boolean-naming
@@ -79,10 +80,10 @@ export class MarketOperationUtils {
     private readonly _buySources: SourceFilters;
     private readonly _feeSources = new SourceFilters(FEE_QUOTE_SOURCES);
 
-    private static _computeQuoteReport(nativeOrders: SignedOrder[], quoteRequestor: QuoteRequestor, marketSideLiquidity: MarketSideLiquidity, optimizerResult: OptimizerResult): void {
+    private static _computeQuoteReport(nativeOrders: SignedOrder[], quoteRequestor: QuoteRequestor, marketSideLiquidity: MarketSideLiquidity, optimizerResult: OptimizerResult): QuoteReport {
         const {side, dexQuotes, twoHopQuotes, orderFillableAmounts } = marketSideLiquidity;
         const { liquidityDelivered } = optimizerResult;
-        generateQuoteReport(
+        return generateQuoteReport(
             side,
             _.flatten(dexQuotes),
             twoHopQuotes,
@@ -354,11 +355,10 @@ export class MarketOperationUtils {
         nativeOrders: SignedOrder[],
         takerAmount: BigNumber,
         opts?: Partial<GetMarketOrdersOpts>,
-        gasPrice?: BigNumber,
-    ): Promise<OptimizerResult> {
+    ): Promise<OptimizerResultWithReport> {
         const defaultOpts = { ...DEFAULT_GET_MARKET_ORDERS_OPTS, ...opts };
         const marketSideLiquidity = await this.getMarketSellLiquidityAsync(nativeOrders, takerAmount, defaultOpts);
-        const optimizedOrders = await this._generateOptimizedOrdersAsync(marketSideLiquidity, {
+        const optimizerResult = await this._generateOptimizedOrdersAsync(marketSideLiquidity, {
             bridgeSlippage: defaultOpts.bridgeSlippage,
             maxFallbackSlippage: defaultOpts.maxFallbackSlippage,
             excludedSources: defaultOpts.excludedSources,
@@ -366,10 +366,12 @@ export class MarketOperationUtils {
             allowFallback: defaultOpts.allowFallback,
             shouldBatchBridgeOrders: defaultOpts.shouldBatchBridgeOrders,
         });
+
+        let quoteReport: QuoteReport | undefined;
         if (defaultOpts.shouldGenerateQuoteReport && defaultOpts.rfqt && defaultOpts.rfqt.quoteRequestor) {
-            MarketOperationUtils._computeQuoteReport(nativeOrders, defaultOpts.rfqt.quoteRequestor, marketSideLiquidity, optimizedResult);
+            quoteReport = MarketOperationUtils._computeQuoteReport(nativeOrders, defaultOpts.rfqt.quoteRequestor, marketSideLiquidity, optimizerResult);
         }
-        return optimizedOrders;
+        return {...optimizerResult, quoteReport};
     }
 
     /**
@@ -384,10 +386,10 @@ export class MarketOperationUtils {
         nativeOrders: SignedOrder[],
         makerAmount: BigNumber,
         opts?: Partial<GetMarketOrdersOpts>,
-    ): Promise<OptimizerResult> {
+    ): Promise<OptimizerResultWithReport> {
         const defaultOpts = { ...DEFAULT_GET_MARKET_ORDERS_OPTS, ...opts };
         const marketSideLiquidity = await this.getMarketBuyLiquidityAsync(nativeOrders, makerAmount, defaultOpts);
-        const optimizedResult = await this._generateOptimizedOrdersAsync(marketSideLiquidity, {
+        const optimizerResult = await this._generateOptimizedOrdersAsync(marketSideLiquidity, {
             bridgeSlippage: defaultOpts.bridgeSlippage,
             maxFallbackSlippage: defaultOpts.maxFallbackSlippage,
             excludedSources: defaultOpts.excludedSources,
@@ -395,10 +397,11 @@ export class MarketOperationUtils {
             allowFallback: defaultOpts.allowFallback,
             shouldBatchBridgeOrders: defaultOpts.shouldBatchBridgeOrders,
         });
+        let quoteReport: QuoteReport | undefined;
         if (defaultOpts.shouldGenerateQuoteReport && defaultOpts.rfqt && defaultOpts.rfqt.quoteRequestor) {
-            MarketOperationUtils._computeQuoteReport(nativeOrders, defaultOpts.rfqt.quoteRequestor, marketSideLiquidity, optimizedResult);
+            quoteReport = MarketOperationUtils._computeQuoteReport(nativeOrders, defaultOpts.rfqt.quoteRequestor, marketSideLiquidity, optimizerResult);
         }
-        return optimizedResult;
+        return {...optimizerResult, quoteReport};
     }
 
     /**
