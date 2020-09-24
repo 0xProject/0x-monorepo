@@ -33,6 +33,5 @@ export function getSwapMinBuyAmount(quote: SwapQuote): BigNumber {
         return quote.bestCaseQuoteInfo.makerAssetAmount;
     }
     const slipRatio = totalOrderMakerAssetAmount.div(totalFillMakerAssetAmount);
-    console.log(slipRatio);
     return quote.bestCaseQuoteInfo.makerAssetAmount.times(slipRatio).integerValue(BigNumber.ROUND_DOWN);
 }

@@ -3,7 +3,7 @@ import { BigNumber } from '@0x/utils';
 import { constants } from '../constants';
 import { MarketOperation } from '../types';
 
-import { CollapsedFill, FeeSchedule, OptimizedMarketOrder } from './market_operation_utils/types';
+import { CollapsedFill, ERC20BridgeSource, FeeSchedule, OptimizedMarketOrder } from './market_operation_utils/types';
 import { isOrderTakerFeePayableWithMakerAsset, isOrderTakerFeePayableWithTakerAsset } from './utils';
 
 const { PROTOCOL_FEE_MULTIPLIER, ZERO_AMOUNT } = constants;
@@ -261,16 +261,27 @@ function createWorstCaseFillOrderCalls(quoteInfo: QuoteFillInfo): QuoteFillOrder
 
 // Apply order slippage to its fill paths.
 function getSlippedOrderFills(order: OptimizedMarketOrder, side: MarketOperation): CollapsedFill[] {
-    const totalInput = BigNumber.sum(...order.fills.map(f => f.input));
-    const totalOutput = BigNumber.sum(...order.fills.map(f => f.output));
-    const inputScaling =
-        side === MarketOperation.Sell
-            ? order.fillableTakerAssetAmount.div(totalInput)
-            : order.fillableMakerAssetAmount.div(totalInput);
-    const outputScaling =
-        side === MarketOperation.Sell
-            ? order.fillableMakerAssetAmount.div(totalOutput)
-            : order.fillableTakerAssetAmount.div(totalOutput);
+    // Infer the slippage from the order amounts vs fill amounts.
+    let inputScaling: BigNumber;
+    let outputScaling: BigNumber;
+    const source = order.fills[0].source;
+    if (source === ERC20BridgeSource.Native) {
+        // Native orders do not have slippage applied to them.
+        inputScaling = new BigNumber(1);
+        outputScaling = new BigNumber(1);
+    } else {
+        if (side === MarketOperation.Sell) {
+            const totalFillableTakerAssetAmount = BigNumber.sum(...order.fills.map(f => f.input));
+            const totalFillableMakerAssetAmount = BigNumber.sum(...order.fills.map(f => f.output));
+            inputScaling = order.fillableTakerAssetAmount.div(totalFillableTakerAssetAmount);
+            outputScaling = order.fillableMakerAssetAmount.div(totalFillableMakerAssetAmount);
+        } else {
+            const totalFillableTakerAssetAmount = BigNumber.sum(...order.fills.map(f => f.output));
+            const totalFillableMakerAssetAmount = BigNumber.sum(...order.fills.map(f => f.input));
+            inputScaling = order.fillableMakerAssetAmount.div(totalFillableMakerAssetAmount);
+            outputScaling = order.fillableTakerAssetAmount.div(totalFillableTakerAssetAmount);
+        }
+    }
     return order.fills.map(f => ({
         ...f,
         input: f.input.times(inputScaling),
