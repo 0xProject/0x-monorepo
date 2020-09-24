@@ -33,14 +33,13 @@ import {
     DexSample,
     ERC20BridgeSource,
     FeeSchedule,
-    FillData,
     GetMarketOrdersOpts,
     MarketSideLiquidity,
     OptimizedMarketOrder,
     OptimizerResult,
+    OptimizerResultWithReport,
     OrderDomain,
     TokenAdjacencyGraph,
-    OptimizerResultWithReport,
 } from './types';
 
 // tslint:disable:boolean-naming
