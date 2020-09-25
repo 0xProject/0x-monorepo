@@ -18,6 +18,7 @@ import 'mocha';
 
 import { constants } from '../src/constants';
 import { ExchangeProxySwapQuoteConsumer } from '../src/quote_consumers/exchange_proxy_swap_quote_consumer';
+import { getSwapMinBuyAmount } from '../src/quote_consumers/utils';
 import { MarketBuySwapQuote, MarketOperation, MarketSellSwapQuote } from '../src/types';
 import { OptimizedMarketOrder } from '../src/utils/market_operation_utils/types';
 
@@ -191,7 +192,7 @@ describe('ExchangeProxySwapQuoteConsumer', () => {
             expect(callArgs.inputToken).to.eq(TAKER_TOKEN);
             expect(callArgs.outputToken).to.eq(MAKER_TOKEN);
             expect(callArgs.inputTokenAmount).to.bignumber.eq(quote.worstCaseQuoteInfo.totalTakerAssetAmount);
-            expect(callArgs.minOutputTokenAmount).to.bignumber.eq(quote.worstCaseQuoteInfo.makerAssetAmount);
+            expect(callArgs.minOutputTokenAmount).to.bignumber.eq(getSwapMinBuyAmount(quote));
             expect(callArgs.transformations).to.be.length(2);
             expect(
                 callArgs.transformations[0].deploymentNonce.toNumber() ===
@@ -220,7 +221,7 @@ describe('ExchangeProxySwapQuoteConsumer', () => {
             expect(callArgs.inputToken).to.eq(TAKER_TOKEN);
             expect(callArgs.outputToken).to.eq(MAKER_TOKEN);
             expect(callArgs.inputTokenAmount).to.bignumber.eq(quote.worstCaseQuoteInfo.totalTakerAssetAmount);
-            expect(callArgs.minOutputTokenAmount).to.bignumber.eq(quote.worstCaseQuoteInfo.makerAssetAmount);
+            expect(callArgs.minOutputTokenAmount).to.bignumber.eq(getSwapMinBuyAmount(quote));
             expect(callArgs.transformations).to.be.length(2);
             expect(
                 callArgs.transformations[0].deploymentNonce.toNumber() ===
@@ -318,7 +319,7 @@ describe('ExchangeProxySwapQuoteConsumer', () => {
             expect(callArgs.inputToken).to.eq(TAKER_TOKEN);
             expect(callArgs.outputToken).to.eq(MAKER_TOKEN);
             expect(callArgs.inputTokenAmount).to.bignumber.eq(quote.worstCaseQuoteInfo.totalTakerAssetAmount);
-            expect(callArgs.minOutputTokenAmount).to.bignumber.eq(quote.worstCaseQuoteInfo.makerAssetAmount);
+            expect(callArgs.minOutputTokenAmount).to.bignumber.eq(getSwapMinBuyAmount(quote));
             expect(callArgs.transformations).to.be.length(3);
             expect(
                 callArgs.transformations[0].deploymentNonce.toNumber() ===

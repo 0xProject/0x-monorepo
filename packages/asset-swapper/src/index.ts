@@ -84,6 +84,7 @@ export {
 export { artifacts } from './artifacts';
 export { InsufficientAssetLiquidityError } from './errors';
 export { SwapQuoteConsumer } from './quote_consumers/swap_quote_consumer';
+export { getSwapMinBuyAmount } from './quote_consumers/utils';
 export { SwapQuoter } from './swap_quoter';
 export {
     AffiliateFee,

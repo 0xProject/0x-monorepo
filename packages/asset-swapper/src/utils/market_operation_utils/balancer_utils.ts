@@ -2,6 +2,8 @@ import { BigNumber } from '@0x/utils';
 import { bmath, getPoolsWithTokens, parsePoolData } from '@balancer-labs/sor';
 import { Decimal } from 'decimal.js';
 
+import { ZERO_AMOUNT } from './constants';
+
 // tslint:disable:boolean-naming
 
 export interface BalancerPool {
@@ -118,6 +120,9 @@ export class BalancerPoolsCache {
 
 // tslint:disable completed-docs
 export function computeBalancerSellQuote(pool: BalancerPool, takerFillAmount: BigNumber): BigNumber {
+    if (takerFillAmount.isGreaterThan(bmath.bmul(pool.balanceIn, bmath.MAX_IN_RATIO))) {
+        return ZERO_AMOUNT;
+    }
     const weightRatio = pool.weightIn.dividedBy(pool.weightOut);
     const adjustedIn = bmath.BONE.minus(pool.swapFee)
         .dividedBy(bmath.BONE)
@@ -130,8 +135,8 @@ export function computeBalancerSellQuote(pool: BalancerPool, takerFillAmount: Bi
 }
 
 export function computeBalancerBuyQuote(pool: BalancerPool, makerFillAmount: BigNumber): BigNumber {
-    if (makerFillAmount.isGreaterThanOrEqualTo(pool.balanceOut)) {
-        return new BigNumber(0);
+    if (makerFillAmount.isGreaterThan(bmath.bmul(pool.balanceOut, bmath.MAX_OUT_RATIO))) {
+        return ZERO_AMOUNT;
     }
     const weightRatio = pool.weightOut.dividedBy(pool.weightIn);
     const diff = pool.balanceOut.minus(makerFillAmount);
