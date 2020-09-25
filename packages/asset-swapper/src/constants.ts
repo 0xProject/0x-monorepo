@@ -1,9 +1,10 @@
-import { BigNumber } from '@0x/utils';
+import { BigNumber, logUtils } from '@0x/utils';
 
 import {
     ExchangeProxyContractOpts,
     ExtensionContractType,
     ForwarderExtensionContractOpts,
+    LogFunction,
     OrderPrunerOpts,
     OrderPrunerPermittedFeeTypes,
     RfqtRequestOpts,
@@ -89,6 +90,11 @@ const DEFAULT_RFQT_REQUEST_OPTS: Partial<RfqtRequestOpts> = {
     makerEndpointMaxResponseTimeMs: 1000,
 };
 
+export const DEFAULT_INFO_LOGGER: LogFunction = (obj, msg) =>
+    logUtils.log(`${msg ? `${msg}: ` : ''}${JSON.stringify(obj)}`);
+export const DEFAULT_WARNING_LOGGER: LogFunction = (obj, msg) =>
+    logUtils.warn(`${msg ? `${msg}: ` : ''}${JSON.stringify(obj)}`);
+
 export const constants = {
     ETH_GAS_STATION_API_URL,
     PROTOCOL_FEE_MULTIPLIER,
@@ -113,4 +119,6 @@ export const constants = {
     PROTOCOL_FEE_UTILS_POLLING_INTERVAL_IN_MS,
     MARKET_UTILS_AMOUNT_BUFFER_PERCENTAGE,
     BRIDGE_ASSET_DATA_PREFIX: '0xdc1600f3',
+    DEFAULT_INFO_LOGGER,
+    DEFAULT_WARNING_LOGGER,
 };

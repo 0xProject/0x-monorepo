@@ -9,7 +9,6 @@ import {
     TokenAdjacencyGraph,
 } from './utils/market_operation_utils/types';
 import { QuoteReport } from './utils/quote_report_generator';
-import { LogFunction } from './utils/quote_requestor';
 
 /**
  * expiryBufferMs: The number of seconds to add when calculating whether an order is expired or not. Defaults to 300s (5m).
@@ -273,7 +272,7 @@ export interface RfqtMakerAssetOfferings {
     [endpoint: string]: Array<[string, string]>;
 }
 
-export { LogFunction } from './utils/quote_requestor';
+export type LogFunction = (obj: object, msg?: string, ...args: any[]) => void;
 
 export interface SwapQuoterRfqtOpts {
     takerApiKeyWhitelist: string[];
