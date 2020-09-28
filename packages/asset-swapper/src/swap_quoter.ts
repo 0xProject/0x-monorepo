@@ -683,33 +683,18 @@ export class SwapQuoter {
             this.expiryBufferMs,
         );
 
-        if (
-            opts.rfqt && // This is an RFQT-enabled API request
-            opts.rfqt.intentOnFilling && // The requestor is asking for a firm quote
-            opts.rfqt.apiKey &&
-            this._isApiKeyWhitelisted(opts.rfqt.apiKey) && // A valid API key was provided
-            sourceFilters.isAllowed(ERC20BridgeSource.Native) // Native liquidity is not excluded
-        ) {
-            if (!opts.rfqt.takerAddress || opts.rfqt.takerAddress === constants.NULL_ADDRESS) {
-                throw new Error('RFQ-T requests must specify a taker address');
+        // If an API key was provided, but the key is not whitelisted, raise a warning and disable RFQ
+        if (opts.rfqt && opts.rfqt.apiKey && !this._isApiKeyWhitelisted(opts.rfqt.apiKey)) {
+            if (rfqtOptions && rfqtOptions.warningLogger) {
+                rfqtOptions.warningLogger({
+                    apiKey: opts.rfqt.apiKey,
+                }, 'Attempt at using an RFQ API key that is not whitelisted. Disabling RFQ for the request lifetime.');
             }
-            orderBatchPromises.push(
-                quoteRequestor
-                    .requestRfqtFirmQuotesAsync(
-                        makerAssetData,
-                        takerAssetData,
-                        assetFillAmount,
-                        marketOperation,
-                        opts.rfqt,
-                    )
-                    .then(firmQuotes => firmQuotes.map(quote => quote.signedOrder)),
-            );
+            opts.rfqt = undefined;
         }
 
         const orderBatches: SignedOrder[][] = await Promise.all(orderBatchPromises);
-
         const unsortedOrders: SignedOrder[] = orderBatches.reduce((_orders, batch) => _orders.concat(...batch), []);
-
         const orders = sortingUtils.sortOrders(unsortedOrders);
 
         // if no native orders, pass in a dummy order for the sampler to have required metadata for sampling
