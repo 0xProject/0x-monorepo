@@ -40,6 +40,7 @@ import {
     OptimizerResultWithReport,
     OrderDomain,
     TokenAdjacencyGraph,
+    GenerateOptimizedOrdersOpts,
 } from './types';
 
 // tslint:disable:boolean-naming
@@ -79,7 +80,12 @@ export class MarketOperationUtils {
     private readonly _buySources: SourceFilters;
     private readonly _feeSources = new SourceFilters(FEE_QUOTE_SOURCES);
 
-    private static _computeQuoteReport(nativeOrders: SignedOrder[], quoteRequestor: QuoteRequestor, marketSideLiquidity: MarketSideLiquidity, optimizerResult: OptimizerResult): QuoteReport {
+    private static _computeQuoteReport(
+        nativeOrders: SignedOrder[],
+        quoteRequestor: QuoteRequestor | undefined,
+        marketSideLiquidity: MarketSideLiquidity,
+        optimizerResult: OptimizerResult,
+    ): QuoteReport {
         const {side, dexQuotes, twoHopQuotes, orderFillableAmounts } = marketSideLiquidity;
         const { liquidityDelivered } = optimizerResult;
         return generateQuoteReport(
@@ -366,9 +372,15 @@ export class MarketOperationUtils {
             shouldBatchBridgeOrders: defaultOpts.shouldBatchBridgeOrders,
         });
 
+        // Compute Quote Report and return the results.
         let quoteReport: QuoteReport | undefined;
-        if (defaultOpts.shouldGenerateQuoteReport && defaultOpts.rfqt && defaultOpts.rfqt.quoteRequestor) {
-            quoteReport = MarketOperationUtils._computeQuoteReport(nativeOrders, defaultOpts.rfqt.quoteRequestor, marketSideLiquidity, optimizerResult);
+        if (defaultOpts.shouldGenerateQuoteReport) {
+            quoteReport = MarketOperationUtils._computeQuoteReport(
+                nativeOrders,
+                defaultOpts.rfqt ? defaultOpts.rfqt.quoteRequestor : undefined,
+                marketSideLiquidity,
+                optimizerResult,
+            );
         }
         return {...optimizerResult, quoteReport};
     }
