@@ -32,7 +32,6 @@ import "./LibERC20Transformer.sol";
 contract AffiliateFeeTransformer is
     Transformer
 {
-    // solhint-disable no-empty-blocks
     using LibRichErrorsV06 for bytes;
     using LibSafeMathV06 for uint256;
     using LibERC20Transformer for IERC20TokenV06;
@@ -51,25 +50,15 @@ contract AffiliateFeeTransformer is
 
     uint256 private constant MAX_UINT256 = uint256(-1);
 
-    /// @dev Create this contract.
-    constructor()
-        public
-        Transformer()
-    {}
-
     /// @dev Transfers tokens to recipients.
-    /// @param data ABI-encoded `TokenFee[]`, indicating which tokens to transfer.
+    /// @param context Context information.
     /// @return success The success bytes (`LibERC20Transformer.TRANSFORMER_SUCCESS`).
-    function transform(
-        bytes32, // callDataHash,
-        address payable, // taker,
-        bytes calldata data
-    )
+    function transform(TransformContext calldata context)
         external
         override
         returns (bytes4 success)
     {
-        TokenFee[] memory fees = abi.decode(data, (TokenFee[]));
+        TokenFee[] memory fees = abi.decode(context.data, (TokenFee[]));
 
         // Transfer tokens to recipients.
         for (uint256 i = 0; i < fees.length; ++i) {

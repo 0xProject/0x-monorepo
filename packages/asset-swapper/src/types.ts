@@ -2,7 +2,12 @@ import { BlockParam, ContractAddresses, GethCallOverrides } from '@0x/contract-w
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
-import { GetMarketOrdersOpts, OptimizedMarketOrder } from './utils/market_operation_utils/types';
+import {
+    ERC20BridgeSource,
+    GetMarketOrdersOpts,
+    OptimizedMarketOrder,
+    TokenAdjacencyGraph,
+} from './utils/market_operation_utils/types';
 import { QuoteReport } from './utils/quote_report_generator';
 import { LogFunction } from './utils/quote_requestor';
 
@@ -124,16 +129,39 @@ export interface ForwarderExtensionContractOpts {
     feeRecipient: string;
 }
 
+export interface AffiliateFee {
+    recipient: string;
+    buyTokenFeeAmount: BigNumber;
+    sellTokenFeeAmount: BigNumber;
+}
+
+/**
+ * Automatically resolved protocol fee refund receiver addresses.
+ */
+export enum ExchangeProxyRefundReceiver {
+    // Refund to the taker address.
+    Taker = '0x0000000000000000000000000000000000000001',
+    // Refund to the sender address.
+    Sender = '0x0000000000000000000000000000000000000002',
+}
+
 /**
  * @param isFromETH Whether the input token is ETH.
  * @param isToETH Whether the output token is ETH.
+ * @param affiliateFee Fee denominated in taker or maker asset to send to specified recipient.
+ * @param refundReceiver The receiver of unspent protocol fees.
+ *        May be a valid address or one of:
+ *        `address(0)`: Stay in flash wallet.
+ *        `address(1)`: Send to the taker.
+ *        `address(2)`: Send to the sender (caller of `transformERC20()`).
  */
 export interface ExchangeProxyContractOpts {
     isFromETH: boolean;
     isToETH: boolean;
+    affiliateFee: AffiliateFee;
+    refundReceiver: string | ExchangeProxyRefundReceiver;
+    isMetaTransaction: boolean;
 }
-
-export type SwapQuote = MarketBuySwapQuote | MarketSellSwapQuote;
 
 export interface GetExtensionContractTypeOpts {
     takerAddress?: string;
@@ -157,6 +185,7 @@ export interface SwapQuoteBase {
     worstCaseQuoteInfo: SwapQuoteInfo;
     sourceBreakdown: SwapQuoteOrdersBreakdown;
     quoteReport?: QuoteReport;
+    isTwoHop: boolean;
 }
 
 /**
@@ -176,6 +205,8 @@ export interface MarketBuySwapQuote extends SwapQuoteBase {
     makerAssetFillAmount: BigNumber;
     type: MarketOperation.Buy;
 }
+
+export type SwapQuote = MarketBuySwapQuote | MarketSellSwapQuote;
 
 /**
  * feeTakerAssetAmount: The amount of takerAsset reserved for paying takerFees when swapping for desired assets.
@@ -197,9 +228,15 @@ export interface SwapQuoteInfo {
 /**
  * percentage breakdown of each liquidity source used in quote
  */
-export interface SwapQuoteOrdersBreakdown {
-    [source: string]: BigNumber;
-}
+export type SwapQuoteOrdersBreakdown = Partial<
+    { [key in Exclude<ERC20BridgeSource, typeof ERC20BridgeSource.MultiHop>]: BigNumber } & {
+        [ERC20BridgeSource.MultiHop]: {
+            proportion: BigNumber;
+            intermediateToken: string;
+            hops: ERC20BridgeSource[];
+        };
+    }
+>;
 
 /**
  * nativeExclusivelyRFQT: if set to `true`, Swap quote will exclude Open Orderbook liquidity.
@@ -256,6 +293,7 @@ export interface SwapQuoterOpts extends OrderPrunerOpts {
     chainId: number;
     orderRefreshIntervalMs: number;
     expiryBufferMs: number;
+    ethereumRpcUrl?: string;
     contractAddresses?: ContractAddresses;
     samplerGasLimit?: number;
     liquidityProviderRegistryAddress?: string;
@@ -263,6 +301,7 @@ export interface SwapQuoterOpts extends OrderPrunerOpts {
     ethGasStationUrl?: string;
     rfqt?: SwapQuoterRfqtOpts;
     samplerOverrides?: SamplerOverrides;
+    tokenAdjacencyGraph?: TokenAdjacencyGraph;
 }
 
 /**

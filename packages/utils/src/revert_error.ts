@@ -7,13 +7,14 @@ import { inspect } from 'util';
 import * as AbiEncoder from './abi_encoder';
 import { BigNumber } from './configured_bignumber';
 
-// tslint:disable: max-classes-per-file
+// tslint:disable: max-classes-per-file no-unnecessary-type-assertion
 
 type ArgTypes =
     | string
     | BigNumber
     | number
     | boolean
+    | RevertError
     | BigNumber[]
     | string[]
     | number[]
@@ -108,7 +109,10 @@ export abstract class RevertError extends Error {
      * @param coerce Whether to coerce unknown selectors into a `RawRevertError` type.
      * @return A RevertError object.
      */
-    public static decode(bytes: string | Buffer, coerce: boolean = false): RevertError {
+    public static decode(bytes: string | Buffer | RevertError, coerce: boolean = false): RevertError {
+        if (bytes instanceof RevertError) {
+            return bytes;
+        }
         const _bytes = bytes instanceof Buffer ? ethUtil.bufferToHex(bytes) : ethUtil.addHexPrefix(bytes);
         // tslint:disable-next-line: custom-no-magic-numbers
         const selector = _bytes.slice(2, 10);
@@ -121,8 +125,7 @@ export abstract class RevertError extends Error {
         const { type, decoder } = RevertError._typeRegistry[selector];
         const instance = new type();
         try {
-            const values = decoder(_bytes);
-            _.assign(instance, { values });
+            Object.assign(instance, { values: decoder(_bytes) });
             instance.message = instance.toString();
             return instance;
         } catch (err) {
@@ -292,6 +295,16 @@ export abstract class RevertError extends Error {
             return `${this.constructor.name}(${this._raw})`;
         }
         const values = _.omitBy(this.values, (v: any) => _.isNil(v));
+        // tslint:disable-next-line: forin
+        for (const k in values) {
+            const { type: argType } = this._getArgumentByName(k);
+            if (argType === 'bytes') {
+                // Try to decode nested revert errors.
+                try {
+                    values[k] = RevertError.decode(values[k] as any);
+                } catch (err) {} // tslint:disable-line:no-empty
+            }
+        }
         const inner = _.isEmpty(values) ? '' : inspect(values);
         return `${this.constructor.name}(${inner})`;
     }
@@ -484,6 +497,12 @@ function declarationToAbi(declaration: string): RevertErrorAbi {
 }
 
 function checkArgEquality(type: string, lhs: ArgTypes, rhs: ArgTypes): boolean {
+    // Try to compare as decoded revert errors first.
+    try {
+        return RevertError.decode(lhs as any).equals(RevertError.decode(rhs as any));
+    } catch (err) {
+        // no-op
+    }
     if (type === 'address') {
         return normalizeAddress(lhs as string) === normalizeAddress(rhs as string);
     } else if (type === 'bytes' || /^bytes(\d+)$/.test(type)) {

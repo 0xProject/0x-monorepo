@@ -1,5 +1,66 @@
 [
     {
+        "version": "0.3.0",
+        "changes": [
+            {
+                "note": "Internal audit fixes",
+                "pr": 2657
+            },
+            {
+                "note": "Add refund mechanism to meta-transactions",
+                "pr": 2657
+            },
+            {
+                "note": "Pass sender address to transformers",
+                "pr": 2657
+            },
+            {
+                "note": "Refund unused protocol fees to `refundReceiver` in FQT",
+                "pr": 2657
+            },
+            {
+                "note": "Fix `TransformerDeployer.kill()` calling the wrong `die()` interface.",
+                "pr": 2624
+            },
+            {
+                "note": "Address CD post-audit feedback",
+                "pr": 2657
+            },
+            {
+                "note": "Add `LogMetadataTransformer`",
+                "pr": 2657
+            },
+            {
+                "note": "Rename all feature contracts to have `Feature` suffix",
+                "pr": 2657
+            },
+            {
+                "note": "Return `IZeroExContract` in `fullMigrateAsync()`",
+                "pr": 2657
+            },
+            {
+                "note": "Add taker address enforcement to RFQT orders in FQT",
+                "pr": 2692
+            },
+            {
+                "note": "All calldata is valid if quote signer is unset in `TransformERC20`",
+                "pr": 2692
+            },
+            {
+                "note": "Add updated Kyber and Mooniswap rollup to FQT",
+                "pr": 2692
+            },
+            {
+                "note": "Add `UniswapFeature`",
+                "pr": 2703
+            },
+            {
+                "note": "Fix versioning (`_encodeVersion()`) bug",
+                "pr": 2703
+            }
+        ]
+    },
+    {
         "version": "0.2.0",
         "changes": [
             {

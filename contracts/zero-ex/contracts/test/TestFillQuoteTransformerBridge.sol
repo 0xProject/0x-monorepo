@@ -29,6 +29,7 @@ contract TestFillQuoteTransformerBridge {
     struct FillBehavior {
         // Scaling for maker assets minted, in 1e18.
         uint256 makerAssetMintRatio;
+        uint256 amount;
     }
 
     bytes4 private constant ERC20_BRIDGE_PROXY_ID = 0xdc1600f3;
@@ -49,7 +50,7 @@ contract TestFillQuoteTransformerBridge {
           LibMathV06.getPartialAmountFloor(
               behavior.makerAssetMintRatio,
               1e18,
-              amount
+              behavior.amount
           )
         );
         return ERC20_BRIDGE_PROXY_ID;

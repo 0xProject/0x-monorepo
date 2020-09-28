@@ -4,7 +4,7 @@ import { MarketOperation, SignedOrderWithFillableAmounts } from '../../types';
 import { fillableAmountsUtils } from '../../utils/fillable_amounts_utils';
 
 import { POSITIVE_INF, ZERO_AMOUNT } from './constants';
-import { CollapsedFill, DexSample, ERC20BridgeSource, FeeSchedule, Fill, FillFlags } from './types';
+import { CollapsedFill, DexSample, ERC20BridgeSource, FeeSchedule, Fill, FillFlags, MultiHopFillData } from './types';
 
 // tslint:disable: prefer-for-of no-bitwise completed-docs
 
@@ -17,6 +17,7 @@ export function createFillPaths(opts: {
     dexQuotes?: DexSample[][];
     targetInput?: BigNumber;
     ethToOutputRate?: BigNumber;
+    ethToInputRate?: BigNumber;
     excludedSources?: ERC20BridgeSource[];
     feeSchedule?: FeeSchedule;
 }): Fill[][] {
@@ -26,8 +27,9 @@ export function createFillPaths(opts: {
     const orders = opts.orders || [];
     const dexQuotes = opts.dexQuotes || [];
     const ethToOutputRate = opts.ethToOutputRate || ZERO_AMOUNT;
+    const ethToInputRate = opts.ethToInputRate || ZERO_AMOUNT;
     // Create native fill paths.
-    const nativePath = nativeOrdersToPath(side, orders, opts.targetInput, ethToOutputRate, feeSchedule);
+    const nativePath = nativeOrdersToPath(side, orders, opts.targetInput, ethToOutputRate, ethToInputRate, feeSchedule);
     // Create DEX fill paths.
     const dexPaths = dexQuotesToPaths(side, dexQuotes, ethToOutputRate, feeSchedule);
     return filterPaths([...dexPaths, nativePath].map(p => clipPathToInput(p, opts.targetInput)), excludedSources);
@@ -54,20 +56,21 @@ function nativeOrdersToPath(
     orders: SignedOrderWithFillableAmounts[],
     targetInput: BigNumber = POSITIVE_INF,
     ethToOutputRate: BigNumber,
+    ethToInputRate: BigNumber,
     fees: FeeSchedule,
 ): Fill[] {
     const sourcePathId = hexUtils.random();
     // Create a single path from all orders.
-    let path: Fill[] = [];
+    let path: Array<Fill & { adjustedRate: BigNumber }> = [];
     for (const order of orders) {
         const makerAmount = fillableAmountsUtils.getMakerAssetAmountSwappedAfterOrderFees(order);
         const takerAmount = fillableAmountsUtils.getTakerAssetAmountSwappedAfterOrderFees(order);
         const input = side === MarketOperation.Sell ? takerAmount : makerAmount;
         const output = side === MarketOperation.Sell ? makerAmount : takerAmount;
-        const penalty = ethToOutputRate.times(
-            fees[ERC20BridgeSource.Native] === undefined ? 0 : fees[ERC20BridgeSource.Native]!(),
-        );
-        const rate = makerAmount.div(takerAmount);
+        const fee = fees[ERC20BridgeSource.Native] === undefined ? 0 : fees[ERC20BridgeSource.Native]!();
+        const outputPenalty = !ethToOutputRate.isZero()
+            ? ethToOutputRate.times(fee)
+            : ethToInputRate.times(fee).times(output.dividedToIntegerBy(input));
         // targetInput can be less than the order size
         // whilst the penalty is constant, it affects the adjusted output
         // only up until the target has been exhausted.
@@ -77,7 +80,7 @@ function nativeOrdersToPath(
         // scale the clipped output inline with the input
         const clippedOutput = clippedInput.dividedBy(input).times(output);
         const adjustedOutput =
-            side === MarketOperation.Sell ? clippedOutput.minus(penalty) : clippedOutput.plus(penalty);
+            side === MarketOperation.Sell ? clippedOutput.minus(outputPenalty) : clippedOutput.plus(outputPenalty);
         const adjustedRate =
             side === MarketOperation.Sell ? adjustedOutput.div(clippedInput) : clippedInput.div(adjustedOutput);
         // Skip orders with rates that are <= 0.
@@ -86,11 +89,10 @@ function nativeOrdersToPath(
         }
         path.push({
             sourcePathId,
-            input: clippedInput,
-            output: clippedOutput,
-            rate,
             adjustedRate,
             adjustedOutput,
+            input: clippedInput,
+            output: clippedOutput,
             flags: 0,
             index: 0, // TBD
             parent: undefined, // TBD
@@ -135,15 +137,11 @@ function dexQuotesToPaths(
                     ? ethToOutputRate.times(fee)
                     : ZERO_AMOUNT;
             const adjustedOutput = side === MarketOperation.Sell ? output.minus(penalty) : output.plus(penalty);
-            const rate = side === MarketOperation.Sell ? output.div(input) : input.div(output);
-            const adjustedRate = side === MarketOperation.Sell ? adjustedOutput.div(input) : input.div(adjustedOutput);
 
             path.push({
                 sourcePathId,
                 input,
                 output,
-                rate,
-                adjustedRate,
                 adjustedOutput,
                 source,
                 fillData,
@@ -155,6 +153,22 @@ function dexQuotesToPaths(
         paths.push(path);
     }
     return paths;
+}
+
+export function getTwoHopAdjustedRate(
+    side: MarketOperation,
+    twoHopQuote: DexSample<MultiHopFillData>,
+    targetInput: BigNumber,
+    ethToOutputRate: BigNumber,
+    fees: FeeSchedule = {},
+): BigNumber {
+    const { output, input, fillData } = twoHopQuote;
+    if (input.isLessThan(targetInput) || output.isZero()) {
+        return ZERO_AMOUNT;
+    }
+    const penalty = ethToOutputRate.times(fees[ERC20BridgeSource.MultiHop]!(fillData));
+    const adjustedOutput = side === MarketOperation.Sell ? output.minus(penalty) : output.plus(penalty);
+    return side === MarketOperation.Sell ? adjustedOutput.div(input) : input.div(adjustedOutput);
 }
 
 function sourceToFillFlags(source: ERC20BridgeSource): number {
@@ -193,8 +207,12 @@ export function getPathAdjustedSize(path: Fill[], targetInput: BigNumber = POSIT
     for (const fill of path) {
         if (input.plus(fill.input).gte(targetInput)) {
             const di = targetInput.minus(input);
-            input = input.plus(di);
-            output = output.plus(fill.adjustedOutput.times(di.div(fill.input)));
+            if (di.gt(0)) {
+                input = input.plus(di);
+                // Penalty does not get interpolated.
+                const penalty = fill.adjustedOutput.minus(fill.output);
+                output = output.plus(fill.output.times(di.div(fill.input)).plus(penalty));
+            }
             break;
         } else {
             input = input.plus(fill.input);
@@ -223,6 +241,10 @@ export function isValidPath(path: Fill[], skipDuplicateCheck: boolean = false): 
         }
         flags |= path[i].flags;
     }
+    return arePathFlagsAllowed(flags);
+}
+
+export function arePathFlagsAllowed(flags: number): boolean {
     const multiBridgeConflict = FillFlags.MultiBridge | FillFlags.ConflictsWithMultiBridge;
     return (flags & multiBridgeConflict) !== multiBridgeConflict;
 }
@@ -247,14 +269,16 @@ export function collapsePath(path: Fill[]): CollapsedFill[] {
         if (collapsed.length !== 0 && source !== ERC20BridgeSource.Native) {
             const prevFill = collapsed[collapsed.length - 1];
             // If the last fill is from the same source, merge them.
-            if (prevFill.source === source) {
+            if (prevFill.sourcePathId === fill.sourcePathId) {
                 prevFill.input = prevFill.input.plus(fill.input);
                 prevFill.output = prevFill.output.plus(fill.output);
+                prevFill.fillData = fill.fillData;
                 prevFill.subFills.push(fill);
                 continue;
             }
         }
         collapsed.push({
+            sourcePathId: fill.sourcePathId,
             source: fill.source,
             fillData: fill.fillData,
             input: fill.input,
@@ -265,12 +289,14 @@ export function collapsePath(path: Fill[]): CollapsedFill[] {
     return collapsed;
 }
 
+export function getPathAdjustedCompleteRate(side: MarketOperation, path: Fill[], targetInput: BigNumber): BigNumber {
+    const [input, output] = getPathAdjustedSize(path, targetInput);
+    return getCompleteRate(side, input, output, targetInput);
+}
+
 export function getPathAdjustedRate(side: MarketOperation, path: Fill[], targetInput: BigNumber): BigNumber {
-    const [, output] = getPathAdjustedSize(path, targetInput);
-    if (output.eq(0)) {
-        return ZERO_AMOUNT;
-    }
-    return side === MarketOperation.Sell ? output.div(targetInput) : targetInput.div(output);
+    const [input, output] = getPathAdjustedSize(path, targetInput);
+    return getRate(side, input, output);
 }
 
 export function getPathAdjustedSlippage(
@@ -285,4 +311,30 @@ export function getPathAdjustedSlippage(
     const totalRate = getPathAdjustedRate(side, path, inputAmount);
     const rateChange = maxRate.minus(totalRate);
     return rateChange.div(maxRate).toNumber();
+}
+
+export function getCompleteRate(
+    side: MarketOperation,
+    input: BigNumber,
+    output: BigNumber,
+    targetInput: BigNumber,
+): BigNumber {
+    if (input.eq(0) || output.eq(0) || targetInput.eq(0)) {
+        return ZERO_AMOUNT;
+    }
+    // Penalize paths that fall short of the entire input amount by a factor of
+    // input / targetInput => (i / t)
+    if (side === MarketOperation.Sell) {
+        // (o / i) * (i / t) => (o / t)
+        return output.div(targetInput);
+    }
+    // (i / o) * (i / t)
+    return input.div(output).times(input.div(targetInput));
+}
+
+export function getRate(side: MarketOperation, input: BigNumber, output: BigNumber): BigNumber {
+    if (input.eq(0) || output.eq(0)) {
+        return ZERO_AMOUNT;
+    }
+    return side === MarketOperation.Sell ? output.div(input) : input.div(output);
 }

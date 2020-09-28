@@ -5,6 +5,26 @@
             {
                 "note": "Update `CurveBridge` to support more varied curves",
                 "pr": 2633
+            },
+            {
+                "note": "Export DexForwarderBridgeContract",
+                "pr": 2656
+            },
+            {
+                "note": "Add BancorBridge and IBancorNetwork, ",
+                "pr": 2650
+            },
+            {
+                "note": "Added `MStableBridge`",
+                "pr": 2662
+            },
+            {
+                "note": "Added `MooniswapBridge`",
+                "pr": 2675
+            },
+            {
+                "note": "Reworked `KyberBridge`",
+                "pr": 2683
             }
         ]
     },

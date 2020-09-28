@@ -1,6 +1,6 @@
 import { constants, expect, getRandomInteger, randomAddress } from '@0x/contracts-test-utils';
 import { assetDataUtils } from '@0x/order-utils';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, hexUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { MarketOperation } from '../src/types';
@@ -22,10 +22,10 @@ describe('quote_simulation tests', async () => {
     const TAKER_TOKEN = randomAddress();
     const DEFAULT_MAKER_ASSET_DATA = assetDataUtils.encodeERC20AssetData(MAKER_TOKEN);
     const DEFAULT_TAKER_ASSET_DATA = assetDataUtils.encodeERC20AssetData(TAKER_TOKEN);
-    const GAS_SCHEDULE = { [ERC20BridgeSource.Native]: _.constant(1) };
+    const GAS_SCHEDULE = { [ERC20BridgeSource.Uniswap]: _.constant(1) };
 
-    // Check if two numbers are within `maxError` error rate within each other (default 1 bps).
-    function assertRoughlyEquals(n1: BigNumber, n2: BigNumber, maxError: BigNumber | number = 1e-12): void {
+    // Check if two numbers are within `maxError` error rate within each other.
+    function assertRoughlyEquals(n1: BigNumber, n2: BigNumber, maxError: BigNumber | number = 1e-10): void {
         // |n2-n1| / max(|n1|, |n2|)
         const err = n2
             .minus(n1)
@@ -155,7 +155,7 @@ describe('quote_simulation tests', async () => {
             signature: '0x',
         };
     }
-
+    const nativeSourcePathId = hexUtils.random();
     function createOrderCollapsedFills(input: BigNumber, output: BigNumber, count: number): CollapsedFill[] {
         const inputs = subdivideAmount(input, count);
         const outputs = subdivideAmount(output, count);
@@ -163,7 +163,8 @@ describe('quote_simulation tests', async () => {
             const subFillInputs = subdivideAmount(inputs[i], count);
             const subFillOutputs = subdivideAmount(outputs[i], count);
             return {
-                source: ERC20BridgeSource.Native,
+                sourcePathId: nativeSourcePathId,
+                source: ERC20BridgeSource.Uniswap,
                 input: inputs[i],
                 output: outputs[i],
                 subFills: _.times(count, j => ({

@@ -1,12 +1,29 @@
 import { schemas, SchemaValidator } from '@0x/json-schemas';
-import { assetDataUtils, orderCalculationUtils, orderHashUtils, SignedOrder } from '@0x/order-utils';
+import { assetDataUtils, orderCalculationUtils, SignedOrder } from '@0x/order-utils';
 import { RFQTFirmQuote, RFQTIndicativeQuote, TakerRequest } from '@0x/quote-server';
 import { ERC20AssetData } from '@0x/types';
 import { BigNumber, logUtils } from '@0x/utils';
-import Axios from 'axios';
+import Axios, { AxiosInstance } from 'axios';
+import { Agent as HttpAgent } from 'http';
+import { Agent as HttpsAgent } from 'https';
 
 import { constants } from '../constants';
 import { MarketOperation, RfqtMakerAssetOfferings, RfqtRequestOpts } from '../types';
+
+import { ONE_SECOND_MS } from './market_operation_utils/constants';
+import { RfqMakerBlacklist } from './rfq_maker_blacklist';
+
+// tslint:disable-next-line: custom-no-magic-numbers
+const KEEP_ALIVE_TTL = 5 * 60 * ONE_SECOND_MS;
+
+export const quoteRequestorHttpClient: AxiosInstance = Axios.create({
+    httpAgent: new HttpAgent({ keepAlive: true, timeout: KEEP_ALIVE_TTL }),
+    httpsAgent: new HttpsAgent({ keepAlive: true, timeout: KEEP_ALIVE_TTL }),
+});
+
+const MAKER_TIMEOUT_STREAK_LENGTH = 10;
+const MAKER_TIMEOUT_BLACKLIST_DURATION_MINUTES = 10;
+const rfqMakerBlacklist = new RfqMakerBlacklist(MAKER_TIMEOUT_STREAK_LENGTH, MAKER_TIMEOUT_BLACKLIST_DURATION_MINUTES);
 
 /**
  * Request quotes from RFQ-T providers
@@ -25,18 +42,6 @@ function getTokenAddressOrThrow(assetData: string): string {
         return (decodedAssetData as ERC20AssetData).tokenAddress;
     }
     throw new Error(`Decoded asset data (${JSON.stringify(decodedAssetData)}) does not contain a token address`);
-}
-
-function assertTakerAddressOrThrow(takerAddress: string | undefined): void {
-    if (
-        takerAddress === undefined ||
-        takerAddress === '' ||
-        takerAddress === '0x' ||
-        !takerAddress ||
-        takerAddress === constants.NULL_ADDRESS
-    ) {
-        throw new Error('RFQ-T requires the presence of a taker address');
-    }
 }
 
 function inferQueryParams(
@@ -74,8 +79,29 @@ function hasExpectedAssetData(
 }
 
 function convertIfAxiosError(error: any): Error | object /* axios' .d.ts has AxiosError.toJSON() returning object */ {
-    if (error.hasOwnProperty('isAxiosError') && error.isAxiosError && error.hasOwnProperty('toJSON')) {
-        return error.toJSON();
+    if (error.hasOwnProperty('isAxiosError') && error.isAxiosError) {
+        const { message, name, config } = error;
+        const { headers, timeout, httpsAgent } = config;
+        const { keepAlive, keepAliveMsecs, sockets } = httpsAgent;
+
+        const socketCounts: { [key: string]: number } = {};
+        for (const socket of Object.keys(sockets)) {
+            socketCounts[socket] = sockets[socket].length;
+        }
+
+        return {
+            message,
+            name,
+            config: {
+                headers,
+                timeout,
+                httpsAgent: {
+                    keepAlive,
+                    keepAliveMsecs,
+                    socketCounts,
+                },
+            },
+        };
     } else {
         return error;
     }
@@ -85,7 +111,7 @@ export type LogFunction = (obj: object, msg?: string, ...args: any[]) => void;
 
 export class QuoteRequestor {
     private readonly _schemaValidator: SchemaValidator = new SchemaValidator();
-    private readonly _orderHashToMakerUri: { [orderHash: string]: string } = {};
+    private readonly _orderSignatureToMakerUri: { [orderSignature: string]: string } = {};
 
     constructor(
         private readonly _rfqtAssetOfferings: RfqtMakerAssetOfferings,
@@ -104,7 +130,15 @@ export class QuoteRequestor {
         options: RfqtRequestOpts,
     ): Promise<RFQTFirmQuote[]> {
         const _opts: RfqtRequestOpts = { ...constants.DEFAULT_RFQT_REQUEST_OPTS, ...options };
-        assertTakerAddressOrThrow(_opts.takerAddress);
+        if (
+            _opts.takerAddress === undefined ||
+            _opts.takerAddress === '' ||
+            _opts.takerAddress === '0x' ||
+            !_opts.takerAddress ||
+            _opts.takerAddress === constants.NULL_ADDRESS
+        ) {
+            throw new Error('RFQ-T firm quotes require the presence of a taker address');
+        }
 
         const firmQuoteResponses = await this._getQuotesAsync<RFQTFirmQuote>( // not yet BigNumber
             makerAssetData,
@@ -167,7 +201,7 @@ export class QuoteRequestor {
             }
 
             // Store makerUri for looking up later
-            this._orderHashToMakerUri[orderHashUtils.getOrderHash(orderWithBigNumberInts)] = firmQuoteResponse.makerUri;
+            this._orderSignatureToMakerUri[orderWithBigNumberInts.signature] = firmQuoteResponse.makerUri;
 
             // Passed all validation, add it to result
             result.push({ signedOrder: orderWithBigNumberInts });
@@ -184,7 +218,15 @@ export class QuoteRequestor {
         options: RfqtRequestOpts,
     ): Promise<RFQTIndicativeQuote[]> {
         const _opts: RfqtRequestOpts = { ...constants.DEFAULT_RFQT_REQUEST_OPTS, ...options };
-        assertTakerAddressOrThrow(_opts.takerAddress);
+
+        // Originally a takerAddress was required for indicative quotes, but
+        // now we've eliminated that requirement.  @0x/quote-server, however,
+        // is still coded to expect a takerAddress.  So if the client didn't
+        // send one, just use the null address to satisfy the quote server's
+        // expectations.
+        if (!_opts.takerAddress) {
+            _opts.takerAddress = constants.NULL_ADDRESS;
+        }
 
         const responsesWithStringInts = await this._getQuotesAsync<RFQTIndicativeQuote>( // not yet BigNumber
             makerAssetData,
@@ -232,10 +274,10 @@ export class QuoteRequestor {
     }
 
     /**
-     * Given an order hash, returns the makerUri that the order originated from
+     * Given an order signature, returns the makerUri that the order originated from
      */
-    public getMakerUriForOrderHash(orderHash: string): string | undefined {
-        return this._orderHashToMakerUri[orderHash];
+    public getMakerUriForOrderSignature(orderSignature: string): string | undefined {
+        return this._orderSignatureToMakerUri[orderSignature];
     }
 
     private _isValidRfqtIndicativeQuoteResponse(response: RFQTIndicativeQuote): boolean {
@@ -298,7 +340,10 @@ export class QuoteRequestor {
         const result: Array<{ response: ResponseT; makerUri: string }> = [];
         await Promise.all(
             Object.keys(this._rfqtAssetOfferings).map(async url => {
-                if (this._makerSupportsPair(url, makerAssetData, takerAssetData)) {
+                if (
+                    this._makerSupportsPair(url, makerAssetData, takerAssetData) &&
+                    !rfqMakerBlacklist.isMakerBlacklisted(url)
+                ) {
                     const requestParamsWithBigNumbers = {
                         takerAddress: options.takerAddress,
                         ...inferQueryParams(marketOperation, makerAssetData, takerAssetData, assetFillAmount),
@@ -318,44 +363,56 @@ export class QuoteRequestor {
 
                     const partialLogEntry = { url, quoteType, requestParams };
                     const timeBeforeAwait = Date.now();
+                    const maxResponseTimeMs =
+                        options.makerEndpointMaxResponseTimeMs === undefined
+                            ? constants.DEFAULT_RFQT_REQUEST_OPTS.makerEndpointMaxResponseTimeMs!
+                            : options.makerEndpointMaxResponseTimeMs;
                     try {
                         const quotePath = (() => {
                             switch (quoteType) {
                                 case 'firm':
                                     return 'quote';
-                                    break;
                                 case 'indicative':
                                     return 'price';
-                                    break;
                                 default:
                                     throw new Error(`Unexpected quote type ${quoteType}`);
                             }
                         })();
-                        const response = await Axios.get<ResponseT>(`${url}/${quotePath}`, {
+                        const response = await quoteRequestorHttpClient.get<ResponseT>(`${url}/${quotePath}`, {
                             headers: { '0x-api-key': options.apiKey },
                             params: requestParams,
-                            timeout: options.makerEndpointMaxResponseTimeMs,
+                            timeout: maxResponseTimeMs,
                         });
+                        const latencyMs = Date.now() - timeBeforeAwait;
                         this._infoLogger({
                             rfqtMakerInteraction: {
                                 ...partialLogEntry,
                                 response: {
+                                    included: true,
+                                    apiKey: options.apiKey,
+                                    takerAddress: requestParams.takerAddress,
                                     statusCode: response.status,
-                                    latencyMs: Date.now() - timeBeforeAwait,
+                                    latencyMs,
                                 },
                             },
                         });
+                        rfqMakerBlacklist.logTimeoutOrLackThereof(url, latencyMs > maxResponseTimeMs);
                         result.push({ response: response.data, makerUri: url });
                     } catch (err) {
+                        const latencyMs = Date.now() - timeBeforeAwait;
                         this._infoLogger({
                             rfqtMakerInteraction: {
                                 ...partialLogEntry,
                                 response: {
+                                    included: false,
+                                    apiKey: options.apiKey,
+                                    takerAddress: requestParams.takerAddress,
                                     statusCode: err.response ? err.response.status : undefined,
-                                    latencyMs: Date.now() - timeBeforeAwait,
+                                    latencyMs,
                                 },
                             },
                         });
+                        rfqMakerBlacklist.logTimeoutOrLackThereof(url, latencyMs > maxResponseTimeMs);
                         this._warningLogger(
                             convertIfAxiosError(err),
                             `Failed to get RFQ-T ${quoteType} quote from market maker endpoint ${url} for API key ${

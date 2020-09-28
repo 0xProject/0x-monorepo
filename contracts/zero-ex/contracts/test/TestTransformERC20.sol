@@ -19,18 +19,12 @@
 pragma solidity ^0.6.5;
 pragma experimental ABIEncoderV2;
 
-import "../src/features/TransformERC20.sol";
+import "../src/features/TransformERC20Feature.sol";
 
 
 contract TestTransformERC20 is
-    TransformERC20
+    TransformERC20Feature
 {
-    // solhint-disable no-empty-blocks
-    constructor()
-        TransformERC20()
-        public
-    {}
-
     modifier onlySelf() override {
         _;
     }

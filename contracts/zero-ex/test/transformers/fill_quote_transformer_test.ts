@@ -20,6 +20,7 @@ import * as _ from 'lodash';
 import { artifacts } from '../artifacts';
 import { TestFillQuoteTransformerBridgeContract } from '../generated-wrappers/test_fill_quote_transformer_bridge';
 import {
+    BridgeAdapterContract,
     FillQuoteTransformerContract,
     TestFillQuoteTransformerExchangeContract,
     TestFillQuoteTransformerHostContract,
@@ -31,6 +32,8 @@ const { NULL_ADDRESS, NULL_BYTES, MAX_UINT256, ZERO_AMOUNT } = constants;
 blockchainTests.resets('FillQuoteTransformer', env => {
     let maker: string;
     let feeRecipient: string;
+    let sender: string;
+    let taker: string;
     let exchange: TestFillQuoteTransformerExchangeContract;
     let bridge: TestFillQuoteTransformerBridgeContract;
     let transformer: FillQuoteTransformerContract;
@@ -43,12 +46,34 @@ blockchainTests.resets('FillQuoteTransformer', env => {
     const GAS_PRICE = 1337;
 
     before(async () => {
-        [maker, feeRecipient] = await env.getAccountAddressesAsync();
+        [maker, feeRecipient, sender, taker] = await env.getAccountAddressesAsync();
         exchange = await TestFillQuoteTransformerExchangeContract.deployFrom0xArtifactAsync(
             artifacts.TestFillQuoteTransformerExchange,
             env.provider,
             env.txDefaults,
             artifacts,
+        );
+        const bridgeAdapter = await BridgeAdapterContract.deployFrom0xArtifactAsync(
+            artifacts.BridgeAdapter,
+            env.provider,
+            env.txDefaults,
+            artifacts,
+            {
+                balancerBridge: NULL_ADDRESS,
+                curveBridge: NULL_ADDRESS,
+                kyberBridge: NULL_ADDRESS,
+                mooniswapBridge: NULL_ADDRESS,
+                mStableBridge: NULL_ADDRESS,
+                oasisBridge: NULL_ADDRESS,
+                uniswapBridge: NULL_ADDRESS,
+                uniswapV2Bridge: NULL_ADDRESS,
+                kyberNetworkProxy: NULL_ADDRESS,
+                oasis: NULL_ADDRESS,
+                uniswapV2Router: NULL_ADDRESS,
+                uniswapExchangeFactory: NULL_ADDRESS,
+                mStable: NULL_ADDRESS,
+                weth: NULL_ADDRESS,
+            },
         );
         transformer = await FillQuoteTransformerContract.deployFrom0xArtifactAsync(
             artifacts.FillQuoteTransformer,
@@ -56,6 +81,7 @@ blockchainTests.resets('FillQuoteTransformer', env => {
             env.txDefaults,
             artifacts,
             exchange.address,
+            bridgeAdapter.address,
         );
         host = await TestFillQuoteTransformerHostContract.deployFrom0xArtifactAsync(
             artifacts.TestFillQuoteTransformerHost,
@@ -69,7 +95,7 @@ blockchainTests.resets('FillQuoteTransformer', env => {
         bridge = await TestFillQuoteTransformerBridgeContract.deployFrom0xArtifactAsync(
             artifacts.TestFillQuoteTransformerBridge,
             env.provider,
-            env.txDefaults,
+            { ...env.txDefaults, from: sender },
             artifacts,
         );
         [makerToken, takerToken, takerFeeToken] = await Promise.all(
@@ -110,8 +136,9 @@ blockchainTests.resets('FillQuoteTransformer', env => {
         };
     }
 
-    function createBridgeOrder(fields: Partial<Order> = {}, bridgeData: string = encodeBridgeBehavior()): FilledOrder {
+    function createBridgeOrder(fields: Partial<Order> = {}, fillRatio: Numberish = 1.0): FilledOrder {
         const order = createOrder(fields);
+        const bridgeData = encodeBridgeBehavior(order.makerAssetAmount, fillRatio);
         return {
             ...order,
             makerAddress: bridge.address,
@@ -246,6 +273,8 @@ blockchainTests.resets('FillQuoteTransformer', env => {
             signatures: [],
             maxOrderFillAmounts: [],
             fillAmount: MAX_UINT256,
+            refundReceiver: NULL_ADDRESS,
+            rfqtTakerAddress: NULL_ADDRESS,
             ...fields,
         });
     }
@@ -265,11 +294,12 @@ blockchainTests.resets('FillQuoteTransformer', env => {
         );
     }
 
-    function encodeBridgeBehavior(makerAssetMintRatio: Numberish = 1.0): string {
+    function encodeBridgeBehavior(amount: BigNumber, makerAssetMintRatio: Numberish = 1.0): string {
         return hexUtils.slice(
             bridge
                 .encodeBehaviorData({
                     makerAssetMintRatio: new BigNumber(makerAssetMintRatio).times('1e18').integerValue(),
+                    amount,
                 })
                 .getABIEncodedTransactionData(),
             4,
@@ -288,6 +318,8 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                     transformer.address,
                     takerToken.address,
                     qfr.takerAssetSpent,
+                    sender,
+                    taker,
                     encodeTransformData({
                         orders,
                         signatures,
@@ -309,6 +341,8 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                     transformer.address,
                     takerToken.address,
                     qfr.takerAssetSpent,
+                    sender,
+                    taker,
                     encodeTransformData({
                         orders,
                         signatures,
@@ -333,6 +367,8 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                     transformer.address,
                     takerToken.address,
                     qfr.takerAssetSpent,
+                    sender,
+                    taker,
                     encodeTransformData({
                         orders,
                         signatures,
@@ -355,6 +391,8 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                     transformer.address,
                     takerToken.address,
                     qfr.takerAssetSpent,
+                    sender,
+                    taker,
                     encodeTransformData({
                         orders,
                         signatures,
@@ -379,6 +417,8 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                     transformer.address,
                     takerToken.address,
                     qfr.takerAssetSpent,
+                    sender,
+                    taker,
                     encodeTransformData({
                         orders,
                         signatures,
@@ -405,6 +445,8 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                     transformer.address,
                     takerToken.address,
                     qfr.takerAssetSpent,
+                    sender,
+                    taker,
                     encodeTransformData({
                         orders,
                         signatures,
@@ -437,6 +479,8 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                     transformer.address,
                     takerToken.address,
                     qfr.takerAssetSpent,
+                    sender,
+                    taker,
                     encodeTransformData({
                         orders,
                         signatures,
@@ -461,6 +505,8 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                     transformer.address,
                     takerToken.address,
                     qfr.takerAssetSpent,
+                    sender,
+                    taker,
                     encodeTransformData({
                         orders,
                         signatures,
@@ -486,6 +532,8 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                     transformer.address,
                     takerToken.address,
                     takerTokenBalance,
+                    sender,
+                    taker,
                     encodeTransformData({
                         orders,
                         signatures,
@@ -510,6 +558,8 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                     transformer.address,
                     takerToken.address,
                     takerTokenBalance,
+                    sender,
+                    taker,
                     encodeTransformData({
                         orders,
                         signatures,
@@ -539,6 +589,8 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                     transformer.address,
                     takerToken.address,
                     qfr.takerAssetSpent,
+                    sender,
+                    taker,
                     encodeTransformData({
                         orders,
                         signatures,
@@ -561,6 +613,8 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                     transformer.address,
                     takerToken.address,
                     qfr.takerAssetSpent,
+                    sender,
+                    taker,
                     encodeTransformData({
                         orders,
                         signatures,
@@ -583,6 +637,8 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                     transformer.address,
                     takerToken.address,
                     qfr.takerAssetSpent,
+                    sender,
+                    taker,
                     encodeTransformData({
                         orders,
                         signatures,
@@ -602,6 +658,8 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                     transformer.address,
                     takerToken.address,
                     qfr.takerAssetSpent,
+                    sender,
+                    taker,
                     encodeTransformData({
                         orders,
                         signatures,
@@ -615,6 +673,80 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                 makerAssetBalance: qfr.makerAssetBought,
             });
         });
+
+        it('can refund unspent protocol fee to the `refundReceiver`', async () => {
+            const orders = _.times(2, () => createOrder());
+            const signatures = orders.map(() => encodeExchangeBehavior());
+            const qfr = getExpectedSellQuoteFillResults(orders);
+            const protocolFee = qfr.protocolFeePaid.plus(1);
+            const refundReceiver = randomAddress();
+            await host
+                .executeTransform(
+                    transformer.address,
+                    takerToken.address,
+                    qfr.takerAssetSpent,
+                    sender,
+                    taker,
+                    encodeTransformData({
+                        orders,
+                        signatures,
+                        refundReceiver,
+                    }),
+                )
+                .awaitTransactionSuccessAsync({ value: protocolFee });
+            const receiverBalancer = await env.web3Wrapper.getBalanceInWeiAsync(refundReceiver);
+            expect(receiverBalancer).to.bignumber.eq(1);
+        });
+
+        it('can refund unspent protocol fee to the taker', async () => {
+            const orders = _.times(2, () => createOrder());
+            const signatures = orders.map(() => encodeExchangeBehavior());
+            const qfr = getExpectedSellQuoteFillResults(orders);
+            const protocolFee = qfr.protocolFeePaid.plus(1);
+            const refundReceiver = randomAddress();
+            await host
+                .executeTransform(
+                    transformer.address,
+                    takerToken.address,
+                    qfr.takerAssetSpent,
+                    sender,
+                    refundReceiver, // taker = refundReceiver
+                    encodeTransformData({
+                        orders,
+                        signatures,
+                        // address(1) indicates taker
+                        refundReceiver: hexUtils.leftPad(1, 20),
+                    }),
+                )
+                .awaitTransactionSuccessAsync({ value: protocolFee });
+            const receiverBalancer = await env.web3Wrapper.getBalanceInWeiAsync(refundReceiver);
+            expect(receiverBalancer).to.bignumber.eq(1);
+        });
+
+        it('can refund unspent protocol fee to the sender', async () => {
+            const orders = _.times(2, () => createOrder());
+            const signatures = orders.map(() => encodeExchangeBehavior());
+            const qfr = getExpectedSellQuoteFillResults(orders);
+            const protocolFee = qfr.protocolFeePaid.plus(1);
+            const refundReceiver = randomAddress();
+            await host
+                .executeTransform(
+                    transformer.address,
+                    takerToken.address,
+                    qfr.takerAssetSpent,
+                    refundReceiver, // sender = refundReceiver
+                    taker,
+                    encodeTransformData({
+                        orders,
+                        signatures,
+                        // address(2) indicates sender
+                        refundReceiver: hexUtils.leftPad(2, 20),
+                    }),
+                )
+                .awaitTransactionSuccessAsync({ value: protocolFee });
+            const receiverBalancer = await env.web3Wrapper.getBalanceInWeiAsync(refundReceiver);
+            expect(receiverBalancer).to.bignumber.eq(1);
+        });
     });
 
     describe('buy quotes', () => {
@@ -627,6 +759,8 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                     transformer.address,
                     takerToken.address,
                     qfr.takerAssetSpent,
+                    sender,
+                    taker,
                     encodeTransformData({
                         orders,
                         signatures,
@@ -650,6 +784,8 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                     transformer.address,
                     takerToken.address,
                     qfr.takerAssetSpent,
+                    sender,
+                    taker,
                     encodeTransformData({
                         orders,
                         signatures,
@@ -676,6 +812,8 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                     transformer.address,
                     takerToken.address,
                     qfr.takerAssetSpent,
+                    sender,
+                    taker,
                     encodeTransformData({
                         orders,
                         signatures,
@@ -700,6 +838,8 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                     transformer.address,
                     takerToken.address,
                     qfr.takerAssetSpent,
+                    sender,
+                    taker,
                     encodeTransformData({
                         orders,
                         signatures,
@@ -726,6 +866,8 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                     transformer.address,
                     takerToken.address,
                     qfr.takerAssetSpent,
+                    sender,
+                    taker,
                     encodeTransformData({
                         orders,
                         signatures,
@@ -749,6 +891,8 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                     transformer.address,
                     takerToken.address,
                     qfr.takerAssetSpent,
+                    sender,
+                    taker,
                     encodeTransformData({
                         orders,
                         signatures,
@@ -779,6 +923,8 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                     transformer.address,
                     takerToken.address,
                     qfr.takerAssetSpent,
+                    sender,
+                    taker,
                     encodeTransformData({
                         orders,
                         signatures,
@@ -803,6 +949,8 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                     transformer.address,
                     takerToken.address,
                     qfr.takerAssetSpent,
+                    sender,
+                    taker,
                     encodeTransformData({
                         orders,
                         signatures,
@@ -827,6 +975,8 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                     transformer.address,
                     takerToken.address,
                     qfr.takerAssetSpent,
+                    sender,
+                    taker,
                     encodeTransformData({
                         orders,
                         signatures,
@@ -848,6 +998,8 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                     transformer.address,
                     takerToken.address,
                     qfr.takerAssetSpent,
+                    sender,
+                    taker,
                     encodeTransformData({
                         orders,
                         signatures,
@@ -865,7 +1017,7 @@ blockchainTests.resets('FillQuoteTransformer', env => {
         });
     });
 
-    describe('bridge orders', () => {
+    describe('bridge orders fall through', () => {
         it('can fully sell to a single bridge order quote', async () => {
             const orders = _.times(1, () => createBridgeOrder());
             const signatures = orders.map(() => NULL_BYTES);
@@ -875,6 +1027,8 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                     transformer.address,
                     takerToken.address,
                     qfr.takerAssetSpent,
+                    sender,
+                    taker,
                     encodeTransformData({
                         orders,
                         signatures,
@@ -901,6 +1055,8 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                     transformer.address,
                     takerToken.address,
                     qfr.takerAssetSpent,
+                    sender,
+                    taker,
                     encodeTransformData({
                         orders,
                         signatures,
@@ -927,6 +1083,8 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                     transformer.address,
                     takerToken.address,
                     qfr.takerAssetSpent,
+                    sender,
+                    taker,
                     encodeTransformData({
                         orders,
                         signatures,
@@ -955,6 +1113,8 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                     transformer.address,
                     takerToken.address,
                     qfr.takerAssetSpent,
+                    sender,
+                    taker,
                     encodeTransformData({
                         orders,
                         signatures,

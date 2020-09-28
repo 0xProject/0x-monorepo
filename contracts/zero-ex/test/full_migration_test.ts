@@ -9,11 +9,11 @@ import { abis } from './utils/abis';
 import { deployFullFeaturesAsync, FullFeatures } from './utils/migration';
 import {
     AllowanceTargetContract,
-    IMetaTransactionsContract,
-    IOwnableContract,
-    ISignatureValidatorContract,
-    ITokenSpenderContract,
-    ITransformERC20Contract,
+    IMetaTransactionsFeatureContract,
+    IOwnableFeatureContract,
+    ISignatureValidatorFeatureContract,
+    ITokenSpenderFeatureContract,
+    ITransformERC20FeatureContract,
     TestFullMigrationContract,
     ZeroExContract,
 } from './wrappers';
@@ -50,7 +50,7 @@ blockchainTests.resets('Full migration', env => {
     });
 
     it('ZeroEx has the correct owner', async () => {
-        const ownable = new IOwnableContract(zeroEx.address, env.provider, env.txDefaults);
+        const ownable = new IOwnableFeatureContract(zeroEx.address, env.provider, env.txDefaults);
         const actualOwner = await ownable.owner().callAsync();
         expect(actualOwner).to.eq(owner);
     });
@@ -70,11 +70,11 @@ blockchainTests.resets('Full migration', env => {
 
     const FEATURE_FNS = {
         TokenSpender: {
-            contractType: ITokenSpenderContract,
+            contractType: ITokenSpenderFeatureContract,
             fns: ['_spendERC20Tokens'],
         },
         TransformERC20: {
-            contractType: ITransformERC20Contract,
+            contractType: ITransformERC20FeatureContract,
             fns: [
                 'transformERC20',
                 '_transformERC20',
@@ -86,11 +86,11 @@ blockchainTests.resets('Full migration', env => {
             ],
         },
         SignatureValidator: {
-            contractType: ISignatureValidatorContract,
+            contractType: ISignatureValidatorFeatureContract,
             fns: ['isValidHashSignature', 'validateHashSignature'],
         },
         MetaTransactions: {
-            contractType: IMetaTransactionsContract,
+            contractType: IMetaTransactionsFeatureContract,
             fns: [
                 'executeMetaTransaction',
                 'batchExecuteMetaTransactions',
@@ -181,7 +181,7 @@ blockchainTests.resets('Full migration', env => {
         let allowanceTarget: AllowanceTargetContract;
 
         before(async () => {
-            const contract = new ITokenSpenderContract(zeroEx.address, env.provider, env.txDefaults);
+            const contract = new ITokenSpenderFeatureContract(zeroEx.address, env.provider, env.txDefaults);
             allowanceTarget = new AllowanceTargetContract(
                 await contract.getAllowanceTarget().callAsync(),
                 env.provider,
@@ -199,10 +199,10 @@ blockchainTests.resets('Full migration', env => {
     });
 
     describe('TransformERC20', () => {
-        let feature: ITransformERC20Contract;
+        let feature: ITransformERC20FeatureContract;
 
         before(async () => {
-            feature = new ITransformERC20Contract(zeroEx.address, env.provider, env.txDefaults);
+            feature = new ITransformERC20FeatureContract(zeroEx.address, env.provider, env.txDefaults);
         });
 
         it('has the correct transformer deployer', async () => {

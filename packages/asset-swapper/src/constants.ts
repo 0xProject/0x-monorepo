@@ -1,6 +1,7 @@
 import { BigNumber } from '@0x/utils';
 
 import {
+    ExchangeProxyContractOpts,
     ExtensionContractType,
     ForwarderExtensionContractOpts,
     OrderPrunerOpts,
@@ -19,7 +20,10 @@ const NULL_ERC20_ASSET_DATA = '0xf47261b0000000000000000000000000000000000000000
 const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
 const MAINNET_CHAIN_ID = 1;
 const ONE_SECOND_MS = 1000;
+const ONE_MINUTE_SECS = 60;
+const ONE_MINUTE_MS = ONE_SECOND_MS * ONE_MINUTE_SECS;
 const DEFAULT_PER_PAGE = 1000;
+const ZERO_AMOUNT = new BigNumber(0);
 
 const DEFAULT_ORDER_PRUNER_OPTS: OrderPrunerOpts = {
     expiryBufferMs: 120000, // 2 minutes
@@ -37,10 +41,8 @@ const PROTOCOL_FEE_MULTIPLIER = new BigNumber(70000);
 const MARKET_UTILS_AMOUNT_BUFFER_PERCENTAGE = 0.5;
 
 const DEFAULT_SWAP_QUOTER_OPTS: SwapQuoterOpts = {
-    ...{
-        chainId: MAINNET_CHAIN_ID,
-        orderRefreshIntervalMs: 10000, // 10 seconds
-    },
+    chainId: MAINNET_CHAIN_ID,
+    orderRefreshIntervalMs: 10000, // 10 seconds
     ...DEFAULT_ORDER_PRUNER_OPTS,
     samplerGasLimit: 250e6,
     ethGasStationUrl: ETH_GAS_STATION_API_URL,
@@ -60,7 +62,24 @@ const DEFAULT_FORWARDER_SWAP_QUOTE_GET_OPTS: SwapQuoteGetOutputOpts = {
     extensionContractOpts: DEFAULT_FORWARDER_EXTENSION_CONTRACT_OPTS,
 };
 
+const DEFAULT_EXCHANGE_PROXY_EXTENSION_CONTRACT_OPTS: ExchangeProxyContractOpts = {
+    isFromETH: false,
+    isToETH: false,
+    affiliateFee: {
+        recipient: NULL_ADDRESS,
+        buyTokenFeeAmount: ZERO_AMOUNT,
+        sellTokenFeeAmount: ZERO_AMOUNT,
+    },
+    refundReceiver: NULL_ADDRESS,
+    isMetaTransaction: false,
+};
+
 const DEFAULT_FORWARDER_SWAP_QUOTE_EXECUTE_OPTS: SwapQuoteExecutionOpts = DEFAULT_FORWARDER_SWAP_QUOTE_GET_OPTS;
+
+const DEFAULT_EXCHANGE_PROXY_SWAP_QUOTE_GET_OPTS: SwapQuoteGetOutputOpts = {
+    useExtensionContract: ExtensionContractType.ExchangeProxy,
+    extensionContractOpts: DEFAULT_EXCHANGE_PROXY_EXTENSION_CONTRACT_OPTS,
+};
 
 const DEFAULT_SWAP_QUOTE_REQUEST_OPTS: SwapQuoteRequestOpts = {
     ...DEFAULT_GET_MARKET_ORDERS_OPTS,
@@ -74,17 +93,20 @@ export const constants = {
     ETH_GAS_STATION_API_URL,
     PROTOCOL_FEE_MULTIPLIER,
     NULL_BYTES,
-    ZERO_AMOUNT: new BigNumber(0),
+    ZERO_AMOUNT,
     NULL_ADDRESS,
     MAINNET_CHAIN_ID,
     DEFAULT_ORDER_PRUNER_OPTS,
     ETHER_TOKEN_DECIMALS: 18,
     ONE_AMOUNT: new BigNumber(1),
     ONE_SECOND_MS,
+    ONE_MINUTE_MS,
     DEFAULT_SWAP_QUOTER_OPTS,
     DEFAULT_FORWARDER_SWAP_QUOTE_GET_OPTS,
     DEFAULT_FORWARDER_SWAP_QUOTE_EXECUTE_OPTS,
     DEFAULT_SWAP_QUOTE_REQUEST_OPTS,
+    DEFAULT_EXCHANGE_PROXY_SWAP_QUOTE_GET_OPTS,
+    DEFAULT_EXCHANGE_PROXY_EXTENSION_CONTRACT_OPTS,
     DEFAULT_PER_PAGE,
     DEFAULT_RFQT_REQUEST_OPTS,
     NULL_ERC20_ASSET_DATA,

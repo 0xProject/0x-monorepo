@@ -9,6 +9,14 @@
             {
                 "note": "Update `ERC20BridgeSampler` wrapper",
                 "pr": 2633
+            },
+            {
+                "note": "Add `exchangeProxy` to `ContractWrappers` type.",
+                "pr": 2649
+            },
+            {
+                "note": "Regenerate wrappers",
+                "pr": 2703
             }
         ]
     },

@@ -8,6 +8,7 @@ import { MarketOperation, SignedOrderWithFillableAmounts } from '../../types';
 
 import {
     ERC20_PROXY_ID,
+    MAX_UINT256,
     NULL_ADDRESS,
     NULL_BYTES,
     ONE_HOUR_IN_SECONDS,
@@ -20,15 +21,22 @@ import { getMultiBridgeIntermediateToken } from './multibridge_utils';
 import {
     AggregationError,
     BalancerFillData,
+    BancorFillData,
     CollapsedFill,
     CurveFillData,
+    DexSample,
     ERC20BridgeSource,
     Fill,
+    KyberFillData,
     LiquidityProviderFillData,
+    MooniswapFillData,
     MultiBridgeFillData,
+    MultiHopFillData,
     NativeCollapsedFill,
     OptimizedMarketOrder,
     OrderDomain,
+    SushiSwapFillData,
+    SwerveFillData,
     UniswapV2FillData,
 } from './types';
 
@@ -149,6 +157,7 @@ export interface CreateOrderFromPathOpts {
 
 // Convert sell fills into orders.
 export function createOrdersFromPath(path: Fill[], opts: CreateOrderFromPathOpts): OptimizedMarketOrder[] {
+    const [makerToken, takerToken] = getMakerTakerTokens(opts);
     const collapsedPath = collapsePath(path);
     const orders: OptimizedMarketOrder[] = [];
     for (let i = 0; i < collapsedPath.length; ) {
@@ -167,7 +176,7 @@ export function createOrdersFromPath(path: Fill[], opts: CreateOrderFromPathOpts
         }
         // Always use DexForwarderBridge unless configured not to
         if (!opts.shouldBatchBridgeOrders) {
-            orders.push(createBridgeOrder(contiguousBridgeFills[0], opts));
+            orders.push(createBridgeOrder(contiguousBridgeFills[0], makerToken, takerToken, opts));
             i += 1;
         } else {
             orders.push(createBatchedBridgeOrder(contiguousBridgeFills, opts));
@@ -177,9 +186,36 @@ export function createOrdersFromPath(path: Fill[], opts: CreateOrderFromPathOpts
     return orders;
 }
 
+export function createOrdersFromTwoHopSample(
+    sample: DexSample<MultiHopFillData>,
+    opts: CreateOrderFromPathOpts,
+): OptimizedMarketOrder[] {
+    const [makerToken, takerToken] = getMakerTakerTokens(opts);
+    const { firstHopSource, secondHopSource, intermediateToken } = sample.fillData!;
+    const firstHopFill: CollapsedFill = {
+        sourcePathId: '',
+        source: firstHopSource.source,
+        input: opts.side === MarketOperation.Sell ? sample.input : ZERO_AMOUNT,
+        output: opts.side === MarketOperation.Sell ? ZERO_AMOUNT : sample.output,
+        subFills: [],
+        fillData: firstHopSource.fillData,
+    };
+    const secondHopFill: CollapsedFill = {
+        sourcePathId: '',
+        source: secondHopSource.source,
+        input: opts.side === MarketOperation.Sell ? MAX_UINT256 : sample.input,
+        output: opts.side === MarketOperation.Sell ? sample.output : MAX_UINT256,
+        subFills: [],
+        fillData: secondHopSource.fillData,
+    };
+    return [
+        createBridgeOrder(firstHopFill, intermediateToken, takerToken, opts),
+        createBridgeOrder(secondHopFill, makerToken, intermediateToken, opts),
+    ];
+}
+
 function getBridgeAddressFromFill(fill: CollapsedFill, opts: CreateOrderFromPathOpts): string {
-    const source = fill.source;
-    switch (source) {
+    switch (fill.source) {
         case ERC20BridgeSource.Eth2Dai:
             return opts.contractAddresses.eth2DaiBridge;
         case ERC20BridgeSource.Kyber:
@@ -188,22 +224,36 @@ function getBridgeAddressFromFill(fill: CollapsedFill, opts: CreateOrderFromPath
             return opts.contractAddresses.uniswapBridge;
         case ERC20BridgeSource.UniswapV2:
             return opts.contractAddresses.uniswapV2Bridge;
+        case ERC20BridgeSource.SushiSwap:
+            return opts.contractAddresses.sushiswapBridge;
         case ERC20BridgeSource.Curve:
             return opts.contractAddresses.curveBridge;
+        case ERC20BridgeSource.Swerve:
+            return opts.contractAddresses.curveBridge;
+        case ERC20BridgeSource.Bancor:
+            return opts.contractAddresses.bancorBridge;
         case ERC20BridgeSource.Balancer:
             return opts.contractAddresses.balancerBridge;
         case ERC20BridgeSource.LiquidityProvider:
             return (fill.fillData as LiquidityProviderFillData).poolAddress;
         case ERC20BridgeSource.MultiBridge:
             return (fill.fillData as MultiBridgeFillData).poolAddress;
+        case ERC20BridgeSource.MStable:
+            return opts.contractAddresses.mStableBridge;
+        case ERC20BridgeSource.Mooniswap:
+            return opts.contractAddresses.mooniswapBridge;
         default:
             break;
     }
     throw new Error(AggregationError.NoBridgeForSource);
 }
 
-function createBridgeOrder(fill: CollapsedFill, opts: CreateOrderFromPathOpts): OptimizedMarketOrder {
-    const [makerToken, takerToken] = getMakerTakerTokens(opts);
+function createBridgeOrder(
+    fill: CollapsedFill,
+    makerToken: string,
+    takerToken: string,
+    opts: CreateOrderFromPathOpts,
+): OptimizedMarketOrder {
     const bridgeAddress = getBridgeAddressFromFill(fill, opts);
 
     let makerAssetData;
@@ -222,12 +272,34 @@ function createBridgeOrder(fill: CollapsedFill, opts: CreateOrderFromPathOpts): 
                 ),
             );
             break;
+        case ERC20BridgeSource.Swerve:
+            const swerveFillData = (fill as CollapsedFill<SwerveFillData>).fillData!; // tslint:disable-line:no-non-null-assertion
+            makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
+                makerToken,
+                bridgeAddress,
+                createCurveBridgeData(
+                    swerveFillData.pool.poolAddress,
+                    swerveFillData.pool.exchangeFunctionSelector,
+                    takerToken,
+                    swerveFillData.fromTokenIdx,
+                    swerveFillData.toTokenIdx,
+                ),
+            );
+            break;
         case ERC20BridgeSource.Balancer:
             const balancerFillData = (fill as CollapsedFill<BalancerFillData>).fillData!; // tslint:disable-line:no-non-null-assertion
             makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
                 makerToken,
                 bridgeAddress,
                 createBalancerBridgeData(takerToken, balancerFillData.poolAddress),
+            );
+            break;
+        case ERC20BridgeSource.Bancor:
+            const bancorFillData = (fill as CollapsedFill<BancorFillData>).fillData!; // tslint:disable-line:no-non-null-assertion
+            makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
+                makerToken,
+                bridgeAddress,
+                createBancorBridgeData(bancorFillData.path, bancorFillData.networkAddress),
             );
             break;
         case ERC20BridgeSource.UniswapV2:
@@ -238,11 +310,35 @@ function createBridgeOrder(fill: CollapsedFill, opts: CreateOrderFromPathOpts): 
                 createUniswapV2BridgeData(uniswapV2FillData.tokenAddressPath),
             );
             break;
+        case ERC20BridgeSource.SushiSwap:
+            const sushiSwapFillData = (fill as CollapsedFill<SushiSwapFillData>).fillData!; // tslint:disable-line:no-non-null-assertion
+            makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
+                makerToken,
+                bridgeAddress,
+                createSushiSwapBridgeData(sushiSwapFillData.tokenAddressPath, sushiSwapFillData.router),
+            );
+            break;
         case ERC20BridgeSource.MultiBridge:
             makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
                 makerToken,
                 bridgeAddress,
                 createMultiBridgeData(takerToken, makerToken),
+            );
+            break;
+        case ERC20BridgeSource.Kyber:
+            const kyberFillData = (fill as CollapsedFill<KyberFillData>).fillData!; // tslint:disable-line:no-non-null-assertion
+            makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
+                makerToken,
+                bridgeAddress,
+                createKyberBridgeData(takerToken, kyberFillData.hint),
+            );
+            break;
+        case ERC20BridgeSource.Mooniswap:
+            const mooniswapFillData = (fill as CollapsedFill<MooniswapFillData>).fillData!; // tslint:disable-line:no-non-null-assertion
+            makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
+                makerToken,
+                bridgeAddress,
+                createMooniswapBridgeData(takerToken, mooniswapFillData.poolAddress),
             );
             break;
         default:
@@ -262,7 +358,7 @@ function createBridgeOrder(fill: CollapsedFill, opts: CreateOrderFromPathOpts): 
         takerAssetAmount: slippedTakerAssetAmount,
         fillableMakerAssetAmount: slippedMakerAssetAmount,
         fillableTakerAssetAmount: slippedTakerAssetAmount,
-        ...createCommonBridgeOrderFields(opts),
+        ...createCommonBridgeOrderFields(opts.orderDomain),
     };
 }
 
@@ -275,7 +371,7 @@ function createBatchedBridgeOrder(fills: CollapsedFill[], opts: CreateOrderFromP
         calls: [],
     };
     for (const fill of fills) {
-        const bridgeOrder = createBridgeOrder(fill, opts);
+        const bridgeOrder = createBridgeOrder(fill, makerToken, takerToken, opts);
         totalMakerAssetAmount = totalMakerAssetAmount.plus(bridgeOrder.makerAssetAmount);
         totalTakerAssetAmount = totalTakerAssetAmount.plus(bridgeOrder.takerAssetAmount);
         const { bridgeAddress, bridgeData: orderBridgeData } = assetDataUtils.decodeAssetDataOrThrow(
@@ -303,7 +399,7 @@ function createBatchedBridgeOrder(fills: CollapsedFill[], opts: CreateOrderFromP
         takerAssetAmount: totalTakerAssetAmount,
         fillableMakerAssetAmount: totalMakerAssetAmount,
         fillableTakerAssetAmount: totalTakerAssetAmount,
-        ...createCommonBridgeOrderFields(opts),
+        ...createCommonBridgeOrderFields(opts.orderDomain),
     };
 }
 
@@ -335,6 +431,27 @@ function createBalancerBridgeData(takerToken: string, poolAddress: string): stri
     return encoder.encode({ takerToken, poolAddress });
 }
 
+function createBancorBridgeData(path: string[], networkAddress: string): string {
+    const encoder = AbiEncoder.create([
+        { name: 'path', type: 'address[]' },
+        { name: 'networkAddress', type: 'address' },
+    ]);
+    return encoder.encode({ path, networkAddress });
+}
+
+function createKyberBridgeData(fromTokenAddress: string, hint: string): string {
+    const encoder = AbiEncoder.create([{ name: 'fromTokenAddress', type: 'address' }, { name: 'hint', type: 'bytes' }]);
+    return encoder.encode({ fromTokenAddress, hint });
+}
+
+function createMooniswapBridgeData(takerToken: string, poolAddress: string): string {
+    const encoder = AbiEncoder.create([
+        { name: 'takerToken', type: 'address' },
+        { name: 'poolAddress', type: 'address' },
+    ]);
+    return encoder.encode({ takerToken, poolAddress });
+}
+
 function createCurveBridgeData(
     curveAddress: string,
     exchangeFunctionSelector: string,
@@ -342,25 +459,24 @@ function createCurveBridgeData(
     fromTokenIdx: number,
     toTokenIdx: number,
 ): string {
-    const curveBridgeDataEncoder = AbiEncoder.create([
+    const encoder = AbiEncoder.create([
         { name: 'curveAddress', type: 'address' },
         { name: 'exchangeFunctionSelector', type: 'bytes4' },
         { name: 'fromTokenAddress', type: 'address' },
         { name: 'fromTokenIdx', type: 'int128' },
         { name: 'toTokenIdx', type: 'int128' },
     ]);
-    return curveBridgeDataEncoder.encode([
-        curveAddress,
-        exchangeFunctionSelector,
-        takerToken,
-        fromTokenIdx,
-        toTokenIdx,
-    ]);
+    return encoder.encode([curveAddress, exchangeFunctionSelector, takerToken, fromTokenIdx, toTokenIdx]);
 }
 
 function createUniswapV2BridgeData(tokenAddressPath: string[]): string {
-    const uniswapV2BridgeDataEncoder = AbiEncoder.create('(address[])');
-    return uniswapV2BridgeDataEncoder.encode([tokenAddressPath]);
+    const encoder = AbiEncoder.create('(address[])');
+    return encoder.encode([tokenAddressPath]);
+}
+
+function createSushiSwapBridgeData(tokenAddressPath: string[], router: string): string {
+    const encoder = AbiEncoder.create('(address[],address)');
+    return encoder.encode([tokenAddressPath, router]);
 }
 
 function getSlippedBridgeAssetAmounts(fill: CollapsedFill, opts: CreateOrderFromPathOpts): [BigNumber, BigNumber] {
@@ -372,7 +488,7 @@ function getSlippedBridgeAssetAmounts(fill: CollapsedFill, opts: CreateOrderFrom
         // Taker asset amount.
         opts.side === MarketOperation.Sell
             ? fill.input
-            : fill.output.times(opts.bridgeSlippage + 1).integerValue(BigNumber.ROUND_UP),
+            : BigNumber.min(fill.output.times(opts.bridgeSlippage + 1).integerValue(BigNumber.ROUND_UP), MAX_UINT256),
     ];
 }
 
@@ -391,7 +507,7 @@ type CommonBridgeOrderFields = Pick<
     >
 >;
 
-function createCommonBridgeOrderFields(opts: CreateOrderFromPathOpts): CommonBridgeOrderFields {
+function createCommonBridgeOrderFields(orderDomain: OrderDomain): CommonBridgeOrderFields {
     return {
         takerAddress: NULL_ADDRESS,
         senderAddress: NULL_ADDRESS,
@@ -405,7 +521,7 @@ function createCommonBridgeOrderFields(opts: CreateOrderFromPathOpts): CommonBri
         takerFee: ZERO_AMOUNT,
         fillableTakerFeeAmount: ZERO_AMOUNT,
         signature: WALLET_SIGNATURE,
-        ...opts.orderDomain,
+        ...orderDomain,
     };
 }
 

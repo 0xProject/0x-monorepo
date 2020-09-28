@@ -1,4 +1,3 @@
-import { ERC20BridgeSamplerContract } from '@0x/contract-wrappers';
 import { RFQTIndicativeQuote } from '@0x/quote-server';
 import { MarketOperation, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -38,6 +37,12 @@ export enum ERC20BridgeSource {
     LiquidityProvider = 'LiquidityProvider',
     MultiBridge = 'MultiBridge',
     Balancer = 'Balancer',
+    Bancor = 'Bancor',
+    MStable = 'mStable',
+    Mooniswap = 'Mooniswap',
+    MultiHop = 'MultiHop',
+    Swerve = 'Swerve',
+    SushiSwap = 'SushiSwap',
 }
 
 // tslint:disable: enum-naming
@@ -66,8 +71,15 @@ export interface CurveInfo {
     tokens: string[];
 }
 
+export interface SwerveInfo extends CurveInfo {}
+
 // Internal `fillData` field for `Fill` objects.
 export interface FillData {}
+
+export interface SourceInfo<TFillData extends FillData = FillData> {
+    source: ERC20BridgeSource;
+    fillData?: TFillData;
+}
 
 // `FillData` for native fills.
 export interface NativeFillData extends FillData {
@@ -80,12 +92,22 @@ export interface CurveFillData extends FillData {
     curve: CurveInfo;
 }
 
+export interface SwerveFillData extends FillData {
+    fromTokenIdx: number;
+    toTokenIdx: number;
+    pool: SwerveInfo;
+}
+
 export interface BalancerFillData extends FillData {
     poolAddress: string;
 }
 
 export interface UniswapV2FillData extends FillData {
     tokenAddressPath: string[];
+}
+
+export interface SushiSwapFillData extends UniswapV2FillData {
+    router: string;
 }
 
 export interface LiquidityProviderFillData extends FillData {
@@ -96,14 +118,42 @@ export interface MultiBridgeFillData extends FillData {
     poolAddress: string;
 }
 
+export interface BancorFillData extends FillData {
+    path: string[];
+    networkAddress: string;
+}
+
+export interface KyberFillData extends FillData {
+    hint: string;
+    reserveId: string;
+}
+
+export interface MooniswapFillData extends FillData {
+    poolAddress: string;
+}
+
+export interface Quote<TFillData = FillData> {
+    amount: BigNumber;
+    fillData?: TFillData;
+}
+
+export interface HopInfo {
+    sourceIndex: BigNumber;
+    returnData: string;
+}
+
+export interface MultiHopFillData extends FillData {
+    firstHopSource: SourceQuoteOperation;
+    secondHopSource: SourceQuoteOperation;
+    intermediateToken: string;
+}
+
 /**
  * Represents an individual DEX sample from the sampler contract.
  */
-export interface DexSample<TFillData extends FillData = FillData> {
-    source: ERC20BridgeSource;
+export interface DexSample<TFillData extends FillData = FillData> extends SourceInfo<TFillData> {
     input: BigNumber;
     output: BigNumber;
-    fillData?: TFillData;
 }
 
 /**
@@ -119,7 +169,7 @@ export enum FillFlags {
 /**
  * Represents a node on a fill path.
  */
-export interface Fill<TFillData extends FillData = FillData> {
+export interface Fill<TFillData extends FillData = FillData> extends SourceInfo<TFillData> {
     // Unique ID of the original source path this fill belongs to.
     // This is generated when the path is generated and is useful to distinguish
     // paths that have the same `source` IDs but are distinct (e.g., Curves).
@@ -130,31 +180,22 @@ export interface Fill<TFillData extends FillData = FillData> {
     input: BigNumber;
     // Output fill amount (maker asset amount in a sell, taker asset amount in a buy).
     output: BigNumber;
-    // The maker/taker rate.
-    rate: BigNumber;
-    // The maker/taker rate, adjusted by fees.
-    adjustedRate: BigNumber;
     // The output fill amount, ajdusted by fees.
     adjustedOutput: BigNumber;
     // Fill that must precede this one. This enforces certain fills to be contiguous.
     parent?: Fill;
     // The index of the fill in the original path.
     index: number;
-    // The source of the fill. See `ERC20BridgeSource`.
-    source: ERC20BridgeSource;
-    // Data associated with this this Fill object. Used to reconstruct orders
-    // from paths.
-    fillData?: TFillData;
 }
 
 /**
  * Represents continguous fills on a path that have been merged together.
  */
-export interface CollapsedFill<TFillData extends FillData = FillData> {
-    /**
-     * The source DEX.
-     */
-    source: ERC20BridgeSource;
+export interface CollapsedFill<TFillData extends FillData = FillData> extends SourceInfo<TFillData> {
+    // Unique ID of the original source path this fill belongs to.
+    // This is generated when the path is generated and is useful to distinguish
+    // paths that have the same `source` IDs but are distinct (e.g., Curves).
+    sourcePathId: string;
     /**
      * Total input amount (sum of `subFill`s)
      */
@@ -170,8 +211,6 @@ export interface CollapsedFill<TFillData extends FillData = FillData> {
         input: BigNumber;
         output: BigNumber;
     }>;
-
-    fillData?: TFillData;
 }
 
 /**
@@ -204,6 +243,11 @@ export interface GetMarketOrdersOpts {
      * Liquidity sources to exclude. Default is none.
      */
     excludedSources: ERC20BridgeSource[];
+    /**
+     * Liquidity sources to include. Default is none, which allows all supported
+     * sources that aren't excluded by `excludedSources`.
+     */
+    includedSources: ERC20BridgeSource[];
     /**
      * Complexity limit on the search algorithm, i.e., maximum number of
      * nodes to visit. Default is 1024.
@@ -255,24 +299,30 @@ export interface GetMarketOrdersOpts {
      * order. Defaults to `true`.
      */
     shouldBatchBridgeOrders: boolean;
+    /**
+     * Whether to generate a quote report
+     */
+    shouldGenerateQuoteReport: boolean;
 }
 
 /**
  * A composable operation the be run in `DexOrderSampler.executeAsync()`.
  */
 export interface BatchedOperation<TResult> {
-    encodeCall(contract: ERC20BridgeSamplerContract): string;
-    handleCallResultsAsync(contract: ERC20BridgeSamplerContract, callResults: string): Promise<TResult>;
+    encodeCall(): string;
+    handleCallResults(callResults: string): TResult;
 }
 
-export interface SourceQuoteOperation<TFillData extends FillData = FillData> extends BatchedOperation<BigNumber[]> {
-    source: ERC20BridgeSource;
-    fillData?: TFillData;
+export interface SourceQuoteOperation<TFillData extends FillData = FillData>
+    extends BatchedOperation<BigNumber[]>,
+        SourceInfo<TFillData> {
+    readonly source: ERC20BridgeSource;
 }
 
-export interface OptimizedOrdersAndQuoteReport {
+export interface OptimizerResult {
     optimizedOrders: OptimizedMarketOrder[];
-    quoteReport: QuoteReport;
+    isTwoHop: boolean;
+    quoteReport?: QuoteReport;
 }
 
 export type MarketDepthSide = Array<Array<DexSample<FillData>>>;
@@ -291,5 +341,11 @@ export interface MarketSideLiquidity {
     nativeOrders: SignedOrder[];
     orderFillableAmounts: BigNumber[];
     ethToOutputRate: BigNumber;
+    ethToInputRate: BigNumber;
     rfqtIndicativeQuotes: RFQTIndicativeQuote[];
+    twoHopQuotes: Array<DexSample<MultiHopFillData>>;
+}
+
+export interface TokenAdjacencyGraph {
+    [token: string]: string[];
 }

@@ -69,13 +69,11 @@
     "dependencies": {
         "@0x/base-contract": "^6.2.3",
         "@0x/contract-addresses": "^4.11.0",
-        "@0x/contract-wrappers": "^13.8.0",
         "@0x/contracts-asset-proxy": "^3.4.0",
         "@0x/contracts-coordinator": "^3.1.7",
         "@0x/contracts-dev-utils": "^1.3.5",
         "@0x/contracts-erc1155": "^2.1.7",
         "@0x/contracts-erc20": "^3.2.1",
-        "@0x/contracts-erc20-bridge-sampler": "^1.7.0",
         "@0x/contracts-erc721": "^3.1.7",
         "@0x/contracts-exchange": "^3.2.7",
         "@0x/contracts-exchange-forwarder": "^4.2.7",

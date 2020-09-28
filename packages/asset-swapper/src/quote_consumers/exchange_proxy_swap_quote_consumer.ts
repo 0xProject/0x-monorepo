@@ -1,23 +1,22 @@
 import { ContractAddresses } from '@0x/contract-addresses';
-import { ITransformERC20Contract } from '@0x/contract-wrappers';
+import { IZeroExContract } from '@0x/contract-wrappers';
 import {
-    assetDataUtils,
+    encodeAffiliateFeeTransformerData,
     encodeFillQuoteTransformerData,
     encodePayTakerTransformerData,
     encodeWethTransformerData,
-    ERC20AssetData,
     ETH_TOKEN_ADDRESS,
     FillQuoteTransformerSide,
+    findTransformerNonce,
 } from '@0x/order-utils';
-import { AssetProxyId } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from '@0x/web3-wrapper';
-import * as ethjs from 'ethereumjs-util';
 import * as _ from 'lodash';
 
 import { constants } from '../constants';
 import {
     CalldataInfo,
+    ExchangeProxyContractOpts,
     MarketBuySwapQuote,
     MarketOperation,
     MarketSellSwapQuote,
@@ -28,11 +27,14 @@ import {
     SwapQuoteGetOutputOpts,
 } from '../types';
 import { assert } from '../utils/assert';
+import { ERC20BridgeSource, UniswapV2FillData } from '../utils/market_operation_utils/types';
+import { getTokenFromAssetData } from '../utils/utils';
+
+import { getSwapMinBuyAmount } from './utils';
 
 // tslint:disable-next-line:custom-no-magic-numbers
 const MAX_UINT256 = new BigNumber(2).pow(256).minus(1);
-const { NULL_ADDRESS } = constants;
-const MAX_NONCE_GUESSES = 2048;
+const { NULL_ADDRESS, ZERO_AMOUNT } = constants;
 
 export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
     public readonly provider: ZeroExProvider;
@@ -41,9 +43,10 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
         wethTransformer: number;
         payTakerTransformer: number;
         fillQuoteTransformer: number;
+        affiliateFeeTransformer: number;
     };
 
-    private readonly _transformFeature: ITransformERC20Contract;
+    private readonly _exchangeProxy: IZeroExContract;
 
     constructor(
         supportedProvider: SupportedProvider,
@@ -56,7 +59,7 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
         this.provider = provider;
         this.chainId = chainId;
         this.contractAddresses = contractAddresses;
-        this._transformFeature = new ITransformERC20Contract(contractAddresses.exchangeProxy, supportedProvider);
+        this._exchangeProxy = new IZeroExContract(contractAddresses.exchangeProxy, supportedProvider);
         this.transformerNonces = {
             wethTransformer: findTransformerNonce(
                 contractAddresses.transformers.wethTransformer,
@@ -70,6 +73,10 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
                 contractAddresses.transformers.fillQuoteTransformer,
                 contractAddresses.exchangeProxyTransformerDeployer,
             ),
+            affiliateFeeTransformer: findTransformerNonce(
+                contractAddresses.transformers.affiliateFeeTransformer,
+                contractAddresses.exchangeProxyTransformerDeployer,
+            ),
         };
     }
 
@@ -78,18 +85,44 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
         opts: Partial<SwapQuoteGetOutputOpts> = {},
     ): Promise<CalldataInfo> {
         assert.isValidSwapQuote('quote', quote);
-        const { isFromETH, isToETH } = {
-            ...constants.DEFAULT_FORWARDER_SWAP_QUOTE_GET_OPTS,
-            extensionContractOpts: {
-                isFromETH: false,
-                isToETH: false,
-            },
-            ...opts,
-        }.extensionContractOpts;
+        const optsWithDefaults: ExchangeProxyContractOpts = {
+            ...constants.DEFAULT_EXCHANGE_PROXY_EXTENSION_CONTRACT_OPTS,
+            ...opts.extensionContractOpts,
+        };
+        // tslint:disable-next-line:no-object-literal-type-assertion
+        const { refundReceiver, affiliateFee, isFromETH, isToETH } = optsWithDefaults;
 
         const sellToken = getTokenFromAssetData(quote.takerAssetData);
         const buyToken = getTokenFromAssetData(quote.makerAssetData);
         const sellAmount = quote.worstCaseQuoteInfo.totalTakerAssetAmount;
+        let minBuyAmount = getSwapMinBuyAmount(quote);
+
+        // VIP routes.
+        if (isDirectUniswapCompatible(quote, optsWithDefaults)) {
+            const source = quote.orders[0].fills[0].source;
+            const fillData = quote.orders[0].fills[0].fillData as UniswapV2FillData;
+            return {
+                calldataHexString: this._exchangeProxy
+                    .sellToUniswap(
+                        fillData.tokenAddressPath.map((a, i) => {
+                            if (i === 0 && isFromETH) {
+                                return ETH_TOKEN_ADDRESS;
+                            }
+                            if (i === fillData.tokenAddressPath.length - 1 && isToETH) {
+                                return ETH_TOKEN_ADDRESS;
+                            }
+                            return a;
+                        }),
+                        sellAmount,
+                        minBuyAmount,
+                        source === ERC20BridgeSource.SushiSwap,
+                    )
+                    .getABIEncodedTransactionData(),
+                ethAmount: isFromETH ? sellAmount : ZERO_AMOUNT,
+                toAddress: this._exchangeProxy.address,
+                allowanceTarget: this.contractAddresses.exchangeProxyAllowanceTarget,
+            };
+        }
 
         // Build up the transforms.
         const transforms = [];
@@ -104,19 +137,54 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
             });
         }
 
+        const intermediateToken = quote.isTwoHop ? getTokenFromAssetData(quote.orders[0].makerAssetData) : NULL_ADDRESS;
         // This transformer will fill the quote.
-        transforms.push({
-            deploymentNonce: this.transformerNonces.fillQuoteTransformer,
-            data: encodeFillQuoteTransformerData({
-                sellToken,
-                buyToken,
-                side: isBuyQuote(quote) ? FillQuoteTransformerSide.Buy : FillQuoteTransformerSide.Sell,
-                fillAmount: isBuyQuote(quote) ? quote.makerAssetFillAmount : quote.takerAssetFillAmount,
-                maxOrderFillAmounts: [],
-                orders: quote.orders,
-                signatures: quote.orders.map(o => o.signature),
-            }),
-        });
+        if (quote.isTwoHop) {
+            const [firstHopOrder, secondHopOrder] = quote.orders;
+            transforms.push({
+                deploymentNonce: this.transformerNonces.fillQuoteTransformer,
+                data: encodeFillQuoteTransformerData({
+                    sellToken,
+                    buyToken: intermediateToken,
+                    side: FillQuoteTransformerSide.Sell,
+                    refundReceiver: refundReceiver || NULL_ADDRESS,
+                    fillAmount: firstHopOrder.takerAssetAmount,
+                    maxOrderFillAmounts: [],
+                    rfqtTakerAddress: NULL_ADDRESS,
+                    orders: [firstHopOrder],
+                    signatures: [firstHopOrder.signature],
+                }),
+            });
+            transforms.push({
+                deploymentNonce: this.transformerNonces.fillQuoteTransformer,
+                data: encodeFillQuoteTransformerData({
+                    buyToken,
+                    sellToken: intermediateToken,
+                    refundReceiver: refundReceiver || NULL_ADDRESS,
+                    side: FillQuoteTransformerSide.Sell,
+                    fillAmount: MAX_UINT256,
+                    maxOrderFillAmounts: [],
+                    rfqtTakerAddress: NULL_ADDRESS,
+                    orders: [secondHopOrder],
+                    signatures: [secondHopOrder.signature],
+                }),
+            });
+        } else {
+            transforms.push({
+                deploymentNonce: this.transformerNonces.fillQuoteTransformer,
+                data: encodeFillQuoteTransformerData({
+                    sellToken,
+                    buyToken,
+                    refundReceiver: refundReceiver || NULL_ADDRESS,
+                    side: isBuyQuote(quote) ? FillQuoteTransformerSide.Buy : FillQuoteTransformerSide.Sell,
+                    fillAmount: isBuyQuote(quote) ? quote.makerAssetFillAmount : quote.takerAssetFillAmount,
+                    maxOrderFillAmounts: [],
+                    rfqtTakerAddress: NULL_ADDRESS,
+                    orders: quote.orders,
+                    signatures: quote.orders.map(o => o.signature),
+                }),
+            });
+        }
 
         if (isToETH) {
             // Create a WETH unwrapper if going to ETH.
@@ -129,21 +197,45 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
             });
         }
 
+        // This transformer pays affiliate fees.
+        const { buyTokenFeeAmount, sellTokenFeeAmount, recipient: feeRecipient } = affiliateFee;
+
+        if (buyTokenFeeAmount.isGreaterThan(0) && feeRecipient !== NULL_ADDRESS) {
+            transforms.push({
+                deploymentNonce: this.transformerNonces.affiliateFeeTransformer,
+                data: encodeAffiliateFeeTransformerData({
+                    fees: [
+                        {
+                            token: isToETH ? ETH_TOKEN_ADDRESS : buyToken,
+                            amount: buyTokenFeeAmount,
+                            recipient: feeRecipient,
+                        },
+                    ],
+                }),
+            });
+            // Adjust the minimum buy amount by the fee.
+            minBuyAmount = BigNumber.max(0, minBuyAmount.minus(buyTokenFeeAmount));
+        }
+
+        if (sellTokenFeeAmount.isGreaterThan(0) && feeRecipient !== NULL_ADDRESS) {
+            throw new Error('Affiliate fees denominated in sell token are not yet supported');
+        }
+
         // The final transformer will send all funds to the taker.
         transforms.push({
             deploymentNonce: this.transformerNonces.payTakerTransformer,
             data: encodePayTakerTransformerData({
-                tokens: [sellToken, buyToken, ETH_TOKEN_ADDRESS],
+                tokens: [sellToken, buyToken, ETH_TOKEN_ADDRESS].concat(quote.isTwoHop ? intermediateToken : []),
                 amounts: [],
             }),
         });
 
-        const calldataHexString = this._transformFeature
+        const calldataHexString = this._exchangeProxy
             .transformERC20(
                 isFromETH ? ETH_TOKEN_ADDRESS : sellToken,
                 isToETH ? ETH_TOKEN_ADDRESS : buyToken,
                 sellAmount,
-                quote.worstCaseQuoteInfo.makerAssetAmount,
+                minBuyAmount,
                 transforms,
             )
             .getABIEncodedTransactionData();
@@ -156,7 +248,7 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
         return {
             calldataHexString,
             ethAmount,
-            toAddress: this._transformFeature.address,
+            toAddress: this._exchangeProxy.address,
             allowanceTarget: this.contractAddresses.exchangeProxyAllowanceTarget,
         };
     }
@@ -174,40 +266,28 @@ function isBuyQuote(quote: SwapQuote): quote is MarketBuySwapQuote {
     return quote.type === MarketOperation.Buy;
 }
 
-function getTokenFromAssetData(assetData: string): string {
-    const data = assetDataUtils.decodeAssetDataOrThrow(assetData);
-    if (data.assetProxyId !== AssetProxyId.ERC20) {
-        throw new Error(`Unsupported exchange proxy quote asset type: ${data.assetProxyId}`);
+function isDirectUniswapCompatible(quote: SwapQuote, opts: ExchangeProxyContractOpts): boolean {
+    // Must not be a mtx.
+    if (opts.isMetaTransaction) {
+        return false;
     }
-    // tslint:disable-next-line:no-unnecessary-type-assertion
-    return (data as ERC20AssetData).tokenAddress;
-}
-
-/**
- * Find the nonce for a transformer given its deployer.
- * If `deployer` is the null address, zero will always be returned.
- */
-export function findTransformerNonce(transformer: string, deployer: string = NULL_ADDRESS): number {
-    if (deployer === NULL_ADDRESS) {
-        return 0;
+    // Must not have an affiliate fee.
+    if (!opts.affiliateFee.buyTokenFeeAmount.eq(0) || !opts.affiliateFee.sellTokenFeeAmount.eq(0)) {
+        return false;
     }
-    const lowercaseTransformer = transformer.toLowerCase();
-    // Try to guess the nonce.
-    for (let nonce = 0; nonce < MAX_NONCE_GUESSES; ++nonce) {
-        const deployedAddress = getTransformerAddress(deployer, nonce);
-        if (deployedAddress === lowercaseTransformer) {
-            return nonce;
-        }
+    // Must be a single order.
+    if (quote.orders.length !== 1) {
+        return false;
     }
-    throw new Error(`${deployer} did not deploy ${transformer}!`);
-}
-
-/**
- * Compute the deployed address for a transformer given a deployer and nonce.
- */
-export function getTransformerAddress(deployer: string, nonce: number): string {
-    return ethjs.bufferToHex(
-        // tslint:disable-next-line: custom-no-magic-numbers
-        ethjs.rlphash([deployer, nonce] as any).slice(12),
-    );
+    const order = quote.orders[0];
+    // With a single underlying fill/source.
+    if (order.fills.length !== 1) {
+        return false;
+    }
+    const fill = order.fills[0];
+    // And that fill must be uniswap v2 or sushiswap.
+    if (![ERC20BridgeSource.UniswapV2, ERC20BridgeSource.SushiSwap].includes(fill.source)) {
+        return false;
+    }
+    return true;
 }

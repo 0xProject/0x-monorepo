@@ -19,22 +19,24 @@
 pragma solidity ^0.6.5;
 pragma experimental ABIEncoderV2;
 
-import "./features/IOwnable.sol";
-import "./features/ISimpleFunctionRegistry.sol";
-import "./features/ITokenSpender.sol";
-import "./features/ISignatureValidator.sol";
-import "./features/ITransformERC20.sol";
-import "./features/IMetaTransactions.sol";
+import "./features/IOwnableFeature.sol";
+import "./features/ISimpleFunctionRegistryFeature.sol";
+import "./features/ITokenSpenderFeature.sol";
+import "./features/ISignatureValidatorFeature.sol";
+import "./features/ITransformERC20Feature.sol";
+import "./features/IMetaTransactionsFeature.sol";
+import "./features/IUniswapFeature.sol";
 
 
 /// @dev Interface for a fully featured Exchange Proxy.
 interface IZeroEx is
-    IOwnable,
-    ISimpleFunctionRegistry,
-    ITokenSpender,
-    ISignatureValidator,
-    ITransformERC20,
-    IMetaTransactions
+    IOwnableFeature,
+    ISimpleFunctionRegistryFeature,
+    ITokenSpenderFeature,
+    ISignatureValidatorFeature,
+    ITransformERC20Feature,
+    IMetaTransactionsFeature,
+    IUniswapFeature
 {
     // solhint-disable state-visibility
 

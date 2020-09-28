@@ -1,5 +1,6 @@
 import { BigNumber } from '@0x/utils';
 
+import { SourceFilters } from './source_filters';
 import { CurveFunctionSelectors, CurveInfo, ERC20BridgeSource, GetMarketOrdersOpts } from './types';
 
 // tslint:disable: custom-no-magic-numbers
@@ -7,31 +8,50 @@ import { CurveFunctionSelectors, CurveInfo, ERC20BridgeSource, GetMarketOrdersOp
 /**
  * Valid sources for market sell.
  */
-export const SELL_SOURCES = [
+export const SELL_SOURCE_FILTER = new SourceFilters([
+    ERC20BridgeSource.Native,
     ERC20BridgeSource.Uniswap,
     ERC20BridgeSource.UniswapV2,
     ERC20BridgeSource.Eth2Dai,
     ERC20BridgeSource.Kyber,
     ERC20BridgeSource.Curve,
     ERC20BridgeSource.Balancer,
-];
+    // Bancor is sampled off-chain, but this list should only include on-chain sources (used in ERC20BridgeSampler)
+    // ERC20BridgeSource.Bancor,
+    ERC20BridgeSource.MStable,
+    ERC20BridgeSource.Mooniswap,
+    ERC20BridgeSource.Swerve,
+    ERC20BridgeSource.SushiSwap,
+    ERC20BridgeSource.MultiHop,
+]);
 
 /**
  * Valid sources for market buy.
  */
-export const BUY_SOURCES = [
-    ERC20BridgeSource.Uniswap,
-    ERC20BridgeSource.UniswapV2,
-    ERC20BridgeSource.Eth2Dai,
-    ERC20BridgeSource.Kyber,
-    ERC20BridgeSource.Curve,
-    ERC20BridgeSource.Balancer,
-];
+export const BUY_SOURCE_FILTER = new SourceFilters(
+    [
+        ERC20BridgeSource.Native,
+        ERC20BridgeSource.Uniswap,
+        ERC20BridgeSource.UniswapV2,
+        ERC20BridgeSource.Eth2Dai,
+        ERC20BridgeSource.Kyber,
+        ERC20BridgeSource.Curve,
+        ERC20BridgeSource.Balancer,
+        // ERC20BridgeSource.Bancor, // FIXME: Disabled until Bancor SDK supports buy quotes
+        ERC20BridgeSource.MStable,
+        ERC20BridgeSource.Mooniswap,
+        ERC20BridgeSource.Swerve,
+        ERC20BridgeSource.SushiSwap,
+        ERC20BridgeSource.MultiHop,
+    ],
+    [ERC20BridgeSource.MultiBridge],
+);
 
 export const DEFAULT_GET_MARKET_ORDERS_OPTS: GetMarketOrdersOpts = {
     // tslint:disable-next-line: custom-no-magic-numbers
     runLimit: 2 ** 15,
     excludedSources: [],
+    includedSources: [],
     bridgeSlippage: 0.005,
     maxFallbackSlippage: 0.05,
     numSamples: 13,
@@ -40,17 +60,13 @@ export const DEFAULT_GET_MARKET_ORDERS_OPTS: GetMarketOrdersOpts = {
     gasSchedule: {},
     allowFallback: true,
     shouldBatchBridgeOrders: true,
+    shouldGenerateQuoteReport: false,
 };
 
 /**
  * Sources to poll for ETH fee price estimates.
  */
-export const FEE_QUOTE_SOURCES = [
-    ERC20BridgeSource.Uniswap,
-    ERC20BridgeSource.UniswapV2,
-    ERC20BridgeSource.Eth2Dai,
-    ERC20BridgeSource.Kyber,
-];
+export const FEE_QUOTE_SOURCES = [ERC20BridgeSource.Uniswap, ERC20BridgeSource.UniswapV2];
 
 /**
  * Mainnet Curve configuration
@@ -102,7 +118,7 @@ export const MAINNET_CURVE_INFOS: { [name: string]: CurveInfo } = {
     DaiUsdcUsdtSusd: {
         exchangeFunctionSelector: CurveFunctionSelectors.exchange_underlying,
         sellQuoteFunctionSelector: CurveFunctionSelectors.get_dy_underlying,
-        buyQuoteFunctionSelector: CurveFunctionSelectors.get_dx_underlying,
+        buyQuoteFunctionSelector: CurveFunctionSelectors.None,
         poolAddress: '0xa5407eae9ba41422680e2e00537571bcc53efbfd',
         tokens: [
             '0x6b175474e89094c44da98b954eedeac495271d0f',
@@ -129,7 +145,70 @@ export const MAINNET_CURVE_INFOS: { [name: string]: CurveInfo } = {
             '0xfe18be6b3bd88a2d2a7f928d00292e7a9963cfc6',
         ],
     },
+    TriPool: {
+        exchangeFunctionSelector: CurveFunctionSelectors.exchange,
+        sellQuoteFunctionSelector: CurveFunctionSelectors.get_dy,
+        buyQuoteFunctionSelector: CurveFunctionSelectors.None,
+        poolAddress: '0xbebc44782c7db0a1a60cb6fe97d0b483032ff1c7',
+        tokens: [
+            '0x6b175474e89094c44da98b954eedeac495271d0f',
+            '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+            '0xdac17f958d2ee523a2206206994597c13d831ec7',
+        ],
+    },
 };
+export const MAINNET_SWERVE_INFOS: { [name: string]: CurveInfo } = {
+    swUSD: {
+        exchangeFunctionSelector: CurveFunctionSelectors.exchange,
+        sellQuoteFunctionSelector: CurveFunctionSelectors.get_dy_underlying,
+        buyQuoteFunctionSelector: CurveFunctionSelectors.get_dx_underlying,
+        poolAddress: '0x329239599afB305DA0A2eC69c58F8a6697F9F88d',
+        tokens: [
+            '0x6b175474e89094c44da98b954eedeac495271d0f',
+            '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+            '0xdac17f958d2ee523a2206206994597c13d831ec7',
+            '0x0000000000085d4780b73119b644ae5ecd22b376',
+        ],
+    },
+};
+
+export const MAINNET_KYBER_RESERVE_IDS: { [name: string]: string } = {
+    Reserve1: '0xff4b796265722046707200000000000000000000000000000000000000000000',
+    Reserve2: '0xffabcd0000000000000000000000000000000000000000000000000000000000',
+    Reserve3: '0xff4f6e65426974205175616e7400000000000000000000000000000000000000',
+};
+
+export const MAINNET_KYBER_TOKEN_RESERVE_IDS: { [token: string]: string } = {
+    // USDC
+    ['0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48']:
+        '0xaa55534443303041505200000000000000000000000000000000000000000000',
+    // AMPL
+    ['0xd46ba6d942050d489dbd938a2c909a5d5039a161']:
+        '0xaad46ba6d942050d489dbd938a2c909a5d5039a1610000000000000000000000',
+    // UBT
+    ['0x8400d94a5cb0fa0d041a3788e395285d61c9ee5e']:
+        '0xaa55425400000000000000000000000000000000000000000000000000000000',
+    // ANT
+    ['0x960b236a07cf122663c4303350609a66a7b288c0']:
+        '0xaa414e5400000000000000000000000000000000000000000000000000000000',
+    // KNC
+    ['0xdd974d5c2e2928dea5f71b9825b8b646686bd200']:
+        '0xaa4b4e435f4d4547414c41444f4e000000000000000000000000000000000000',
+    // sUSD
+    ['0x57ab1ec28d129707052df4df418d58a2d46d5f51']:
+        '0xaa73555344000000000000000000000000000000000000000000000000000000',
+    // SNX
+    ['0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f']:
+        '0xaa534e5800000000000000000000000000000000000000000000000000000000',
+    // REN
+    ['0x408e41876cccdc0f92210600ef50372656052a38']:
+        '0xaa72656e00000000000000000000000000000000000000000000000000000000',
+    // BAND
+    ['0xba11d00c5f74255f56a5e366f4f77f5a186d7f55']:
+        '0xaa42414e44000000000000000000000000000000000000000000000000000000',
+};
+
+export const MAINNET_SUSHI_SWAP_ROUTER = '0xd9e1cE17f2641f24aE83637ab66a2cca9C378B9F';
 
 export const ERC20_PROXY_ID = '0xf47261b0';
 export const WALLET_SIGNATURE = '0x04';
@@ -137,6 +216,7 @@ export const ONE_ETHER = new BigNumber(1e18);
 export const NEGATIVE_INF = new BigNumber('-Infinity');
 export const POSITIVE_INF = new BigNumber('Infinity');
 export const ZERO_AMOUNT = new BigNumber(0);
+export const MAX_UINT256 = new BigNumber(2).pow(256).minus(1);
 export const ONE_HOUR_IN_SECONDS = 60 * 60;
 export const ONE_SECOND_MS = 1000;
 export const NULL_BYTES = '0x';

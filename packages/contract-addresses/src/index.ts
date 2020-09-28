@@ -35,11 +35,15 @@ export interface ContractAddresses {
     dexForwarderBridge: string;
     multiBridge: string;
     balancerBridge: string;
+    bancorBridge: string;
     exchangeProxyGovernor: string;
     exchangeProxy: string;
     exchangeProxyAllowanceTarget: string;
     exchangeProxyTransformerDeployer: string;
     exchangeProxyFlashWallet: string;
+    mStableBridge: string;
+    mooniswapBridge: string;
+    sushiswapBridge: string;
     transformers: {
         wethTransformer: string;
         payTakerTransformer: string;

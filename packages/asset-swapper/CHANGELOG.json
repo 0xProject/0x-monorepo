@@ -25,6 +25,114 @@
             {
                 "note": "Adds `getBidAskLiquidityForMakerTakerAssetPairAsync` to return more detailed sample information",
                 "pr": 2641
+            },
+            {
+                "note": "Fix regression where a split on the same source was collapsed into a single fill",
+                "pr": 2654
+            },
+            {
+                "note": "Add support for buy token affiliate fees",
+                "pr": 2658
+            },
+            {
+                "note": "Fix optimization of buy paths",
+                "pr": 2655
+            },
+            {
+                "note": "Fix depth buy scale",
+                "pr": 2659
+            },
+            {
+                "note": "Adjust fill by ethToInputRate when ethToOutputRate is 0",
+                "pr": 2660
+            },
+            {
+                "note": "Add Bancor as liquidity source",
+                "pr": 2650
+            },
+            {
+                "note": "Added `mStable`",
+                "pr": 2662
+            },
+            {
+                "note": "Merge `erc20-bridge-sampler` into this package",
+                "pr": 2664
+            },
+            {
+                "note": "Added `Mooniswap`",
+                "pr": 2675
+            },
+            {
+                "note": "Stop requiring takerAddress for RFQ-T indicative quotes",
+                "pr": 2684
+            },
+            {
+                "note": "Added two-hop support",
+                "pr": 2647
+            },
+            {
+                "note": "Move ERC20BridgeSampler interfaces into `interfaces` directory",
+                "pr": 2647
+            },
+            {
+                "note": "Use on-chain sampling (sometimes) for Balancer",
+                "pr": 2647
+            },
+            {
+                "note": "Re-worked `Kyber` quotes supporting multiple reserves",
+                "pr": 2683
+            },
+            {
+                "note": "Enable Quote Report to be generated with an option `shouldGenerateQuoteReport`. Default is `false`",
+                "pr": 2687
+            },
+            {
+                "note": "Add `refundReceiver` to `ExchangeProxySwapQuoteConsumer` options.",
+                "pr": 2657
+            },
+            {
+                "note": "Use `IZeroExContract` in EP swap quote consumer.",
+                "pr": 2657
+            },
+            {
+                "note": "Set `rfqtTakerAddress` to null in EP consumer",
+                "pr": 2692
+            },
+            {
+                "note": "Return Mooniswap pool in sampler and encode it in bridge data",
+                "pr": 2692
+            },
+            {
+                "note": "Added `Swerve`",
+                "pr": 2698
+            },
+            {
+                "note": "Added `SushiSwap`",
+                "pr": 2698
+            },
+            {
+                "note": "Add uniswap VIP support",
+                "pr": 2703
+            },
+            {
+                "note": "Add `includedSources` support",
+                "pr": 2703
+            },
+            {
+                "note": "Added `Curve` Tripool",
+                "pr": 2708
+            },
+            {
+                "note": "Pass back fillData from quote reporter",
+                "pr": 2702
+            },
+            {
+                "note": "Fix Balancer sampling",
+                "pr": 2711
+            },
+            {
+                "note": "Respect max slippage in EP consumer",
+                "pr": 2712
             }
         ]
     },

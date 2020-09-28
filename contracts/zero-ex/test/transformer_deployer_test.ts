@@ -59,6 +59,12 @@ blockchainTests.resets('TransformerDeployer', env => {
             expect(await env.web3Wrapper.getBalanceInWeiAsync(targetAddress)).to.bignumber.eq(1);
         });
 
+        it('reverts if constructor throws', async () => {
+            const CONSTRUCTOR_FAIL_VALUE = new BigNumber(3333);
+            const tx = deployer.deploy(deployBytes).callAsync({ value: CONSTRUCTOR_FAIL_VALUE, from: authority });
+            return expect(tx).to.revertWith('TransformerDeployer/DEPLOY_FAILED');
+        });
+
         it('updates nonce', async () => {
             expect(await deployer.nonce().callAsync()).to.bignumber.eq(1);
             await deployer.deploy(deployBytes).awaitTransactionSuccessAsync({ from: authority });
@@ -82,6 +88,7 @@ blockchainTests.resets('TransformerDeployer', env => {
     });
 
     describe('kill()', () => {
+        const ethRecipient = randomAddress();
         let target: TestTransformerDeployerTransformerContract;
 
         before(async () => {
@@ -90,14 +97,16 @@ blockchainTests.resets('TransformerDeployer', env => {
             await deployer.deploy(deployBytes).awaitTransactionSuccessAsync({ from: authority });
         });
 
-        it('authority cannot call', async () => {
+        it('non-authority cannot call', async () => {
             const nonAuthority = randomAddress();
-            const tx = deployer.kill(target.address).callAsync({ from: nonAuthority });
+            const tx = deployer.kill(target.address, ethRecipient).callAsync({ from: nonAuthority });
             return expect(tx).to.revertWith(new AuthorizableRevertErrors.SenderNotAuthorizedError(nonAuthority));
         });
 
         it('authority can kill a contract', async () => {
-            const receipt = await deployer.kill(target.address).awaitTransactionSuccessAsync({ from: authority });
+            const receipt = await deployer
+                .kill(target.address, ethRecipient)
+                .awaitTransactionSuccessAsync({ from: authority });
             verifyEventsFromLogs(
                 receipt.logs,
                 [{ target: target.address, sender: authority }],

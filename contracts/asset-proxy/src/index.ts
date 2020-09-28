@@ -18,6 +18,7 @@ export {
     TestDydxBridgeContract,
     TestStaticCallTargetContract,
     UniswapBridgeContract,
+    DexForwarderBridgeContract,
 } from './wrappers';
 
 export { ERC20Wrapper } from './erc20_wrapper';

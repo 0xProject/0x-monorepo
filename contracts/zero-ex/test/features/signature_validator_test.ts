@@ -5,7 +5,7 @@ import { hexUtils, ZeroExRevertErrors } from '@0x/utils';
 import * as ethjs from 'ethereumjs-util';
 import * as _ from 'lodash';
 
-import { SignatureValidatorContract, ZeroExContract } from '../../src/wrappers';
+import { IZeroExContract, SignatureValidatorFeatureContract } from '../../src/wrappers';
 import { abis } from '../utils/abis';
 import { fullMigrateAsync } from '../utils/migration';
 
@@ -14,13 +14,13 @@ const { NULL_BYTES } = constants;
 blockchainTests.resets('SignatureValidator feature', env => {
     let owner: string;
     let signers: string[];
-    let zeroEx: ZeroExContract;
-    let feature: SignatureValidatorContract;
+    let zeroEx: IZeroExContract;
+    let feature: SignatureValidatorFeatureContract;
 
     before(async () => {
         [owner, ...signers] = await env.getAccountAddressesAsync();
         zeroEx = await fullMigrateAsync(owner, env.provider, env.txDefaults);
-        feature = new SignatureValidatorContract(zeroEx.address, env.provider, env.txDefaults, abis);
+        feature = new SignatureValidatorFeatureContract(zeroEx.address, env.provider, env.txDefaults, abis);
     });
 
     describe('validateHashSignature()', () => {

@@ -2,11 +2,13 @@ import { getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
 import { constants as contractConstants, getRandomInteger, Numberish, randomAddress } from '@0x/contracts-test-utils';
 import {
     assetDataUtils,
+    decodeAffiliateFeeTransformerData,
     decodeFillQuoteTransformerData,
     decodePayTakerTransformerData,
     decodeWethTransformerData,
     ETH_TOKEN_ADDRESS,
     FillQuoteTransformerSide,
+    getTransformerAddress,
 } from '@0x/order-utils';
 import { Order } from '@0x/types';
 import { AbiEncoder, BigNumber, hexUtils } from '@0x/utils';
@@ -15,10 +17,8 @@ import * as _ from 'lodash';
 import 'mocha';
 
 import { constants } from '../src/constants';
-import {
-    ExchangeProxySwapQuoteConsumer,
-    getTransformerAddress,
-} from '../src/quote_consumers/exchange_proxy_swap_quote_consumer';
+import { ExchangeProxySwapQuoteConsumer } from '../src/quote_consumers/exchange_proxy_swap_quote_consumer';
+import { getSwapMinBuyAmount } from '../src/quote_consumers/utils';
 import { MarketBuySwapQuote, MarketOperation, MarketSellSwapQuote } from '../src/types';
 import { OptimizedMarketOrder } from '../src/utils/market_operation_utils/types';
 
@@ -28,7 +28,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 
 const { NULL_ADDRESS } = constants;
-const { MAX_UINT256 } = contractConstants;
+const { MAX_UINT256, ZERO_AMOUNT } = contractConstants;
 
 // tslint:disable: custom-no-magic-numbers
 
@@ -36,6 +36,7 @@ describe('ExchangeProxySwapQuoteConsumer', () => {
     const CHAIN_ID = 1;
     const TAKER_TOKEN = randomAddress();
     const MAKER_TOKEN = randomAddress();
+    const INTERMEDIATE_TOKEN = randomAddress();
     const TRANSFORMER_DEPLOYER = randomAddress();
     const contractAddresses = {
         ...getContractAddressesForChainOrThrow(CHAIN_ID),
@@ -123,6 +124,18 @@ describe('ExchangeProxySwapQuoteConsumer', () => {
         } as any;
     }
 
+    function getRandomTwoHopQuote(side: MarketOperation): MarketBuySwapQuote | MarketSellSwapQuote {
+        const intermediateTokenAssetData = createAssetData(INTERMEDIATE_TOKEN);
+        return {
+            ...getRandomQuote(side),
+            orders: [
+                { ...getRandomOrder(), makerAssetData: intermediateTokenAssetData },
+                { ...getRandomOrder(), takerAssetData: intermediateTokenAssetData },
+            ],
+            isTwoHop: true,
+        } as any;
+    }
+
     function getRandomSellQuote(): MarketSellSwapQuote {
         return getRandomQuote(MarketOperation.Sell) as MarketSellSwapQuote;
     }
@@ -179,7 +192,7 @@ describe('ExchangeProxySwapQuoteConsumer', () => {
             expect(callArgs.inputToken).to.eq(TAKER_TOKEN);
             expect(callArgs.outputToken).to.eq(MAKER_TOKEN);
             expect(callArgs.inputTokenAmount).to.bignumber.eq(quote.worstCaseQuoteInfo.totalTakerAssetAmount);
-            expect(callArgs.minOutputTokenAmount).to.bignumber.eq(quote.worstCaseQuoteInfo.makerAssetAmount);
+            expect(callArgs.minOutputTokenAmount).to.bignumber.eq(getSwapMinBuyAmount(quote));
             expect(callArgs.transformations).to.be.length(2);
             expect(
                 callArgs.transformations[0].deploymentNonce.toNumber() ===
@@ -208,7 +221,7 @@ describe('ExchangeProxySwapQuoteConsumer', () => {
             expect(callArgs.inputToken).to.eq(TAKER_TOKEN);
             expect(callArgs.outputToken).to.eq(MAKER_TOKEN);
             expect(callArgs.inputTokenAmount).to.bignumber.eq(quote.worstCaseQuoteInfo.totalTakerAssetAmount);
-            expect(callArgs.minOutputTokenAmount).to.bignumber.eq(quote.worstCaseQuoteInfo.makerAssetAmount);
+            expect(callArgs.minOutputTokenAmount).to.bignumber.eq(getSwapMinBuyAmount(quote));
             expect(callArgs.transformations).to.be.length(2);
             expect(
                 callArgs.transformations[0].deploymentNonce.toNumber() ===
@@ -264,6 +277,85 @@ describe('ExchangeProxySwapQuoteConsumer', () => {
             const wethTransformerData = decodeWethTransformerData(callArgs.transformations[1].data);
             expect(wethTransformerData.amount).to.bignumber.eq(MAX_UINT256);
             expect(wethTransformerData.token).to.eq(contractAddresses.etherToken);
+        });
+        it('Appends an affiliate fee transformer after the fill if a buy token affiliate fee is provided', async () => {
+            const quote = getRandomSellQuote();
+            const affiliateFee = {
+                recipient: randomAddress(),
+                buyTokenFeeAmount: getRandomAmount(),
+                sellTokenFeeAmount: ZERO_AMOUNT,
+            };
+            const callInfo = await consumer.getCalldataOrThrowAsync(quote, {
+                extensionContractOpts: { affiliateFee },
+            });
+            const callArgs = callDataEncoder.decode(callInfo.calldataHexString) as CallArgs;
+            expect(callArgs.transformations[1].deploymentNonce.toNumber()).to.eq(
+                consumer.transformerNonces.affiliateFeeTransformer,
+            );
+            const affiliateFeeTransformerData = decodeAffiliateFeeTransformerData(callArgs.transformations[1].data);
+            expect(affiliateFeeTransformerData.fees).to.deep.equal([
+                { token: MAKER_TOKEN, amount: affiliateFee.buyTokenFeeAmount, recipient: affiliateFee.recipient },
+            ]);
+        });
+        it('Throws if a sell token affiliate fee is provided', async () => {
+            const quote = getRandomSellQuote();
+            const affiliateFee = {
+                recipient: randomAddress(),
+                buyTokenFeeAmount: ZERO_AMOUNT,
+                sellTokenFeeAmount: getRandomAmount(),
+            };
+            expect(
+                consumer.getCalldataOrThrowAsync(quote, {
+                    extensionContractOpts: { affiliateFee },
+                }),
+            ).to.eventually.be.rejectedWith('Affiliate fees denominated in sell token are not yet supported');
+        });
+        it('Uses two `FillQuoteTransformer`s if given two-hop sell quote', async () => {
+            const quote = getRandomTwoHopQuote(MarketOperation.Sell) as MarketSellSwapQuote;
+            const callInfo = await consumer.getCalldataOrThrowAsync(quote, {
+                extensionContractOpts: { isTwoHop: true },
+            });
+            const callArgs = callDataEncoder.decode(callInfo.calldataHexString) as CallArgs;
+            expect(callArgs.inputToken).to.eq(TAKER_TOKEN);
+            expect(callArgs.outputToken).to.eq(MAKER_TOKEN);
+            expect(callArgs.inputTokenAmount).to.bignumber.eq(quote.worstCaseQuoteInfo.totalTakerAssetAmount);
+            expect(callArgs.minOutputTokenAmount).to.bignumber.eq(getSwapMinBuyAmount(quote));
+            expect(callArgs.transformations).to.be.length(3);
+            expect(
+                callArgs.transformations[0].deploymentNonce.toNumber() ===
+                    consumer.transformerNonces.fillQuoteTransformer,
+            );
+            expect(
+                callArgs.transformations[1].deploymentNonce.toNumber() ===
+                    consumer.transformerNonces.fillQuoteTransformer,
+            );
+            expect(
+                callArgs.transformations[2].deploymentNonce.toNumber() ===
+                    consumer.transformerNonces.payTakerTransformer,
+            );
+            const [firstHopOrder, secondHopOrder] = quote.orders;
+            const firstHopFillQuoteTransformerData = decodeFillQuoteTransformerData(callArgs.transformations[0].data);
+            expect(firstHopFillQuoteTransformerData.side).to.eq(FillQuoteTransformerSide.Sell);
+            expect(firstHopFillQuoteTransformerData.fillAmount).to.bignumber.eq(firstHopOrder.takerAssetAmount);
+            expect(firstHopFillQuoteTransformerData.orders).to.deep.eq(cleanOrders([firstHopOrder]));
+            expect(firstHopFillQuoteTransformerData.signatures).to.deep.eq([firstHopOrder.signature]);
+            expect(firstHopFillQuoteTransformerData.sellToken).to.eq(TAKER_TOKEN);
+            expect(firstHopFillQuoteTransformerData.buyToken).to.eq(INTERMEDIATE_TOKEN);
+            const secondHopFillQuoteTransformerData = decodeFillQuoteTransformerData(callArgs.transformations[1].data);
+            expect(secondHopFillQuoteTransformerData.side).to.eq(FillQuoteTransformerSide.Sell);
+            expect(secondHopFillQuoteTransformerData.fillAmount).to.bignumber.eq(contractConstants.MAX_UINT256);
+            expect(secondHopFillQuoteTransformerData.orders).to.deep.eq(cleanOrders([secondHopOrder]));
+            expect(secondHopFillQuoteTransformerData.signatures).to.deep.eq([secondHopOrder.signature]);
+            expect(secondHopFillQuoteTransformerData.sellToken).to.eq(INTERMEDIATE_TOKEN);
+            expect(secondHopFillQuoteTransformerData.buyToken).to.eq(MAKER_TOKEN);
+            const payTakerTransformerData = decodePayTakerTransformerData(callArgs.transformations[2].data);
+            expect(payTakerTransformerData.amounts).to.deep.eq([]);
+            expect(payTakerTransformerData.tokens).to.deep.eq([
+                TAKER_TOKEN,
+                MAKER_TOKEN,
+                ETH_TOKEN_ADDRESS,
+                INTERMEDIATE_TOKEN,
+            ]);
         });
     });
 });

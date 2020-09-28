@@ -127,7 +127,7 @@ blockchainTests.resets('FlashWallet', env => {
                     callTarget.address,
                     REVERTING_DATA,
                     constants.ZERO_AMOUNT,
-                    new StringRevertError('TestCallTarget/REVERT').encode(),
+                    new StringRevertError('TestCallTarget/REVERT'),
                 ),
             );
         });
@@ -203,7 +203,7 @@ blockchainTests.resets('FlashWallet', env => {
                     wallet.address,
                     callTarget.address,
                     REVERTING_DATA,
-                    new StringRevertError('TestCallTarget/REVERT').encode(),
+                    new StringRevertError('TestCallTarget/REVERT'),
                 ),
             );
         });

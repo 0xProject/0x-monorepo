@@ -16,10 +16,6 @@ import {
 import { artifacts as devUtilsArtifacts, DevUtilsContract } from '@0x/contracts-dev-utils';
 import { artifacts as erc1155Artifacts, ERC1155MintableContract } from '@0x/contracts-erc1155';
 import { artifacts as erc20Artifacts, DummyERC20TokenContract, WETH9Contract } from '@0x/contracts-erc20';
-import {
-    artifacts as erc20BridgeSamplerArtifacts,
-    ERC20BridgeSamplerContract,
-} from '@0x/contracts-erc20-bridge-sampler';
 import { artifacts as erc721Artifacts, DummyERC721TokenContract } from '@0x/contracts-erc721';
 import { artifacts as exchangeArtifacts, ExchangeContract } from '@0x/contracts-exchange';
 import { artifacts as forwarderArtifacts, ForwarderContract } from '@0x/contracts-exchange-forwarder';
@@ -32,10 +28,9 @@ import {
 import {
     AffiliateFeeTransformerContract,
     artifacts as exchangeProxyArtifacts,
+    BridgeAdapterContract,
     FillQuoteTransformerContract,
     fullMigrateAsync as fullMigrateExchangeProxyAsync,
-    ITokenSpenderContract,
-    ITransformERC20Contract,
     PayTakerTransformerContract,
     WethTransformerContract,
 } from '@0x/contracts-zero-ex';
@@ -56,8 +51,8 @@ const allArtifacts = {
     ...exchangeArtifacts,
     ...forwarderArtifacts,
     ...stakingArtifacts,
-    ...erc20BridgeSamplerArtifacts,
     ...exchangeProxyArtifacts,
+    ...assetProxyArtifacts,
 };
 
 const { NULL_ADDRESS } = constants;
@@ -295,41 +290,49 @@ export async function runMigrationsAsync(
         etherToken.address,
     );
 
-    const erc20BridgeSampler = await ERC20BridgeSamplerContract.deployFrom0xArtifactAsync(
-        erc20BridgeSamplerArtifacts.ERC20BridgeSampler,
+    // JAM
+    // tslint:disable-next-line:no-unused-variable
+    const jamToken = await DummyERC20TokenContract.deployFrom0xArtifactAsync(
+        erc20Artifacts.DummyERC20Token,
         provider,
         txDefaults,
         allArtifacts,
+        'JAM Token',
+        'JAM',
+        new BigNumber(18),
+        new BigNumber(1000000000000000000000000000),
     );
 
     // Exchange Proxy //////////////////////////////////////////////////////////
 
-    const exchangeProxy = await fullMigrateExchangeProxyAsync(txDefaults.from, provider, txDefaults);
-    const exchangeProxyAllowanceTargetAddress = await new ITokenSpenderContract(
-        exchangeProxy.address,
+    const bridgeAdapter = await BridgeAdapterContract.deployFrom0xArtifactAsync(
+        exchangeProxyArtifacts.BridgeAdapter,
         provider,
         txDefaults,
-    )
-        .getAllowanceTarget()
-        .callAsync();
-    const exchangeProxyFlashWalletAddress = await new ITransformERC20Contract(exchangeProxy.address, provider)
-        .getTransformWallet()
-        .callAsync();
+        allArtifacts,
+        {
+            balancerBridge: NULL_ADDRESS,
+            curveBridge: NULL_ADDRESS,
+            kyberBridge: NULL_ADDRESS,
+            mooniswapBridge: NULL_ADDRESS,
+            mStableBridge: NULL_ADDRESS,
+            oasisBridge: NULL_ADDRESS,
+            uniswapBridge: NULL_ADDRESS,
+            uniswapV2Bridge: NULL_ADDRESS,
+            kyberNetworkProxy: NULL_ADDRESS,
+            oasis: NULL_ADDRESS,
+            uniswapV2Router: NULL_ADDRESS,
+            uniswapExchangeFactory: NULL_ADDRESS,
+            mStable: NULL_ADDRESS,
+            weth: etherToken.address,
+        },
+    );
+
+    const exchangeProxy = await fullMigrateExchangeProxyAsync(txDefaults.from, provider, txDefaults);
+    const exchangeProxyAllowanceTargetAddress = await exchangeProxy.getAllowanceTarget().callAsync();
+    const exchangeProxyFlashWalletAddress = await exchangeProxy.getTransformWallet().callAsync();
 
     // Deploy transformers.
-    const fillQuoteTransformer = await FillQuoteTransformerContract.deployFrom0xArtifactAsync(
-        exchangeProxyArtifacts.FillQuoteTransformer,
-        provider,
-        txDefaults,
-        allArtifacts,
-        exchange.address,
-    );
-    const payTakerTransformer = await PayTakerTransformerContract.deployFrom0xArtifactAsync(
-        exchangeProxyArtifacts.PayTakerTransformer,
-        provider,
-        txDefaults,
-        allArtifacts,
-    );
     const wethTransformer = await WethTransformerContract.deployFrom0xArtifactAsync(
         exchangeProxyArtifacts.WethTransformer,
         provider,
@@ -337,11 +340,25 @@ export async function runMigrationsAsync(
         allArtifacts,
         etherToken.address,
     );
+    const payTakerTransformer = await PayTakerTransformerContract.deployFrom0xArtifactAsync(
+        exchangeProxyArtifacts.PayTakerTransformer,
+        provider,
+        txDefaults,
+        allArtifacts,
+    );
     const affiliateFeeTransformer = await AffiliateFeeTransformerContract.deployFrom0xArtifactAsync(
         exchangeProxyArtifacts.AffiliateFeeTransformer,
         provider,
         txDefaults,
         allArtifacts,
+    );
+    const fillQuoteTransformer = await FillQuoteTransformerContract.deployFrom0xArtifactAsync(
+        exchangeProxyArtifacts.FillQuoteTransformer,
+        provider,
+        txDefaults,
+        allArtifacts,
+        exchange.address,
+        bridgeAdapter.address,
     );
 
     const contractAddresses = {
@@ -367,7 +384,7 @@ export async function runMigrationsAsync(
         uniswapBridge: NULL_ADDRESS,
         eth2DaiBridge: NULL_ADDRESS,
         kyberBridge: NULL_ADDRESS,
-        erc20BridgeSampler: erc20BridgeSampler.address,
+        erc20BridgeSampler: NULL_ADDRESS,
         chaiBridge: NULL_ADDRESS,
         dydxBridge: NULL_ADDRESS,
         curveBridge: NULL_ADDRESS,
@@ -379,7 +396,11 @@ export async function runMigrationsAsync(
         dexForwarderBridge: NULL_ADDRESS,
         multiBridge: NULL_ADDRESS,
         balancerBridge: NULL_ADDRESS,
+        bancorBridge: NULL_ADDRESS,
         exchangeProxyGovernor: NULL_ADDRESS,
+        mStableBridge: NULL_ADDRESS,
+        mooniswapBridge: NULL_ADDRESS,
+        sushiswapBridge: NULL_ADDRESS,
         exchangeProxy: exchangeProxy.address,
         exchangeProxyAllowanceTarget: exchangeProxyAllowanceTargetAddress,
         exchangeProxyTransformerDeployer: txDefaults.from,

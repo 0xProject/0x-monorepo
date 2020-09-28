@@ -1,38 +1,109 @@
-export { ERC20BridgeSamplerContract } from './generated-wrappers/erc20_bridge_sampler';
-
-export { ContractAddresses } from '@0x/contract-addresses';
-
-export { ContractWrappers } from './contract_wrappers';
-export { DevUtilsContract } from './generated-wrappers/dev_utils';
-export { IERC20BridgeSamplerContract } from './generated-wrappers/i_erc20_bridge_sampler';
-export { IAssetDataContract } from './generated-wrappers/i_asset_data'; // used for synchronously encoding and decoding asset data
 export {
+    AwaitTransactionSuccessOpts,
+    ContractEvent,
+    ContractFunctionObj,
+    ContractTxFunctionObj,
+    SendTransactionOpts,
+    SubscriptionErrors,
+} from '@0x/base-contract';
+export { ContractAddresses } from '@0x/contract-addresses';
+export {
+    DecodedLogEvent,
+    EventCallback,
+    IndexedFilterValues,
+    SimpleContractArtifact,
+    SimpleEvmBytecodeOutput,
+    SimpleEvmOutput,
+    SimpleStandardContractOutput,
+} from '@0x/types';
+export { AbiDecoder, DecodedCalldata } from '@0x/utils';
+export {
+    AbiDefinition,
+    BlockParam,
+    BlockParamLiteral,
+    BlockRange,
+    CallData,
+    CompilerOpts,
+    CompilerSettings,
+    CompilerSettingsMetadata,
+    ConstructorAbi,
+    ConstructorStateMutability,
+    ContractAbi,
+    ContractArtifact,
+    ContractChainData,
+    ContractChains,
+    ContractEventArg,
+    DataItem,
+    DecodedLogArgs,
+    DecodedLogEntry,
+    DecodedLogEntryEvent,
+    DevdocOutput,
+    EIP1193Event,
+    EIP1193Provider,
+    EventAbi,
+    EventParameter,
+    EvmBytecodeOutput,
+    EvmBytecodeOutputLinkReferences,
+    EvmOutput,
+    FallbackAbi,
+    FunctionAbi,
+    GanacheProvider,
+    GethCallOverrides,
+    JSONRPCErrorCallback,
+    JSONRPCRequestPayload,
+    JSONRPCResponseError,
+    JSONRPCResponsePayload,
+    LogEntry,
+    LogEntryEvent,
+    LogWithDecodedArgs,
+    MethodAbi,
+    OptimizerSettings,
+    OutputField,
+    ParamDescription,
+    RawLog,
+    RevertErrorAbi,
+    StandardContractOutput,
+    StateMutability,
+    SupportedProvider,
+    TupleDataItem,
+    TxData,
+    TxDataPayable,
+    Web3JsProvider,
+    Web3JsV1Provider,
+    Web3JsV2Provider,
+    Web3JsV3Provider,
+    ZeroExProvider,
+} from 'ethereum-types';
+export { ContractWrappers } from './contract_wrappers';
+export { CoordinatorContract } from './generated-wrappers/coordinator';
+export { DevUtilsContract } from './generated-wrappers/dev_utils';
+export {
+    ERC20TokenApprovalEventArgs,
+    ERC20TokenContract,
     ERC20TokenEventArgs,
     ERC20TokenEvents,
     ERC20TokenTransferEventArgs,
-    ERC20TokenApprovalEventArgs,
-    ERC20TokenContract,
 } from './generated-wrappers/erc20_token';
 export {
-    ERC721TokenEventArgs,
-    ERC721TokenEvents,
-    ERC721TokenTransferEventArgs,
     ERC721TokenApprovalEventArgs,
     ERC721TokenApprovalForAllEventArgs,
     ERC721TokenContract,
+    ERC721TokenEventArgs,
+    ERC721TokenEvents,
+    ERC721TokenTransferEventArgs,
 } from './generated-wrappers/erc721_token';
 export {
-    ExchangeEventArgs,
-    ExchangeEvents,
-    ExchangeSignatureValidatorApprovalEventArgs,
-    ExchangeFillEventArgs,
+    ExchangeAssetProxyRegisteredEventArgs,
     ExchangeCancelEventArgs,
     ExchangeCancelUpToEventArgs,
-    ExchangeAssetProxyRegisteredEventArgs,
     ExchangeContract,
+    ExchangeEventArgs,
+    ExchangeEvents,
+    ExchangeFillEventArgs,
     ExchangeOwnershipTransferredEventArgs,
     ExchangeProtocolFeeCollectorAddressEventArgs,
     ExchangeProtocolFeeMultiplierEventArgs,
+    ExchangeSignatureValidatorApprovalEventArgs,
     ExchangeTransactionExecutionEventArgs,
 } from './generated-wrappers/exchange';
 export {
@@ -41,17 +112,27 @@ export {
     ForwarderEvents,
     ForwarderOwnershipTransferredEventArgs,
 } from './generated-wrappers/forwarder';
+export { IAssetDataContract } from './generated-wrappers/i_asset_data'; // used for synchronously encoding and decoding asset data
 export {
-    WETH9EventArgs,
-    WETH9Events,
-    WETH9ApprovalEventArgs,
-    WETH9TransferEventArgs,
-    WETH9DepositEventArgs,
-    WETH9WithdrawalEventArgs,
-    WETH9Contract,
-} from './generated-wrappers/weth9';
-export { CoordinatorContract } from './generated-wrappers/coordinator';
-export { OrderStatus, ContractError, ForwarderError, ContractWrappersConfig, OrderInfo } from './types';
+    ITransformERC20Contract,
+    ITransformERC20EventArgs,
+    ITransformERC20Events,
+    ITransformERC20QuoteSignerUpdatedEventArgs,
+    ITransformERC20TransformedERC20EventArgs,
+    ITransformERC20TransformerDeployerUpdatedEventArgs,
+} from './generated-wrappers/i_transform_erc20';
+export {
+    IZeroExContract,
+    IZeroExEventArgs,
+    IZeroExEvents,
+    IZeroExMetaTransactionExecutedEventArgs,
+    IZeroExMigratedEventArgs,
+    IZeroExOwnershipTransferredEventArgs,
+    IZeroExProxyFunctionUpdatedEventArgs,
+    IZeroExQuoteSignerUpdatedEventArgs,
+    IZeroExTransformedERC20EventArgs,
+    IZeroExTransformerDeployerUpdatedEventArgs,
+} from './generated-wrappers/i_zero_ex';
 export {
     StakingAuthorizedAddressAddedEventArgs,
     StakingAuthorizedAddressRemovedEventArgs,
@@ -84,99 +165,12 @@ export {
     StakingProxyStakingContractDetachedFromProxyEventArgs,
 } from './generated-wrappers/staking_proxy';
 export {
-    ITransformERC20Contract,
-    ITransformERC20EventArgs,
-    ITransformERC20Events,
-    ITransformERC20QuoteSignerUpdatedEventArgs,
-    ITransformERC20TransformerDeployerUpdatedEventArgs,
-    ITransformERC20TransformedERC20EventArgs,
-} from './generated-wrappers/i_transform_erc20';
-export {
-    IZeroExContract,
-    IZeroExEventArgs,
-    IZeroExEvents,
-    IZeroExMetaTransactionExecutedEventArgs,
-    IZeroExMigratedEventArgs,
-    IZeroExOwnershipTransferredEventArgs,
-    IZeroExProxyFunctionUpdatedEventArgs,
-    IZeroExQuoteSignerUpdatedEventArgs,
-    IZeroExTransformedERC20EventArgs,
-    IZeroExTransformerDeployerUpdatedEventArgs,
-} from './generated-wrappers/i_zero_ex';
-export {
-    BlockRange,
-    SupportedProvider,
-    TxData,
-    ContractAbi,
-    ContractArtifact,
-    DataItem,
-    CallData,
-    GethCallOverrides,
-    BlockParam,
-    ContractEventArg,
-    DecodedLogArgs,
-    LogWithDecodedArgs,
-    CompilerOpts,
-    StandardContractOutput,
-    ContractChains,
-    EventParameter,
-    TupleDataItem,
-    TxDataPayable,
-    BlockParamLiteral,
-    AbiDefinition,
-    Web3JsProvider,
-    GanacheProvider,
-    EIP1193Provider,
-    ZeroExProvider,
-    LogEntry,
-    RawLog,
-    CompilerSettings,
-    ContractChainData,
-    EIP1193Event,
-    JSONRPCRequestPayload,
-    JSONRPCErrorCallback,
-    DecodedLogEntry,
-    LogEntryEvent,
-    DevdocOutput,
-    EvmOutput,
-    FunctionAbi,
-    EventAbi,
-    Web3JsV1Provider,
-    Web3JsV2Provider,
-    Web3JsV3Provider,
-    CompilerSettingsMetadata,
-    OptimizerSettings,
-    OutputField,
-    DecodedLogEntryEvent,
-    ParamDescription,
-    EvmBytecodeOutput,
-    EvmBytecodeOutputLinkReferences,
-    JSONRPCResponsePayload,
-    MethodAbi,
-    ConstructorAbi,
-    FallbackAbi,
-    ConstructorStateMutability,
-    JSONRPCResponseError,
-    StateMutability,
-    RevertErrorAbi,
-} from 'ethereum-types';
-
-export {
-    SimpleContractArtifact,
-    SimpleStandardContractOutput,
-    SimpleEvmOutput,
-    SimpleEvmBytecodeOutput,
-    EventCallback,
-    DecodedLogEvent,
-    IndexedFilterValues,
-} from '@0x/types';
-
-export { AbiDecoder, DecodedCalldata } from '@0x/utils';
-export {
-    ContractEvent,
-    SendTransactionOpts,
-    AwaitTransactionSuccessOpts,
-    ContractFunctionObj,
-    ContractTxFunctionObj,
-    SubscriptionErrors,
-} from '@0x/base-contract';
+    WETH9ApprovalEventArgs,
+    WETH9Contract,
+    WETH9DepositEventArgs,
+    WETH9EventArgs,
+    WETH9Events,
+    WETH9TransferEventArgs,
+    WETH9WithdrawalEventArgs,
+} from './generated-wrappers/weth9';
+export { ContractError, ContractWrappersConfig, ForwarderError, OrderInfo, OrderStatus } from './types';

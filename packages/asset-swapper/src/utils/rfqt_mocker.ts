@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosInstance } from 'axios';
 import AxiosMockAdapter from 'axios-mock-adapter';
 
 import { MockedRfqtFirmQuoteResponse } from '../types';
@@ -16,8 +16,9 @@ export const rfqtMocker = {
     withMockedRfqtFirmQuotes: async (
         mockedResponses: MockedRfqtFirmQuoteResponse[],
         performFn: () => Promise<void>,
+        axiosClient: AxiosInstance = axios,
     ) => {
-        const mockedAxios = new AxiosMockAdapter(axios);
+        const mockedAxios = new AxiosMockAdapter(axiosClient);
         try {
             // Mock out RFQT responses
             for (const mockedResponse of mockedResponses) {
@@ -37,8 +38,9 @@ export const rfqtMocker = {
     withMockedRfqtIndicativeQuotes: async (
         mockedResponses: MockedRfqtFirmQuoteResponse[],
         performFn: () => Promise<void>,
+        axiosClient: AxiosInstance = axios,
     ) => {
-        const mockedAxios = new AxiosMockAdapter(axios);
+        const mockedAxios = new AxiosMockAdapter(axiosClient);
         try {
             // Mock out RFQT responses
             for (const mockedResponse of mockedResponses) {

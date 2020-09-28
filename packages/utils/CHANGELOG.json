@@ -1,5 +1,18 @@
 [
     {
+        "version": "5.6.0",
+        "changes": [
+            {
+                "note": "Added support for nested rich revert decoding",
+                "pr": 2668
+            },
+            {
+                "note": "Add EP flavor of `IllegalReentrancyError`.",
+                "pr": 2657
+            }
+        ]
+    },
+    {
         "timestamp": 1594788383,
         "version": "5.5.1",
         "changes": [

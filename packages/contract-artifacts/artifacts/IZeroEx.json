@@ -85,7 +85,7 @@
                             { "internalType": "contract IERC20TokenV06", "name": "feeToken", "type": "address" },
                             { "internalType": "uint256", "name": "feeAmount", "type": "uint256" }
                         ],
-                        "internalType": "struct IMetaTransactions.MetaTransactionData",
+                        "internalType": "struct IMetaTransactionsFeature.MetaTransactionData",
                         "name": "mtx",
                         "type": "tuple"
                     },
@@ -122,14 +122,14 @@
                                     { "internalType": "uint32", "name": "deploymentNonce", "type": "uint32" },
                                     { "internalType": "bytes", "name": "data", "type": "bytes" }
                                 ],
-                                "internalType": "struct ITransformERC20.Transformation[]",
+                                "internalType": "struct ITransformERC20Feature.Transformation[]",
                                 "name": "transformations",
                                 "type": "tuple[]"
                             },
                             { "internalType": "bytes32", "name": "callDataHash", "type": "bytes32" },
                             { "internalType": "bytes", "name": "callDataSignature", "type": "bytes" }
                         ],
-                        "internalType": "struct ITransformERC20.TransformERC20Args",
+                        "internalType": "struct ITransformERC20Feature.TransformERC20Args",
                         "name": "args",
                         "type": "tuple"
                     }
@@ -154,7 +154,7 @@
                             { "internalType": "contract IERC20TokenV06", "name": "feeToken", "type": "address" },
                             { "internalType": "uint256", "name": "feeAmount", "type": "uint256" }
                         ],
-                        "internalType": "struct IMetaTransactions.MetaTransactionData[]",
+                        "internalType": "struct IMetaTransactionsFeature.MetaTransactionData[]",
                         "name": "mtxs",
                         "type": "tuple[]"
                     },
@@ -187,7 +187,7 @@
                             { "internalType": "contract IERC20TokenV06", "name": "feeToken", "type": "address" },
                             { "internalType": "uint256", "name": "feeAmount", "type": "uint256" }
                         ],
-                        "internalType": "struct IMetaTransactions.MetaTransactionData",
+                        "internalType": "struct IMetaTransactionsFeature.MetaTransactionData",
                         "name": "mtx",
                         "type": "tuple"
                     },
@@ -237,7 +237,7 @@
                             { "internalType": "contract IERC20TokenV06", "name": "feeToken", "type": "address" },
                             { "internalType": "uint256", "name": "feeAmount", "type": "uint256" }
                         ],
-                        "internalType": "struct IMetaTransactions.MetaTransactionData",
+                        "internalType": "struct IMetaTransactionsFeature.MetaTransactionData",
                         "name": "mtx",
                         "type": "tuple"
                     }
@@ -262,7 +262,7 @@
                             { "internalType": "contract IERC20TokenV06", "name": "feeToken", "type": "address" },
                             { "internalType": "uint256", "name": "feeAmount", "type": "uint256" }
                         ],
-                        "internalType": "struct IMetaTransactions.MetaTransactionData",
+                        "internalType": "struct IMetaTransactionsFeature.MetaTransactionData",
                         "name": "mtx",
                         "type": "tuple"
                     }
@@ -367,6 +367,18 @@
                 "type": "function"
             },
             {
+                "inputs": [
+                    { "internalType": "contract IERC20TokenV06[]", "name": "tokens", "type": "address[]" },
+                    { "internalType": "uint256", "name": "sellAmount", "type": "uint256" },
+                    { "internalType": "uint256", "name": "minBuyAmount", "type": "uint256" },
+                    { "internalType": "bool", "name": "isSushi", "type": "bool" }
+                ],
+                "name": "sellToUniswap",
+                "outputs": [{ "internalType": "uint256", "name": "buyAmount", "type": "uint256" }],
+                "stateMutability": "payable",
+                "type": "function"
+            },
+            {
                 "inputs": [{ "internalType": "address", "name": "quoteSigner", "type": "address" }],
                 "name": "setQuoteSigner",
                 "outputs": [],
@@ -398,7 +410,7 @@
                             { "internalType": "uint32", "name": "deploymentNonce", "type": "uint32" },
                             { "internalType": "bytes", "name": "data", "type": "bytes" }
                         ],
-                        "internalType": "struct ITransformERC20.Transformation[]",
+                        "internalType": "struct ITransformERC20Feature.Transformation[]",
                         "name": "transformations",
                         "type": "tuple[]"
                     }
@@ -551,6 +563,16 @@
                         "selector": "The function selector.",
                         "targetImpl": "The address of an older implementation of the function."
                     }
+                },
+                "sellToUniswap(address[],uint256,uint256,bool)": {
+                    "details": "Efficiently sell directly to uniswap/sushiswap.",
+                    "params": {
+                        "isSushi": "Use sushiswap if true.",
+                        "minBuyAmount": "Minimum amount of `tokens[-1]` to buy.",
+                        "sellAmount": "of `tokens[0]` Amount to sell.",
+                        "tokens": "Sell path."
+                    },
+                    "returns": { "buyAmount": "Amount of `tokens[-1]` bought." }
                 },
                 "setQuoteSigner(address)": {
                     "details": "Replace the optional signer for `transformERC20()` calldata.      Only callable by the owner.",

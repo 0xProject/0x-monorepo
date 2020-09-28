@@ -5,6 +5,26 @@
             {
                 "note": "Change test protocol fee to 70000.",
                 "pr": 2637
+            },
+            {
+                "note": "Refactor `migration.ts` a little",
+                "pr": 2656
+            },
+            {
+                "note": "Add bancorBridge to addresses",
+                "pr": 2650
+            },
+            {
+                "note": "Update EP migration.",
+                "pr": 2657
+            },
+            {
+                "note": "Add mooniswap addresses to `BridgeAdapter` deployment",
+                "pr": 2692
+            },
+            {
+                "note": "Reorder transformer deployments",
+                "pr": 2693
             }
         ]
     },
