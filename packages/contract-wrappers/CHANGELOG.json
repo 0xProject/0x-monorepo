@@ -17,6 +17,10 @@
             {
                 "note": "Regenerate wrappers",
                 "pr": 2703
+            },
+            {
+                "note": "Update IZeroEx wrapper for LiquidityProviderFeature",
+                "pr": 2691
             }
         ]
     },
