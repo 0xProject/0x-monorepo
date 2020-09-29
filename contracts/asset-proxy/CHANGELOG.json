@@ -25,6 +25,10 @@
             {
                 "note": "Reworked `KyberBridge`",
                 "pr": 2683
+            },
+            {
+                "note": "Added `CreamBridge`",
+                "pr": 2715
             }
         ]
     },
