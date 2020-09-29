@@ -40,7 +40,6 @@ import {
     OptimizerResultWithReport,
     OrderDomain,
     TokenAdjacencyGraph,
-    GenerateOptimizedOrdersOpts,
 } from './types';
 
 // tslint:disable:boolean-naming
@@ -361,23 +360,23 @@ export class MarketOperationUtils {
         takerAmount: BigNumber,
         opts?: Partial<GetMarketOrdersOpts>,
     ): Promise<OptimizerResultWithReport> {
-        const defaultOpts = { ...DEFAULT_GET_MARKET_ORDERS_OPTS, ...opts };
-        const marketSideLiquidity = await this.getMarketSellLiquidityAsync(nativeOrders, takerAmount, defaultOpts);
+        const _opts = { ...DEFAULT_GET_MARKET_ORDERS_OPTS, ...opts };
+        const marketSideLiquidity = await this.getMarketSellLiquidityAsync(nativeOrders, takerAmount, _opts);
         const optimizerResult = await this._generateOptimizedOrdersAsync(marketSideLiquidity, {
-            bridgeSlippage: defaultOpts.bridgeSlippage,
-            maxFallbackSlippage: defaultOpts.maxFallbackSlippage,
-            excludedSources: defaultOpts.excludedSources,
-            feeSchedule: defaultOpts.feeSchedule,
-            allowFallback: defaultOpts.allowFallback,
-            shouldBatchBridgeOrders: defaultOpts.shouldBatchBridgeOrders,
+            bridgeSlippage: _opts.bridgeSlippage,
+            maxFallbackSlippage: _opts.maxFallbackSlippage,
+            excludedSources: _opts.excludedSources,
+            feeSchedule: _opts.feeSchedule,
+            allowFallback: _opts.allowFallback,
+            shouldBatchBridgeOrders: _opts.shouldBatchBridgeOrders,
         });
 
         // Compute Quote Report and return the results.
         let quoteReport: QuoteReport | undefined;
-        if (defaultOpts.shouldGenerateQuoteReport) {
+        if (_opts.shouldGenerateQuoteReport) {
             quoteReport = MarketOperationUtils._computeQuoteReport(
                 nativeOrders,
-                defaultOpts.rfqt ? defaultOpts.rfqt.quoteRequestor : undefined,
+                _opts.rfqt ? _opts.rfqt.quoteRequestor : undefined,
                 marketSideLiquidity,
                 optimizerResult,
             );
@@ -398,19 +397,19 @@ export class MarketOperationUtils {
         makerAmount: BigNumber,
         opts?: Partial<GetMarketOrdersOpts>,
     ): Promise<OptimizerResultWithReport> {
-        const defaultOpts = { ...DEFAULT_GET_MARKET_ORDERS_OPTS, ...opts };
-        const marketSideLiquidity = await this.getMarketBuyLiquidityAsync(nativeOrders, makerAmount, defaultOpts);
+        const _opts = { ...DEFAULT_GET_MARKET_ORDERS_OPTS, ...opts };
+        const marketSideLiquidity = await this.getMarketBuyLiquidityAsync(nativeOrders, makerAmount, _opts);
         const optimizerResult = await this._generateOptimizedOrdersAsync(marketSideLiquidity, {
-            bridgeSlippage: defaultOpts.bridgeSlippage,
-            maxFallbackSlippage: defaultOpts.maxFallbackSlippage,
-            excludedSources: defaultOpts.excludedSources,
-            feeSchedule: defaultOpts.feeSchedule,
-            allowFallback: defaultOpts.allowFallback,
-            shouldBatchBridgeOrders: defaultOpts.shouldBatchBridgeOrders,
+            bridgeSlippage: _opts.bridgeSlippage,
+            maxFallbackSlippage: _opts.maxFallbackSlippage,
+            excludedSources: _opts.excludedSources,
+            feeSchedule: _opts.feeSchedule,
+            allowFallback: _opts.allowFallback,
+            shouldBatchBridgeOrders: _opts.shouldBatchBridgeOrders,
         });
         let quoteReport: QuoteReport | undefined;
-        if (defaultOpts.shouldGenerateQuoteReport && defaultOpts.rfqt && defaultOpts.rfqt.quoteRequestor) {
-            quoteReport = MarketOperationUtils._computeQuoteReport(nativeOrders, defaultOpts.rfqt.quoteRequestor, marketSideLiquidity, optimizerResult);
+        if (_opts.shouldGenerateQuoteReport && _opts.rfqt && _opts.rfqt.quoteRequestor) {
+            quoteReport = MarketOperationUtils._computeQuoteReport(nativeOrders, _opts.rfqt.quoteRequestor, marketSideLiquidity, optimizerResult);
         }
         return {...optimizerResult, quoteReport};
     }
