@@ -17,7 +17,7 @@
         "compile": "sol-compiler",
         "lint": "tslint --format stylish --project . --exclude ./generated-wrappers/**/* --exclude ./test/generated-wrappers/**/* --exclude ./generated-artifacts/**/* --exclude ./test/generated-artifacts/**/* --exclude **/lib/**/* && yarn lint-contracts",
         "lint-contracts": "#solhint -c .solhint.json contracts/**/**/**/**/*.sol",
-        "prettier": "prettier '**/*.{ts,tsx,json,md}' --config ../../.prettierrc  --ignore-path ../../.prettierignore",
+        "prettier": "prettier --write '**/*.{ts,tsx,json,md}' --config ../../.prettierrc  --ignore-path ../../.prettierignore",
         "fix": "tslint --fix --format stylish --project . --exclude ./generated-wrappers/**/* --exclude ./generated-artifacts/**/* --exclude ./test/generated-wrappers/**/* --exclude ./test/generated-artifacts/**/* --exclude **/lib/**/* && yarn lint-contracts",
         "test": "yarn run_mocha",
         "rebuild_and_test": "run-s clean build test",

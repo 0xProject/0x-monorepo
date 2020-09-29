@@ -85,7 +85,7 @@ export class MarketOperationUtils {
         marketSideLiquidity: MarketSideLiquidity,
         optimizerResult: OptimizerResult,
     ): QuoteReport {
-        const {side, dexQuotes, twoHopQuotes, orderFillableAmounts } = marketSideLiquidity;
+        const { side, dexQuotes, twoHopQuotes, orderFillableAmounts } = marketSideLiquidity;
         const { liquidityDelivered } = optimizerResult;
         return generateQuoteReport(
             side,
@@ -381,7 +381,7 @@ export class MarketOperationUtils {
                 optimizerResult,
             );
         }
-        return {...optimizerResult, quoteReport};
+        return { ...optimizerResult, quoteReport };
     }
 
     /**
@@ -409,9 +409,14 @@ export class MarketOperationUtils {
         });
         let quoteReport: QuoteReport | undefined;
         if (_opts.shouldGenerateQuoteReport && _opts.rfqt && _opts.rfqt.quoteRequestor) {
-            quoteReport = MarketOperationUtils._computeQuoteReport(nativeOrders, _opts.rfqt.quoteRequestor, marketSideLiquidity, optimizerResult);
+            quoteReport = MarketOperationUtils._computeQuoteReport(
+                nativeOrders,
+                _opts.rfqt.quoteRequestor,
+                marketSideLiquidity,
+                optimizerResult,
+            );
         }
-        return {...optimizerResult, quoteReport};
+        return { ...optimizerResult, quoteReport };
     }
 
     /**
