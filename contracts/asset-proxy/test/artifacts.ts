@@ -8,6 +8,7 @@ import { ContractArtifact } from 'ethereum-types';
 import * as BalancerBridge from '../test/generated-artifacts/BalancerBridge.json';
 import * as BancorBridge from '../test/generated-artifacts/BancorBridge.json';
 import * as ChaiBridge from '../test/generated-artifacts/ChaiBridge.json';
+import * as CreamBridge from '../test/generated-artifacts/CreamBridge.json';
 import * as CurveBridge from '../test/generated-artifacts/CurveBridge.json';
 import * as DexForwarderBridge from '../test/generated-artifacts/DexForwarderBridge.json';
 import * as DydxBridge from '../test/generated-artifacts/DydxBridge.json';
@@ -70,6 +71,7 @@ export const artifacts = {
     BalancerBridge: BalancerBridge as ContractArtifact,
     BancorBridge: BancorBridge as ContractArtifact,
     ChaiBridge: ChaiBridge as ContractArtifact,
+    CreamBridge: CreamBridge as ContractArtifact,
     CurveBridge: CurveBridge as ContractArtifact,
     DexForwarderBridge: DexForwarderBridge as ContractArtifact,
     DydxBridge: DydxBridge as ContractArtifact,
