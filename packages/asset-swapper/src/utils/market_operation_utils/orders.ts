@@ -121,10 +121,13 @@ export function createSignedOrdersWithFillableAmounts(
     orders: SignedOrder[],
     fillableAmounts: BigNumber[],
 ): SignedOrderWithFillableAmounts[] {
-
     // Quick safety check: ensures that orders maps perfectly to fillable amounts.
     if (orders.length !== fillableAmounts.length) {
-        throw new Error(`Number of orders was ${orders.length} but fillable amounts was ${fillableAmounts.length}. This should never happen`);
+        throw new Error(
+            `Number of orders was ${orders.length} but fillable amounts was ${
+                fillableAmounts.length
+            }. This should never happen`,
+        );
     }
 
     return orders

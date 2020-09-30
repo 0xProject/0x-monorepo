@@ -1,3 +1,4 @@
+// tslint:disable: no-unbound-method
 import { getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
 import {
     assertRoughlyEquals,
@@ -15,8 +16,6 @@ import { BigNumber, fromTokenUnitAmount, hexUtils, NULL_ADDRESS } from '@0x/util
 import * as _ from 'lodash';
 import * as TypeMoq from 'typemoq';
 
-import { RFQMIndicativeQuote, RFQTFirmQuote, RFQTIndicativeQuote } from '@0x/quote-server';
-import { noop, random } from 'lodash';
 import { MarketOperation, QuoteRequestor, RfqtRequestOpts, SignedOrderWithFillableAmounts } from '../src';
 import { getRfqtIndicativeQuotesAsync, MarketOperationUtils } from '../src/utils/market_operation_utils/';
 import { BalancerPoolsCache } from '../src/utils/market_operation_utils/balancer_utils';
@@ -29,7 +28,6 @@ import {
 import { createFillPaths } from '../src/utils/market_operation_utils/fills';
 import { DexOrderSampler } from '../src/utils/market_operation_utils/sampler';
 import { BATCH_SOURCE_FILTERS } from '../src/utils/market_operation_utils/sampler_operations';
-import { SourceFilters } from '../src/utils/market_operation_utils/source_filters';
 import {
     AggregationError,
     DexSample,
@@ -38,10 +36,8 @@ import {
     GenerateOptimizedOrdersOpts,
     MarketSideLiquidity,
     NativeFillData,
-    OptimizedMarketOrder
+    OptimizedMarketOrder,
 } from '../src/utils/market_operation_utils/types';
-import { quoteRequestorHttpClient } from '../src/utils/quote_requestor';
-import { IReturnsResult } from 'typemoq/_all';
 
 const MAKER_TOKEN = randomAddress();
 const TAKER_TOKEN = randomAddress();
@@ -66,7 +62,11 @@ describe('MarketOperationUtils tests', () => {
     const CHAIN_ID = 1;
     const contractAddresses = { ...getContractAddressesForChainOrThrow(CHAIN_ID), multiBridge: NULL_ADDRESS };
 
-    function getMockedQuoteRequestor(type: 'indicative' | 'firm', results: SignedOrder[], verifiable: TypeMoq.Times): TypeMoq.IMock<QuoteRequestor> {
+    function getMockedQuoteRequestor(
+        type: 'indicative' | 'firm',
+        results: SignedOrder[],
+        verifiable: TypeMoq.Times,
+    ): TypeMoq.IMock<QuoteRequestor> {
         const args: [any, any, any, any, any] = [
             TypeMoq.It.isAny(),
             TypeMoq.It.isAny(),
@@ -76,13 +76,15 @@ describe('MarketOperationUtils tests', () => {
         ];
         const requestor = TypeMoq.Mock.ofType(QuoteRequestor, TypeMoq.MockBehavior.Loose, true);
         if (type === 'firm') {
-            requestor.setup(
-                r => r.requestRfqtFirmQuotesAsync(...args)
-            ).returns(async () => results.map(result => ({signedOrder: result}))).verifiable(verifiable)
+            requestor
+                .setup(r => r.requestRfqtFirmQuotesAsync(...args))
+                .returns(async () => results.map(result => ({ signedOrder: result })))
+                .verifiable(verifiable);
         } else {
-            requestor.setup(
-                r => r.requestRfqtIndicativeQuotesAsync(...args)
-            ).returns(async () => results).verifiable(verifiable);
+            requestor
+                .setup(r => r.requestRfqtIndicativeQuotesAsync(...args))
+                .returns(async () => results)
+                .verifiable(verifiable);
         }
         return requestor;
     }
@@ -674,53 +676,58 @@ describe('MarketOperationUtils tests', () => {
             });
 
             it('getMarketSellOrdersAsync() optimizer will be called once only if RFQ if not defined', async () => {
-                const mockedMarketOpUtils = TypeMoq.Mock.ofType(MarketOperationUtils, TypeMoq.MockBehavior.Loose, false, MOCK_SAMPLER, contractAddresses, ORDER_DOMAIN);
+                const mockedMarketOpUtils = TypeMoq.Mock.ofType(
+                    MarketOperationUtils,
+                    TypeMoq.MockBehavior.Loose,
+                    false,
+                    MOCK_SAMPLER,
+                    contractAddresses,
+                    ORDER_DOMAIN,
+                );
                 mockedMarketOpUtils.callBase = true;
 
                 // Ensure that `_generateOptimizedOrdersAsync` is only called once
-                mockedMarketOpUtils.setup(
-                    m => m._generateOptimizedOrdersAsync(TypeMoq.It.isAny(), TypeMoq.It.isAny()),
-                ).returns(
-                    async (a, b) => mockedMarketOpUtils.target._generateOptimizedOrdersAsync(a, b),
-                ).verifiable(TypeMoq.Times.once());
+                mockedMarketOpUtils
+                    .setup(m => m._generateOptimizedOrdersAsync(TypeMoq.It.isAny(), TypeMoq.It.isAny()))
+                    .returns(async (a, b) => mockedMarketOpUtils.target._generateOptimizedOrdersAsync(a, b))
+                    .verifiable(TypeMoq.Times.once());
 
                 const totalAssetAmount = ORDERS.map(o => o.takerAssetAmount).reduce((a, b) => a.plus(b));
-                await mockedMarketOpUtils.object.getMarketSellOrdersAsync(
-                    ORDERS, totalAssetAmount,
-                    DEFAULT_OPTS,
-                );
+                await mockedMarketOpUtils.object.getMarketSellOrdersAsync(ORDERS, totalAssetAmount, DEFAULT_OPTS);
                 mockedMarketOpUtils.verifyAll();
             });
 
             it('getMarketSellOrdersAsync() will not rerun the optimizer if no orders are returned', async () => {
-
                 // Ensure that `_generateOptimizedOrdersAsync` is only called once
-                const mockedMarketOpUtils = TypeMoq.Mock.ofType(MarketOperationUtils, TypeMoq.MockBehavior.Loose, false, MOCK_SAMPLER, contractAddresses, ORDER_DOMAIN);
+                const mockedMarketOpUtils = TypeMoq.Mock.ofType(
+                    MarketOperationUtils,
+                    TypeMoq.MockBehavior.Loose,
+                    false,
+                    MOCK_SAMPLER,
+                    contractAddresses,
+                    ORDER_DOMAIN,
+                );
                 mockedMarketOpUtils.callBase = true;
-                mockedMarketOpUtils.setup(
-                    m => m._generateOptimizedOrdersAsync(TypeMoq.It.isAny(), TypeMoq.It.isAny()),
-                ).returns(
-                    async (a, b) => mockedMarketOpUtils.target._generateOptimizedOrdersAsync(a, b),
-                ).verifiable(TypeMoq.Times.once());
+                mockedMarketOpUtils
+                    .setup(m => m._generateOptimizedOrdersAsync(TypeMoq.It.isAny(), TypeMoq.It.isAny()))
+                    .returns(async (a, b) => mockedMarketOpUtils.target._generateOptimizedOrdersAsync(a, b))
+                    .verifiable(TypeMoq.Times.once());
 
                 const requestor = getMockedQuoteRequestor('firm', [], TypeMoq.Times.once());
 
                 const totalAssetAmount = ORDERS.map(o => o.takerAssetAmount).reduce((a, b) => a.plus(b));
-                await mockedMarketOpUtils.object.getMarketSellOrdersAsync(
-                    ORDERS, totalAssetAmount,
-                    {
-                        ...DEFAULT_OPTS,
-                        rfqt: {
-                            isIndicative: false,
-                            apiKey: 'foo',
-                            takerAddress: randomAddress(),
-                            intentOnFilling: true,
-                            quoteRequestor: {
-                                requestRfqtFirmQuotesAsync: requestor.object.requestRfqtFirmQuotesAsync,
-                            } as any,
-                        },
+                await mockedMarketOpUtils.object.getMarketSellOrdersAsync(ORDERS, totalAssetAmount, {
+                    ...DEFAULT_OPTS,
+                    rfqt: {
+                        isIndicative: false,
+                        apiKey: 'foo',
+                        takerAddress: randomAddress(),
+                        intentOnFilling: true,
+                        quoteRequestor: {
+                            requestRfqtFirmQuotesAsync: requestor.object.requestRfqtFirmQuotesAsync,
+                        } as any,
                     },
-                );
+                });
                 mockedMarketOpUtils.verifyAll();
                 requestor.verifyAll();
             });
@@ -731,22 +738,28 @@ describe('MarketOperationUtils tests', () => {
                 const numOrdersInCall: number[] = [];
                 const numIndicativeQuotesInCall: number[] = [];
 
-                const mockedMarketOpUtils = TypeMoq.Mock.ofType(MarketOperationUtils, TypeMoq.MockBehavior.Loose, false, MOCK_SAMPLER, contractAddresses, ORDER_DOMAIN);
+                const mockedMarketOpUtils = TypeMoq.Mock.ofType(
+                    MarketOperationUtils,
+                    TypeMoq.MockBehavior.Loose,
+                    false,
+                    MOCK_SAMPLER,
+                    contractAddresses,
+                    ORDER_DOMAIN,
+                );
                 mockedMarketOpUtils.callBase = true;
-                mockedMarketOpUtils.setup(
-                    m => m._generateOptimizedOrdersAsync(TypeMoq.It.isAny(), TypeMoq.It.isAny()),
-                ).callback(async (msl: MarketSideLiquidity, _opts: GenerateOptimizedOrdersOpts) => {
-                    numOrdersInCall.push(msl.nativeOrders.length);
-                    numIndicativeQuotesInCall.push(msl.rfqtIndicativeQuotes.length);
-                })
-                .returns(
-                    async (a, b) => mockedMarketOpUtils.target._generateOptimizedOrdersAsync(a, b),
-                )
-                .verifiable(TypeMoq.Times.exactly(2));
+                mockedMarketOpUtils
+                    .setup(m => m._generateOptimizedOrdersAsync(TypeMoq.It.isAny(), TypeMoq.It.isAny()))
+                    .callback(async (msl: MarketSideLiquidity, _opts: GenerateOptimizedOrdersOpts) => {
+                        numOrdersInCall.push(msl.nativeOrders.length);
+                        numIndicativeQuotesInCall.push(msl.rfqtIndicativeQuotes.length);
+                    })
+                    .returns(async (a, b) => mockedMarketOpUtils.target._generateOptimizedOrdersAsync(a, b))
+                    .verifiable(TypeMoq.Times.exactly(2));
 
                 const totalAssetAmount = ORDERS.map(o => o.takerAssetAmount).reduce((a, b) => a.plus(b));
                 await mockedMarketOpUtils.object.getMarketSellOrdersAsync(
-                    ORDERS.slice(2, ORDERS.length), totalAssetAmount,
+                    ORDERS.slice(2, ORDERS.length),
+                    totalAssetAmount,
                     {
                         ...DEFAULT_OPTS,
                         rfqt: {
@@ -782,21 +795,27 @@ describe('MarketOperationUtils tests', () => {
 
                 // TODO: Ensure fillable amounts increase too
                 const numOrdersInCall: number[] = [];
-                const mockedMarketOpUtils = TypeMoq.Mock.ofType(MarketOperationUtils, TypeMoq.MockBehavior.Loose, false, MOCK_SAMPLER, contractAddresses, ORDER_DOMAIN);
+                const mockedMarketOpUtils = TypeMoq.Mock.ofType(
+                    MarketOperationUtils,
+                    TypeMoq.MockBehavior.Loose,
+                    false,
+                    MOCK_SAMPLER,
+                    contractAddresses,
+                    ORDER_DOMAIN,
+                );
                 mockedMarketOpUtils.callBase = true;
-                mockedMarketOpUtils.setup(
-                    m => m._generateOptimizedOrdersAsync(TypeMoq.It.isAny(), TypeMoq.It.isAny()),
-                ).callback(async (msl: MarketSideLiquidity, _opts: GenerateOptimizedOrdersOpts) => {
-                    numOrdersInCall.push(msl.nativeOrders.length);
-                })
-                .returns(
-                    async (a, b) => mockedMarketOpUtils.target._generateOptimizedOrdersAsync(a, b),
-                )
-                .verifiable(TypeMoq.Times.exactly(2));
+                mockedMarketOpUtils
+                    .setup(m => m._generateOptimizedOrdersAsync(TypeMoq.It.isAny(), TypeMoq.It.isAny()))
+                    .callback(async (msl: MarketSideLiquidity, _opts: GenerateOptimizedOrdersOpts) => {
+                        numOrdersInCall.push(msl.nativeOrders.length);
+                    })
+                    .returns(async (a, b) => mockedMarketOpUtils.target._generateOptimizedOrdersAsync(a, b))
+                    .verifiable(TypeMoq.Times.exactly(2));
 
                 const totalAssetAmount = ORDERS.map(o => o.takerAssetAmount).reduce((a, b) => a.plus(b));
                 await mockedMarketOpUtils.object.getMarketSellOrdersAsync(
-                    ORDERS.slice(1, ORDERS.length), totalAssetAmount,
+                    ORDERS.slice(1, ORDERS.length),
+                    totalAssetAmount,
                     {
                         ...DEFAULT_OPTS,
                         rfqt: {
@@ -825,25 +844,34 @@ describe('MarketOperationUtils tests', () => {
                 let hasSecondOptimizationRun = false;
                 const requestor = getMockedQuoteRequestor('firm', [ORDERS[0], ORDERS[1]], TypeMoq.Times.once());
 
-                const mockedMarketOpUtils = TypeMoq.Mock.ofType(MarketOperationUtils, TypeMoq.MockBehavior.Loose, false, MOCK_SAMPLER, contractAddresses, ORDER_DOMAIN);
+                const mockedMarketOpUtils = TypeMoq.Mock.ofType(
+                    MarketOperationUtils,
+                    TypeMoq.MockBehavior.Loose,
+                    false,
+                    MOCK_SAMPLER,
+                    contractAddresses,
+                    ORDER_DOMAIN,
+                );
                 mockedMarketOpUtils.callBase = true;
-                mockedMarketOpUtils.setup(
-                    m => m._generateOptimizedOrdersAsync(TypeMoq.It.isAny(), TypeMoq.It.isAny()),
-                ).returns(async (msl: MarketSideLiquidity, _opts: GenerateOptimizedOrdersOpts) => {
-                    if (msl.nativeOrders.length === 1) {
-                        hasFirstOptimizationRun = true;
-                        throw new Error(AggregationError.NoOptimalPath);
-                    } else if (msl.nativeOrders.length === 3) {
-                        hasSecondOptimizationRun = true;
-                        return mockedMarketOpUtils.target._generateOptimizedOrdersAsync(msl, _opts);
-                    } else {
-                        throw new Error('Invalid path. this error message should never appear')
-                    }
-                }).verifiable(TypeMoq.Times.exactly(2));
+                mockedMarketOpUtils
+                    .setup(m => m._generateOptimizedOrdersAsync(TypeMoq.It.isAny(), TypeMoq.It.isAny()))
+                    .returns(async (msl: MarketSideLiquidity, _opts: GenerateOptimizedOrdersOpts) => {
+                        if (msl.nativeOrders.length === 1) {
+                            hasFirstOptimizationRun = true;
+                            throw new Error(AggregationError.NoOptimalPath);
+                        } else if (msl.nativeOrders.length === 3) {
+                            hasSecondOptimizationRun = true;
+                            return mockedMarketOpUtils.target._generateOptimizedOrdersAsync(msl, _opts);
+                        } else {
+                            throw new Error('Invalid path. this error message should never appear');
+                        }
+                    })
+                    .verifiable(TypeMoq.Times.exactly(2));
 
                 const totalAssetAmount = ORDERS.map(o => o.takerAssetAmount).reduce((a, b) => a.plus(b));
                 await mockedMarketOpUtils.object.getMarketSellOrdersAsync(
-                    ORDERS.slice(2, ORDERS.length), totalAssetAmount,
+                    ORDERS.slice(2, ORDERS.length),
+                    totalAssetAmount,
                     {
                         ...DEFAULT_OPTS,
                         rfqt: {
@@ -865,17 +893,27 @@ describe('MarketOperationUtils tests', () => {
             });
 
             it('getMarketSellOrdersAsync() will raise a NoOptimalPath error if no path was found during on-chain DEX optimization and RFQ optimization', async () => {
-                const mockedMarketOpUtils = TypeMoq.Mock.ofType(MarketOperationUtils, TypeMoq.MockBehavior.Loose, false, MOCK_SAMPLER, contractAddresses, ORDER_DOMAIN);
+                const mockedMarketOpUtils = TypeMoq.Mock.ofType(
+                    MarketOperationUtils,
+                    TypeMoq.MockBehavior.Loose,
+                    false,
+                    MOCK_SAMPLER,
+                    contractAddresses,
+                    ORDER_DOMAIN,
+                );
                 mockedMarketOpUtils.callBase = true;
-                mockedMarketOpUtils.setup(
-                    m => m._generateOptimizedOrdersAsync(TypeMoq.It.isAny(), TypeMoq.It.isAny()),
-                ).returns(async (msl: MarketSideLiquidity, _opts: GenerateOptimizedOrdersOpts) => {
-                    throw new Error(AggregationError.NoOptimalPath);
-                }).verifiable(TypeMoq.Times.exactly(1));
+                mockedMarketOpUtils
+                    .setup(m => m._generateOptimizedOrdersAsync(TypeMoq.It.isAny(), TypeMoq.It.isAny()))
+                    .returns(async (msl: MarketSideLiquidity, _opts: GenerateOptimizedOrdersOpts) => {
+                        throw new Error(AggregationError.NoOptimalPath);
+                    })
+                    .verifiable(TypeMoq.Times.exactly(1));
 
                 try {
                     await mockedMarketOpUtils.object.getMarketSellOrdersAsync(
-                        ORDERS.slice(2, ORDERS.length), ORDERS[0].takerAssetAmount, DEFAULT_OPTS,
+                        ORDERS.slice(2, ORDERS.length),
+                        ORDERS[0].takerAssetAmount,
+                        DEFAULT_OPTS,
                     );
                     expect.fail(`Call should have thrown "${AggregationError.NoOptimalPath}" but instead succeded`);
                 } catch (e) {

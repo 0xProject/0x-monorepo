@@ -686,9 +686,12 @@ export class SwapQuoter {
         // If an API key was provided, but the key is not whitelisted, raise a warning and disable RFQ
         if (opts.rfqt && opts.rfqt.apiKey && !this._isApiKeyWhitelisted(opts.rfqt.apiKey)) {
             if (rfqtOptions && rfqtOptions.warningLogger) {
-                rfqtOptions.warningLogger({
-                    apiKey: opts.rfqt.apiKey,
-                }, 'Attempt at using an RFQ API key that is not whitelisted. Disabling RFQ for the request lifetime.');
+                rfqtOptions.warningLogger(
+                    {
+                        apiKey: opts.rfqt.apiKey,
+                    },
+                    'Attempt at using an RFQ API key that is not whitelisted. Disabling RFQ for the request lifetime.',
+                );
             }
             opts.rfqt = undefined;
         }

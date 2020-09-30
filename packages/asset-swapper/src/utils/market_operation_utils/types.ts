@@ -5,6 +5,7 @@ import { BigNumber } from '@0x/utils';
 import { RfqtRequestOpts, SignedOrderWithFillableAmounts } from '../../types';
 import { QuoteRequestor } from '../../utils/quote_requestor';
 import { QuoteReport } from '../quote_report_generator';
+
 import { SourceFilters } from './source_filters';
 
 /**
