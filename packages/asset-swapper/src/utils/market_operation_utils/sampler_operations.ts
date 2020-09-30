@@ -798,9 +798,8 @@ export class SamplerOperations {
         liquidityProviderRegistryAddress?: string,
         multiBridgeAddress?: string,
     ): BatchedOperation<DexSample[][]> {
-        const _sources = BATCH_SOURCE_FILTERS.getAllowed(sources);
         const subOps = this._getSellQuoteOperations(
-            _sources,
+            sources,
             makerToken,
             takerToken,
             takerFillAmounts,
@@ -839,9 +838,8 @@ export class SamplerOperations {
         wethAddress: string,
         liquidityProviderRegistryAddress?: string,
     ): BatchedOperation<DexSample[][]> {
-        const _sources = BATCH_SOURCE_FILTERS.getAllowed(sources);
         const subOps = this._getBuyQuoteOperations(
-            _sources,
+            sources,
             makerToken,
             takerToken,
             makerFillAmounts,
@@ -880,8 +878,13 @@ export class SamplerOperations {
         liquidityProviderRegistryAddress?: string,
         multiBridgeAddress?: string,
     ): SourceQuoteOperation[] {
+        const _sources = BATCH_SOURCE_FILTERS.exclude(
+            liquidityProviderRegistryAddress ? [] : [ERC20BridgeSource.LiquidityProvider],
+        )
+            .exclude(multiBridgeAddress ? [] : [ERC20BridgeSource.MultiBridge])
+            .getAllowed(sources);
         return _.flatten(
-            sources.map(
+            _sources.map(
                 (source): SourceQuoteOperation | SourceQuoteOperation[] => {
                     switch (source) {
                         case ERC20BridgeSource.Eth2Dai:
@@ -984,8 +987,11 @@ export class SamplerOperations {
         wethAddress: string,
         liquidityProviderRegistryAddress?: string,
     ): SourceQuoteOperation[] {
+        const _sources = BATCH_SOURCE_FILTERS.exclude(
+            liquidityProviderRegistryAddress ? [] : [ERC20BridgeSource.LiquidityProvider],
+        ).getAllowed(sources);
         return _.flatten(
-            sources.map(
+            _sources.map(
                 (source): SourceQuoteOperation | SourceQuoteOperation[] => {
                     switch (source) {
                         case ERC20BridgeSource.Eth2Dai:
