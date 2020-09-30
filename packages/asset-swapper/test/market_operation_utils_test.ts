@@ -864,7 +864,7 @@ describe('MarketOperationUtils tests', () => {
                 expect(hasSecondOptimizationRun).to.eql(true);
             });
 
-            it.only('getMarketSellOrdersAsync() will raise a NoOptimalPath error if no path was found during on-chain DEX optimization and RFQ optimization', async () => {
+            it('getMarketSellOrdersAsync() will raise a NoOptimalPath error if no path was found during on-chain DEX optimization and RFQ optimization', async () => {
                 const mockedMarketOpUtils = TypeMoq.Mock.ofType(MarketOperationUtils, TypeMoq.MockBehavior.Loose, false, MOCK_SAMPLER, contractAddresses, ORDER_DOMAIN);
                 mockedMarketOpUtils.callBase = true;
                 mockedMarketOpUtils.setup(

@@ -622,6 +622,9 @@ export class MarketOperationUtils {
                         // Re-run optimizer with the new firm quote. This is the second and last time
                         // we run the optimized in a block of code. In this case, we don't catch a potential `NoOptimalPath` exception
                         // and we let it bubble up if it happens.
+                        //
+                        // NOTE: as of now, we assume that RFQ orders are 100% fillable because these are trusted market makers, therefore
+                        // we do not perform an extra check to get fillable taker amounts.
                         optimizerResult = await this._generateOptimizedOrdersAsync({
                             ...marketSideLiquidity,
                             nativeOrders: marketSideLiquidity.nativeOrders.concat(firmQuotes.map(quote => quote.signedOrder)),
