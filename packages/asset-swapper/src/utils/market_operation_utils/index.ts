@@ -557,14 +557,14 @@ export class MarketOperationUtils {
         side: MarketOperation,
         opts?: Partial<GetMarketOrdersOpts>,
     ): Promise<OptimizerResultWithReport> {
-        const defaultOpts = { ...DEFAULT_GET_MARKET_ORDERS_OPTS, ...opts };
+        const _opts = { ...DEFAULT_GET_MARKET_ORDERS_OPTS, ...opts };
         const optimizerOpts: GenerateOptimizedOrdersOpts = {
-            bridgeSlippage: defaultOpts.bridgeSlippage,
-            maxFallbackSlippage: defaultOpts.maxFallbackSlippage,
-            excludedSources: defaultOpts.excludedSources,
-            feeSchedule: defaultOpts.feeSchedule,
-            allowFallback: defaultOpts.allowFallback,
-            shouldBatchBridgeOrders: defaultOpts.shouldBatchBridgeOrders,
+            bridgeSlippage: _opts.bridgeSlippage,
+            maxFallbackSlippage: _opts.maxFallbackSlippage,
+            excludedSources: _opts.excludedSources,
+            feeSchedule: _opts.feeSchedule,
+            allowFallback: _opts.allowFallback,
+            shouldBatchBridgeOrders: _opts.shouldBatchBridgeOrders,
         };
 
         // Compute an optimized path for on-chain DEX and open-orderbook. This should not include RFQ liquidity.
@@ -572,7 +572,7 @@ export class MarketOperationUtils {
             side === MarketOperation.Sell
                 ? this.getMarketSellLiquidityAsync.bind(this)
                 : this.getMarketBuyLiquidityAsync.bind(this);
-        const marketSideLiquidity = await marketLiquidityFnAsync(nativeOrders, amount, defaultOpts);
+        const marketSideLiquidity = await marketLiquidityFnAsync(nativeOrders, amount, _opts);
         let optimizerResult: OptimizerResult | undefined;
         try {
             optimizerResult = await this._generateOptimizedOrdersAsync(marketSideLiquidity, optimizerOpts);
@@ -586,7 +586,7 @@ export class MarketOperationUtils {
         }
 
         // If RFQ liquidity is enabled, make a request to check RFQ liquidity
-        const { rfqt } = defaultOpts;
+        const { rfqt } = _opts;
         if (rfqt && rfqt.quoteRequestor && marketSideLiquidity.quoteSourceFilters.isAllowed(ERC20BridgeSource.Native)) {
             // If we are making an indicative quote, make the RFQT request and then re-run the sampler if new orders come back.
             if (rfqt.isIndicative) {
@@ -595,7 +595,7 @@ export class MarketOperationUtils {
                     nativeOrders[0].takerAssetData,
                     side,
                     amount,
-                    defaultOpts,
+                    _opts,
                 );
                 // Re-run optimizer with the new indicative quote
                 if (indicativeQuotes.length > 0) {
@@ -654,10 +654,10 @@ export class MarketOperationUtils {
 
         // Compute Quote Report and return the results.
         let quoteReport: QuoteReport | undefined;
-        if (defaultOpts.shouldGenerateQuoteReport) {
+        if (_opts.shouldGenerateQuoteReport) {
             quoteReport = MarketOperationUtils._computeQuoteReport(
                 nativeOrders,
-                defaultOpts.rfqt ? defaultOpts.rfqt.quoteRequestor : undefined,
+                _opts.rfqt ? _opts.rfqt.quoteRequestor : undefined,
                 marketSideLiquidity,
                 optimizerResult,
             );
