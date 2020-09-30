@@ -558,7 +558,7 @@ export class MarketOperationUtils {
         return {...optimizerResult, quoteReport};
     }
 
-    private async _generateOptimizedOrdersAsync(
+    public async _generateOptimizedOrdersAsync(
         marketSideLiquidity: MarketSideLiquidity,
         opts: GenerateOptimizedOrdersOpts,
     ): Promise<OptimizerResult> {
