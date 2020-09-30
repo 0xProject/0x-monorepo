@@ -32,7 +32,6 @@ import {
     AggregationError,
     DexSample,
     ERC20BridgeSource,
-    FeeSchedule,
     GenerateOptimizedOrdersOpts,
     GetMarketOrdersOpts,
     MarketSideLiquidity,
@@ -460,6 +459,98 @@ export class MarketOperationUtils {
         );
     }
 
+    public async _generateOptimizedOrdersAsync(
+        marketSideLiquidity: MarketSideLiquidity,
+        opts: GenerateOptimizedOrdersOpts,
+    ): Promise<OptimizerResult> {
+        const {
+            inputToken,
+            outputToken,
+            side,
+            inputAmount,
+            nativeOrders,
+            orderFillableAmounts,
+            rfqtIndicativeQuotes,
+            dexQuotes,
+            ethToOutputRate,
+            ethToInputRate,
+        } = marketSideLiquidity;
+        const maxFallbackSlippage = opts.maxFallbackSlippage || 0;
+
+        const orderOpts = {
+            side,
+            inputToken,
+            outputToken,
+            orderDomain: this._orderDomain,
+            contractAddresses: this.contractAddresses,
+            bridgeSlippage: opts.bridgeSlippage || 0,
+            shouldBatchBridgeOrders: !!opts.shouldBatchBridgeOrders,
+        };
+
+        // Convert native orders and dex quotes into fill paths.
+        const paths = createFillPaths({
+            side,
+            // Augment native orders with their fillable amounts.
+            orders: [
+                ...createSignedOrdersWithFillableAmounts(side, nativeOrders, orderFillableAmounts),
+                ...createSignedOrdersFromRfqtIndicativeQuotes(rfqtIndicativeQuotes),
+            ],
+            dexQuotes,
+            targetInput: inputAmount,
+            ethToOutputRate,
+            ethToInputRate,
+            excludedSources: opts.excludedSources,
+            feeSchedule: opts.feeSchedule,
+        });
+
+        // Find the optimal path.
+        let optimalPath = (await findOptimalPathAsync(side, paths, inputAmount, opts.runLimit)) || [];
+        if (optimalPath.length === 0) {
+            throw new Error(AggregationError.NoOptimalPath);
+        }
+        const optimalPathRate = getPathAdjustedRate(side, optimalPath, inputAmount);
+
+        const { adjustedRate: bestTwoHopRate, quote: bestTwoHopQuote } = getBestTwoHopQuote(
+            marketSideLiquidity,
+            opts.feeSchedule,
+        );
+        if (bestTwoHopQuote && bestTwoHopRate.isGreaterThan(optimalPathRate)) {
+            const twoHopOrders = createOrdersFromTwoHopSample(bestTwoHopQuote, orderOpts);
+            return { optimizedOrders: twoHopOrders, liquidityDelivered: bestTwoHopQuote, isTwoHop: true };
+        }
+
+        // Generate a fallback path if native orders are in the optimal path.
+        const nativeSubPath = optimalPath.filter(f => f.source === ERC20BridgeSource.Native);
+        if (opts.allowFallback && nativeSubPath.length !== 0) {
+            // We create a fallback path that is exclusive of Native liquidity
+            // This is the optimal on-chain path for the entire input amount
+            const nonNativePaths = paths.filter(p => p.length > 0 && p[0].source !== ERC20BridgeSource.Native);
+            const nonNativeOptimalPath =
+                (await findOptimalPathAsync(side, nonNativePaths, inputAmount, opts.runLimit)) || [];
+            // Calculate the slippage of on-chain sources compared to the most optimal path
+            const fallbackSlippage = getPathAdjustedSlippage(side, nonNativeOptimalPath, inputAmount, optimalPathRate);
+            if (nativeSubPath.length === optimalPath.length || fallbackSlippage <= maxFallbackSlippage) {
+                // If the last fill is Native and penultimate is not, then the intention was to partial fill
+                // In this case we drop it entirely as we can't handle a failure at the end and we don't
+                // want to fully fill when it gets prepended to the front below
+                const [last, penultimateIfExists] = optimalPath.slice().reverse();
+                const lastNativeFillIfExists =
+                    last.source === ERC20BridgeSource.Native &&
+                    penultimateIfExists &&
+                    penultimateIfExists.source !== ERC20BridgeSource.Native
+                        ? last
+                        : undefined;
+                // By prepending native paths to the front they cannot split on-chain sources and incur
+                // an additional protocol fee. I.e [Uniswap,Native,Kyber] becomes [Native,Uniswap,Kyber]
+                // In the previous step we dropped any hanging Native partial fills, as to not fully fill
+                optimalPath = [...nativeSubPath.filter(f => f !== lastNativeFillIfExists), ...nonNativeOptimalPath];
+            }
+        }
+        const optimizedOrders = createOrdersFromPath(optimalPath, orderOpts);
+        const liquidityDelivered = _.flatten(optimizedOrders.map(order => order.fills));
+        return { optimizedOrders, liquidityDelivered, isTwoHop: false };
+    }
+
     private async _getMarketSideOrdersAsync(
         nativeOrders: SignedOrder[],
         amount: BigNumber,
@@ -556,98 +647,6 @@ export class MarketOperationUtils {
             );
         }
         return {...optimizerResult, quoteReport};
-    }
-
-    public async _generateOptimizedOrdersAsync(
-        marketSideLiquidity: MarketSideLiquidity,
-        opts: GenerateOptimizedOrdersOpts,
-    ): Promise<OptimizerResult> {
-        const {
-            inputToken,
-            outputToken,
-            side,
-            inputAmount,
-            nativeOrders,
-            orderFillableAmounts,
-            rfqtIndicativeQuotes,
-            dexQuotes,
-            ethToOutputRate,
-            ethToInputRate,
-        } = marketSideLiquidity;
-        const maxFallbackSlippage = opts.maxFallbackSlippage || 0;
-
-        const orderOpts = {
-            side,
-            inputToken,
-            outputToken,
-            orderDomain: this._orderDomain,
-            contractAddresses: this.contractAddresses,
-            bridgeSlippage: opts.bridgeSlippage || 0,
-            shouldBatchBridgeOrders: !!opts.shouldBatchBridgeOrders,
-        };
-
-        // Convert native orders and dex quotes into fill paths.
-        const paths = createFillPaths({
-            side,
-            // Augment native orders with their fillable amounts.
-            orders: [
-                ...createSignedOrdersWithFillableAmounts(side, nativeOrders, orderFillableAmounts),
-                ...createSignedOrdersFromRfqtIndicativeQuotes(rfqtIndicativeQuotes),
-            ],
-            dexQuotes,
-            targetInput: inputAmount,
-            ethToOutputRate,
-            ethToInputRate,
-            excludedSources: opts.excludedSources,
-            feeSchedule: opts.feeSchedule,
-        });
-
-        // Find the optimal path.
-        let optimalPath = (await findOptimalPathAsync(side, paths, inputAmount, opts.runLimit)) || [];
-        if (optimalPath.length === 0) {
-            throw new Error(AggregationError.NoOptimalPath);
-        }
-        const optimalPathRate = getPathAdjustedRate(side, optimalPath, inputAmount);
-
-        const { adjustedRate: bestTwoHopRate, quote: bestTwoHopQuote } = getBestTwoHopQuote(
-            marketSideLiquidity,
-            opts.feeSchedule,
-        );
-        if (bestTwoHopQuote && bestTwoHopRate.isGreaterThan(optimalPathRate)) {
-            const twoHopOrders = createOrdersFromTwoHopSample(bestTwoHopQuote, orderOpts);
-            return { optimizedOrders: twoHopOrders, liquidityDelivered: bestTwoHopQuote, isTwoHop: true };
-        }
-
-        // Generate a fallback path if native orders are in the optimal path.
-        const nativeSubPath = optimalPath.filter(f => f.source === ERC20BridgeSource.Native);
-        if (opts.allowFallback && nativeSubPath.length !== 0) {
-            // We create a fallback path that is exclusive of Native liquidity
-            // This is the optimal on-chain path for the entire input amount
-            const nonNativePaths = paths.filter(p => p.length > 0 && p[0].source !== ERC20BridgeSource.Native);
-            const nonNativeOptimalPath =
-                (await findOptimalPathAsync(side, nonNativePaths, inputAmount, opts.runLimit)) || [];
-            // Calculate the slippage of on-chain sources compared to the most optimal path
-            const fallbackSlippage = getPathAdjustedSlippage(side, nonNativeOptimalPath, inputAmount, optimalPathRate);
-            if (nativeSubPath.length === optimalPath.length || fallbackSlippage <= maxFallbackSlippage) {
-                // If the last fill is Native and penultimate is not, then the intention was to partial fill
-                // In this case we drop it entirely as we can't handle a failure at the end and we don't
-                // want to fully fill when it gets prepended to the front below
-                const [last, penultimateIfExists] = optimalPath.slice().reverse();
-                const lastNativeFillIfExists =
-                    last.source === ERC20BridgeSource.Native &&
-                    penultimateIfExists &&
-                    penultimateIfExists.source !== ERC20BridgeSource.Native
-                        ? last
-                        : undefined;
-                // By prepending native paths to the front they cannot split on-chain sources and incur
-                // an additional protocol fee. I.e [Uniswap,Native,Kyber] becomes [Native,Uniswap,Kyber]
-                // In the previous step we dropped any hanging Native partial fills, as to not fully fill
-                optimalPath = [...nativeSubPath.filter(f => f !== lastNativeFillIfExists), ...nonNativeOptimalPath];
-            }
-        }
-        const optimizedOrders = createOrdersFromPath(optimalPath, orderOpts);
-        const liquidityDelivered = _.flatten(optimizedOrders.map(order => order.fills));
-        return { optimizedOrders, liquidityDelivered, isTwoHop: false };
     }
 }
 

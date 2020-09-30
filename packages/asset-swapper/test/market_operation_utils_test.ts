@@ -15,6 +15,8 @@ import { BigNumber, fromTokenUnitAmount, hexUtils, NULL_ADDRESS } from '@0x/util
 import * as _ from 'lodash';
 import * as TypeMoq from 'typemoq';
 
+import { RFQMIndicativeQuote, RFQTFirmQuote, RFQTIndicativeQuote } from '@0x/quote-server';
+import { noop, random } from 'lodash';
 import { MarketOperation, QuoteRequestor, RfqtRequestOpts, SignedOrderWithFillableAmounts } from '../src';
 import { getRfqtIndicativeQuotesAsync, MarketOperationUtils } from '../src/utils/market_operation_utils/';
 import { BalancerPoolsCache } from '../src/utils/market_operation_utils/balancer_utils';
@@ -27,18 +29,18 @@ import {
 import { createFillPaths } from '../src/utils/market_operation_utils/fills';
 import { DexOrderSampler } from '../src/utils/market_operation_utils/sampler';
 import { BATCH_SOURCE_FILTERS } from '../src/utils/market_operation_utils/sampler_operations';
+import { SourceFilters } from '../src/utils/market_operation_utils/source_filters';
 import {
     DexSample,
     ERC20BridgeSource,
     FillData,
-    NativeFillData,
-    OptimizedMarketOrder,
+    GenerateOptimizedOrdersOpts,
     MarketSideLiquidity,
-    GenerateOptimizedOrdersOpts
+    NativeFillData,
+    OptimizedMarketOrder
 } from '../src/utils/market_operation_utils/types';
-import { SourceFilters } from '../src/utils/market_operation_utils/source_filters';
-import { noop, random } from 'lodash';
 import { quoteRequestorHttpClient } from '../src/utils/quote_requestor';
+import { IReturnsResult } from 'typemoq/_all';
 
 const MAKER_TOKEN = randomAddress();
 const TAKER_TOKEN = randomAddress();
@@ -62,6 +64,27 @@ const SELL_SOURCES = SELL_SOURCE_FILTER.sources;
 describe('MarketOperationUtils tests', () => {
     const CHAIN_ID = 1;
     const contractAddresses = { ...getContractAddressesForChainOrThrow(CHAIN_ID), multiBridge: NULL_ADDRESS };
+
+    function getMockedQuoteRequestor(type: 'indicative' | 'firm', results: SignedOrder[], verifiable: TypeMoq.Times): TypeMoq.IMock<QuoteRequestor> {
+        const args: [any, any, any, any, any] = [
+            TypeMoq.It.isAny(),
+            TypeMoq.It.isAny(),
+            TypeMoq.It.isAny(),
+            TypeMoq.It.isAny(),
+            TypeMoq.It.isAny(),
+        ];
+        const requestor = TypeMoq.Mock.ofType(QuoteRequestor, TypeMoq.MockBehavior.Loose, true);
+        if (type === 'firm') {
+            requestor.setup(
+                r => r.requestRfqtFirmQuotesAsync(...args)
+            ).returns(async () => results.map(result => ({signedOrder: result}))).verifiable(verifiable)
+        } else {
+            requestor.setup(
+                r => r.requestRfqtIndicativeQuotesAsync(...args)
+            ).returns(async () => results).verifiable(verifiable);
+        }
+        return requestor;
+    }
 
     function createOrder(overrides?: Partial<SignedOrder>): SignedOrder {
         return {
@@ -655,9 +678,9 @@ describe('MarketOperationUtils tests', () => {
 
                 // Ensure that `_generateOptimizedOrdersAsync` is only called once
                 mockedMarketOpUtils.setup(
-                    m => m._generateOptimizedOrdersAsync(TypeMoq.It.isAny(), TypeMoq.It.isAny())
+                    m => m._generateOptimizedOrdersAsync(TypeMoq.It.isAny(), TypeMoq.It.isAny()),
                 ).returns(
-                    async (a, b) => mockedMarketOpUtils.target._generateOptimizedOrdersAsync(a, b)
+                    async (a, b) => mockedMarketOpUtils.target._generateOptimizedOrdersAsync(a, b),
                 ).verifiable(TypeMoq.Times.once());
 
                 const totalAssetAmount = ORDERS.map(o => o.takerAssetAmount).reduce((a, b) => a.plus(b));
@@ -669,31 +692,20 @@ describe('MarketOperationUtils tests', () => {
             });
 
             it('getMarketSellOrdersAsync() will not rerun the optimizer if no orders are returned', async () => {
-                const requestor = TypeMoq.Mock.ofType(QuoteRequestor, TypeMoq.MockBehavior.Loose, true);
-                requestor
-                .setup(r =>
-                    r.requestRfqtFirmQuotesAsync(
-                        TypeMoq.It.isAny(),
-                        TypeMoq.It.isAny(),
-                        TypeMoq.It.isAny(),
-                        TypeMoq.It.isAny(),
-                        TypeMoq.It.isAny(),
-                    ),
-                )
-                .returns(() => Promise.resolve([]))
-                .verifiable(TypeMoq.Times.once());
 
                 // Ensure that `_generateOptimizedOrdersAsync` is only called once
                 const mockedMarketOpUtils = TypeMoq.Mock.ofType(MarketOperationUtils, TypeMoq.MockBehavior.Loose, false, MOCK_SAMPLER, contractAddresses, ORDER_DOMAIN);
                 mockedMarketOpUtils.callBase = true;
                 mockedMarketOpUtils.setup(
-                    m => m._generateOptimizedOrdersAsync(TypeMoq.It.isAny(), TypeMoq.It.isAny())
+                    m => m._generateOptimizedOrdersAsync(TypeMoq.It.isAny(), TypeMoq.It.isAny()),
                 ).returns(
-                    async (a, b) => mockedMarketOpUtils.target._generateOptimizedOrdersAsync(a, b)
+                    async (a, b) => mockedMarketOpUtils.target._generateOptimizedOrdersAsync(a, b),
                 ).verifiable(TypeMoq.Times.once());
 
+                const requestor = getMockedQuoteRequestor('firm', [], TypeMoq.Times.once());
+
                 const totalAssetAmount = ORDERS.map(o => o.takerAssetAmount).reduce((a, b) => a.plus(b));
-                const results = await mockedMarketOpUtils.object.getMarketSellOrdersAsync(
+                await mockedMarketOpUtils.object.getMarketSellOrdersAsync(
                     ORDERS, totalAssetAmount,
                     {
                         ...DEFAULT_OPTS,
@@ -704,40 +716,80 @@ describe('MarketOperationUtils tests', () => {
                             intentOnFilling: true,
                             quoteRequestor: {
                                 requestRfqtFirmQuotesAsync: requestor.object.requestRfqtFirmQuotesAsync,
-                            } as any
-                        }
+                            } as any,
+                        },
                     },
                 );
                 mockedMarketOpUtils.verifyAll();
                 requestor.verifyAll();
             });
 
-            it.only('getMarketSellOrdersAsync() will rerun the optimizer if one or more RFQ orders are returned', async () => {
-                const requestor = TypeMoq.Mock.ofType(QuoteRequestor, TypeMoq.MockBehavior.Loose, true);
-                requestor
-                .setup(r =>
-                    r.requestRfqtFirmQuotesAsync(
-                        TypeMoq.It.isAny(),
-                        TypeMoq.It.isAny(),
-                        TypeMoq.It.isAny(),
-                        TypeMoq.It.isAny(),
-                        TypeMoq.It.isAny(),
-                    ),
-                )
-                .returns(() => Promise.resolve([{signedOrder: ORDERS[0]}]))
-                .verifiable(TypeMoq.Times.once());
+            it('getMarketSellOrdersAsync() will rerun the optimizer if one or more indicative are returned', async () => {
+                const requestor = getMockedQuoteRequestor('indicative', [ORDERS[0], ORDERS[1]], TypeMoq.Times.once());
 
-                // Ensure that `_generateOptimizedOrdersAsync` is only called once
-                let numOrdersInCall: number[] = [];
+                const numOrdersInCall: number[] = [];
+                const numIndicativeQuotesInCall: number[] = [];
+
                 const mockedMarketOpUtils = TypeMoq.Mock.ofType(MarketOperationUtils, TypeMoq.MockBehavior.Loose, false, MOCK_SAMPLER, contractAddresses, ORDER_DOMAIN);
                 mockedMarketOpUtils.callBase = true;
                 mockedMarketOpUtils.setup(
-                    m => m._generateOptimizedOrdersAsync(TypeMoq.It.isAny(), TypeMoq.It.isAny())
-                ).callback(async (msl: MarketSideLiquidity, opts: GenerateOptimizedOrdersOpts) => {
+                    m => m._generateOptimizedOrdersAsync(TypeMoq.It.isAny(), TypeMoq.It.isAny()),
+                ).callback(async (msl: MarketSideLiquidity, _opts: GenerateOptimizedOrdersOpts) => {
+                    numOrdersInCall.push(msl.nativeOrders.length);
+                    numIndicativeQuotesInCall.push(msl.rfqtIndicativeQuotes.length);
+                })
+                .returns(
+                    async (a, b) => mockedMarketOpUtils.target._generateOptimizedOrdersAsync(a, b),
+                )
+                .verifiable(TypeMoq.Times.exactly(2));
+
+                const totalAssetAmount = ORDERS.map(o => o.takerAssetAmount).reduce((a, b) => a.plus(b));
+                await mockedMarketOpUtils.object.getMarketSellOrdersAsync(
+                    ORDERS.slice(2, ORDERS.length), totalAssetAmount,
+                    {
+                        ...DEFAULT_OPTS,
+                        rfqt: {
+                            isIndicative: true,
+                            apiKey: 'foo',
+                            takerAddress: randomAddress(),
+                            intentOnFilling: true,
+                            quoteRequestor: {
+                                requestRfqtIndicativeQuotesAsync: requestor.object.requestRfqtIndicativeQuotesAsync,
+                            } as any,
+                        },
+                    },
+                );
+                mockedMarketOpUtils.verifyAll();
+                requestor.verifyAll();
+
+                // The first and second optimizer call contains same number of RFQ orders.
+                expect(numOrdersInCall.length).to.eql(2);
+                expect(numOrdersInCall[0]).to.eql(1);
+                expect(numOrdersInCall[1]).to.eql(1);
+
+                // The first call to optimizer will have no RFQ indicative quotes. The second call will have
+                // two indicative quotes.
+                expect(numIndicativeQuotesInCall.length).to.eql(2);
+                expect(numIndicativeQuotesInCall[0]).to.eql(0);
+                expect(numIndicativeQuotesInCall[1]).to.eql(2);
+            });
+
+            it('getMarketSellOrdersAsync() will rerun the optimizer if one or more RFQ orders are returned', async () => {
+                const requestor = getMockedQuoteRequestor('firm', [ORDERS[0]], TypeMoq.Times.once());
+
+                // Ensure that `_generateOptimizedOrdersAsync` is only called once
+
+                // TODO: Ensure fillable amounts increase too
+                const numOrdersInCall: number[] = [];
+                const mockedMarketOpUtils = TypeMoq.Mock.ofType(MarketOperationUtils, TypeMoq.MockBehavior.Loose, false, MOCK_SAMPLER, contractAddresses, ORDER_DOMAIN);
+                mockedMarketOpUtils.callBase = true;
+                mockedMarketOpUtils.setup(
+                    m => m._generateOptimizedOrdersAsync(TypeMoq.It.isAny(), TypeMoq.It.isAny()),
+                ).callback(async (msl: MarketSideLiquidity, _opts: GenerateOptimizedOrdersOpts) => {
                     numOrdersInCall.push(msl.nativeOrders.length);
                 })
                 .returns(
-                    async (a, b) => mockedMarketOpUtils.target._generateOptimizedOrdersAsync(a, b)
+                    async (a, b) => mockedMarketOpUtils.target._generateOptimizedOrdersAsync(a, b),
                 )
                 .verifiable(TypeMoq.Times.exactly(2));
 
@@ -753,8 +805,8 @@ describe('MarketOperationUtils tests', () => {
                             intentOnFilling: true,
                             quoteRequestor: {
                                 requestRfqtFirmQuotesAsync: requestor.object.requestRfqtFirmQuotesAsync,
-                            } as any
-                        }
+                            } as any,
+                        },
                     },
                 );
                 mockedMarketOpUtils.verifyAll();
