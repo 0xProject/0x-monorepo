@@ -575,6 +575,8 @@ export class MarketOperationUtils {
             optimizerResult = await this._generateOptimizedOrdersAsync(marketSideLiquidity, optimizerOpts);
         } catch (e) {
             // If no on-chain or off-chain Open Orderbook orders are present, a `NoOptimalPath` will be thrown.
+            // If this happens at this stage, there is still a chance that an RFQ order is fillable, therefore
+            // we catch the error and continue.
             if (e.message !== AggregationError.NoOptimalPath) {
                 throw e;
             }

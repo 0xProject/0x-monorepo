@@ -31,6 +31,7 @@ import { DexOrderSampler } from '../src/utils/market_operation_utils/sampler';
 import { BATCH_SOURCE_FILTERS } from '../src/utils/market_operation_utils/sampler_operations';
 import { SourceFilters } from '../src/utils/market_operation_utils/source_filters';
 import {
+    AggregationError,
     DexSample,
     ERC20BridgeSource,
     FillData,
@@ -817,6 +818,72 @@ describe('MarketOperationUtils tests', () => {
                 // The first call to optimizer was with an extra RFQ order.
                 expect(numOrdersInCall[0]).to.eql(2);
                 expect(numOrdersInCall[1]).to.eql(3);
+            });
+
+            it('getMarketSellOrdersAsync() will not raise a NoOptimalPath error if no initial path was found during on-chain DEX optimization, but a path was found after RFQ optimization', async () => {
+                let hasFirstOptimizationRun = false;
+                let hasSecondOptimizationRun = false;
+                const requestor = getMockedQuoteRequestor('firm', [ORDERS[0], ORDERS[1]], TypeMoq.Times.once());
+
+                const mockedMarketOpUtils = TypeMoq.Mock.ofType(MarketOperationUtils, TypeMoq.MockBehavior.Loose, false, MOCK_SAMPLER, contractAddresses, ORDER_DOMAIN);
+                mockedMarketOpUtils.callBase = true;
+                mockedMarketOpUtils.setup(
+                    m => m._generateOptimizedOrdersAsync(TypeMoq.It.isAny(), TypeMoq.It.isAny()),
+                ).returns(async (msl: MarketSideLiquidity, _opts: GenerateOptimizedOrdersOpts) => {
+                    if (msl.nativeOrders.length === 1) {
+                        hasFirstOptimizationRun = true;
+                        throw new Error(AggregationError.NoOptimalPath);
+                    } else if (msl.nativeOrders.length === 3) {
+                        hasSecondOptimizationRun = true;
+                        return mockedMarketOpUtils.target._generateOptimizedOrdersAsync(msl, _opts);
+                    } else {
+                        throw new Error('Invalid path. this error message should never appear')
+                    }
+                }).verifiable(TypeMoq.Times.exactly(2));
+
+                const totalAssetAmount = ORDERS.map(o => o.takerAssetAmount).reduce((a, b) => a.plus(b));
+                await mockedMarketOpUtils.object.getMarketSellOrdersAsync(
+                    ORDERS.slice(2, ORDERS.length), totalAssetAmount,
+                    {
+                        ...DEFAULT_OPTS,
+                        rfqt: {
+                            isIndicative: false,
+                            apiKey: 'foo',
+                            takerAddress: randomAddress(),
+                            intentOnFilling: true,
+                            quoteRequestor: {
+                                requestRfqtFirmQuotesAsync: requestor.object.requestRfqtFirmQuotesAsync,
+                            } as any,
+                        },
+                    },
+                );
+                mockedMarketOpUtils.verifyAll();
+                requestor.verifyAll();
+
+                expect(hasFirstOptimizationRun).to.eql(true);
+                expect(hasSecondOptimizationRun).to.eql(true);
+            });
+
+            it.only('getMarketSellOrdersAsync() will raise a NoOptimalPath error if no path was found during on-chain DEX optimization and RFQ optimization', async () => {
+                const mockedMarketOpUtils = TypeMoq.Mock.ofType(MarketOperationUtils, TypeMoq.MockBehavior.Loose, false, MOCK_SAMPLER, contractAddresses, ORDER_DOMAIN);
+                mockedMarketOpUtils.callBase = true;
+                mockedMarketOpUtils.setup(
+                    m => m._generateOptimizedOrdersAsync(TypeMoq.It.isAny(), TypeMoq.It.isAny()),
+                ).returns(async (msl: MarketSideLiquidity, _opts: GenerateOptimizedOrdersOpts) => {
+                    throw new Error(AggregationError.NoOptimalPath);
+                }).verifiable(TypeMoq.Times.exactly(1));
+
+                try {
+                    await mockedMarketOpUtils.object.getMarketSellOrdersAsync(
+                        ORDERS.slice(2, ORDERS.length), ORDERS[0].takerAssetAmount, DEFAULT_OPTS,
+                    );
+                    expect.fail(`Call should have thrown "${AggregationError.NoOptimalPath}" but instead succeded`);
+                } catch (e) {
+                    if (e.message !== AggregationError.NoOptimalPath) {
+                        expect.fail(e);
+                    }
+                }
+                mockedMarketOpUtils.verifyAll();
             });
 
             it('generates bridge orders with correct taker amount', async () => {
