@@ -7,7 +7,7 @@ import * as _ from 'lodash';
 import { MarketOperation } from '../../types';
 import { QuoteRequestor } from '../quote_requestor';
 
-import { generateQuoteReport } from './../quote_report_generator';
+import { generateQuoteReport, QuoteReport } from './../quote_report_generator';
 import {
     BUY_SOURCE_FILTER,
     DEFAULT_GET_MARKET_ORDERS_OPTS,
@@ -37,6 +37,7 @@ import {
     MarketSideLiquidity,
     OptimizedMarketOrder,
     OptimizerResult,
+    OptimizerResultWithReport,
     OrderDomain,
     TokenAdjacencyGraph,
 } from './types';
@@ -77,6 +78,25 @@ export class MarketOperationUtils {
     private readonly _sellSources: SourceFilters;
     private readonly _buySources: SourceFilters;
     private readonly _feeSources = new SourceFilters(FEE_QUOTE_SOURCES);
+
+    private static _computeQuoteReport(
+        nativeOrders: SignedOrder[],
+        quoteRequestor: QuoteRequestor | undefined,
+        marketSideLiquidity: MarketSideLiquidity,
+        optimizerResult: OptimizerResult,
+    ): QuoteReport {
+        const { side, dexQuotes, twoHopQuotes, orderFillableAmounts } = marketSideLiquidity;
+        const { liquidityDelivered } = optimizerResult;
+        return generateQuoteReport(
+            side,
+            _.flatten(dexQuotes),
+            twoHopQuotes,
+            nativeOrders,
+            orderFillableAmounts,
+            liquidityDelivered,
+            quoteRequestor,
+        );
+    }
 
     constructor(
         private readonly _sampler: DexOrderSampler,
@@ -339,19 +359,29 @@ export class MarketOperationUtils {
         nativeOrders: SignedOrder[],
         takerAmount: BigNumber,
         opts?: Partial<GetMarketOrdersOpts>,
-    ): Promise<OptimizerResult> {
+    ): Promise<OptimizerResultWithReport> {
         const _opts = { ...DEFAULT_GET_MARKET_ORDERS_OPTS, ...opts };
         const marketSideLiquidity = await this.getMarketSellLiquidityAsync(nativeOrders, takerAmount, _opts);
-        return this._generateOptimizedOrdersAsync(marketSideLiquidity, {
+        const optimizerResult = await this._generateOptimizedOrdersAsync(marketSideLiquidity, {
             bridgeSlippage: _opts.bridgeSlippage,
             maxFallbackSlippage: _opts.maxFallbackSlippage,
             excludedSources: _opts.excludedSources,
             feeSchedule: _opts.feeSchedule,
             allowFallback: _opts.allowFallback,
             shouldBatchBridgeOrders: _opts.shouldBatchBridgeOrders,
-            quoteRequestor: _opts.rfqt ? _opts.rfqt.quoteRequestor : undefined,
-            shouldGenerateQuoteReport: _opts.shouldGenerateQuoteReport,
         });
+
+        // Compute Quote Report and return the results.
+        let quoteReport: QuoteReport | undefined;
+        if (_opts.shouldGenerateQuoteReport) {
+            quoteReport = MarketOperationUtils._computeQuoteReport(
+                nativeOrders,
+                _opts.rfqt ? _opts.rfqt.quoteRequestor : undefined,
+                marketSideLiquidity,
+                optimizerResult,
+            );
+        }
+        return { ...optimizerResult, quoteReport };
     }
 
     /**
@@ -366,19 +396,27 @@ export class MarketOperationUtils {
         nativeOrders: SignedOrder[],
         makerAmount: BigNumber,
         opts?: Partial<GetMarketOrdersOpts>,
-    ): Promise<OptimizerResult> {
+    ): Promise<OptimizerResultWithReport> {
         const _opts = { ...DEFAULT_GET_MARKET_ORDERS_OPTS, ...opts };
         const marketSideLiquidity = await this.getMarketBuyLiquidityAsync(nativeOrders, makerAmount, _opts);
-        return this._generateOptimizedOrdersAsync(marketSideLiquidity, {
+        const optimizerResult = await this._generateOptimizedOrdersAsync(marketSideLiquidity, {
             bridgeSlippage: _opts.bridgeSlippage,
             maxFallbackSlippage: _opts.maxFallbackSlippage,
             excludedSources: _opts.excludedSources,
             feeSchedule: _opts.feeSchedule,
             allowFallback: _opts.allowFallback,
             shouldBatchBridgeOrders: _opts.shouldBatchBridgeOrders,
-            quoteRequestor: _opts.rfqt ? _opts.rfqt.quoteRequestor : undefined,
-            shouldGenerateQuoteReport: _opts.shouldGenerateQuoteReport,
         });
+        let quoteReport: QuoteReport | undefined;
+        if (_opts.shouldGenerateQuoteReport && _opts.rfqt && _opts.rfqt.quoteRequestor) {
+            quoteReport = MarketOperationUtils._computeQuoteReport(
+                nativeOrders,
+                _opts.rfqt.quoteRequestor,
+                marketSideLiquidity,
+                optimizerResult,
+            );
+        }
+        return { ...optimizerResult, quoteReport };
     }
 
     /**
@@ -468,7 +506,6 @@ export class MarketOperationUtils {
                             feeSchedule: _opts.feeSchedule,
                             allowFallback: _opts.allowFallback,
                             shouldBatchBridgeOrders: _opts.shouldBatchBridgeOrders,
-                            shouldGenerateQuoteReport: false,
                         },
                     );
                     return optimizedOrders;
@@ -491,8 +528,6 @@ export class MarketOperationUtils {
             feeSchedule?: FeeSchedule;
             allowFallback?: boolean;
             shouldBatchBridgeOrders?: boolean;
-            quoteRequestor?: QuoteRequestor;
-            shouldGenerateQuoteReport?: boolean;
         },
     ): Promise<OptimizerResult> {
         const {
@@ -506,7 +541,6 @@ export class MarketOperationUtils {
             dexQuotes,
             ethToOutputRate,
             ethToInputRate,
-            twoHopQuotes,
         } = marketSideLiquidity;
         const maxFallbackSlippage = opts.maxFallbackSlippage || 0;
 
@@ -549,18 +583,7 @@ export class MarketOperationUtils {
         );
         if (bestTwoHopQuote && bestTwoHopRate.isGreaterThan(optimalPathRate)) {
             const twoHopOrders = createOrdersFromTwoHopSample(bestTwoHopQuote, orderOpts);
-            const twoHopQuoteReport = opts.shouldGenerateQuoteReport
-                ? generateQuoteReport(
-                      side,
-                      _.flatten(dexQuotes),
-                      twoHopQuotes,
-                      nativeOrders,
-                      orderFillableAmounts,
-                      bestTwoHopQuote,
-                      opts.quoteRequestor,
-                  )
-                : undefined;
-            return { optimizedOrders: twoHopOrders, quoteReport: twoHopQuoteReport, isTwoHop: true };
+            return { optimizedOrders: twoHopOrders, liquidityDelivered: bestTwoHopQuote, isTwoHop: true };
         }
 
         // Generate a fallback path if native orders are in the optimal path.
@@ -591,18 +614,8 @@ export class MarketOperationUtils {
             }
         }
         const optimizedOrders = createOrdersFromPath(optimalPath, orderOpts);
-        const quoteReport = opts.shouldGenerateQuoteReport
-            ? generateQuoteReport(
-                  side,
-                  _.flatten(dexQuotes),
-                  twoHopQuotes,
-                  nativeOrders,
-                  orderFillableAmounts,
-                  _.flatten(optimizedOrders.map(order => order.fills)),
-                  opts.quoteRequestor,
-              )
-            : undefined;
-        return { optimizedOrders, quoteReport, isTwoHop: false };
+        const liquidityDelivered = _.flatten(optimizedOrders.map(order => order.fills));
+        return { optimizedOrders, liquidityDelivered, isTwoHop: false };
     }
 }
 

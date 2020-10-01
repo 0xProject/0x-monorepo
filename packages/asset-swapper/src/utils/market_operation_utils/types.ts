@@ -322,6 +322,10 @@ export interface SourceQuoteOperation<TFillData extends FillData = FillData>
 export interface OptimizerResult {
     optimizedOrders: OptimizedMarketOrder[];
     isTwoHop: boolean;
+    liquidityDelivered: CollapsedFill[] | DexSample<MultiHopFillData>;
+}
+
+export interface OptimizerResultWithReport extends OptimizerResult {
     quoteReport?: QuoteReport;
 }
 
