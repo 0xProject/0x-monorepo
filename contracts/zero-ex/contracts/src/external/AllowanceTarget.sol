@@ -46,10 +46,23 @@ contract AllowanceTarget is
         onlyAuthorized
         returns (bytes memory resultData)
     {
-        bool success;
-        (success, resultData) = target.call(callData);
-        if (!success) {
-            resultData.rrevert();
+        // Gas savings from assembly: 474
+        assembly {
+            let where := add(calldataload(0x24), 4)
+            let cdlen := calldataload(where)
+            calldatacopy(0, add(where, 0x20), cdlen)
+            let success := call(gas(), target, 0, 0, cdlen, 0, 0)
+
+            if iszero(success) {
+                returndatacopy(0, 0, returndatasize())
+                revert(0, returndatasize())
+            }
+
+            // ABI-encoded return data
+            mstore(0, 0x20)                            // offset
+            mstore(0x20, returndatasize())             // length prefix
+            returndatacopy(0x40, 0, returndatasize())  // data
+            return(0, add(returndatasize(), 0x40))
         }
     }
 }
