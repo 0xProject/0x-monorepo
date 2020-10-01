@@ -67,7 +67,8 @@ describe('MarketOperationUtils tests', () => {
         results: SignedOrder[],
         verifiable: TypeMoq.Times,
     ): TypeMoq.IMock<QuoteRequestor> {
-        const args: [any, any, any, any, any] = [
+        const args: [any, any, any, any, any, any] = [
+            TypeMoq.It.isAny(),
             TypeMoq.It.isAny(),
             TypeMoq.It.isAny(),
             TypeMoq.It.isAny(),
@@ -455,6 +456,7 @@ describe('MarketOperationUtils tests', () => {
             requestor
                 .setup(r =>
                     r.requestRfqtIndicativeQuotesAsync(
+                        TypeMoq.It.isAny(),
                         TypeMoq.It.isAny(),
                         TypeMoq.It.isAny(),
                         TypeMoq.It.isAny(),

@@ -1,6 +1,7 @@
 import { schemas, SchemaValidator } from '@0x/json-schemas';
 import { assetDataUtils, orderCalculationUtils, SignedOrder } from '@0x/order-utils';
 import { RFQTFirmQuote, RFQTIndicativeQuote, TakerRequest } from '@0x/quote-server';
+import { TakerRequestQueryParams } from '@0x/quote-server/lib/src/types';
 import { ERC20AssetData } from '@0x/types';
 import { BigNumber, logUtils } from '@0x/utils';
 import Axios, { AxiosInstance } from 'axios';
@@ -113,6 +114,39 @@ export class QuoteRequestor {
     private readonly _schemaValidator: SchemaValidator = new SchemaValidator();
     private readonly _orderSignatureToMakerUri: { [orderSignature: string]: string } = {};
 
+    public static makeQueryParameters(
+        takerAddress: string,
+        marketOperation: MarketOperation,
+        makerAssetData: string,
+        takerAssetData: string,
+        assetFillAmount: BigNumber,
+        comparisonPrice?: BigNumber | undefined,
+    ): TakerRequestQueryParams {
+
+        const {buyAmountBaseUnits, sellAmountBaseUnits, ...rest } = inferQueryParams(marketOperation, makerAssetData, takerAssetData, assetFillAmount);
+        const requestParamsWithBigNumbers: Pick<TakerRequestQueryParams, 'buyTokenAddress' | 'sellTokenAddress' | 'takerAddress' | 'comparisonPrice'> = {
+            takerAddress,
+            comparisonPrice: comparisonPrice === undefined ? undefined : comparisonPrice.toString(),
+            ...rest,
+        };
+
+        // convert BigNumbers to strings
+        // so they are digestible by axios
+        if (sellAmountBaseUnits) {
+            return {
+                ...requestParamsWithBigNumbers,
+                sellAmountBaseUnits: sellAmountBaseUnits.toString(),
+            };
+        } else if (buyAmountBaseUnits) {
+            return {
+                ...requestParamsWithBigNumbers,
+                buyAmountBaseUnits: buyAmountBaseUnits.toString(),
+            };
+        } else {
+            throw new Error('Neither "buyAmountBaseUnits" or "sellAmountBaseUnits" were defined');
+        }
+    }
+
     constructor(
         private readonly _rfqtAssetOfferings: RfqtMakerAssetOfferings,
         private readonly _warningLogger: LogFunction = (obj, msg) =>
@@ -127,6 +161,7 @@ export class QuoteRequestor {
         takerAssetData: string,
         assetFillAmount: BigNumber,
         marketOperation: MarketOperation,
+        comparisonPrice: BigNumber | undefined,
         options: RfqtRequestOpts,
     ): Promise<RFQTFirmQuote[]> {
         const _opts: RfqtRequestOpts = { ...constants.DEFAULT_RFQT_REQUEST_OPTS, ...options };
@@ -145,6 +180,7 @@ export class QuoteRequestor {
             takerAssetData,
             assetFillAmount,
             marketOperation,
+            comparisonPrice,
             _opts,
             'firm',
         );
@@ -215,6 +251,7 @@ export class QuoteRequestor {
         takerAssetData: string,
         assetFillAmount: BigNumber,
         marketOperation: MarketOperation,
+        comparisonPrice: BigNumber | undefined,
         options: RfqtRequestOpts,
     ): Promise<RFQTIndicativeQuote[]> {
         const _opts: RfqtRequestOpts = { ...constants.DEFAULT_RFQT_REQUEST_OPTS, ...options };
@@ -233,6 +270,7 @@ export class QuoteRequestor {
             takerAssetData,
             assetFillAmount,
             marketOperation,
+            comparisonPrice,
             _opts,
             'indicative',
         );
@@ -333,6 +371,7 @@ export class QuoteRequestor {
         takerAssetData: string,
         assetFillAmount: BigNumber,
         marketOperation: MarketOperation,
+        comparisonPrice: BigNumber | undefined,
         options: RfqtRequestOpts,
         quoteType: 'firm' | 'indicative',
     ): Promise<Array<{ response: ResponseT; makerUri: string }>> {
@@ -343,23 +382,14 @@ export class QuoteRequestor {
                     this._makerSupportsPair(url, makerAssetData, takerAssetData) &&
                     !rfqMakerBlacklist.isMakerBlacklisted(url)
                 ) {
-                    const requestParamsWithBigNumbers = {
-                        takerAddress: options.takerAddress,
-                        ...inferQueryParams(marketOperation, makerAssetData, takerAssetData, assetFillAmount),
-                    };
-
-                    // convert BigNumbers to strings
-                    // so they are digestible by axios
-                    const requestParams = {
-                        ...requestParamsWithBigNumbers,
-                        sellAmountBaseUnits: requestParamsWithBigNumbers.sellAmountBaseUnits
-                            ? requestParamsWithBigNumbers.sellAmountBaseUnits.toString()
-                            : undefined,
-                        buyAmountBaseUnits: requestParamsWithBigNumbers.buyAmountBaseUnits
-                            ? requestParamsWithBigNumbers.buyAmountBaseUnits.toString()
-                            : undefined,
-                    };
-
+                    const requestParams = QuoteRequestor.makeQueryParameters(
+                        options.takerAddress,
+                        marketOperation,
+                        makerAssetData,
+                        takerAssetData,
+                        assetFillAmount,
+                        comparisonPrice,
+                    );
                     const partialLogEntry = { url, quoteType, requestParams };
                     const timeBeforeAwait = Date.now();
                     const maxResponseTimeMs =

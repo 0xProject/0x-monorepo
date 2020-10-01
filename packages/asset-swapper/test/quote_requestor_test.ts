@@ -1,3 +1,4 @@
+import { randomAddress } from '@0x/contracts-test-utils';
 import { tokenUtils } from '@0x/dev-utils';
 import { assetDataUtils } from '@0x/order-utils';
 import { StatusCodes } from '@0x/types';
@@ -174,6 +175,7 @@ describe('QuoteRequestor', async () => {
                         takerAssetData,
                         new BigNumber(10000),
                         MarketOperation.Sell,
+                        undefined,
                         {
                             apiKey,
                             takerAddress,
@@ -189,6 +191,18 @@ describe('QuoteRequestor', async () => {
         });
     });
     describe('requestRfqtIndicativeQuotesAsync for Indicative quotes', async () => {
+
+        it('should optionally accept a "comparisonPrice" parameter', async () => {
+            const response = QuoteRequestor.makeQueryParameters(
+                otherToken1,
+                MarketOperation.Sell,
+                makerAssetData,
+                takerAssetData,
+                new BigNumber(1000),
+                new BigNumber(300.2),
+            );
+            expect(response.comparisonPrice).to.eql('300.2');
+        });
         it('should return successful RFQT requests', async () => {
             const takerAddress = '0xd209925defc99488e3afff1174e48b4fa628302a';
             const apiKey = 'my-ko0l-api-key';
@@ -276,6 +290,7 @@ describe('QuoteRequestor', async () => {
                         takerAssetData,
                         new BigNumber(10000),
                         MarketOperation.Sell,
+                        undefined,
                         {
                             apiKey,
                             takerAddress,
@@ -326,6 +341,7 @@ describe('QuoteRequestor', async () => {
                         takerAssetData,
                         new BigNumber(10000),
                         MarketOperation.Buy,
+                        undefined,
                         {
                             apiKey,
                             takerAddress,

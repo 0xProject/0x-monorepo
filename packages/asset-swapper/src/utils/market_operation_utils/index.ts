@@ -65,6 +65,7 @@ export async function getRfqtIndicativeQuotesAsync(
             takerAssetData,
             assetFillAmount,
             marketOperation,
+            undefined,
             opts.rfqt,
         );
     } else {
@@ -620,6 +621,7 @@ export class MarketOperationUtils {
                         nativeOrders[0].takerAssetData,
                         amount,
                         side,
+                        undefined,
                         rfqt,
                     );
                     if (firmQuotes.length > 0) {
