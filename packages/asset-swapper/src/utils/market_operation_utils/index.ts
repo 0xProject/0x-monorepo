@@ -408,10 +408,10 @@ export class MarketOperationUtils {
             shouldBatchBridgeOrders: _opts.shouldBatchBridgeOrders,
         });
         let quoteReport: QuoteReport | undefined;
-        if (_opts.shouldGenerateQuoteReport && _opts.rfqt && _opts.rfqt.quoteRequestor) {
+        if (_opts.shouldGenerateQuoteReport) {
             quoteReport = MarketOperationUtils._computeQuoteReport(
                 nativeOrders,
-                _opts.rfqt.quoteRequestor,
+                _opts.rfqt ? _opts.rfqt.quoteRequestor : undefined,
                 marketSideLiquidity,
                 optimizerResult,
             );
