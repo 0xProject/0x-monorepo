@@ -393,7 +393,7 @@ export class QuoteRequestor {
                                 },
                             },
                         });
-                        rfqMakerBlacklist.logTimeoutOrLackThereof(url, latencyMs > maxResponseTimeMs);
+                        rfqMakerBlacklist.logTimeoutOrLackThereof(url, latencyMs >= maxResponseTimeMs);
                         result.push({ response: response.data, makerUri: url });
                     } catch (err) {
                         const latencyMs = Date.now() - timeBeforeAwait;
@@ -409,7 +409,7 @@ export class QuoteRequestor {
                                 },
                             },
                         });
-                        rfqMakerBlacklist.logTimeoutOrLackThereof(url, latencyMs > maxResponseTimeMs);
+                        rfqMakerBlacklist.logTimeoutOrLackThereof(url, latencyMs >= maxResponseTimeMs);
                         this._warningLogger(
                             convertIfAxiosError(err),
                             `Failed to get RFQ-T ${quoteType} quote from market maker endpoint ${url} for API key ${
