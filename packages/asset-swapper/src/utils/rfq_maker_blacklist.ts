@@ -21,10 +21,10 @@ export class RfqMakerBlacklist {
         if (didTimeout) {
             this._makerTimeoutStreakLength[makerUrl] += 1;
             if (this._makerTimeoutStreakLength[makerUrl] === this._timeoutStreakThreshold) {
-                this._makerBlacklistedUntilDate[makerUrl] =
-                    Date.now() + this._blacklistDurationMinutes * constants.ONE_MINUTE_MS;
+                const blacklistEnd = Date.now() + this._blacklistDurationMinutes * constants.ONE_MINUTE_MS;
+                this._makerBlacklistedUntilDate[makerUrl] = blacklistEnd;
                 this.infoLogger(
-                    { makerUrl, blacklistedUntil: new Date(this._makerBlacklistedUntilDate[makerUrl]).toISOString() },
+                    { makerUrl, blacklistedUntil: new Date(blacklistEnd).toISOString() },
                     'maker blacklisted',
                 );
             }
