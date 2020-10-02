@@ -57,6 +57,7 @@ export async function getRfqtIndicativeQuotesAsync(
     takerAssetData: string,
     marketOperation: MarketOperation,
     assetFillAmount: BigNumber,
+    comparisonPrice: BigNumber | undefined,
     opts: Partial<GetMarketOrdersOpts>,
 ): Promise<RFQTIndicativeQuote[]> {
     if (opts.rfqt && opts.rfqt.isIndicative === true && opts.rfqt.quoteRequestor) {
@@ -65,7 +66,7 @@ export async function getRfqtIndicativeQuotesAsync(
             takerAssetData,
             assetFillAmount,
             marketOperation,
-            undefined,
+            comparisonPrice,
             opts.rfqt,
         );
     } else {
@@ -589,6 +590,17 @@ export class MarketOperationUtils {
         // If RFQ liquidity is enabled, make a request to check RFQ liquidity
         const { rfqt } = _opts;
         if (rfqt && rfqt.quoteRequestor && marketSideLiquidity.quoteSourceFilters.isAllowed(ERC20BridgeSource.Native)) {
+
+            // Calculate a suggested price. For now, this is simply the overall price of the aggregation.
+            let comparisonPrice: BigNumber | undefined;
+            if (optimizerResult) {
+                const totalMakerAmount = BigNumber.sum(...optimizerResult.optimizedOrders.map(order => order.makerAssetAmount));
+                const totalTakerAmount = BigNumber.sum(...optimizerResult.optimizedOrders.map(order => order.takerAssetAmount));
+                if (totalTakerAmount.gt(0)) {
+                    comparisonPrice = totalMakerAmount.div(totalTakerAmount);
+                }
+            }
+
             // If we are making an indicative quote, make the RFQT request and then re-run the sampler if new orders come back.
             if (rfqt.isIndicative) {
                 const indicativeQuotes = await getRfqtIndicativeQuotesAsync(
@@ -596,6 +608,7 @@ export class MarketOperationUtils {
                     nativeOrders[0].takerAssetData,
                     side,
                     amount,
+                    comparisonPrice,
                     _opts,
                 );
                 // Re-run optimizer with the new indicative quote
@@ -621,7 +634,7 @@ export class MarketOperationUtils {
                         nativeOrders[0].takerAssetData,
                         amount,
                         side,
-                        undefined,
+                        comparisonPrice,
                         rfqt,
                     );
                     if (firmQuotes.length > 0) {

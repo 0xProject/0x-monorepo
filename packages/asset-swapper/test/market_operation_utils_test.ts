@@ -28,6 +28,7 @@ import {
 import { createFillPaths } from '../src/utils/market_operation_utils/fills';
 import { DexOrderSampler } from '../src/utils/market_operation_utils/sampler';
 import { BATCH_SOURCE_FILTERS } from '../src/utils/market_operation_utils/sampler_operations';
+import { SourceFilters } from '../src/utils/market_operation_utils/source_filters';
 import {
     AggregationError,
     DexSample,
@@ -471,6 +472,7 @@ describe('MarketOperationUtils tests', () => {
                 TAKER_ASSET_DATA,
                 MarketOperation.Sell,
                 new BigNumber('100e18'),
+                undefined,
                 {
                     rfqt: { quoteRequestor: requestor.object, ...partialRfqt },
                 },
@@ -697,6 +699,106 @@ describe('MarketOperationUtils tests', () => {
                 const totalAssetAmount = ORDERS.map(o => o.takerAssetAmount).reduce((a, b) => a.plus(b));
                 await mockedMarketOpUtils.object.getMarketSellOrdersAsync(ORDERS, totalAssetAmount, DEFAULT_OPTS);
                 mockedMarketOpUtils.verifyAll();
+            });
+
+            it('optimizer will send in a comparison price to RFQ providers', async () => {
+
+                // Set up mocked quote requestor, will return an order that is better
+                // than the best of the orders.
+                const mockedQuoteRequestor = TypeMoq.Mock.ofType(
+                    QuoteRequestor,
+                    TypeMoq.MockBehavior.Loose,
+                    false,
+                    {},
+                );
+
+                let requestedComparisonPrice: BigNumber | undefined;
+                mockedQuoteRequestor.setup(
+                    mqr => mqr.requestRfqtFirmQuotesAsync(
+                        TypeMoq.It.isAny(),
+                        TypeMoq.It.isAny(),
+                        TypeMoq.It.isAny(),
+                        TypeMoq.It.isAny(),
+                        TypeMoq.It.isAny(),
+                        TypeMoq.It.isAny(),
+                    )
+                ).callback((
+                    _makerAssetData: string,
+                    _takerAssetData: string,
+                    _assetFillAmount: BigNumber,
+                    _marketOperation: MarketOperation,
+                    comparisonPrice: BigNumber | undefined,
+                    _options: RfqtRequestOpts,
+                ) => {
+                    requestedComparisonPrice = comparisonPrice;
+                }).returns(async () => {
+                    return [
+                        {
+                            signedOrder: createOrder({
+                                makerAssetData: MAKER_ASSET_DATA,
+                                takerAssetData: TAKER_ASSET_DATA,
+                                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(321, 18),
+                                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(1, 18),
+                            }),
+                        },
+                    ];
+                });
+
+                // Set up sampler, will only return 1 on-chain order
+                const mockedMarketOpUtils = TypeMoq.Mock.ofType(
+                    MarketOperationUtils,
+                    TypeMoq.MockBehavior.Loose,
+                    false,
+                    MOCK_SAMPLER,
+                    contractAddresses,
+                    ORDER_DOMAIN,
+                );
+                mockedMarketOpUtils.callBase = true;
+                mockedMarketOpUtils.setup(
+                    mou => mou.getMarketSellLiquidityAsync(
+                        TypeMoq.It.isAny(),
+                        TypeMoq.It.isAny(),
+                        TypeMoq.It.isAny(),
+                    )
+                ).returns(async () => {
+                    return {
+                        dexQuotes: [],
+                        ethToInputRate: Web3Wrapper.toBaseUnitAmount(1, 18),
+                        ethToOutputRate: Web3Wrapper.toBaseUnitAmount(1, 18),
+                        inputAmount: Web3Wrapper.toBaseUnitAmount(1, 18),
+                        inputToken: MAKER_TOKEN,
+                        outputToken: TAKER_TOKEN,
+                        nativeOrders: [
+                            createOrder({
+                                makerAssetData: MAKER_ASSET_DATA,
+                                takerAssetData: TAKER_ASSET_DATA,
+                                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(320, 18),
+                                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(1, 18),
+                            }),
+                        ],
+                        orderFillableAmounts: [Web3Wrapper.toBaseUnitAmount(1, 18)],
+                        rfqtIndicativeQuotes: [],
+                        side: MarketOperation.Sell,
+                        twoHopQuotes: [],
+                        quoteSourceFilters: new SourceFilters(),
+                    };
+                })
+                const result = await mockedMarketOpUtils.object.getMarketSellOrdersAsync(ORDERS, Web3Wrapper.toBaseUnitAmount(1, 18), {
+                    ...DEFAULT_OPTS,
+                    rfqt: {
+                        isIndicative: false,
+                        apiKey: 'foo',
+                        takerAddress: randomAddress(),
+                        intentOnFilling: true,
+                        quoteRequestor: {
+                            requestRfqtFirmQuotesAsync: mockedQuoteRequestor.object.requestRfqtFirmQuotesAsync,
+                        } as any,
+                    }
+                });
+                expect(result.optimizedOrders.length).to.eql(1);
+                expect(requestedComparisonPrice!.toString()).to.eql("320");
+                expect(result.optimizedOrders[0].makerAssetAmount.toString()).to.eql('321000000000000000000');
+                expect(result.optimizedOrders[0].takerAssetAmount.toString()).to.eql('1000000000000000000');
             });
 
             it('getMarketSellOrdersAsync() will not rerun the optimizer if no orders are returned', async () => {
