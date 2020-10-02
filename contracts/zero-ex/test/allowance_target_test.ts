@@ -2,12 +2,13 @@ import { blockchainTests, constants, expect, randomAddress, verifyEventsFromLogs
 import { AuthorizableRevertErrors, hexUtils, StringRevertError } from '@0x/utils';
 
 import { artifacts } from './artifacts';
-import { AllowanceTargetContract, TestCallTargetContract, TestCallTargetEvents } from './wrappers';
+import { AllowanceTargetContract, TestCallTargetContract, TestCallTargetEvents, IAllowanceTargetContract } from './wrappers';
 
 blockchainTests.resets('AllowanceTarget', env => {
     let owner: string;
     let authority: string;
     let allowanceTarget: AllowanceTargetContract;
+    let iAllowanceTarget: IAllowanceTargetContract;
     let callTarget: TestCallTargetContract;
 
     before(async () => {
@@ -19,6 +20,9 @@ blockchainTests.resets('AllowanceTarget', env => {
             artifacts,
         );
         await allowanceTarget.addAuthorizedAddress(authority).awaitTransactionSuccessAsync();
+        iAllowanceTarget = new IAllowanceTargetContract(
+            allowanceTarget.address, env.provider, env.txDefaults,
+            { "TestCallTarget": artifacts.TestCallTarget.compilerOutput.abi }); // logDecodeDependencies
         callTarget = await TestCallTargetContract.deployFrom0xArtifactAsync(
             artifacts.TestCallTarget,
             env.provider,
@@ -33,7 +37,7 @@ blockchainTests.resets('AllowanceTarget', env => {
     describe('executeCall()', () => {
         it('non-authority cannot call executeCall()', async () => {
             const notAuthority = randomAddress();
-            const tx = allowanceTarget
+            const tx = iAllowanceTarget
                 .executeCall(randomAddress(), hexUtils.random())
                 .callAsync({ from: notAuthority });
             return expect(tx).to.revertWith(new AuthorizableRevertErrors.SenderNotAuthorizedError(notAuthority));
@@ -41,7 +45,7 @@ blockchainTests.resets('AllowanceTarget', env => {
 
         it('authority can call executeCall()', async () => {
             const targetData = hexUtils.random(128);
-            const receipt = await allowanceTarget
+            const receipt = await iAllowanceTarget
                 .executeCall(callTarget.address, targetData)
                 .awaitTransactionSuccessAsync({ from: authority });
             verifyEventsFromLogs(
@@ -59,14 +63,14 @@ blockchainTests.resets('AllowanceTarget', env => {
         });
 
         it('AllowanceTarget returns call result', async () => {
-            const result = await allowanceTarget
+            const result = await iAllowanceTarget
                 .executeCall(callTarget.address, hexUtils.random(128))
                 .callAsync({ from: authority });
             expect(result).to.eq(TARGET_RETURN_VALUE);
         });
 
         it('AllowanceTarget returns raw call revert', async () => {
-            const tx = allowanceTarget.executeCall(callTarget.address, REVERTING_DATA).callAsync({ from: authority });
+            const tx = iAllowanceTarget.executeCall(callTarget.address, REVERTING_DATA).callAsync({ from: authority });
             return expect(tx).to.revertWith(new StringRevertError('TestCallTarget/REVERT'));
         });
 

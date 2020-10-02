@@ -17,41 +17,55 @@
 */
 
 pragma solidity ^0.6.5;
-pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-utils/contracts/src/v06/errors/LibRichErrorsV06.sol";
 import "@0x/contracts-utils/contracts/src/v06/AuthorizableV06.sol";
-import "../errors/LibSpenderRichErrors.sol";
-import "./IAllowanceTarget.sol";
-
 
 /// @dev The allowance target for the TokenSpender feature.
 contract AllowanceTarget is
-    IAllowanceTarget,
     AuthorizableV06
 {
-    // solhint-disable no-unused-vars,indent,no-empty-blocks
-    using LibRichErrorsV06 for bytes;
-
-    /// @dev Execute an arbitrary call. Only an authority can call this.
-    /// @param target The call target.
-    /// @param callData The call data.
-    /// @return resultData The data returned by the call.
-    function executeCall(
-        address payable target,
-        bytes calldata callData
-    )
-        external
-        override
-        onlyAuthorized
-        returns (bytes memory resultData)
-    {
-        // Gas savings from assembly: 474
+    fallback() external {
+        // Gas savings from assembly: 730
         assembly {
-            let where := add(calldataload(0x24), 4)
-            let cdlen := calldataload(where)
-            calldatacopy(0, add(where, 0x20), cdlen)
-            let success := call(gas(), target, 0, 0, cdlen, 0, 0)
+            // The first 4 bytes of calldata holds the function selector
+            let selector := and(calldataload(0), 0xffffffff00000000000000000000000000000000000000000000000000000000)
+
+            // bytes4(keccak256("executeCall(address,bytes)")) = 0xbca8c7b5
+            if iszero(eq(selector, 0xbca8c7b500000000000000000000000000000000000000000000000000000000)) {
+                revert(0, 0)
+            }
+
+            // To lookup a value in a mapping, we load from the storage location keccak256(k, p),
+            // where k is the key left padded to 32 bytes and p is the storage slot
+            mstore(0, and(caller(), 0xffffffffffffffffffffffffffffffffffffffff))
+            mstore(0x20, authorized_slot)
+
+            // Revert if authorized[msg.sender] == false
+            if iszero(sload(keccak256(0, 0x40))) {
+                // Revert with `SenderNotAuthorizedError(address)`
+                mstore(0, 0xb65a25b900000000000000000000000000000000000000000000000000000000)
+                mstore(4, caller())
+                revert(0, 36)
+            }
+
+            // Call data for executeCall(address target, bytes callData):
+            // 0x00-0x04 selector
+            // 0x04-0x24 address target
+            // 0x24-0x44 offset to callData, relative to 0x04
+
+            let offset := add(calldataload(0x24), 4)
+
+            // callData (relative to offset)
+            // 0x00-0x20 size in bytes
+            // 0x20-???? actual data
+
+            let size := calldataload(offset)
+            if lt(calldatasize(), add(add(offset, 0x20), size)) {
+                revert(0, 0) // insufficient call data
+            }
+            calldatacopy(0, add(offset, 0x20), size)
+
+            let success := call(gas(), and(calldataload(4), 0xffffffffffffffffffffffffffffffffffffffff), 0, 0, size, 0, 0)
 
             if iszero(success) {
                 returndatacopy(0, 0, returndatasize())
