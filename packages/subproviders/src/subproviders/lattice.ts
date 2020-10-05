@@ -115,7 +115,7 @@ export class LatticeSubprovider extends BaseWalletSubprovider {
         try {
             const data = {
                 protocol: 'eth_signTypedData',
-                data: typedData,
+                payload: typedData,
             };
             const sig = await this._latticeConnectClient.signMessage(address, data);
             return sig;
