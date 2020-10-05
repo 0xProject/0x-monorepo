@@ -56,6 +56,8 @@ contract DeploymentConstants {
     address constant private MUSD_ADDRESS = 0xe2f2a5C287993345a840Db3B0845fbC70f5935a5;
     /// @dev Mainnet address of the Mooniswap Registry contract
     address constant private MOONISWAP_REGISTRY = 0x71CD6666064C3A1354a3B4dca5fA1E2D3ee7D303;
+    /// @dev Mainnet address of the Shell contract
+    address constant private SHELL_CONTRACT = 0x2E703D658f8dd21709a7B458967aB4081F8D3d05;
 
     // // Ropsten addresses ///////////////////////////////////////////////////////
     // /// @dev Mainnet address of the WETH contract.
@@ -295,5 +297,15 @@ contract DeploymentConstants {
         returns (address)
     {
         return MOONISWAP_REGISTRY;
+    }
+
+    /// @dev An overridable way to retrieve the Shell contract address.
+    /// @return registry The Shell contract address.
+    function _getShellAddress()
+        internal
+        view
+        returns (address)
+    {
+        return SHELL_CONTRACT;
     }
 }
