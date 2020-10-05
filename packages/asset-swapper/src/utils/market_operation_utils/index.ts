@@ -30,6 +30,7 @@ import { DexOrderSampler, getSampleAmounts } from './sampler';
 import { SourceFilters } from './source_filters';
 import {
     AggregationError,
+    CollapsedFill,
     DexSample,
     ERC20BridgeSource,
     ExchangeProxyOverhead,
@@ -617,9 +618,9 @@ export class MarketOperationUtils {
         const collapsedPath = optimalPath.collapse(orderOpts);
         return {
             optimizedOrders: collapsedPath.orders,
-            liquidityDelivered: collapsedPath.collapsedFills,
+            liquidityDelivered: collapsedPath.collapsedFills as CollapsedFill[],
             sourceFlags: collapsedPath.sourceFlags,
-        } as OptimizerResult;
+        };
     }
 }
 
