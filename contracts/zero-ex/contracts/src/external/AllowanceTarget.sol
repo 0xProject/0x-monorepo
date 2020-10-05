@@ -25,15 +25,56 @@ contract AllowanceTarget is
     AuthorizableV06
 {
     fallback() external {
-        // Gas savings from assembly: 730
         assembly {
+            function assertAuthorized() {
+                // To lookup a value in a mapping, we load from the storage location keccak256(k, p),
+                // where k is the key left padded to 32 bytes and p is the storage slot
+                mstore(0, and(caller(), 0xffffffffffffffffffffffffffffffffffffffff))
+                mstore(0x20, authorized_slot)
+
+                // Revert if authorized[msg.sender] == false
+                if iszero(sload(keccak256(0, 0x40))) {
+                    // Revert with `SenderNotAuthorizedError(address)`
+                    mstore(0, 0xb65a25b900000000000000000000000000000000000000000000000000000000)
+                    mstore(4, caller())
+                    revert(0, 36)
+                }
+            }
+
             // The first 4 bytes of calldata holds the function selector
             let selector := and(calldataload(0), 0xffffffff00000000000000000000000000000000000000000000000000000000)
+
+            if eq(selector, 0x15dacbea00000000000000000000000000000000000000000000000000000000) {
+                assertAuthorized()
+
+                // selector for transferFrom(address,address,uint256)
+                mstore(0, 0x23b872dd00000000000000000000000000000000000000000000000000000000)
+
+                // Call data looks like:
+                // 0x00-0x04 selector
+                // 0x04-0x24 token address
+                // 0x24-0x44 sender
+                // 0x44-0x64 recipient
+                // 0x64-0x84 amount
+                calldatacopy(4, 0x24, 0x60)
+
+                let success := call(gas(), and(calldataload(4), 0xffffffffffffffffffffffffffffffffffffffff), 0, 0, 0x64, 0, 0)
+
+                if iszero(success) {
+                    returndatacopy(0, 0, returndatasize())
+                    revert(0, returndatasize())
+                }
+
+                returndatacopy(0, 0, returndatasize())
+                return(0, returndatasize())
+            }
 
             // bytes4(keccak256("executeCall(address,bytes)")) = 0xbca8c7b5
             if iszero(eq(selector, 0xbca8c7b500000000000000000000000000000000000000000000000000000000)) {
                 revert(0, 0)
             }
+
+            assertAuthorized()
 
             // To lookup a value in a mapping, we load from the storage location keccak256(k, p),
             // where k is the key left padded to 32 bytes and p is the storage slot
@@ -72,11 +113,8 @@ contract AllowanceTarget is
                 revert(0, returndatasize())
             }
 
-            // ABI-encoded return data
-            mstore(0, 0x20)                            // offset
-            mstore(0x20, returndatasize())             // length prefix
-            returndatacopy(0x40, 0, returndatasize())  // data
-            return(0, add(returndatasize(), 0x40))
+            returndatacopy(0, 0, returndatasize())
+            return(0, returndatasize())
         }
     }
 }

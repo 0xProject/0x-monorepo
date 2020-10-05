@@ -26,14 +26,25 @@ import "@0x/contracts-utils/contracts/src/v06/interfaces/IAuthorizableV06.sol";
 interface IAllowanceTarget is
     IAuthorizableV06
 {
-    /// @dev Execute an arbitrary call. Only an authority can call this.
+    /// @dev Execute an arbitrary call. Only an authority can call this. Returns raw (unencoded) return data from the call.
     /// @param target The call target.
     /// @param callData The call data.
-    /// @return resultData The data returned by the call.
     function executeCall(
         address payable target,
         bytes calldata callData
     )
-        external
-        returns (bytes memory resultData);
+        external;
+
+    /// @dev Execute an ERC20 transferFrom. Only an authority can call this. Returns raw (unencoded) return data from the call.
+    /// @param token The ERC20 token address.
+    /// @param sender The token sender.
+    /// @param recipient The token recipient.
+    /// @param amount The amount to transfer.
+    function transferFrom(
+        address token,
+        address sender,
+        address recipient,
+        uint256 amount
+    )
+        external;
 }

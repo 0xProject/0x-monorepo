@@ -80,79 +80,61 @@ contract TokenSpenderFeature is
     {
         IAllowanceTarget spender = LibTokenSpenderStorage.getStorage().allowanceTarget;
 
-        // Gas savings from assembly: 2324
-        bytes4 esel = IAllowanceTarget.executeCall.selector;
-        bytes4 tsel = IERC20TokenV06.transferFrom.selector;
-        bool didSucceed;
-        bytes memory resultData;
         assembly {
-            let ptr := mload(0x40)
-            if iszero(ptr) { ptr := 0x60 }
+            // bytes4(keccak256("transferFrom(address,address,address,uint256)")) == 0x15dacbea
+            mstore(0x00, 0x15dacbea00000000000000000000000000000000000000000000000000000000)
+            mstore(0x04, token)
+            mstore(0x24, owner)
+            mstore(0x44, to)
+            mstore(0x64, amount)
+            let didSucceed := call(gas(), spender, 0, 0, 0x84, 0, 0)
 
-            mstore(           ptr, esel)   // executeCall.selector  : 4 bytes
-            mstore(add(ptr, 0x04), token)  // target                : 32
-            mstore(add(ptr, 0x24), 0x40)   // offset to callData    : 32
-            mstore(add(ptr, 0x44), 100)    // length of callData    : 32
-            mstore(add(ptr, 0x64), tsel)   // transferFrom.selector : 4
-            mstore(add(ptr, 0x68), owner)  //                       : 32
-            mstore(add(ptr, 0x88), to)     //                       : 32
-            mstore(add(ptr, 0xa8), amount) //                       : 32
-                                           //                  total: 200
+            let rdsize := returndatasize()
 
-            didSucceed := call(gas(), spender, 0, ptr, 200, 0, 0)
+            // 0xc4 will be the right location in the rich revert case below
+            returndatacopy(0xc4, 0, rdsize)
 
-            // Set new free memory pointer, accounting for allocation of
-            // max(200, returndatasize()) bytes. We're using at least 200 for
-            // the call data, and at least returndatasize() for the result.
-            switch gt(add(returndatasize(), 32), 200)
-            case 1 {
-                mstore(0x40, add(ptr, add(returndatasize(), 32)))
-            }
-            default {
-                mstore(0x40, add(ptr, 200))
-            }
-
-            // Reuse memory we just used for call().
-            mstore(ptr, returndatasize())
-            returndatacopy(add(ptr, 32), 0, returndatasize())
-
-            // In case of failure, we want resultData to be length-prefixed
-            // bytes with the exact revert data we got.
-            resultData := ptr
+            // Check for ERC20 success. ERC20 tokens should return a boolean,
+            // but some don't. We accept 0-length return data as success.
+            didSucceed := and(
+                didSucceed,                 // call itself succeeded and
+                or(
+                    iszero(rdsize),         // either no return data or
+                    and(
+                        eq(rdsize, 0x20),   // exactly 32 bytes
+                        eq(mload(0xc4), 1)  // and the value is 1 (true)
+                    )
+                )
+            )
 
             if didSucceed {
-                // On a successful call to the AllowanceTarget, return data
-                // will be an ABI encoded `bytes`:
-                // * First word is 0x20 (offset to returned bytes).
-                // * Second word is the length of the returned bytes.
-                // * Beyond that is the actual data.
-
-                // In successful calls, we need to ABI decode the return data.
-                // Skip to the actual data. This is the equivalent of:
-                // resultData = abi.decode(resultData, (bytes))
-                resultData := add(resultData, 64)
-
-                let rdlen := mload(resultData)
-                if rdlen {
-                    // If we have a non-zero length, the length has to be
-                    // exactly 64, and the data has to be exactly 1.
-
-                    didSucceed := and(
-                        eq(rdlen, 32),
-                        eq(mload(add(resultData, 0x20)), 1)
-                    )
-                }
+                return(0, 0)
             }
-        }
 
-        if (!didSucceed) {
-            LibSpenderRichErrors.SpenderERC20TransferFromFailedError(
-                address(token),
-                owner,
-                to,
-                amount,
-                resultData
-            ).rrevert();
+            // Rich revert on failure.
+            // bytes4(keccak256("SpenderERC20TransferFromFailedError(address,address,address,uint256,bytes)")) == 0xdfdc6f57
+            mstore(0x00, 0xdfdc6f5700000000000000000000000000000000000000000000000000000000)
+            mstore(0x04, token)
+            mstore(0x24, owner)
+            mstore(0x44, to)
+            mstore(0x64, amount)
+            mstore(0x84, 0xa0) // offset to bytes parameter (relative to 0x04)
+            mstore(0xa4, rdsize) // length prefix
+            // return data is already in 0xc4
+
+            // pad to a multiple of 32 if necessary
+            if and(rdsize, 0x1f) {
+                mstore(add(0xc4, rdsize), 0) // write extra zeros
+
+                // rdsize = (rdsize + 31) & ~31
+                // Adding 31 rounds up to the next multiple of 32, and then
+                // & ~31 truncates to a multiple of 32. This is roughly the
+                // equivalent of (rdsize + 31) / 32 * 32 (with integer
+                // division).
+                rdsize := and(add(rdsize, 0x1f), not(0x1f))
+            }
+
+            revert(0, add(0xc4, rdsize))
         }
     }
 
