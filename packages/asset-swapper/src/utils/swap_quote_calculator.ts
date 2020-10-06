@@ -25,10 +25,9 @@ import {
     GetMarketOrdersOpts,
     OptimizedMarketOrder,
 } from './market_operation_utils/types';
-import { getTokenFromAssetData, isSupportedAssetDataInOrders } from './utils';
-
 import { QuoteReport } from './quote_report_generator';
 import { QuoteFillResult, simulateBestCaseFill, simulateWorstCaseFill } from './quote_simulation';
+import { getTokenFromAssetData, isSupportedAssetDataInOrders } from './utils';
 
 // TODO(dave4506) How do we want to reintroduce InsufficientAssetLiquidityError?
 export class SwapQuoteCalculator {
@@ -195,7 +194,8 @@ export class SwapQuoteCalculator {
                       opts.gasSchedule,
                       quoteReport,
                   );
-        const exchangeProxyOverhead = _opts.exchangeProxyOverhead(sourceFlags).toNumber();
+        // Use the raw gas, not scaled by gas price
+        const exchangeProxyOverhead = opts.exchangeProxyOverhead(sourceFlags).toNumber();
         swapQuote.bestCaseQuoteInfo.gas += exchangeProxyOverhead;
         swapQuote.worstCaseQuoteInfo.gas += exchangeProxyOverhead;
         return swapQuote;
