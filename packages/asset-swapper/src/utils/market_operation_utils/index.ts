@@ -1,10 +1,11 @@
 import { ContractAddresses } from '@0x/contract-addresses';
+import { Web3Wrapper } from '@0x/dev-utils';
 import { RFQTIndicativeQuote } from '@0x/quote-server';
 import { SignedOrder } from '@0x/types';
 import { BigNumber, NULL_ADDRESS } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { MarketOperation } from '../../types';
+import { MarketOperation, Omit } from '../../types';
 import { QuoteRequestor } from '../quote_requestor';
 
 import { generateQuoteReport, QuoteReport } from './../quote_report_generator';
@@ -28,7 +29,6 @@ import {
 import { findOptimalPathAsync } from './path_optimizer';
 import { DexOrderSampler, getSampleAmounts } from './sampler';
 import { SourceFilters } from './source_filters';
-import { Omit } from '../../types';
 import {
     AggregationError,
     DexSample,
@@ -42,7 +42,6 @@ import {
     OrderDomain,
     TokenAdjacencyGraph,
 } from './types';
-import { Web3Wrapper } from '@0x/dev-utils';
 
 // tslint:disable:boolean-naming
 

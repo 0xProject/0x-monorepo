@@ -725,7 +725,7 @@ describe('MarketOperationUtils tests', () => {
                         TypeMoq.It.isAny(),
                         TypeMoq.It.isAny(),
                         TypeMoq.It.isAny(),
-                    )
+                    ),
                 ).callback((
                     _makerAssetData: string,
                     _takerAssetData: string,
@@ -763,7 +763,7 @@ describe('MarketOperationUtils tests', () => {
                         TypeMoq.It.isAny(),
                         TypeMoq.It.isAny(),
                         TypeMoq.It.isAny(),
-                    )
+                    ),
                 ).returns(async () => {
                     return {
                         dexQuotes: [],
@@ -788,7 +788,7 @@ describe('MarketOperationUtils tests', () => {
                         makerTokenDecimals: 6,
                         takerTokenDecimals: 18,
                     };
-                })
+                });
                 const result = await mockedMarketOpUtils.object.getMarketSellOrdersAsync(ORDERS, Web3Wrapper.toBaseUnitAmount(1, 18), {
                     ...DEFAULT_OPTS,
                     rfqt: {
@@ -799,10 +799,10 @@ describe('MarketOperationUtils tests', () => {
                         quoteRequestor: {
                             requestRfqtFirmQuotesAsync: mockedQuoteRequestor.object.requestRfqtFirmQuotesAsync,
                         } as any,
-                    }
+                    },
                 });
                 expect(result.optimizedOrders.length).to.eql(1);
-                expect(requestedComparisonPrice!.toString()).to.eql("0.003125");
+                expect(requestedComparisonPrice!.toString()).to.eql('0.003125');
                 expect(result.optimizedOrders[0].makerAssetAmount.toString()).to.eql('321000000');
                 expect(result.optimizedOrders[0].takerAssetAmount.toString()).to.eql('1000000000000000000');
             });

@@ -1,4 +1,3 @@
-import { randomAddress } from '@0x/contracts-test-utils';
 import { tokenUtils } from '@0x/dev-utils';
 import { assetDataUtils } from '@0x/order-utils';
 import { StatusCodes } from '@0x/types';

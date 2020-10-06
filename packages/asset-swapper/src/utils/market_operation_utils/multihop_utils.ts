@@ -1,10 +1,11 @@
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
+import { Omit } from '../../types';
+
 import { ZERO_AMOUNT } from './constants';
 import { getTwoHopAdjustedRate } from './fills';
 import { DexSample, FeeSchedule, MarketSideLiquidity, MultiHopFillData, TokenAdjacencyGraph } from './types';
-import { Omit } from '../../types';
 
 /**
  * Given a token pair, returns the intermediate tokens to consider for two-hop routes.
