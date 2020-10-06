@@ -22,9 +22,10 @@ import {
     BUY_SOURCE_FILTER,
     POSITIVE_INF,
     SELL_SOURCE_FILTER,
+    SOURCE_FLAGS,
     ZERO_AMOUNT,
 } from '../src/utils/market_operation_utils/constants';
-import { createFillPaths } from '../src/utils/market_operation_utils/fills';
+import { createFills } from '../src/utils/market_operation_utils/fills';
 import { DexOrderSampler } from '../src/utils/market_operation_utils/sampler';
 import { BATCH_SOURCE_FILTERS } from '../src/utils/market_operation_utils/sampler_operations';
 import {
@@ -267,11 +268,7 @@ describe('MarketOperationUtils tests', () => {
     function getSortedOrderSources(side: MarketOperation, orders: OptimizedMarketOrder[]): ERC20BridgeSource[][] {
         return (
             orders
-                // Sort orders by descending rate.
-                .sort((a, b) =>
-                    b.makerAssetAmount.div(b.takerAssetAmount).comparedTo(a.makerAssetAmount.div(a.takerAssetAmount)),
-                )
-                // Then sort fills by descending rate.
+                // Sort fills by descending rate.
                 .map(o => {
                     return o.fills
                         .slice()
@@ -935,6 +932,49 @@ describe('MarketOperationUtils tests', () => {
                     [ERC20BridgeSource.Eth2Dai, ERC20BridgeSource.Curve],
                 ]);
             });
+            it('factors in exchange proxy gas overhead', async () => {
+                // Uniswap has a slightly better rate than LiquidityProvider,
+                // but LiquidityProvider is better accounting for the EP gas overhead.
+                const rates: RatesBySource = {
+                    [ERC20BridgeSource.Native]: [0.01, 0.01, 0.01, 0.01],
+                    [ERC20BridgeSource.Uniswap]: [1, 1, 1, 1],
+                    [ERC20BridgeSource.LiquidityProvider]: [0.9999, 0.9999, 0.9999, 0.9999],
+                };
+                replaceSamplerOps({
+                    getSellQuotes: createGetMultipleSellQuotesOperationFromRates(rates),
+                    getMedianSellRate: createGetMedianSellRate(ETH_TO_MAKER_RATE),
+                });
+                const optimizer = new MarketOperationUtils(
+                    MOCK_SAMPLER,
+                    contractAddresses,
+                    ORDER_DOMAIN,
+                    randomAddress(), // liquidity provider registry
+                );
+                const gasPrice = 100e9; // 100 gwei
+                const exchangeProxyOverhead = (sourceFlags: number) =>
+                    sourceFlags === SOURCE_FLAGS.LiquidityProvider
+                        ? new BigNumber(3e4).times(gasPrice)
+                        : new BigNumber(1.3e5).times(gasPrice);
+                const improvedOrdersResponse = await optimizer.getMarketSellOrdersAsync(
+                    createOrdersFromSellRates(FILL_AMOUNT, rates[ERC20BridgeSource.Native]),
+                    FILL_AMOUNT,
+                    {
+                        ...DEFAULT_OPTS,
+                        numSamples: 4,
+                        excludedSources: [
+                            ...DEFAULT_OPTS.excludedSources,
+                            ERC20BridgeSource.Eth2Dai,
+                            ERC20BridgeSource.Kyber,
+                            ERC20BridgeSource.Bancor,
+                        ],
+                        exchangeProxyOverhead,
+                    },
+                );
+                const improvedOrders = improvedOrdersResponse.optimizedOrders;
+                const orderSources = improvedOrders.map(o => o.fills[0].source);
+                const expectedSources = [ERC20BridgeSource.LiquidityProvider];
+                expect(orderSources).to.deep.eq(expectedSources);
+            });
         });
 
         describe('getMarketBuyOrdersAsync()', () => {
@@ -1304,7 +1344,7 @@ describe('MarketOperationUtils tests', () => {
 
             it('batches contiguous bridge sources', async () => {
                 const rates: RatesBySource = { ...ZERO_RATES };
-                rates[ERC20BridgeSource.Native] = [0.5, 0.01, 0.01, 0.01];
+                rates[ERC20BridgeSource.Native] = [0.3, 0.01, 0.01, 0.01];
                 rates[ERC20BridgeSource.Eth2Dai] = [0.49, 0.02, 0.01, 0.01];
                 rates[ERC20BridgeSource.Uniswap] = [0.48, 0.01, 0.01, 0.01];
                 replaceSamplerOps({
@@ -1323,14 +1363,56 @@ describe('MarketOperationUtils tests', () => {
                 expect(improvedOrders).to.be.length(2);
                 const orderFillSources = getSortedOrderSources(MarketOperation.Sell, improvedOrders);
                 expect(orderFillSources).to.deep.eq([
-                    [ERC20BridgeSource.Native],
                     [ERC20BridgeSource.Eth2Dai, ERC20BridgeSource.Uniswap],
+                    [ERC20BridgeSource.Native],
                 ]);
+            });
+            it('factors in exchange proxy gas overhead', async () => {
+                // Uniswap has a slightly better rate than LiquidityProvider,
+                // but LiquidityProvider is better accounting for the EP gas overhead.
+                const rates: RatesBySource = {
+                    [ERC20BridgeSource.Native]: [0.01, 0.01, 0.01, 0.01],
+                    [ERC20BridgeSource.Uniswap]: [1, 1, 1, 1],
+                    [ERC20BridgeSource.LiquidityProvider]: [0.9999, 0.9999, 0.9999, 0.9999],
+                };
+                replaceSamplerOps({
+                    getBuyQuotes: createGetMultipleBuyQuotesOperationFromRates(rates),
+                    getMedianSellRate: createGetMedianSellRate(ETH_TO_TAKER_RATE),
+                });
+                const optimizer = new MarketOperationUtils(
+                    MOCK_SAMPLER,
+                    contractAddresses,
+                    ORDER_DOMAIN,
+                    randomAddress(), // liquidity provider registry
+                );
+                const gasPrice = 100e9; // 100 gwei
+                const exchangeProxyOverhead = (sourceFlags: number) =>
+                    sourceFlags === SOURCE_FLAGS.LiquidityProvider
+                        ? new BigNumber(3e4).times(gasPrice)
+                        : new BigNumber(1.3e5).times(gasPrice);
+                const improvedOrdersResponse = await optimizer.getMarketBuyOrdersAsync(
+                    createOrdersFromSellRates(FILL_AMOUNT, rates[ERC20BridgeSource.Native]),
+                    FILL_AMOUNT,
+                    {
+                        ...DEFAULT_OPTS,
+                        numSamples: 4,
+                        excludedSources: [
+                            ...DEFAULT_OPTS.excludedSources,
+                            ERC20BridgeSource.Eth2Dai,
+                            ERC20BridgeSource.Kyber,
+                        ],
+                        exchangeProxyOverhead,
+                    },
+                );
+                const improvedOrders = improvedOrdersResponse.optimizedOrders;
+                const orderSources = improvedOrders.map(o => o.fills[0].source);
+                const expectedSources = [ERC20BridgeSource.LiquidityProvider];
+                expect(orderSources).to.deep.eq(expectedSources);
             });
         });
     });
 
-    describe('createFillPaths', () => {
+    describe('createFills', () => {
         const takerAssetAmount = new BigNumber(5000000);
         const ethToOutputRate = new BigNumber(0.5);
         // tslint:disable-next-line:no-object-literal-type-assertion
@@ -1364,7 +1446,7 @@ describe('MarketOperationUtils tests', () => {
         };
 
         it('penalizes native fill based on target amount when target is smaller', () => {
-            const path = createFillPaths({
+            const path = createFills({
                 side: MarketOperation.Sell,
                 orders,
                 dexQuotes: [],
@@ -1377,7 +1459,7 @@ describe('MarketOperationUtils tests', () => {
         });
 
         it('penalizes native fill based on available amount when target is larger', () => {
-            const path = createFillPaths({
+            const path = createFills({
                 side: MarketOperation.Sell,
                 orders,
                 dexQuotes: [],

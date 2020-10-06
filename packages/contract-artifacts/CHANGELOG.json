@@ -17,6 +17,10 @@
             {
                 "note": "Regenerate artifacts",
                 "pr": 2703
+            },
+            {
+                "note": "Update IZeroEx artifact for LiquidityProviderFeature",
+                "pr": 2691
             }
         ]
     },

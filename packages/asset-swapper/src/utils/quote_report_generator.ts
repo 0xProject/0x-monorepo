@@ -64,7 +64,7 @@ export function generateQuoteReport(
     multiHopQuotes: Array<DexSample<MultiHopFillData>>,
     nativeOrders: SignedOrder[],
     orderFillableAmounts: BigNumber[],
-    liquidityDelivered: CollapsedFill[] | DexSample<MultiHopFillData>,
+    liquidityDelivered: ReadonlyArray<CollapsedFill> | DexSample<MultiHopFillData>,
     quoteRequestor?: QuoteRequestor,
 ): QuoteReport {
     const dexReportSourcesConsidered = dexQuotes.map(quote => _dexSampleToReportSource(quote, marketOperation));
@@ -101,7 +101,9 @@ export function generateQuoteReport(
             }
         });
     } else {
-        sourcesDelivered = [_multiHopSampleToReportSource(liquidityDelivered, marketOperation)];
+        sourcesDelivered = [
+            _multiHopSampleToReportSource(liquidityDelivered as DexSample<MultiHopFillData>, marketOperation),
+        ];
     }
     return {
         sourcesConsidered,

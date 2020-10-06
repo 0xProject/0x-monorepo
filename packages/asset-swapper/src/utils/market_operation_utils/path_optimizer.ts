@@ -1,17 +1,9 @@
 import { BigNumber } from '@0x/utils';
+import * as _ from 'lodash';
 
 import { MarketOperation } from '../../types';
 
-import { ZERO_AMOUNT } from './constants';
-import {
-    arePathFlagsAllowed,
-    getCompleteRate,
-    getPathAdjustedCompleteRate,
-    getPathAdjustedRate,
-    getPathAdjustedSize,
-    getPathSize,
-    isValidPath,
-} from './fills';
+import { DEFAULT_PATH_PENALTY_OPTS, Path, PathPenaltyOpts } from './path';
 import { Fill } from './types';
 
 // tslint:disable: prefer-for-of custom-no-magic-numbers completed-docs no-bitwise
@@ -19,134 +11,93 @@ import { Fill } from './types';
 const RUN_LIMIT_DECAY_FACTOR = 0.5;
 
 /**
- * Find the optimal mixture of paths that maximizes (for sells) or minimizes
+ * Find the optimal mixture of fills that maximizes (for sells) or minimizes
  * (for buys) output, while meeting the input requirement.
  */
 export async function findOptimalPathAsync(
     side: MarketOperation,
-    paths: Fill[][],
+    fills: Fill[][],
     targetInput: BigNumber,
     runLimit: number = 2 ** 8,
-): Promise<Fill[] | undefined> {
-    // Sort paths by descending adjusted completed rate.
-    const sortedPaths = paths
-        .slice(0)
-        .sort((a, b) =>
-            getPathAdjustedCompleteRate(side, b, targetInput).comparedTo(
-                getPathAdjustedCompleteRate(side, a, targetInput),
-            ),
-        );
-    let optimalPath = sortedPaths[0] || [];
+    opts: PathPenaltyOpts = DEFAULT_PATH_PENALTY_OPTS,
+): Promise<Path | undefined> {
+    const rates = rateBySourcePathId(side, fills, targetInput);
+    const paths = fills.map(singleSourceFills => Path.create(side, singleSourceFills, targetInput, opts));
+    // Sort fill arrays by descending adjusted completed rate.
+    const sortedPaths = paths.sort((a, b) => b.adjustedCompleteRate().comparedTo(a.adjustedCompleteRate()));
+    if (sortedPaths.length === 0) {
+        return undefined;
+    }
+    let optimalPath = sortedPaths[0];
     for (const [i, path] of sortedPaths.slice(1).entries()) {
-        optimalPath = mixPaths(side, optimalPath, path, targetInput, runLimit * RUN_LIMIT_DECAY_FACTOR ** i);
+        optimalPath = mixPaths(side, optimalPath, path, targetInput, runLimit * RUN_LIMIT_DECAY_FACTOR ** i, rates);
         // Yield to event loop.
         await Promise.resolve();
     }
-    return isPathComplete(optimalPath, targetInput) ? optimalPath : undefined;
+    return optimalPath.isComplete() ? optimalPath : undefined;
 }
 
 function mixPaths(
     side: MarketOperation,
-    pathA: Fill[],
-    pathB: Fill[],
+    pathA: Path,
+    pathB: Path,
     targetInput: BigNumber,
     maxSteps: number,
-): Fill[] {
+    rates: { [id: string]: BigNumber },
+): Path {
     const _maxSteps = Math.max(maxSteps, 32);
     let steps = 0;
     // We assume pathA is the better of the two initially.
-    let bestPath: Fill[] = pathA;
-    let [bestPathInput, bestPathOutput] = getPathAdjustedSize(pathA, targetInput);
-    let bestPathRate = getCompleteRate(side, bestPathInput, bestPathOutput, targetInput);
-    const _isBetterPath = (input: BigNumber, rate: BigNumber) => {
-        if (bestPathInput.lt(targetInput)) {
-            return input.gt(bestPathInput);
-        } else if (input.gte(targetInput)) {
-            return rate.gt(bestPathRate);
-        }
-        return false;
-    };
-    const _walk = (path: Fill[], input: BigNumber, output: BigNumber, flags: number, remainingFills: Fill[]) => {
+    let bestPath: Path = pathA;
+
+    const _walk = (path: Path, remainingFills: Fill[]) => {
         steps += 1;
-        const rate = getCompleteRate(side, input, output, targetInput);
-        if (_isBetterPath(input, rate)) {
+        if (path.isBetterThan(bestPath)) {
             bestPath = path;
-            bestPathInput = input;
-            bestPathOutput = output;
-            bestPathRate = rate;
         }
-        const remainingInput = targetInput.minus(input);
-        if (remainingInput.gt(0)) {
+        const remainingInput = targetInput.minus(path.size().input);
+        if (remainingInput.isGreaterThan(0)) {
             for (let i = 0; i < remainingFills.length && steps < _maxSteps; ++i) {
                 const fill = remainingFills[i];
                 // Only walk valid paths.
-                if (!isValidNextPathFill(path, flags, fill)) {
+                if (!path.isValidNextFill(fill)) {
                     continue;
                 }
                 // Remove this fill from the next list of candidate fills.
                 const nextRemainingFills = remainingFills.slice();
                 nextRemainingFills.splice(i, 1);
                 // Recurse.
-                _walk(
-                    [...path, fill],
-                    input.plus(BigNumber.min(remainingInput, fill.input)),
-                    output.plus(
-                        // Clip the output of the next fill to the remaining
-                        // input.
-                        clipFillAdjustedOutput(fill, remainingInput),
-                    ),
-                    flags | fill.flags,
-                    nextRemainingFills,
-                );
+                _walk(Path.clone(path).append(fill), nextRemainingFills);
             }
         }
     };
-    const allFills = [...pathA, ...pathB];
-    const sources = allFills.filter(f => f.index === 0).map(f => f.sourcePathId);
-    const rateBySource = Object.assign(
-        {},
-        ...sources.map(s => ({
-            [s]: getPathAdjustedRate(side, allFills.filter(f => f.sourcePathId === s), targetInput),
-        })),
-    );
+    const allFills = [...pathA.fills, ...pathB.fills];
     // Sort subpaths by rate and keep fills contiguous to improve our
     // chances of walking ideal, valid paths first.
     const sortedFills = allFills.sort((a, b) => {
         if (a.sourcePathId !== b.sourcePathId) {
-            return rateBySource[b.sourcePathId].comparedTo(rateBySource[a.sourcePathId]);
+            return rates[b.sourcePathId].comparedTo(rates[a.sourcePathId]);
         }
         return a.index - b.index;
     });
-    _walk([], ZERO_AMOUNT, ZERO_AMOUNT, 0, sortedFills);
-    if (!isValidPath(bestPath)) {
+    _walk(Path.create(side, [], targetInput, pathA.pathPenaltyOpts), sortedFills);
+    if (!bestPath.isValid()) {
         throw new Error('nooope');
     }
     return bestPath;
 }
 
-function isValidNextPathFill(path: Fill[], pathFlags: number, fill: Fill): boolean {
-    if (path.length === 0) {
-        return !fill.parent;
-    }
-    if (path[path.length - 1] === fill.parent) {
-        return true;
-    }
-    if (fill.parent) {
-        return false;
-    }
-    return arePathFlagsAllowed(pathFlags | fill.flags);
-}
-
-function isPathComplete(path: Fill[], targetInput: BigNumber): boolean {
-    const [input] = getPathSize(path);
-    return input.gte(targetInput);
-}
-
-function clipFillAdjustedOutput(fill: Fill, remainingInput: BigNumber): BigNumber {
-    if (fill.input.lte(remainingInput)) {
-        return fill.adjustedOutput;
-    }
-    // Penalty does not get interpolated.
-    const penalty = fill.adjustedOutput.minus(fill.output);
-    return remainingInput.times(fill.output.div(fill.input)).plus(penalty);
+function rateBySourcePathId(
+    side: MarketOperation,
+    fills: Fill[][],
+    targetInput: BigNumber,
+): { [id: string]: BigNumber } {
+    const flattenedFills = _.flatten(fills);
+    const sourcePathIds = flattenedFills.filter(f => f.index === 0).map(f => f.sourcePathId);
+    return Object.assign(
+        {},
+        ...sourcePathIds.map(s => ({
+            [s]: Path.create(side, flattenedFills.filter(f => f.sourcePathId === s), targetInput).adjustedRate(),
+        })),
+    );
 }

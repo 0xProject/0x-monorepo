@@ -16,7 +16,6 @@ import {
     WALLET_SIGNATURE,
     ZERO_AMOUNT,
 } from './constants';
-import { collapsePath } from './fills';
 import { getMultiBridgeIntermediateToken } from './multibridge_utils';
 import {
     AggregationError,
@@ -26,7 +25,6 @@ import {
     CurveFillData,
     DexSample,
     ERC20BridgeSource,
-    Fill,
     KyberFillData,
     LiquidityProviderFillData,
     MooniswapFillData,
@@ -155,37 +153,6 @@ export interface CreateOrderFromPathOpts {
     shouldBatchBridgeOrders: boolean;
 }
 
-// Convert sell fills into orders.
-export function createOrdersFromPath(path: Fill[], opts: CreateOrderFromPathOpts): OptimizedMarketOrder[] {
-    const [makerToken, takerToken] = getMakerTakerTokens(opts);
-    const collapsedPath = collapsePath(path);
-    const orders: OptimizedMarketOrder[] = [];
-    for (let i = 0; i < collapsedPath.length; ) {
-        if (collapsedPath[i].source === ERC20BridgeSource.Native) {
-            orders.push(createNativeOrder(collapsedPath[i] as NativeCollapsedFill));
-            ++i;
-            continue;
-        }
-        // If there are contiguous bridge orders, we can batch them together.
-        const contiguousBridgeFills = [collapsedPath[i]];
-        for (let j = i + 1; j < collapsedPath.length; ++j) {
-            if (collapsedPath[j].source === ERC20BridgeSource.Native) {
-                break;
-            }
-            contiguousBridgeFills.push(collapsedPath[j]);
-        }
-        // Always use DexForwarderBridge unless configured not to
-        if (!opts.shouldBatchBridgeOrders) {
-            orders.push(createBridgeOrder(contiguousBridgeFills[0], makerToken, takerToken, opts));
-            i += 1;
-        } else {
-            orders.push(createBatchedBridgeOrder(contiguousBridgeFills, opts));
-            i += contiguousBridgeFills.length;
-        }
-    }
-    return orders;
-}
-
 export function createOrdersFromTwoHopSample(
     sample: DexSample<MultiHopFillData>,
     opts: CreateOrderFromPathOpts,
@@ -250,7 +217,7 @@ function getBridgeAddressFromFill(fill: CollapsedFill, opts: CreateOrderFromPath
     throw new Error(AggregationError.NoBridgeForSource);
 }
 
-function createBridgeOrder(
+export function createBridgeOrder(
     fill: CollapsedFill,
     makerToken: string,
     takerToken: string,
@@ -364,7 +331,7 @@ function createBridgeOrder(
     };
 }
 
-function createBatchedBridgeOrder(fills: CollapsedFill[], opts: CreateOrderFromPathOpts): OptimizedMarketOrder {
+export function createBatchedBridgeOrder(fills: CollapsedFill[], opts: CreateOrderFromPathOpts): OptimizedMarketOrder {
     const [makerToken, takerToken] = getMakerTakerTokens(opts);
     let totalMakerAssetAmount = ZERO_AMOUNT;
     let totalTakerAssetAmount = ZERO_AMOUNT;
@@ -405,7 +372,7 @@ function createBatchedBridgeOrder(fills: CollapsedFill[], opts: CreateOrderFromP
     };
 }
 
-function getMakerTakerTokens(opts: CreateOrderFromPathOpts): [string, string] {
+export function getMakerTakerTokens(opts: CreateOrderFromPathOpts): [string, string] {
     const makerToken = opts.side === MarketOperation.Sell ? opts.outputToken : opts.inputToken;
     const takerToken = opts.side === MarketOperation.Sell ? opts.inputToken : opts.outputToken;
     return [makerToken, takerToken];
@@ -527,7 +494,7 @@ function createCommonBridgeOrderFields(orderDomain: OrderDomain): CommonBridgeOr
     };
 }
 
-function createNativeOrder(fill: NativeCollapsedFill): OptimizedMarketOrder {
+export function createNativeOrder(fill: NativeCollapsedFill): OptimizedMarketOrder {
     return {
         fills: [fill],
         ...fill.fillData!.order, // tslint:disable-line:no-non-null-assertion
