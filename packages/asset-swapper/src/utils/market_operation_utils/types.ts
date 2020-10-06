@@ -351,6 +351,8 @@ export interface MarketSideLiquidity {
     rfqtIndicativeQuotes: RFQTIndicativeQuote[];
     twoHopQuotes: Array<DexSample<MultiHopFillData>>;
     quoteSourceFilters: SourceFilters;
+    makerTokenDecimals: number;
+    takerTokenDecimals: number;
 }
 
 export interface TokenAdjacencyGraph {

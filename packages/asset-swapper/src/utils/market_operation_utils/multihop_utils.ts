@@ -4,6 +4,7 @@ import * as _ from 'lodash';
 import { ZERO_AMOUNT } from './constants';
 import { getTwoHopAdjustedRate } from './fills';
 import { DexSample, FeeSchedule, MarketSideLiquidity, MultiHopFillData, TokenAdjacencyGraph } from './types';
+import { Omit } from '../../types';
 
 /**
  * Given a token pair, returns the intermediate tokens to consider for two-hop routes.
@@ -34,7 +35,7 @@ export function getIntermediateTokens(
  * Returns the best two-hop quote and the fee-adjusted rate of that quote.
  */
 export function getBestTwoHopQuote(
-    marketSideLiquidity: MarketSideLiquidity,
+    marketSideLiquidity: Omit<MarketSideLiquidity, 'makerTokenDecimals' | 'takerTokenDecimals'>,
     feeSchedule?: FeeSchedule,
 ): { quote: DexSample<MultiHopFillData> | undefined; adjustedRate: BigNumber } {
     const { side, inputAmount, ethToOutputRate, twoHopQuotes } = marketSideLiquidity;

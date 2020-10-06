@@ -385,6 +385,10 @@ describe('MarketOperationUtils tests', () => {
     };
 
     const DEFAULT_OPS = {
+        getTokenDecimals(_makerAddress: string, _takerAddress: string): BigNumber[] {
+            const result = new BigNumber(18);
+            return [result, result];
+        },
         getOrderFillableTakerAmounts(orders: SignedOrder[]): BigNumber[] {
             return orders.map(o => o.takerAssetAmount);
         },
@@ -737,7 +741,7 @@ describe('MarketOperationUtils tests', () => {
                             signedOrder: createOrder({
                                 makerAssetData: MAKER_ASSET_DATA,
                                 takerAssetData: TAKER_ASSET_DATA,
-                                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(321, 18),
+                                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(321, 6),
                                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(1, 18),
                             }),
                         },
@@ -764,7 +768,7 @@ describe('MarketOperationUtils tests', () => {
                     return {
                         dexQuotes: [],
                         ethToInputRate: Web3Wrapper.toBaseUnitAmount(1, 18),
-                        ethToOutputRate: Web3Wrapper.toBaseUnitAmount(1, 18),
+                        ethToOutputRate: Web3Wrapper.toBaseUnitAmount(1, 6),
                         inputAmount: Web3Wrapper.toBaseUnitAmount(1, 18),
                         inputToken: MAKER_TOKEN,
                         outputToken: TAKER_TOKEN,
@@ -772,7 +776,7 @@ describe('MarketOperationUtils tests', () => {
                             createOrder({
                                 makerAssetData: MAKER_ASSET_DATA,
                                 takerAssetData: TAKER_ASSET_DATA,
-                                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(320, 18),
+                                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(320, 6),
                                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(1, 18),
                             }),
                         ],
@@ -781,6 +785,8 @@ describe('MarketOperationUtils tests', () => {
                         side: MarketOperation.Sell,
                         twoHopQuotes: [],
                         quoteSourceFilters: new SourceFilters(),
+                        makerTokenDecimals: 6,
+                        takerTokenDecimals: 18,
                     };
                 })
                 const result = await mockedMarketOpUtils.object.getMarketSellOrdersAsync(ORDERS, Web3Wrapper.toBaseUnitAmount(1, 18), {
@@ -796,8 +802,8 @@ describe('MarketOperationUtils tests', () => {
                     }
                 });
                 expect(result.optimizedOrders.length).to.eql(1);
-                expect(requestedComparisonPrice!.toString()).to.eql("320");
-                expect(result.optimizedOrders[0].makerAssetAmount.toString()).to.eql('321000000000000000000');
+                expect(requestedComparisonPrice!.toString()).to.eql("0.003125");
+                expect(result.optimizedOrders[0].makerAssetAmount.toString()).to.eql('321000000');
                 expect(result.optimizedOrders[0].takerAssetAmount.toString()).to.eql('1000000000000000000');
             });
 

@@ -88,6 +88,15 @@ export class SamplerOperations {
         return this._bancorService;
     }
 
+    public getTokenDecimals(makerTokenAddress: string, takerTokenAddress: string): BatchedOperation<BigNumber[]> {
+        return new SamplerContractOperation({
+            source: ERC20BridgeSource.Native,
+            contract: this._samplerContract,
+            function: this._samplerContract.getTokenDecimals,
+            params: [makerTokenAddress, takerTokenAddress],
+        });
+    }
+
     public getOrderFillableTakerAmounts(orders: SignedOrder[], exchangeAddress: string): BatchedOperation<BigNumber[]> {
         return new SamplerContractOperation({
             source: ERC20BridgeSource.Native,

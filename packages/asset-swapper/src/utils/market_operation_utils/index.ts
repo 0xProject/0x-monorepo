@@ -28,6 +28,7 @@ import {
 import { findOptimalPathAsync } from './path_optimizer';
 import { DexOrderSampler, getSampleAmounts } from './sampler';
 import { SourceFilters } from './source_filters';
+import { Omit } from '../../types';
 import {
     AggregationError,
     DexSample,
@@ -41,6 +42,7 @@ import {
     OrderDomain,
     TokenAdjacencyGraph,
 } from './types';
+import { Web3Wrapper } from '@0x/dev-utils';
 
 // tslint:disable:boolean-naming
 
@@ -153,6 +155,7 @@ export class MarketOperationUtils {
 
         // Call the sampler contract.
         const samplerPromise = this._sampler.executeAsync(
+            this._sampler.getTokenDecimals(makerToken, takerToken),
             // Get native order fillable amounts.
             this._sampler.getOrderFillableTakerAmounts(nativeOrders, this.contractAddresses.exchange),
             // Get ETH -> maker token price.
@@ -205,11 +208,12 @@ export class MarketOperationUtils {
             : Promise.resolve([]);
 
         const [
-            [orderFillableAmounts, ethToMakerAssetRate, ethToTakerAssetRate, dexQuotes, twoHopQuotes],
+            [tokenDecimals, orderFillableAmounts, ethToMakerAssetRate, ethToTakerAssetRate, dexQuotes, twoHopQuotes],
             offChainBalancerQuotes,
             offChainBancorQuotes,
         ] = await Promise.all([samplerPromise, offChainBalancerPromise, offChainBancorPromise]);
 
+        const [makerTokenDecimals, takerTokenDecimals] = tokenDecimals;
         return {
             side: MarketOperation.Sell,
             inputAmount: takerAmount,
@@ -223,6 +227,8 @@ export class MarketOperationUtils {
             rfqtIndicativeQuotes: [],
             twoHopQuotes,
             quoteSourceFilters,
+            makerTokenDecimals: makerTokenDecimals.toNumber(),
+            takerTokenDecimals: takerTokenDecimals.toNumber(),
         };
     }
 
@@ -259,6 +265,7 @@ export class MarketOperationUtils {
 
         // Call the sampler contract.
         const samplerPromise = this._sampler.executeAsync(
+            this._sampler.getTokenDecimals(makerToken, takerToken),
             // Get native order fillable amounts.
             this._sampler.getOrderFillableMakerAmounts(nativeOrders, this.contractAddresses.exchange),
             // Get ETH -> makerToken token price.
@@ -306,13 +313,14 @@ export class MarketOperationUtils {
             : Promise.resolve([]);
 
         const [
-            [orderFillableAmounts, ethToMakerAssetRate, ethToTakerAssetRate, dexQuotes, twoHopQuotes],
+            [tokenDecimals, orderFillableAmounts, ethToMakerAssetRate, ethToTakerAssetRate, dexQuotes, twoHopQuotes],
             offChainBalancerQuotes,
         ] = await Promise.all([samplerPromise, offChainBalancerPromise]);
         // Attach the MultiBridge address to the sample fillData
         (dexQuotes.find(quotes => quotes[0] && quotes[0].source === ERC20BridgeSource.MultiBridge) || []).forEach(
             q => (q.fillData = { poolAddress: this._multiBridge }),
         );
+        const [makerTokenDecimals, takerTokenDecimals] = tokenDecimals;
         return {
             side: MarketOperation.Buy,
             inputAmount: makerAmount,
@@ -326,6 +334,8 @@ export class MarketOperationUtils {
             rfqtIndicativeQuotes: [],
             twoHopQuotes,
             quoteSourceFilters,
+            makerTokenDecimals: makerTokenDecimals.toNumber(),
+            takerTokenDecimals: takerTokenDecimals.toNumber(),
         };
     }
 
@@ -462,7 +472,7 @@ export class MarketOperationUtils {
     }
 
     public async _generateOptimizedOrdersAsync(
-        marketSideLiquidity: MarketSideLiquidity,
+        marketSideLiquidity: Omit<MarketSideLiquidity, 'makerTokenDecimals' | 'takerTokenDecimals'>,
         opts: GenerateOptimizedOrdersOpts,
     ): Promise<OptimizerResult> {
         const {
@@ -596,8 +606,10 @@ export class MarketOperationUtils {
             if (optimizerResult) {
                 const totalMakerAmount = BigNumber.sum(...optimizerResult.optimizedOrders.map(order => order.makerAssetAmount));
                 const totalTakerAmount = BigNumber.sum(...optimizerResult.optimizedOrders.map(order => order.takerAssetAmount));
-                if (totalTakerAmount.gt(0)) {
-                    comparisonPrice = totalMakerAmount.div(totalTakerAmount);
+                if (totalMakerAmount.gt(0)) {
+                    const totalMakerAmountUnitAmount = Web3Wrapper.toUnitAmount(totalMakerAmount, marketSideLiquidity.makerTokenDecimals);
+                    const totalTakerAmountUnitAmount = Web3Wrapper.toUnitAmount(totalTakerAmount, marketSideLiquidity.takerTokenDecimals);
+                    comparisonPrice = totalTakerAmountUnitAmount.div(totalMakerAmountUnitAmount);
                 }
             }
 

@@ -20,6 +20,7 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
+import "@0x/contracts-erc20/contracts/src/LibERC20Token.sol";
 import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
@@ -35,6 +36,19 @@ contract NativeOrderSampler {
     bytes4 private constant ERC20_ASSET_PROXY_ID = 0xf47261b0;
     /// @dev Gas limit for calls to `getOrderFillableTakerAmount()`.
     uint256 constant internal DEFAULT_CALL_GAS = 200e3; // 200k
+
+    function getTokenDecimals(
+        address makerTokenAddress,
+        address takerTokenAddress
+    )
+        public
+        view
+        returns (uint256, uint256)
+    {
+        uint256 fromTokenDecimals = LibERC20Token.decimals(makerTokenAddress);
+        uint256 toTokenDecimals = LibERC20Token.decimals(takerTokenAddress);
+        return (fromTokenDecimals, toTokenDecimals);
+    }
 
     /// @dev Queries the fillable taker asset amounts of native orders.
     ///      Effectively ignores orders that have empty signatures or
