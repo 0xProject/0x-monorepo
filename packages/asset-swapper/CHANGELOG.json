@@ -141,6 +141,10 @@
             {
                 "note": "Added `Shell`",
                 "pr": 2722
+            },
+            {
+                "note": "Fix exchange proxy overhead gas being scaled by gas price",
+                "pr": 2723
             }
         ]
     },
