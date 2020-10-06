@@ -57,6 +57,10 @@
             {
                 "note": "Fix versioning (`_encodeVersion()`) bug",
                 "pr": 2703
+            },
+            {
+                "note": "Added `Shell` into FQT",
+                "pr": 2722
             }
         ]
     },

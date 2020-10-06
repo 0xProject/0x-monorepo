@@ -94,7 +94,7 @@ contract ShellSampler is
                         IShell(0).viewTargetSwap.selector,
                         takerToken,
                         makerToken,
-                        takerTokenAmounts[i]
+                        makerTokenAmounts[i]
                     ));
             uint256 sellAmount = 0;
             if (didSucceed) {

@@ -33,8 +33,8 @@ contract ShellBridge is
     DeploymentConstants
 {
 
-    /// @dev Swaps specified tokens against the mStable mUSD contract
-    /// @param toTokenAddress The token to give to `to` (i.e DAI, USDC, USDT).
+    /// @dev Swaps specified tokens against the Shell contract
+    /// @param toTokenAddress The token to give to `to`.
     /// @param from The maker (this contract).
     /// @param to The recipient of the bought tokens.
     /// @param amount Minimum amount of `toTokenAddress` tokens to buy.

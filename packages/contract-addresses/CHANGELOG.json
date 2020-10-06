@@ -49,6 +49,10 @@
             {
                 "note": "Deploy `BancorBridge` on Mainnet",
                 "pr": 2699
+            },
+            {
+                "note": "Deploy `ShellBridge` on Mainnet",
+                "pr": 2722
             }
         ]
     },
