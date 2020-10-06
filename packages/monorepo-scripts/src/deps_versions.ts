@@ -26,8 +26,8 @@ const PACKAGE_JSON_GLOB = '../../*/package.json';
 
 const config = utils.readJSONFile<PackageJSON>(path.join(__dirname, '../../../package.json'))
     .config as PackageJSONConfig; // tslint:disable-line no-unnecessary-type-assertion
-const dependenciesWithIgnoredVersions: string[] = (config.ignoreDependencyVersions as string).split(' ');
-const packagesWithIgnoredVersions: string[] = (config.ignoreDependencyVersionsForPackage as string).split(' ');
+const dependenciesWithIgnoredVersions: string[] = (config.ignoreDependencyVersions || ('' as string)).split(' ');
+const packagesWithIgnoredVersions: string[] = (config.ignoreDependencyVersionsForPackage || ('' as string)).split(' ');
 
 if (require.main === module) {
     const dependencies = parseDependencies();

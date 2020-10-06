@@ -7,6 +7,8 @@ import { DebugPayload, DebugSubprovider } from './../../src/subproviders/debug_s
 
 chaiSetup.configure();
 const expect = chai.expect;
+// tslint:disable-next-line: no-unbound-method
+const fail = chai.assert.fail;
 
 const blankCallback = () => {
     return;

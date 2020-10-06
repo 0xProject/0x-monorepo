@@ -1,7 +1,0 @@
-{
-    "extends": ["@0x/tslint-config"],
-    "rules": {
-        "no-invalid-this": false,
-        "custom-no-magic-numbers": false
-    }
-}

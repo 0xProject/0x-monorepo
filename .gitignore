@@ -79,119 +79,11 @@ TODO.md
 .vscode
 
 # generated contract artifacts/
-contracts/broker/generated-artifacts/
-contracts/broker/test/generated-artifacts/
-contracts/erc20-bridge-sampler/generated-artifacts/
-contracts/erc20-bridge-sampler/test/generated-artifacts/
-contracts/integrations/generated-artifacts/
-contracts/integrations/test/generated-artifacts/
-contracts/staking/generated-artifacts/
-contracts/staking/test/generated-artifacts/
-contracts/coordinator/generated-artifacts/
-contracts/coordinator/test/generated-artifacts/
-contracts/exchange/generated-artifacts/
-contracts/exchange/test/generated-artifacts/
-contracts/asset-proxy/generated-artifacts/
-contracts/asset-proxy/test/generated-artifacts/
-contracts/multisig/generated-artifacts/
-contracts/multisig/test/generated-artifacts/
-contracts/utils/generated-artifacts/
-contracts/utils/test/generated-artifacts/
-contracts/exchange-libs/generated-artifacts/
-contracts/exchange-libs/test/generated-artifacts/
-contracts/erc20/generated-artifacts/
-contracts/erc20/test/generated-artifacts/
-contracts/erc721/generated-artifacts/
-contracts/erc721/test/generated-artifacts/
-contracts/erc1155/generated-artifacts/
-contracts/erc1155/test/generated-artifacts/
-contracts/extensions/generated-artifacts/
-contracts/extensions/test/generated-artifacts/
-contracts/exchange-forwarder/generated-artifacts/
-contracts/exchange-forwarder/test/generated-artifacts/
-contracts/dev-utils/generated-artifacts/
-contracts/dev-utils/test/generated-artifacts/
-contracts/zero-ex/generated-artifacts/
-contracts/zero-ex/test/generated-artifacts/
 packages/sol-tracing-utils/test/fixtures/artifacts/
-python-packages/contract_artifacts/src/zero_ex/contract_artifacts/artifacts/
-
-# generated truffle contract artifacts/
-contracts/broker/build/
-contracts/erc20-bridge-sampler/build/
-contracts/staking/build/
-contracts/coordinator/build/
-contracts/exchange/build/
-contracts/asset-proxy/build/
-contracts/multisig/build/
-contracts/utils/build/
-contracts/exchange-libs/build/
-contracts/erc20/build/
-contracts/erc721/build/
-contracts/erc1155/build/
-contracts/extensions/build/
-contracts/exchange-forwarder/build/
-contracts/dev-utils/build/
-
-# generated contract wrappers
-contracts/broker/generated-wrappers/
-contracts/broker/test/generated-wrappers/
-packages/python-contract-wrappers/generated/
-contracts/erc20-bridge-sampler/generated-wrappers/
-contracts/erc20-bridge-sampler/test/generated-wrappers/
-contracts/integrations/generated-wrappers/
-contracts/integrations/test/generated-wrappers/
-contracts/staking/generated-wrappers/
-contracts/staking/test/generated-wrappers/
-contracts/coordinator/generated-wrappers/
-contracts/coordinator/test/generated-wrappers/
-contracts/exchange/generated-wrappers/
-contracts/exchange/test/generated-wrappers/
-contracts/asset-proxy/generated-wrappers/
-contracts/asset-proxy/test/generated-wrappers/
-contracts/multisig/generated-wrappers/
-contracts/multisig/test/generated-wrappers/
-contracts/utils/generated-wrappers/
-contracts/utils/test/generated-wrappers/
-contracts/exchange-libs/generated-wrappers/
-contracts/exchange-libs/test/generated-wrappers/
-contracts/erc20/generated-wrappers/
-contracts/erc20/test/generated-wrappers/
-contracts/erc721/generated-wrappers/
-contracts/erc721/test/generated-wrappers/
-contracts/erc1155/generated-wrappers/
-contracts/erc1155/test/generated-wrappers/
-contracts/extensions/generated-wrappers/
-contracts/extensions/test/generated-wrappers/
-contracts/exchange-forwarder/generated-wrappers/
-contracts/exchange-forwarder/test/generated-wrappers/
-contracts/dev-utils/generated-wrappers/
-contracts/dev-utils/test/generated-wrappers/
-contracts/zero-ex/generated-wrappers/
-contracts/zero-ex/test/generated-wrappers/
-python-packages/contract_wrappers/src/zero_ex/contract_wrappers/*/__init__.py
 
 # solc-bin in sol-compiler
 packages/sol-compiler/solc_bin/
-
-# python stuff
-.eggs
-.mypy_cache
-.tox
-python-packages/*/build
-python-packages/*/dist
-__pycache__
-python-packages/*/src/*.egg-info
-python-packages/*/.coverage
-
-# python keeps package-local copies of json schemas and contract addresses
-python-packages/json_schemas/src/zero_ex/json_schemas/schemas
-python-packages/contract_addresses/src/zero_ex/contract_addresses/addresses.json
-
 # Doc README copy
 packages/*/docs/README.md
 
 .DS_Store
-
-# the snapshot that gets built for migrations sure does have a ton of files
-packages/migrations/0x_ganache_snapshot*

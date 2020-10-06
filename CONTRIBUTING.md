@@ -4,9 +4,9 @@ We welcome contributions from anyone on the internet and are grateful for even t
 
 ### Getting started
 
-1.  Fork `0xproject/0x-monorepo`
+1.  Fork `0xproject/0x-tools`
 2.  Clone your fork
-3.  Follow the [installation & build steps](https://github.com/0xProject/0x-monorepo#install-dependencies) in the repo's top-level README.
+3.  Follow the [installation & build steps](https://github.com/0xProject/0x-tools#install-dependencies) in the repo's top-level README.
 4.  Setup the recommended [Development Tooling](#development-tooling).
 5.  Open a PR with the `[WIP]` flag against the `development` branch and describe the change you are intending to undertake in the PR description. (see [our branch naming conventions](#branch-structure))
 
@@ -59,11 +59,11 @@ We strongly recommend you use the [VSCode](https://code.visualstudio.com/) text 
 
 #### Linter
 
-We use [TSLint](https://palantir.github.io/tslint/) with [custom configs](https://github.com/0xProject/0x-monorepo/tree/development/packages/tslint-config) to keep our code-style consistent.
+We use [TSLint](https://palantir.github.io/tslint/) with [custom configs](https://github.com/0xProject/0x-tools/tree/development/packages/tslint-config) to keep our code-style consistent.
 
 Use `yarn:lint` to lint the entire monorepo, and `PKG={PACKAGE_NAME} yarn lint` to lint a specific package.
 
-If you want to change a rule, or add a custom rule, please make these changes to our [tslint-config](https://github.com/0xProject/0x-monorepo/tree/development/packages/tslint-config) package. All other packages have it as a dependency.
+If you want to change a rule, or add a custom rule, please make these changes to our [tslint-config](https://github.com/0xProject/0x-tools/tree/development/packages/tslint-config) package. All other packages have it as a dependency.
 
 Integrate it into your text editor:
 
@@ -94,12 +94,12 @@ A few of our coding conventions are not yet enforced by the linter/auto-formatte
 
 ### Fix `submit-coverage` CI failure
 
-If you simply fork the repo and then create a PR from it, your PR will fail the `submit-coverage` check on CI. This is because the 0x CircleCI configuration sets the `COVERALLS_REPO_TOKEN` environment variable to the token for `0xProject/0x-monorepo`, but when running the check against your fork the token needs to match your repo's name `your-username/0x-monorepo`.
+If you simply fork the repo and then create a PR from it, your PR will fail the `submit-coverage` check on CI. This is because the 0x CircleCI configuration sets the `COVERALLS_REPO_TOKEN` environment variable to the token for `0xProject/0x-tools`, but when running the check against your fork the token needs to match your repo's name `your-username/0x-tools`.
 
 To facilitate this check, after creating your fork, but before creating the branch for your PR, do the following:
 
 1.  Log in to [coveralls.io](https://coveralls.io/), go to `Add Repos`, and enable your fork. Then go to the settings for that repo, and copy the `Repo Token` identifier.
-2.  Log in to [CircleCI](https://circleci.com/login), go to `Add Projects`, click the `Set Up Project` button corresponding to your fork, and then click `Start Building`. (Aside from step 3 below, no actual set up is needed, since it will use the `.circleci/config.yml` file in 0x-monorepo, so you can ignore all of the instruction/explanation given on the page with the `Start Building` button.)
+2.  Log in to [CircleCI](https://circleci.com/login), go to `Add Projects`, click the `Set Up Project` button corresponding to your fork, and then click `Start Building`. (Aside from step 3 below, no actual set up is needed, since it will use the `.circleci/config.yml` file in 0x-tools, so you can ignore all of the instruction/explanation given on the page with the `Start Building` button.)
 3.  In CircleCI, configure your project to add an environment variable, with name `COVERALLS_REPO_TOKEN`, and for the value paste in the `Repo Token` you copied in step 1.
 
 Now, when you push to your branch, CircleCI will automatically run all of the checks in your own instance, and the coverage check will work since it has the proper `Repo Token`, and the PR will magically refer to your own checks rather than running them in the 0x CircleCI instance.

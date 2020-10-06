@@ -2,7 +2,4 @@
 
 # Automatically collapse generated files in GitHub.
 *.svg linguist-generated=true
-packages/contract-artifacts/artifacts/*json linguist-generated=true
 packages/abi-gen-wrappers/src/generated-wrappers/*.ts linguist-generated=true
-packages/contract-wrappers/src/generated-wrappers/*.ts linguist-generated=true
-

@@ -4,24 +4,14 @@
 # It uses the same pattern rule for gitignore file
 # https://git-scm.com/docs/gitignore#_pattern_format
 
-# Website
-packages/asset-swapper/  @BMillman19 @fragosti @dave4506
-packages/instant/  @BMillman19 @fragosti @dave4506
-
 # Dev tools & setup
 .circleci/ @LogvinovLeon
 packages/abi-gen/ @feuGeneA
 packages/base-contract/ @xianny
-packages/connect/ @fragosti 
 packages/abi-gen-templates/ @feuGeneA @xianny
-packages/contract-addresses/ @abandeali1
-packages/contract-artifacts/ @abandeali1
 packages/dev-utils/ @LogvinovLeon @fabioberger
-packages/devnet/ @albrow
 packages/ethereum-types/ @LogvinovLeon
 packages/monorepo-scripts/ @fabioberger
-packages/order-utils/ @fabioberger @LogvinovLeon 
-packages/python-contract-wrappers/ @feuGeneA
 packages/sol-compiler/ @LogvinovLeon
 packages/sol-coverage/ @LogvinovLeon
 packages/sol-profiler/ @LogvinovLeon
@@ -31,8 +21,4 @@ packages/sol-resolver/ @LogvinovLeon
 packages/subproviders/ @fabioberger @dekz
 packages/verdaccio/ @albrow
 packages/web3-wrapper/ @LogvinovLeon @fabioberger
-python-packages/ @feuGeneA
 packages/utils/ @hysz
-
-# Protocol/smart contracts
-contracts/ @abandeali1 @hysz

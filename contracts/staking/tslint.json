@@ -1,7 +1,0 @@
-{
-    "extends": ["@0x/tslint-config"],
-    "rules": {
-        "custom-no-magic-numbers": false,
-        "restrict-plus-operands": false
-    }
-}

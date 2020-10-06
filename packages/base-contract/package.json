@@ -32,6 +32,7 @@
     "devDependencies": {
         "@0x/tslint-config": "^4.1.0",
         "@0x/types": "^3.2.0",
+        "@types/uuid": "^3.4.3",
         "@0x/typescript-typings": "^5.1.1",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^5.2.7",

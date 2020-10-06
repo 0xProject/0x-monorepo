@@ -1,5 +1,0 @@
-find ./ \
-    -name .discharge.json \
-    -exec sed -i \
-        -e "s/\(domain.*\)\",$/\1-staging\",/" \
-        {} \;

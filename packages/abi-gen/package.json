@@ -23,7 +23,7 @@
         "test_cli:build": "tsc --project test-cli/tsconfig.json",
         "test_cli:test_typescript": "mocha --require source-map-support/register --require make-promises-safe test-cli/test_typescript/lib/**/*_test.js --timeout 100000 --bail --exit",
         "test_cli:lint": "run-p test_cli:lint_solidity # test_cli:lint_python test_cli:lint_typescript # HACK: typescript and python lint disabled because formatterr fails",
-        "test_cli:lint_solidity": "solhint -c ../../contracts/.solhint.json test-cli/fixtures/contracts/*.sol",
+        "test_cli:lint_solidity": "solhint -c .solhint.json test-cli/fixtures/contracts/*.sol",
         "test_cli:lint_typescript": "prettier --check ./test-cli/output/typescript/* --config ../../.prettierrc",
         "test_cli:lint_python": "pip install -r test-cli/fixtures/python-requirements.txt && run-p test_cli:lint_python:black test_cli:lint_python:mypy test_cli:lint_python:pylint",
         "test_cli:lint_python:black": "black --line-length=79 --check ./test-cli/output/python/*",

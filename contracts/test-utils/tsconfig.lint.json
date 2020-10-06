@@ -1,7 +1,0 @@
-{
-    // This file is a workaround that issue: https://github.com/palantir/tslint/issues/4148#issuecomment-419872702
-    "extends": "./tsconfig",
-    "compilerOptions": {
-        "composite": false
-    }
-}
