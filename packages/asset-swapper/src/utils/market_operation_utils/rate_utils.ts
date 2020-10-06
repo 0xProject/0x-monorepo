@@ -2,8 +2,8 @@ import { BigNumber } from '@0x/utils';
 
 import { MarketOperation } from '../../types';
 
-import { ZERO_AMOUNT } from './constants';
-import { DexSample, ERC20BridgeSource, FeeSchedule, MultiHopFillData } from './types';
+import { SOURCE_FLAGS, ZERO_AMOUNT } from './constants';
+import { DexSample, ERC20BridgeSource, ExchangeProxyOverhead, FeeSchedule, MultiHopFillData } from './types';
 
 /**
  * Returns the fee-adjusted rate of a two-hop quote. Returns zero if the
@@ -15,12 +15,15 @@ export function getTwoHopAdjustedRate(
     targetInput: BigNumber,
     ethToOutputRate: BigNumber,
     fees: FeeSchedule = {},
+    exchangeProxyOverhead: ExchangeProxyOverhead = () => ZERO_AMOUNT,
 ): BigNumber {
     const { output, input, fillData } = twoHopQuote;
     if (input.isLessThan(targetInput) || output.isZero()) {
         return ZERO_AMOUNT;
     }
-    const penalty = ethToOutputRate.times(fees[ERC20BridgeSource.MultiHop]!(fillData));
+    const penalty = ethToOutputRate.times(
+        exchangeProxyOverhead(SOURCE_FLAGS.MultiHop).plus(fees[ERC20BridgeSource.MultiHop]!(fillData)),
+    );
     const adjustedOutput = side === MarketOperation.Sell ? output.minus(penalty) : output.plus(penalty);
     return side === MarketOperation.Sell ? adjustedOutput.div(input) : input.div(adjustedOutput);
 }
