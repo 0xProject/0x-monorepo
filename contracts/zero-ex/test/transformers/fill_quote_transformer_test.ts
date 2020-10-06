@@ -73,6 +73,8 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                 uniswapExchangeFactory: NULL_ADDRESS,
                 mStable: NULL_ADDRESS,
                 weth: NULL_ADDRESS,
+                shellBridge: NULL_ADDRESS,
+                shell: NULL_ADDRESS,
             },
         );
         transformer = await FillQuoteTransformerContract.deployFrom0xArtifactAsync(
