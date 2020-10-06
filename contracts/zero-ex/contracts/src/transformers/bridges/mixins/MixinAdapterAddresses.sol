@@ -29,6 +29,7 @@ contract MixinAdapterAddresses
         address mooniswapBridge;
         address mStableBridge;
         address oasisBridge;
+        address shellBridge;
         address uniswapBridge;
         address uniswapV2Bridge;
         // Exchanges
@@ -37,6 +38,7 @@ contract MixinAdapterAddresses
         address uniswapV2Router;
         address uniswapExchangeFactory;
         address mStable;
+        address shell;
         // Other
         address weth;
     }

@@ -137,6 +137,10 @@
             {
                 "note": "Introduced Path class, exchangeProxyOverhead parameter",
                 "pr": 2691
+            },
+            {
+                "note": "Added `Shell`",
+                "pr": 2722
             }
         ]
     },

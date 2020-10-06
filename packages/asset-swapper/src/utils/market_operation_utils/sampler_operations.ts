@@ -734,6 +734,32 @@ export class SamplerOperations {
         });
     }
 
+    public getShellSellQuotes(
+        makerToken: string,
+        takerToken: string,
+        takerFillAmounts: BigNumber[],
+    ): SourceQuoteOperation {
+        return new SamplerContractOperation({
+            source: ERC20BridgeSource.Shell,
+            contract: this._samplerContract,
+            function: this._samplerContract.sampleSellsFromShell,
+            params: [takerToken, makerToken, takerFillAmounts],
+        });
+    }
+
+    public getShellBuyQuotes(
+        makerToken: string,
+        takerToken: string,
+        makerFillAmounts: BigNumber[],
+    ): SourceQuoteOperation {
+        return new SamplerContractOperation({
+            source: ERC20BridgeSource.Shell,
+            contract: this._samplerContract,
+            function: this._samplerContract.sampleBuysFromShell,
+            params: [takerToken, makerToken, makerFillAmounts],
+        });
+    }
+
     public getMedianSellRate(
         sources: ERC20BridgeSource[],
         makerToken: string,
@@ -971,6 +997,8 @@ export class SamplerOperations {
                                 .map(poolAddress =>
                                     this.getBalancerSellQuotes(poolAddress, makerToken, takerToken, takerFillAmounts),
                                 );
+                        case ERC20BridgeSource.Shell:
+                            return this.getShellSellQuotes(makerToken, takerToken, takerFillAmounts);
                         default:
                             throw new Error(`Unsupported sell sample source: ${source}`);
                     }
@@ -1058,6 +1086,8 @@ export class SamplerOperations {
                                 .map(poolAddress =>
                                     this.getBalancerBuyQuotes(poolAddress, makerToken, takerToken, makerFillAmounts),
                                 );
+                        case ERC20BridgeSource.Shell:
+                            return this.getShellBuyQuotes(makerToken, takerToken, makerFillAmounts);
                         default:
                             throw new Error(`Unsupported buy sample source: ${source}`);
                     }

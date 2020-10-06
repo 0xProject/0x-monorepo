@@ -22,6 +22,7 @@ export const SELL_SOURCE_FILTER = new SourceFilters([
     ERC20BridgeSource.Mooniswap,
     ERC20BridgeSource.Swerve,
     ERC20BridgeSource.SushiSwap,
+    ERC20BridgeSource.Shell,
     ERC20BridgeSource.MultiHop,
 ]);
 
@@ -40,6 +41,7 @@ export const BUY_SOURCE_FILTER = new SourceFilters(
         // ERC20BridgeSource.Bancor, // FIXME: Disabled until Bancor SDK supports buy quotes
         ERC20BridgeSource.MStable,
         ERC20BridgeSource.Mooniswap,
+        ERC20BridgeSource.Shell,
         ERC20BridgeSource.Swerve,
         ERC20BridgeSource.SushiSwap,
         ERC20BridgeSource.MultiHop,

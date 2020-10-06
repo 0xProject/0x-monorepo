@@ -41,6 +41,7 @@ export enum ERC20BridgeSource {
     MStable = 'mStable',
     Mooniswap = 'Mooniswap',
     MultiHop = 'MultiHop',
+    Shell = 'Shell',
     Swerve = 'Swerve',
     SushiSwap = 'SushiSwap',
 }
