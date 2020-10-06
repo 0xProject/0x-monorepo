@@ -184,7 +184,7 @@ contract MetaTransactionsFeature is
 
     /// @dev Execute a meta-transaction via `sender`. Privileged variant.
     ///      Only callable from within.
-    /// @param sender Who is executing the meta-transaction..
+    /// @param sender Who is executing the meta-transaction.
     /// @param mtx The meta-transaction.
     /// @param signature The signature by `mtx.signer`.
     /// @return returnResult The ABI-encoded result of the underlying call.
@@ -454,7 +454,7 @@ contract MetaTransactionsFeature is
     }
 
     /// @dev Make an arbitrary internal, meta-transaction call.
-    ///      Warning: Do not let unadulerated `callData` into this function.
+    ///      Warning: Do not let unadulterated `callData` into this function.
     function _callSelf(bytes32 hash, bytes memory callData, uint256 value)
         private
         returns (bytes memory returnResult)

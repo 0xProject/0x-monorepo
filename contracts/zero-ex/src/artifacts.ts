@@ -18,6 +18,7 @@ import * as ISimpleFunctionRegistryFeature from '../generated-artifacts/ISimpleF
 import * as ITokenSpenderFeature from '../generated-artifacts/ITokenSpenderFeature.json';
 import * as ITransformERC20Feature from '../generated-artifacts/ITransformERC20Feature.json';
 import * as IZeroEx from '../generated-artifacts/IZeroEx.json';
+import * as LiquidityProviderFeature from '../generated-artifacts/LiquidityProviderFeature.json';
 import * as LogMetadataTransformer from '../generated-artifacts/LogMetadataTransformer.json';
 import * as MetaTransactionsFeature from '../generated-artifacts/MetaTransactionsFeature.json';
 import * as OwnableFeature from '../generated-artifacts/OwnableFeature.json';
@@ -52,4 +53,5 @@ export const artifacts = {
     MetaTransactionsFeature: MetaTransactionsFeature as ContractArtifact,
     LogMetadataTransformer: LogMetadataTransformer as ContractArtifact,
     BridgeAdapter: BridgeAdapter as ContractArtifact,
+    LiquidityProviderFeature: LiquidityProviderFeature as ContractArtifact,
 };

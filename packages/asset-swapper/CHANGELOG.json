@@ -133,6 +133,10 @@
             {
                 "note": "Respect max slippage in EP consumer",
                 "pr": 2712
+            },
+            {
+                "note": "Introduced Path class, exchangeProxyOverhead parameter",
+                "pr": 2691
             }
         ]
     },
