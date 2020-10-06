@@ -11,6 +11,7 @@ import { QuoteRequestor } from '../quote_requestor';
 import { generateQuoteReport, QuoteReport } from './../quote_report_generator';
 import {
     BUY_SOURCE_FILTER,
+    COMPARISON_PRICE_DECIMALS,
     DEFAULT_GET_MARKET_ORDERS_OPTS,
     FEE_QUOTE_SOURCES,
     ONE_ETHER,
@@ -608,7 +609,7 @@ export class MarketOperationUtils {
                 if (totalMakerAmount.gt(0)) {
                     const totalMakerAmountUnitAmount = Web3Wrapper.toUnitAmount(totalMakerAmount, marketSideLiquidity.makerTokenDecimals);
                     const totalTakerAmountUnitAmount = Web3Wrapper.toUnitAmount(totalTakerAmount, marketSideLiquidity.takerTokenDecimals);
-                    comparisonPrice = totalTakerAmountUnitAmount.div(totalMakerAmountUnitAmount);
+                    comparisonPrice = totalMakerAmountUnitAmount.div(totalTakerAmountUnitAmount).decimalPlaces(COMPARISON_PRICE_DECIMALS);
                 }
             }
 
