@@ -1,0 +1,5 @@
+{
+    "id": "/numberSchema",
+    "type": "string",
+    "pattern": "^\\d+(\\.\\d+)?$"
+}

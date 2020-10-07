@@ -1,0 +1,4 @@
+*.sol linguist-language=Solidity
+
+# Automatically collapse generated files in GitHub.
+*.svg linguist-generated=true

@@ -1,0 +1,69 @@
+{
+    "name": "@0x/base-contract",
+    "version": "6.2.3",
+    "engines": {
+        "node": ">=6.12"
+    },
+    "description": "0x Base TS contract",
+    "main": "lib/src/index.js",
+    "types": "lib/src/index.d.ts",
+    "scripts": {
+        "build": "tsc -b",
+        "build:ci": "yarn build",
+        "clean": "shx rm -rf lib",
+        "test": "yarn run_mocha",
+        "rebuild_and_test": "run-s clean build test",
+        "test:circleci": "yarn test:coverage",
+        "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js --bail --exit",
+        "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
+        "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
+        "lint": "tslint --format stylish --project .",
+        "fix": "tslint --format stylish --fix --project ."
+    },
+    "license": "Apache-2.0",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/0xProject/0x-monorepo.git"
+    },
+    "bugs": {
+        "url": "https://github.com/0xProject/0x-monorepo/issues"
+    },
+    "homepage": "https://github.com/0xProject/0x-monorepo/packages/base-contract/README.md",
+    "devDependencies": {
+        "@0x/tslint-config": "^4.1.0",
+        "@0x/types": "^3.2.0",
+        "@0x/typescript-typings": "^5.1.1",
+        "@types/lodash": "4.14.104",
+        "@types/mocha": "^5.2.7",
+        "@types/uuid": "^3.4.3",
+        "chai": "^4.0.1",
+        "ethereum-types": "^3.2.0",
+        "make-promises-safe": "^1.1.0",
+        "mocha": "^6.2.0",
+        "npm-run-all": "^4.1.2",
+        "shx": "^0.2.2",
+        "tslint": "5.11.0",
+        "typescript": "3.0.1"
+    },
+    "dependencies": {
+        "@0x/assert": "^3.0.9",
+        "@0x/json-schemas": "^5.1.0",
+        "@0x/utils": "^5.5.1",
+        "@0x/web3-wrapper": "^7.2.0",
+        "@types/node": "12.12.54",
+        "ethereumjs-account": "^3.0.0",
+        "ethereumjs-blockstream": "^7.0.0",
+        "ethereumjs-util": "^5.1.1",
+        "ethereumjs-vm": "^4.0.0",
+        "ethers": "~4.0.4",
+        "js-sha3": "^0.7.0",
+        "uuid": "^3.3.2"
+    },
+    "resolutions": {
+        "merkle-patricia-tree": "^2.3.2"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "gitHead": "4f91bfd907996b2f4dd383778b50c479c2602b56"
+}

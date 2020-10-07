@@ -1,0 +1,41 @@
+{
+    "name": "@0x/types",
+    "version": "3.2.0",
+    "engines": {
+        "node": ">=6.12"
+    },
+    "description": "0x types",
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
+    "scripts": {
+        "build": "tsc -b",
+        "build:ci": "yarn build",
+        "clean": "shx rm -rf lib",
+        "lint": "tslint --format stylish --project ."
+    },
+    "license": "Apache-2.0",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/0xProject/0x-monorepo.git"
+    },
+    "bugs": {
+        "url": "https://github.com/0xProject/0x-monorepo/issues"
+    },
+    "homepage": "https://github.com/0xProject/0x-monorepo/packages/types/README.md",
+    "devDependencies": {
+        "@0x/tslint-config": "^4.1.0",
+        "make-promises-safe": "^1.1.0",
+        "shx": "^0.2.2",
+        "tslint": "5.11.0",
+        "typescript": "3.0.1"
+    },
+    "dependencies": {
+        "@types/node": "12.12.54",
+        "bignumber.js": "~9.0.0",
+        "ethereum-types": "^3.2.0"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "gitHead": "4f91bfd907996b2f4dd383778b50c479c2602b56"
+}

@@ -1,0 +1,789 @@
+[
+    {
+        "version": "7.2.0",
+        "changes": [
+            {
+                "note": "Add geth eth_call support",
+                "pr": 2620
+            },
+            {
+                "note": "Remove duplicate overrides data from the eth_call rpc call",
+                "pr": 2629
+            }
+        ],
+        "timestamp": 1594788383
+    },
+    {
+        "version": "7.1.0",
+        "changes": [
+            {
+                "note": "Add `getAccountNonce()` to `Web3Wrapper`",
+                "pr": 2545
+            },
+            {
+                "note": "Update ganache-core",
+                "pr": 2545
+            }
+        ],
+        "timestamp": 1592969527
+    },
+    {
+        "timestamp": 1582623685,
+        "version": "7.0.7",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1581204851,
+        "version": "7.0.6",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1580988106,
+        "version": "7.0.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1579682890,
+        "version": "7.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1578272714,
+        "version": "7.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1576540892,
+        "version": "7.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1575931811,
+        "version": "7.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "7.0.0",
+        "changes": [
+            {
+                "note": "Let `toBaseUnitAmount()` accept a `number`",
+                "pr": 1819
+            }
+        ],
+        "timestamp": 1575296764
+    },
+    {
+        "version": "6.1.0-beta.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1575290197
+    },
+    {
+        "version": "6.1.0-beta.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1574030254
+    },
+    {
+        "version": "6.1.0-beta.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1573159180
+    },
+    {
+        "version": "6.1.0-beta.0",
+        "changes": [
+            {
+                "note": "Let `toBaseUnitAmount()` accept a `number`",
+                "pr": 1819
+            }
+        ],
+        "timestamp": 1570135330
+    },
+    {
+        "timestamp": 1568744790,
+        "version": "6.0.13",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1567521715,
+        "version": "6.0.12",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1566446343,
+        "version": "6.0.11",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1565296576,
+        "version": "6.0.10",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1564604963,
+        "version": "6.0.9",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "6.0.8",
+        "changes": [
+            {
+                "note": "re-export new ethereum-types types, TupleDataItem",
+                "pr": 1919
+            }
+        ],
+        "timestamp": 1563957393
+    },
+    {
+        "timestamp": 1563006338,
+        "version": "6.0.7",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1557507213,
+        "version": "6.0.6",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "6.0.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1554997931
+    },
+    {
+        "timestamp": 1553183790,
+        "version": "6.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "6.0.3",
+        "changes": [
+            {
+                "note": "Update ganache-core to 2.5.3",
+                "pr": 1707
+            }
+        ],
+        "timestamp": 1553091633
+    },
+    {
+        "timestamp": 1551479279,
+        "version": "6.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1551220833,
+        "version": "6.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "6.0.0",
+        "changes": [
+            {
+                "note": "Add support for EIP1193 providers & Web3.js providers >= 1.0-beta.38",
+                "pr": 1627
+            },
+            {
+                "note": "Update provider params to type SupportedProvider which outlines all supported providers",
+                "pr": 1627
+            }
+        ],
+        "timestamp": 1551130135
+    },
+    {
+        "version": "5.0.0",
+        "changes": [
+            {
+                "note": "Export `DecodedCalldata` from @0x/utils",
+                "pr": 1569
+            }
+        ],
+        "timestamp": 1549733923
+    },
+    {
+        "version": "4.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1549547375
+    },
+    {
+        "timestamp": 1549452781,
+        "version": "4.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "4.0.0",
+        "changes": [
+            {
+                "note": "Upgrade the bignumber.js to v8.0.2",
+                "pr": 1517
+            },
+            {
+                "note": "Update ganache-core to v2.3.3",
+                "pr": 1518
+            }
+        ],
+        "timestamp": 1549373905
+    },
+    {
+        "timestamp": 1547561734,
+        "version": "3.2.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1547225310,
+        "version": "3.2.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1547040760,
+        "version": "3.2.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "3.2.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1544739608
+    },
+    {
+        "version": "3.2.0",
+        "changes": [
+            {
+                "note": "Return `value` and `gasPrice` as BigNumbers to avoid loss of precision errors",
+                "pr": 1402
+            }
+        ],
+        "timestamp": 1544570656
+    },
+    {
+        "version": "3.1.6",
+        "changes": [
+            {
+                "note": "Unmarshall mined transaction receipts",
+                "pr": 1308
+            }
+        ],
+        "timestamp": 1543401373
+    },
+    {
+        "version": "3.1.5",
+        "changes": [
+            {
+                "note": "Add unmarshalling of transaction receipts",
+                "pr": 1291
+            },
+            {
+                "note": "Return `undefined` instead of `null` if transaction receipt not found",
+                "pr": 1291
+            }
+        ],
+        "timestamp": 1542821676
+    },
+    {
+        "timestamp": 1542208198,
+        "version": "3.1.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1542134075,
+        "version": "3.1.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1542028948,
+        "version": "3.1.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "3.1.1",
+        "changes": [
+            {
+                "note": "Fix bug in `getTransactionByHashAsync` which was causing the return value to have the wrong type (raw fields instead of unmarshalled fields).",
+                "pr": 1177
+            }
+        ],
+        "timestamp": 1541740904
+    },
+    {
+        "version": "3.1.0",
+        "changes": [
+            {
+                "note": "Add `signTypedData` to perform EIP712 `eth_signTypedData`.",
+                "pr": 1102
+            },
+            {
+                "note": "Web3Wrapper now throws when an RPC request contains an error field in the response. Previously errors could be swallowed and undefined returned.",
+                "pr": 1102
+            }
+        ],
+        "timestamp": 1539871071
+    },
+    {
+        "version": "3.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1538693146
+    },
+    {
+        "timestamp": 1538157789,
+        "version": "3.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1537907159,
+        "version": "3.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note": "Rename `getBlockAsync` to `getBlockIfExistsAsync` and rather then throw if the requested block wasn't found, return undefined.",
+                "pr": 1082
+            },
+            {
+                "note": "Expose `sendRawPayloadAsync` so one can easily extend `Web3Wrapper` with their own custom JSON RPC calls",
+                "pr": 1080
+            }
+        ],
+        "timestamp": 1537875740
+    },
+    {
+        "version": "2.0.3",
+        "changes": [
+            {
+                "note": "Fixes issue #1076 where Parity now returns a placeholder transactionReceipt before the transaction is mined.",
+                "pr": 1079
+            }
+        ],
+        "timestamp": 1537541580
+    },
+    {
+        "timestamp": 1536142250,
+        "version": "2.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1535377027,
+        "version": "2.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "2.0.0",
+        "changes": [
+            {
+                "note": "Export types:  `BlockParam`, `TxData`, `Provider`, `TransactionReceipt`, `Transaction`, `TraceParams`, `TransactionTrace``, BlockWithoutTransactionDat`a, `LogEntry`, `FilterObject`, `CallData`, `TransactionReceiptWithDecodedLogs`, `BlockWithTransactionData``, LogTopi`c, `JSONRPCRequestPayload`, `TransactionReceiptStatus`, `DecodedLogArgs`, `StructLog`, `JSONRPCErrorCallback``, BlockParamLitera`l, `ContractEventArg`, `DecodedLogEntry`, `LogEntryEvent`, `OpCode`, `TxDataPayable`, `JSONRPCResponsePayload``, RawLogEntr`y, `DecodedLogEntryEvent`, `LogWithDecodedArgs`, `AbiDefinition`, `RawLog`, `FunctionAbi`, `EventAbi`, `EventParameter``, MethodAb`i, `ConstructorAbi`, `FallbackAbi`, `DataItem`, `ConstructorStateMutability` and `StateMutability`",
+                "pr": 924
+            },
+            {
+                "note": "Stop exporting types: `CallTxDataBaseRPC` and `AbstractBlockRPC`",
+                "pr": 924
+            },
+            {
+                "note": "Export `AbiDecoder` class",
+                "pr": 924
+            }
+        ],
+        "timestamp": 1535133899
+    },
+    {
+        "version": "1.2.0",
+        "changes": [
+            {
+                "note": "Export marshaller to convert between RPC and user-space data formats",
+                "pr": 938
+            },
+            {
+                "note": "Export RPC types",
+                "pr": 938
+            }
+        ],
+        "timestamp": 1534210131
+    },
+    {
+        "timestamp": 1532619515,
+        "version": "1.1.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532614997,
+        "version": "1.1.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "1.1.0",
+        "changes": [
+            {
+                "note": "Add `getTransactionByHashAsync` method",
+                "pr": 847
+            }
+        ],
+        "timestamp": 1532605697
+    },
+    {
+        "timestamp": 1532357734,
+        "version": "1.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532043000,
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Stop exporting `marshaller` utility file.",
+                "pr": 902
+            },
+            {
+                "note": "Export `marshaller` utility file.",
+                "pr": 829
+            },
+            {
+                "note": "Add `getNodeTypeAsync` method",
+                "pr": 812
+            },
+            {
+                "note": "Stop exporting uniqueVersionIds object",
+                "pr": 897
+            }
+        ]
+    },
+    {
+        "timestamp": 1531919263,
+        "version": "0.7.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1531149657,
+        "version": "0.7.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1529397769,
+        "version": "0.7.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1528070400,
+        "version": "0.7.0",
+        "changes": [
+            {
+                "note": "Add `web3Wrapper.getContractCodeAsync`",
+                "pr": 675
+            },
+            {
+                "note": "Add `web3Wrapper.getTransactionTraceAsync`",
+                "pr": 675
+            },
+            {
+                "note": "Add `web3Wrapper.getBlockWithTransactionDataAsync`",
+                "pr": 675
+            },
+            {
+                "note": "Add exported uniqueVersionIds object",
+                "pr": 622
+            },
+            {
+                "note": "Update increaseTimeAsync to work with Geth",
+                "pr": 622
+            },
+            {
+                "note": "Make callAsync throw if raw call result is 0x (null)",
+                "pr": 622
+            },
+            {
+                "note": "Add new setHeadAsync method",
+                "pr": 622
+            },
+            {
+                "note": "Improve performance of awaitTransactionMinedAsync by immediately checking if the transaction was already mined instead of waiting for the first interval.",
+                "pr": 688
+            }
+        ]
+    },
+    {
+        "timestamp": 1527009133,
+        "version": "0.6.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1525477860,
+        "version": "0.6.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1525428773,
+        "version": "0.6.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1524044013,
+        "version": "0.6.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "0.6.0",
+        "changes": [
+            {
+                "note": "Make `isAddress` and `toWei` static",
+                "pr": 501
+            },
+            {
+                "note": "Add static methods `toUnitAmount` and `toBaseUnitAmount`",
+                "pr": 501
+            }
+        ],
+        "timestamp": 1523462196
+    },
+    {
+        "version": "0.5.0",
+        "changes": [
+            {
+                "note": "Add `web3Wrapper.awaitTransactionMinedAsync`",
+                "pr": 485
+            },
+            {
+                "note": "Add a public field `abiDecoder: AbiDecoder` which allows you to add your ABIs that are later used to decode logs",
+                "pr": 485
+            },
+            {
+                "note": "Export enum `Web3WrapperErrors` with a single value so far: `TransactionMiningTimeout`",
+                "pr": 485
+            }
+        ],
+        "timestamp": 1522673609
+    },
+    {
+        "version": "0.4.0",
+        "changes": [
+            {
+                "note": "Rename `signTransactionAsync` to `signMessageAsync` for clarity",
+                "pr": 465
+            }
+        ],
+        "timestamp": 1522658513
+    },
+    {
+        "version": "0.3.0",
+        "changes": [
+            {
+                "note": "Add `web3Wrapper.takeSnapshotAsync`, `web3Wrapper.revertSnapshotAsync`, `web3Wrapper.mineBlockAsync`, `web3Wrapper.increaseTimeAsync`",
+                "pr": 426
+            },
+            {
+                "note": "Add `web3Wrapper.isZeroExWeb3Wrapper` for runtime instanceOf checks",
+                "pr": 426
+            },
+            {
+                "note": "Add a `getProvider` method",
+                "pr": 444
+            }
+        ],
+        "timestamp": 1521298800
+    },
+    {
+        "version": "0.2.0",
+        "changes": [
+            {
+                "note": "Ensure all returned user addresses are lowercase",
+                "pr": 373
+            },
+            {
+                "note": "Add `web3Wrapper.callAsync`",
+                "pr": 413
+            },
+            {
+                "note": "Make `web3Wrapper.estimateGas` accept whole `txData` instead of `data`",
+                "pr": 413
+            },
+            {
+                "note": "Remove `web3Wrapper.getContractInstance`",
+                "pr": 413
+            }
+        ],
+        "timestamp": 1520089200
+    },
+    {
+        "version": "0.1.12",
+        "changes": [
+            {
+                "note": "Fix publishing issue where .npmignore was not properly excluding undesired content",
+                "pr": 389
+            }
+        ],
+        "timestamp": 1518102000
+    }
+]

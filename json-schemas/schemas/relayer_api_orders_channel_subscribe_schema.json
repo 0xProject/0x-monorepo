@@ -1,0 +1,11 @@
+{
+    "id": "/relayerApiOrdersChannelSubscribeSchema",
+    "type": "object",
+    "properties": {
+        "type": { "enum": ["subscribe"] },
+        "channel": { "enum": ["orders"] },
+        "requestId": { "type": "string" },
+        "payload": { "$ref": "/relayerApiOrdersChannelSubscribePayloadSchema" }
+    },
+    "required": ["type", "channel", "requestId"]
+}

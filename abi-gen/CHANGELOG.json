@@ -1,0 +1,928 @@
+[
+    {
+        "version": "5.4.0",
+        "changes": [
+            {
+                "note": "Allow overriding of `data` with contract calls and transactions",
+                "pr": 2626
+            }
+        ]
+    },
+    {
+        "timestamp": 1594788383,
+        "version": "5.3.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "5.3.0",
+        "changes": [
+            {
+                "note": "Allow identifiers with leading underscores in python wrappers",
+                "pr": 2591
+            }
+        ],
+        "timestamp": 1592969527
+    },
+    {
+        "version": "5.2.2",
+        "changes": [
+            {
+                "note": "Include `bin` files"
+            }
+        ],
+        "timestamp": 1582677073
+    },
+    {
+        "timestamp": 1582623685,
+        "version": "5.2.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "5.2.0",
+        "changes": [
+            {
+                "note": "Support deploying contracts with unliked libraries through `deployWithLibrariesFrom0xArtifactAsync()`",
+                "pr": 2463
+            },
+            {
+                "note": "Update reference outputs",
+                "pr": 2466
+            }
+        ],
+        "timestamp": 1581204851
+    },
+    {
+        "timestamp": 1580988106,
+        "version": "5.1.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1580811564,
+        "version": "5.1.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "5.1.0",
+        "changes": [
+            {
+                "note": "Catch empty call reverts on live networks.",
+                "pr": 2433
+            },
+            {
+                "note": "Regenerate test outputs.",
+                "pr": 2433
+            }
+        ],
+        "timestamp": 1579682890
+    },
+    {
+        "timestamp": 1578272714,
+        "version": "5.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1576540892,
+        "version": "5.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1575931811,
+        "version": "5.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "5.0.0",
+        "changes": [
+            {
+                "note": "Refactored TS wrapper templates to result in a more succint interface. See https://github.com/0xProject/0x-monorepo/pull/2325 for details.",
+                "pr": 2284
+            },
+            {
+                "note": "Python: Corrected return types and values for call() interface to generated method wrappers.  (Fixes #2298)",
+                "pr": 2345
+            },
+            {
+                "note": "Python: Stopped generating send_transaction() interface for constant (view/pure) methods",
+                "pr": 2345
+            },
+            {
+                "note": "Python: Added a build_transaction() interface to contract method classes",
+                "pr": 2345
+            },
+            {
+                "note": "Python: Removed `validator` argument to contract method classes for methods that don't have any inputs",
+                "pr": 2345
+            },
+            {
+                "note": "Python: Changed the names of generated tuples to use the `internalType` field in the ABI, if it's present, resulting in human readable struct names rather than hashes of component field names.",
+                "pr": 2345
+            },
+            {
+                "note": "Moved shared logic into `BaseContract` helpers to reduce size.",
+                "pr": 2343
+            },
+            {
+                "note": "Re-enable gas estimation when `gas` is not provided.",
+                "pr": 2343
+            },
+            {
+                "note": "In Python wrappers, accept string arguments to bytes parameters",
+                "pr": 2284
+            },
+            {
+                "note": "In Python wrappers, support module-local, Web3.py-compatible middleware",
+                "pr": 2284
+            },
+            {
+                "note": "In Python wrappers, allow contracts to be instantiated with EITHER a Web3.py BaseProvider OR a Web3 client object",
+                "pr": 2284
+            },
+            {
+                "note": "In Python wrappers, fix bug with casting some bytes objects using bytes.fromhex()",
+                "pr": 2284
+            },
+            {
+                "note": "Add `getSelector` method to all functions",
+                "pr": 2224
+            },
+            {
+                "note": "Command-line argument network-id has changed to chain-id",
+                "pr": 2313
+            },
+            {
+                "note": "Fix templates not being included in published tarball",
+                "pr": 2315
+            }
+        ],
+        "timestamp": 1575296764
+    },
+    {
+        "version": "4.4.0-beta.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1575290197
+    },
+    {
+        "version": "4.4.0-beta.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1574238768
+    },
+    {
+        "version": "4.4.0-beta.2",
+        "changes": [
+            {
+                "note": "Refactored TS wrapper templates to result in a more succint interface. See https://github.com/0xProject/0x-monorepo/pull/2325 for details.",
+                "pr": 2284
+            },
+            {
+                "note": "Python: Corrected return types and values for call() interface to generated method wrappers.  (Fixes #2298)",
+                "pr": 2345
+            },
+            {
+                "note": "Python: Stopped generating send_transaction() interface for constant (view/pure) methods",
+                "pr": 2345
+            },
+            {
+                "note": "Python: Added a build_transaction() interface to contract method classes",
+                "pr": 2345
+            },
+            {
+                "note": "Python: Removed `validator` argument to contract method classes for methods that don't have any inputs",
+                "pr": 2345
+            },
+            {
+                "note": "Python: Changed the names of generated tuples to use the `internalType` field in the ABI, if it's present, resulting in human readable struct names rather than hashes of component field names.",
+                "pr": 2345
+            },
+            {
+                "note": "Moved shared logic into `BaseContract` helpers to reduce size.",
+                "pr": 2343
+            },
+            {
+                "note": "Re-enable gas estimation when `gas` is not provided.",
+                "pr": 2343
+            }
+        ],
+        "timestamp": 1574030254
+    },
+    {
+        "version": "4.4.0-beta.1",
+        "changes": [
+            {
+                "note": "In Python wrappers, accept string arguments to bytes parameters",
+                "pr": 2284
+            },
+            {
+                "note": "In Python wrappers, support module-local, Web3.py-compatible middleware",
+                "pr": 2284
+            },
+            {
+                "note": "In Python wrappers, allow contracts to be instantiated with EITHER a Web3.py BaseProvider OR a Web3 client object",
+                "pr": 2284
+            },
+            {
+                "note": "In Python wrappers, fix bug with casting some bytes objects using bytes.fromhex()",
+                "pr": 2284
+            },
+            {
+                "note": "Add `getSelector` method to all functions",
+                "pr": 2224
+            },
+            {
+                "note": "Command-line argument network-id has changed to chain-id",
+                "pr": 2313
+            },
+            {
+                "note": "Fix templates not being included in published tarball",
+                "pr": 2315
+            }
+        ],
+        "timestamp": 1573159180
+    },
+    {
+        "version": "4.3.0-beta.0",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1570135330
+    },
+    {
+        "version": "4.2.1",
+        "changes": [
+            {
+                "note": "Redirect to `evmExecAsync` to use local EVM instead of eth_call for pure functions",
+                "pr": 2108
+            }
+        ],
+        "timestamp": 1568744790
+    },
+    {
+        "version": "4.2.0",
+        "changes": [
+            {
+                "note": "Provide a default set of templates for code generation, used when --template and --partials are left unspecified",
+                "pr": 2082
+            }
+        ],
+        "timestamp": 1567521715
+    },
+    {
+        "timestamp": 1566446343,
+        "version": "4.1.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "4.1.0",
+        "changes": [
+            {
+                "note": "Updated expected typescript output for cli tests to include `getABIDecodedTransactionData` and `getABIDecodedReturnData`",
+                "pr": 2018
+            },
+            {
+                "note": "Added tests for`getABIDecodedTransactionData` and `getABIDecodedReturnData` in contract wrappers.",
+                "pr": 2018
+            }
+        ],
+        "timestamp": 1565296576
+    },
+    {
+        "version": "4.0.0",
+        "changes": [
+            {
+                "note": "whitespace changes to generated Python code",
+                "pr": 1996
+            },
+            {
+                "note": "move Python Validator base class from generated code to common package",
+                "pr": 1996
+            },
+            {
+                "note": "Changed fundamental thing-to-be-wrapped from the contract to the contract method.  That is, now there is a base contract method wrapper class rather than a base contract wrapper class, and individual contract methods are represented by named classes inheriting from that base, and the different operations on a method are now represented by a nested-object dot notation, ie, WrappedContract.ContractMethod.call() and WrappedContract.ContractMethod.send_transaction().",
+                "pr": 1996
+            },
+            {
+                "note": "added gas estimation functionality to contract methods",
+                "pr": 1996
+            },
+            {
+                "note": "Python: fixed bug with methods returning multiple values",
+                "pr": 1996
+            },
+            {
+                "note": "Python: fixed bug with methods returning arrays of structs",
+                "pr": 1996
+            },
+            {
+                "note": "Python: fixed bug with methods that return a struct that contains another struct where the inner struct was not otherwise directly referenced by any method",
+                "pr": 1996
+            },
+            {
+                "note": "Python: fixed bug with tuples sometimes being used before they were declared",
+                "pr": 1996
+            },
+            {
+                "note": "Python: fixed bug with supporting overloaded methods",
+                "pr": 1996
+            }
+        ]
+    },
+    {
+        "version": "3.1.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1564604963
+    },
+    {
+        "version": "3.1.1",
+        "changes": [
+            {
+                "note": "Python method parameters are now in snake case",
+                "pr": 1919
+            },
+            {
+                "note": "Python wrappers now support tuples in method parameters",
+                "pr": 1919
+            },
+            {
+                "note": "document Python method's bytes params as requiring UTF-8",
+                "pr": 1919
+            },
+            {
+                "note": "generate Python output into a contract-named folder, not a file (eg exchange/__init__.py rather than exchange.py) leaving space for user-defined additions to the same module, such as for custom types, as used by the Exchange wrapper's manually-written type aliases in the contract_wrappers.exchange.types Python module",
+                "pr": 1919
+            },
+            {
+                "note": "support for customizable parameter validation for Python wrappers",
+                "pr": 1919
+            },
+            {
+                "note": "wrap Python docstrings better, for pydocstyle compliance",
+                "pr": 1919
+            },
+            {
+                "note": "lots of fixes to satisfy linters of generated Python code",
+                "pr": 1919
+            }
+        ],
+        "timestamp": 1563957393
+    },
+    {
+        "timestamp": 1563047529,
+        "version": "2.1.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "2.1.0",
+        "changes": [
+            {
+                "note": "Initial support for Python",
+                "pr": 1878
+            }
+        ],
+        "timestamp": 1563006338
+    },
+    {
+        "version": "2.0.11",
+        "changes": [
+            {
+                "note": "Watch template files for changes",
+                "pr": 1875
+            }
+        ]
+    },
+    {
+        "timestamp": 1557507213,
+        "version": "2.0.10",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "2.0.9",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1554997931
+    },
+    {
+        "timestamp": 1553183790,
+        "version": "2.0.8",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1553091633,
+        "version": "2.0.7",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1551479279,
+        "version": "2.0.6",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1551220833,
+        "version": "2.0.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1551130135,
+        "version": "2.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1549733923,
+        "version": "2.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "2.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1549547375
+    },
+    {
+        "timestamp": 1549452781,
+        "version": "2.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "2.0.0",
+        "changes": [
+            {
+                "note": "Upgrade the bignumber.js to v8.0.2",
+                "pr": 1517
+            }
+        ],
+        "timestamp": 1549373905
+    },
+    {
+        "timestamp": 1547561734,
+        "version": "1.0.22",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1547225310,
+        "version": "1.0.21",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1547040760,
+        "version": "1.0.20",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "1.0.19",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1544739608
+    },
+    {
+        "version": "1.0.18",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1544570656
+    },
+    {
+        "timestamp": 1542821676,
+        "version": "1.0.17",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1542208198,
+        "version": "1.0.16",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "1.0.15",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1541740904
+    },
+    {
+        "timestamp": 1539871071,
+        "version": "1.0.14",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "1.0.13",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1538693146
+    },
+    {
+        "timestamp": 1538157789,
+        "version": "1.0.12",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1537907159,
+        "version": "1.0.11",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1537875740,
+        "version": "1.0.10",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1537541580,
+        "version": "1.0.9",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1536142250,
+        "version": "1.0.8",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1535377027,
+        "version": "1.0.7",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1535133899,
+        "version": "1.0.6",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1534210131,
+        "version": "1.0.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532619515,
+        "version": "1.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532614997,
+        "version": "1.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532605697,
+        "version": "1.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "1.0.1",
+        "changes": [
+            {
+                "note": "Fix the abi-gen entry point in package.json",
+                "pr": 901
+            }
+        ],
+        "timestamp": 1532357734
+    },
+    {
+        "timestamp": 1532043000,
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Convert e_r_c to erc in generated file names",
+                "pr": 822
+            },
+            {
+                "note": "Remove the output directory before writing to it",
+                "pr": 822
+            },
+            {
+                "note": "skip generation of wrappers that are already up to date",
+                "pr": 788
+            }
+        ]
+    },
+    {
+        "timestamp": 1531919263,
+        "version": "0.3.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1531149657,
+        "version": "0.3.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1529397769,
+        "version": "0.3.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "0.3.1",
+        "changes": [
+            {
+                "note": "Incorrect publish that was unpublished"
+            }
+        ],
+        "timestamp": 1527810075
+    },
+    {
+        "version": "0.3.0",
+        "changes": [
+            {
+                "note": "Properly export the executable binary",
+                "pr": 588
+            }
+        ],
+        "timestamp": 1527008270
+    },
+    {
+        "timestamp": 1525477860,
+        "version": "0.2.13",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1525428773,
+        "version": "0.2.12",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1524044013,
+        "version": "0.2.11",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1523462196,
+        "version": "0.2.10",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1522673609,
+        "version": "0.2.9",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1522658513,
+        "version": "0.2.8",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "0.2.5",
+        "changes": [
+            {
+                "note": "Consolidate all `console.log` calls into `logUtils` in the `@0xproject/utils` package",
+                "pr": 452
+            }
+        ],
+        "timestamp": 1521298800
+    },
+    {
+        "version": "0.2.4",
+        "changes": [
+            {
+                "note": "Add a `backend` parameter that allows you to specify the Ethereum library you use in your templates (`web3` or `ethers`). Ethers auto-converts small ints to numbers whereas Web3 doesn't. Defaults to `web3`",
+                "pr": 413
+            },
+            {
+                "note": "Add support for [tuple types](https://solidity.readthedocs.io/en/develop/abi-spec.html#handling-tuple-types)",
+                "pr": 413
+            },
+            {
+                "note": "Add `hasReturnValue` to context data",
+                "pr": 413
+            }
+        ],
+        "timestamp": 1520089200
+    },
+    {
+        "version": "0.2.1",
+        "changes": [
+            {
+                "note": "Fix publishing issue where .npmignore was not properly excluding undesired content",
+                "pr": 389
+            }
+        ],
+        "timestamp": 1518102000
+    },
+    {
+        "version": "0.2.0",
+        "changes": [
+            {
+                "note": "Added CLI options for explicit specifying location of partials and main template",
+                "pr": 346
+            },
+            {
+                "note": "Added CLI option to specify networkId, adding support for the JSON artifact format found in @0xproject/contracts",
+                "pr": 388
+            }
+        ],
+        "timestamp": 1517929200
+    },
+    {
+        "version": "0.1.0",
+        "changes": [
+            {
+                "note": "Fixed array typings with union types",
+                "pr": 295
+            },
+            {
+                "note": "Add event ABIs to context data passed to templates",
+                "pr": 302
+            },
+            {
+                "note": "Add constructor ABIs to context data passed to templates",
+                "pr": 304
+            }
+        ],
+        "timestamp": 1515596400
+    }
+]

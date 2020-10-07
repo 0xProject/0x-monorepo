@@ -1,0 +1,5 @@
+{
+    "id": "/jsNumberSchema",
+    "type": "number",
+    "minimum": 0
+}

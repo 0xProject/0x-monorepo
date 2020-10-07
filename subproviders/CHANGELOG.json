@@ -1,0 +1,800 @@
+[
+    {
+        "timestamp": 1594788383,
+        "version": "6.1.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "6.1.0",
+        "changes": [
+            {
+                "note": "Update ganache-core",
+                "pr": 2545
+            }
+        ],
+        "timestamp": 1592969527
+    },
+    {
+        "timestamp": 1582623685,
+        "version": "6.0.8",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1581204851,
+        "version": "6.0.7",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1580988106,
+        "version": "6.0.6",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1580811564,
+        "version": "6.0.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1579682890,
+        "version": "6.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1578272714,
+        "version": "6.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1576540892,
+        "version": "6.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1575931811,
+        "version": "6.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "6.0.0",
+        "changes": [
+            {
+                "note": "Adds DebugSubprovider",
+                "pr": 2329
+            }
+        ],
+        "timestamp": 1575296764
+    },
+    {
+        "version": "5.1.0-beta.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1575290197
+    },
+    {
+        "version": "5.1.0-beta.2",
+        "changes": [
+            {
+                "note": "Adds DebugSubprovider",
+                "pr": 2329
+            }
+        ],
+        "timestamp": 1574030254
+    },
+    {
+        "version": "5.1.0-beta.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1573159180
+    },
+    {
+        "version": "5.1.0-beta.0",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1570135330
+    },
+    {
+        "timestamp": 1568744790,
+        "version": "5.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1567521715,
+        "version": "5.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "5.0.2",
+        "changes": [
+            {
+                "note": "Updated `MetamaskSubprovider` to use `personal_sign` instead of `eth_sign` to support proxied hardware wallets.",
+                "pr": 2054
+            }
+        ],
+        "timestamp": 1566446343
+    },
+    {
+        "timestamp": 1565296576,
+        "version": "5.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "5.0.0",
+        "changes": [
+            {
+                "note": "Remove eth-lightwallet subprovider"
+            }
+        ],
+        "timestamp": 1564604963
+    },
+    {
+        "version": "4.1.2",
+        "changes": [
+            {
+                "note": "Fix bug in Private Key subprovider causing checksummed tx.origin addresses to be rejected.",
+                "pr": 1962
+            }
+        ],
+        "timestamp": 1563957393
+    },
+    {
+        "version": "4.1.1",
+        "changes": [
+            {
+                "note": "Fix bug in Trezor subprovider causing Trezor response to not be hex encoded",
+                "pr": 1867
+            }
+        ],
+        "timestamp": 1563006338
+    },
+    {
+        "version": "4.1.0",
+        "changes": [
+            {
+                "note": "Improve performance of Trezor subprovider via caching",
+                "pr": 1830
+            },
+            {
+                "note": "Add Trezor handware wallet subprovider",
+                "pr": 1431
+            }
+        ],
+        "timestamp": 1558712885
+    },
+    {
+        "timestamp": 1557507213,
+        "version": "4.0.6",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "4.0.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1554997931
+    },
+    {
+        "timestamp": 1553183790,
+        "version": "4.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "4.0.3",
+        "changes": [
+            {
+                "note": "Update ganache-core to 2.5.3",
+                "pr": 1707
+            }
+        ],
+        "timestamp": 1553091633
+    },
+    {
+        "timestamp": 1551479279,
+        "version": "4.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1551220833,
+        "version": "4.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "4.0.0",
+        "changes": [
+            {
+                "note": "Add support for EIP1193 providers & Web3.js providers >= 1.0-beta.38",
+                "pr": 1627
+            },
+            {
+                "note": "Update provider params to type SupportedProvider which outlines all supported providers",
+                "pr": 1627
+            }
+        ],
+        "timestamp": 1551130135
+    },
+    {
+        "timestamp": 1549733923,
+        "version": "3.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "3.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1549547375
+    },
+    {
+        "timestamp": 1549452781,
+        "version": "3.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note": "Upgrade the bignumber.js to v8.0.2",
+                "pr": 1517
+            },
+            {
+                "note": "Update ganache-core to v2.3.3",
+                "pr": 1518
+            }
+        ],
+        "timestamp": 1549373905
+    },
+    {
+        "timestamp": 1547561734,
+        "version": "2.1.11",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1547225310,
+        "version": "2.1.10",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1547040760,
+        "version": "2.1.9",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "2.1.8",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1544739608
+    },
+    {
+        "version": "2.1.7",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1544570656
+    },
+    {
+        "timestamp": 1543401373,
+        "version": "2.1.6",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1542821676,
+        "version": "2.1.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1542208198,
+        "version": "2.1.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1542134075,
+        "version": "2.1.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1542028948,
+        "version": "2.1.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "2.1.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1541740904
+    },
+    {
+        "version": "2.1.0",
+        "changes": [
+            {
+                "note": "Add `MetamaskSubprovider` to handle inconsistent JSON RPC behaviour",
+                "pr": 1102
+            },
+            {
+                "note": "Add support for `eth_signTypedData` in wallets Mnemonic, Private and EthLightWallet",
+                "pr": 1102
+            },
+            {
+                "note": "Make web3-provider-engine types a 'dependency' so it's available to users of the library",
+                "pr": 1105
+            }
+        ],
+        "timestamp": 1539871071
+    },
+    {
+        "version": "2.0.7",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1538693146
+    },
+    {
+        "timestamp": 1538157789,
+        "version": "2.0.6",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1537907159,
+        "version": "2.0.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1537875740,
+        "version": "2.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1537541580,
+        "version": "2.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1536142250,
+        "version": "2.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1535377027,
+        "version": "2.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "2.0.0",
+        "changes": [
+            {
+                "note": "Export types: `PartialTxParams`, `JSONRPCRequestPayloadWithMethod`, `ECSignatureString`, `AccountFetchingConfigs`, `LedgerEthereumClientFactoryAsync`, `OnNextCompleted`, `MnemonicWalletSubproviderConfigs`, LedgerGetAddressResult, `JSONRPCRequestPayload`, `Provider`, `JSONRPCResponsePayload` and `JSONRPCErrorCallback`",
+                "pr": 924
+            }
+        ],
+        "timestamp": 1535133899
+    },
+    {
+        "timestamp": 1534210131,
+        "version": "1.0.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532619515,
+        "version": "1.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532614997,
+        "version": "1.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532605697,
+        "version": "1.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532357734,
+        "version": "1.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532043000,
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Add `RpcSubprovider` with timeout",
+                "pr": 874
+            },
+            {
+                "note": "Add `EthLightwalletSubprovider`",
+                "pr": 775
+            }
+        ]
+    },
+    {
+        "timestamp": 1531919263,
+        "version": "0.10.6",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1529397769,
+        "version": "0.10.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1527009133,
+        "version": "0.10.3",
+        "changes": [
+            {
+                "note": "Define engine type as Provider in setEngine",
+                "pr": 675
+            }
+        ]
+    },
+    {
+        "timestamp": 1527009133,
+        "version": "0.10.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1525477860,
+        "version": "0.10.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "0.10.0",
+        "changes": [
+            {
+                "note": "Upgrade web3-provider-engine to 14.0.4",
+                "pr": 555
+            },
+            {
+                "note": "Relax `to` validation in base wallet subprovider for transactions that deploy contracts",
+                "pr": 555
+            }
+        ],
+        "timestamp": 1525428773
+    },
+    {
+        "version": "0.9.0",
+        "changes": [
+            {
+                "note": "Refactor RedundantRPCSubprovider into RedundantSubprovider where it now accepts an array of subproviders rather then an array of RPC endpoints",
+                "pr": 500
+            },
+            {
+                "note": "Add PrivateKeySubprovider and refactor shared functionality into a base wallet subprovider",
+                "pr": 506
+            },
+            {
+                "note": "Add MnemonicWalletsubprovider, deprecating our truffle-hdwallet-provider fork",
+                "pr": 507
+            },
+            {
+                "note": "Support multiple addresses in ledger and mnemonic wallets",
+                "pr": 507
+            },
+            {
+                "note": "Refactors LedgerSubprovider such that explicitly setting the `pathIndex` is no longer required. Simply set the request `from` address as desired",
+                "pr": 507
+            },
+            {
+                "note": "Renamed derivationPath to baseDerivationPath.",
+                "pr": 507
+            }
+        ],
+        "timestamp": 1523462196
+    },
+    {
+        "timestamp": 1522673609,
+        "version": "0.8.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "0.8.3",
+        "changes": [
+            {
+                "note": "Introduce `JSONRPCRequestPayloadWithMethod` type",
+                "pr": 465
+            },
+            {
+                "note": "Export `ErrorCallback` type.",
+                "pr": 465
+            }
+        ],
+        "timestamp": 1522658513
+    },
+    {
+        "version": "0.8.0",
+        "changes": [
+            {
+                "note": "Export `GanacheSubprovider` and `Subprovider`",
+                "pr": 426
+            },
+            {
+                "note": "Make all subproviders to derive from `Subprovider`",
+                "pr": 426
+            },
+            {
+                "note": "Add types for `NextCallback`, `OnNextCompleted`",
+                "pr": 426
+            },
+            {
+                "note": "Ignore `ganache-core` dependency when using package in a browser environment."
+            }
+        ],
+        "timestamp": 1521298800
+    },
+    {
+        "version": "0.7.0",
+        "changes": [
+            {
+                "note": "Updated legerco packages. Removed node-hid package as a dependency and make it an optional dependency. It is still used in integration tests but is causing problems for users on Linux distros.",
+                "pr": 437
+            }
+        ],
+        "timestamp": 1520434800
+    },
+    {
+        "version": "0.6.0",
+        "changes": [
+            {
+                "note": "Move web3 types from being a devDep to a dep since one cannot use this package without it",
+                "pr": 429
+            },
+            {
+                "note": "Add `numberOfAccounts` param to `LedgerSubprovider` method `getAccountsAsync`",
+                "pr": 432
+            }
+        ],
+        "timestamp": 1520089200
+    },
+    {
+        "version": "0.5.0",
+        "changes": [
+            {
+                "note": "Add EmptyWalletSubprovider and FakeGasEstimateSubprovider",
+                "pr": 392
+            }
+        ],
+        "timestamp": 1518706800
+    },
+    {
+        "version": "0.4.1",
+        "changes": [
+            {
+                "note": "Fix publishing issue where .npmignore was not properly excluding undesired content",
+                "pr": 389
+            }
+        ],
+        "timestamp": 1518102000
+    },
+    {
+        "version": "0.4.0",
+        "changes": [
+            {
+                "note": "Added NonceTrackerSubprovider",
+                "pr": 355
+            },
+            {
+                "note": "InjectedWeb3Subprovider accepts a Provider in the constructor, previously it was a Web3 object",
+                "pr": 363
+            }
+        ],
+        "timestamp": 1517929200
+    },
+    {
+        "version": "0.3.6",
+        "changes": [
+            {
+                "note": "Return a transaction hash from `_sendTransactionAsync`",
+                "pr": 303
+            }
+        ],
+        "timestamp": 1517065200
+    },
+    {
+        "version": "0.3.0",
+        "changes": [
+            {
+                "note": "Allow LedgerSubprovider to handle `eth_sign` in addition to `personal_sign` RPC requests"
+            }
+        ],
+        "timestamp": 1514386800
+    },
+    {
+        "version": "0.2.0",
+        "changes": [
+            {
+                "note": "Improve the performance of address fetching",
+                "pr": 271
+            }
+        ],
+        "timestamp": 1513695600
+    }
+]

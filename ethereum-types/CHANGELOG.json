@@ -1,0 +1,369 @@
+[
+    {
+        "version": "3.3.0",
+        "changes": [
+            {
+                "note": "Make `payable` field in `ConstructorAbi` optional",
+                "pr": 2648
+            }
+        ]
+    },
+    {
+        "version": "3.2.0",
+        "changes": [
+            {
+                "note": "Add geth eth_call types",
+                "pr": 2620
+            },
+            {
+                "note": "Touch this package to fix publish",
+                "pr": 2628
+            }
+        ],
+        "timestamp": 1594788383
+    },
+    {
+        "timestamp": 1592969527,
+        "version": "3.1.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "3.1.0",
+        "changes": [
+            {
+                "note": "Add `linkReferences` to `EvmBytecodeOutput` and `EvmBytecodeOutputLinkReferences` type",
+                "pr": 2462
+            },
+            {
+                "note": "Update `MethodAbi` definition for solidity 0.6",
+                "pr": 2540
+            }
+        ],
+        "timestamp": 1581204851
+    },
+    {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note": "All references to network ID have been removed, and references to chain ID have been introduced instead",
+                "pr": 2313
+            },
+            {
+                "note": "Add `RevertErrorAbi` interface as part of `AbiDefinition` types",
+                "pr": 1761
+            },
+            {
+                "note": "Add `DecodedLogs` type",
+                "pr": 2220
+            }
+        ],
+        "timestamp": 1575296764
+    },
+    {
+        "version": "2.2.0-beta.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1574030254
+    },
+    {
+        "version": "2.2.0-beta.1",
+        "changes": [
+            {
+                "note": "All references to network ID have been removed, and references to chain ID have been introduced instead",
+                "pr": 2313
+            }
+        ],
+        "timestamp": 1573159180
+    },
+    {
+        "version": "2.2.0-beta.0",
+        "changes": [
+            {
+                "note": "Add `RevertErrorAbi` interface as part of `AbiDefinition` types",
+                "pr": 1761
+            },
+            {
+                "note": "Add `DecodedLogs` type",
+                "pr": 2220
+            }
+        ],
+        "timestamp": 1570135330
+    },
+    {
+        "timestamp": 1568744790,
+        "version": "2.1.6",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1567521715,
+        "version": "2.1.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "2.1.4",
+        "changes": [
+            {
+                "note": "new interface TupleDataItem, a DataItem that definitely has a `components` field",
+                "pr": 1919
+            }
+        ],
+        "timestamp": 1563957393
+    },
+    {
+        "version": "2.1.3",
+        "changes": [
+            {
+                "note": "Made most fields in DevdocOutput optional, as they may not all be present just because devdoc is",
+                "pr": 1878
+            }
+        ],
+        "timestamp": 1563006338
+    },
+    {
+        "version": "2.1.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1554997931
+    },
+    {
+        "timestamp": 1553091633,
+        "version": "2.1.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "2.1.0",
+        "changes": [
+            {
+                "note": "Added types SupportedProvider, GanacheProvider, Web3JsProvider, ZeroExProvider, EIP1193Provider",
+                "pr": 1627
+            },
+            {
+                "note": "Added all existing opcodes to `OpCode` type",
+                "pr": 1638
+            }
+        ],
+        "timestamp": 1551130135
+    },
+    {
+        "version": "2.0.0",
+        "changes": [
+            {
+                "note": "Upgrade the bignumber.js to v8.0.2",
+                "pr": 1517
+            }
+        ],
+        "timestamp": 1549373905
+    },
+    {
+        "timestamp": 1547561734,
+        "version": "1.1.6",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1547225310,
+        "version": "1.1.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "1.1.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1544739608
+    },
+    {
+        "version": "1.1.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1544570656
+    },
+    {
+        "version": "1.1.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1541740904
+    },
+    {
+        "version": "1.1.1",
+        "changes": [
+            {
+                "note": "Add `JSONRPCResponseError` and error field on `JSONRPCResponsePayload`.",
+                "pr": 1102
+            }
+        ],
+        "timestamp": 1539871071
+    },
+    {
+        "version": "1.1.0",
+        "changes": [
+            {
+                "note": "Unpublished package."
+            }
+        ]
+    },
+    {
+        "timestamp": 1538693146,
+        "version": "1.0.11",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1538475601,
+        "version": "1.0.10",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1538157789,
+        "version": "1.0.9",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1537907159,
+        "version": "1.0.8",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1537541580,
+        "version": "1.0.7",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1536142250,
+        "version": "1.0.6",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1535133899,
+        "version": "1.0.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1534210131,
+        "version": "1.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532614997,
+        "version": "1.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532605697,
+        "version": "1.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532357734,
+        "version": "1.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532043000,
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Add `TraceParams` interface for `debug_traceTransaction` parameters",
+                "pr": 675
+            },
+            {
+                "note": "Add `TransactionReceiptStatus` type",
+                "pr": 812
+            },
+            {
+                "note": "Add Artifact types: `CompilerSettings`, `CompilerOptions`, `OutputField`",
+                "pr": 924
+            }
+        ]
+    },
+    {
+        "version": "0.0.2",
+        "changes": [
+            {
+                "note": "Initial publish",
+                "pr": "642"
+            }
+        ],
+        "timestamp": 1527811200
+    }
+]

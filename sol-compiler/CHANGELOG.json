@@ -1,0 +1,820 @@
+[
+    {
+        "timestamp": 1594788383,
+        "version": "4.1.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "4.1.0",
+        "changes": [
+            {
+                "note": "Refactor + add solidity 0.6 support",
+                "pr": 2532
+            },
+            {
+                "note": "Filter `receive` functions from 0.6 ABIs",
+                "pr": 2540
+            },
+            {
+                "note": "Fix `CompilerOptions` schema",
+                "pr": 2591
+            }
+        ],
+        "timestamp": 1592969527
+    },
+    {
+        "timestamp": 1582623685,
+        "version": "4.0.8",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1581204851,
+        "version": "4.0.7",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1580988106,
+        "version": "4.0.6",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1580811564,
+        "version": "4.0.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1579682890,
+        "version": "4.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "4.0.3",
+        "changes": [
+            {
+                "note": "More tolerant of AST-only compilation targets",
+                "pr": 2391
+            }
+        ],
+        "timestamp": 1578272714
+    },
+    {
+        "timestamp": 1576540892,
+        "version": "4.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1575931811,
+        "version": "4.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "4.0.0",
+        "changes": [
+            {
+                "note": "Add `shouldSaveStandardInput` config",
+                "pr": 2322
+            },
+            {
+                "note": "Output artifacts now include a 'chains' attribute rather than 'networks'",
+                "pr": 2313
+            },
+            {
+                "note": "Convert `getContractNamesToCompile` to public function of `Compiler` class",
+                "pr": 2055
+            }
+        ],
+        "timestamp": 1575296764
+    },
+    {
+        "version": "3.2.0-beta.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1575290197
+    },
+    {
+        "version": "3.2.0-beta.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1574238768
+    },
+    {
+        "version": "3.2.0-beta.2",
+        "changes": [
+            {
+                "note": "Add `shouldSaveStandardInput` config",
+                "pr": 2322
+            }
+        ],
+        "timestamp": 1574030254
+    },
+    {
+        "version": "3.2.0-beta.1",
+        "changes": [
+            {
+                "note": "Output artifacts now include a 'chains' attribute rather than 'networks'",
+                "pr": 2313
+            }
+        ],
+        "timestamp": 1573159180
+    },
+    {
+        "version": "3.2.0-beta.0",
+        "changes": [
+            {
+                "note": "Convert `getContractNamesToCompile` to public function of `Compiler` class",
+                "pr": 2055
+            }
+        ],
+        "timestamp": 1570135330
+    },
+    {
+        "timestamp": 1568744790,
+        "version": "3.1.15",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1567521715,
+        "version": "3.1.14",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1566446343,
+        "version": "3.1.13",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1565296576,
+        "version": "3.1.12",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1564604963,
+        "version": "3.1.11",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "3.1.10",
+        "changes": [
+            {
+                "note": "re-export new ethereum-types types, TupleDataItem",
+                "pr": 1919
+            }
+        ],
+        "timestamp": 1563957393
+    },
+    {
+        "timestamp": 1563006338,
+        "version": "3.1.9",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1558712885,
+        "version": "3.1.8",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1557507213,
+        "version": "3.1.7",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "3.1.6",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1554997931
+    },
+    {
+        "timestamp": 1553183790,
+        "version": "3.1.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1553091633,
+        "version": "3.1.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1551479279,
+        "version": "3.1.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "3.1.2",
+        "changes": [
+            {
+                "note": "Remove redundant log message",
+                "pr": 1652
+            }
+        ],
+        "timestamp": 1551299797
+    },
+    {
+        "version": "3.1.1",
+        "changes": [
+            {
+                "note": "Fix a bug when combining compilerSettings from different sources",
+                "pr": 1652
+            }
+        ],
+        "timestamp": 1551220833
+    },
+    {
+        "version": "3.1.0",
+        "changes": [
+            {
+                "note": "Add `isOfflineMode` flag to sol-compiler`",
+                "pr": 1625
+            }
+        ],
+        "timestamp": 1551130135
+    },
+    {
+        "timestamp": 1549733923,
+        "version": "3.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "3.0.2",
+        "changes": [
+            {
+                "note": "Fix a bug when smart recompilation wasn't working because of remappings",
+                "pr": 1575
+            },
+            {
+                "note": "Fix a bug that made `opts` required instead of optional",
+                "pr": 1596
+            },
+            {
+                "note": "Remove `bin_paths` and fetch the list of Solidity compilers from Github",
+                "pr": 1596
+            },
+            {
+                "note": "Fix a bug causing `ast` and `legacyAST` to not be added to the artifacts even when requested",
+                "pr": 1596
+            }
+        ],
+        "timestamp": 1549547375
+    },
+    {
+        "timestamp": 1549452781,
+        "version": "3.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note": "Upgrade the bignumber.js to v8.0.2",
+                "pr": 1517
+            }
+        ],
+        "timestamp": 1549373905
+    },
+    {
+        "timestamp": 1547561734,
+        "version": "2.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1547225310,
+        "version": "2.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "2.0.0",
+        "changes": [
+            {
+                "note": "Add sol-compiler watch mode with -w flag",
+                "pr": 1461
+            },
+            {
+                "note": "Make error and warning colouring more visually pleasant and consistent with other compilers",
+                "pr": 1461
+            },
+            {
+                "note": "Add newest solidity versions from 0.4.25 to 0.5.2",
+                "pr": 1496
+            }
+        ],
+        "timestamp": 1547040760
+    },
+    {
+        "version": "1.1.16",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1544739608
+    },
+    {
+        "version": "1.1.15",
+        "changes": [
+            {
+                "note": "Fix bug where we were appending base path to absolute imports (e.g NPM imports)",
+                "pr": 1311
+            }
+        ],
+        "timestamp": 1544570656
+    },
+    {
+        "timestamp": 1543401373,
+        "version": "1.1.14",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1542821676,
+        "version": "1.1.13",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1542208198,
+        "version": "1.1.12",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1542134075,
+        "version": "1.1.11",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1542028948,
+        "version": "1.1.10",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "1.1.9",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1541740904
+    },
+    {
+        "timestamp": 1539871071,
+        "version": "1.1.8",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "1.1.7",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1538693146
+    },
+    {
+        "timestamp": 1538157789,
+        "version": "1.1.6",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1537907159,
+        "version": "1.1.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1537875740,
+        "version": "1.1.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1537541580,
+        "version": "1.1.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1536142250,
+        "version": "1.1.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1535377027,
+        "version": "1.1.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "1.1.0",
+        "changes": [
+            {
+                "note": "Quicken compilation by sending multiple contracts to the same solcjs invocation, batching them together based on compiler version requirements.",
+                "pr": 965
+            },
+            {
+                "note": "Stop exporting types: `ContractArtifact`, `ContractNetworks`",
+                "pr": 924
+            },
+            {
+                "note": "Export types: `CompilerSettings`, `OutputField`",
+                "pr": 924
+            }
+        ],
+        "timestamp": 1535133899
+    },
+    {
+        "timestamp": 1534210131,
+        "version": "1.0.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532619515,
+        "version": "1.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532614997,
+        "version": "1.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532605697,
+        "version": "1.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532357734,
+        "version": "1.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532043000,
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1531919263,
+        "version": "0.5.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1531149657,
+        "version": "0.5.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1529397769,
+        "version": "0.5.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "0.5.1",
+        "changes": [
+            {
+                "note": "Make `opts` constructor parameter optional",
+                "pr": 621
+            },
+            {
+                "note": "Add schema validation for compiler configuration",
+                "pr": 621
+            }
+        ],
+        "timestamp": 1527009133
+    },
+    {
+        "version": "0.5.0",
+        "changes": [
+            {
+                "note": "Properly export the executable binary",
+                "pr": 588
+            },
+            {
+                "note": "Add the ability to define a specific solidity version",
+                "pr": 589
+            }
+        ],
+        "timestamp": 1527009133
+    },
+    {
+        "timestamp": 1525477860,
+        "version": "0.4.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "0.4.2",
+        "changes": [
+            {
+                "note": "Add support for solidity 0.4.23",
+                "pr": 545
+            }
+        ],
+        "timestamp": 1525428773
+    },
+    {
+        "version": "0.4.1",
+        "changes": [
+            {
+                "note": "Add support for solidity 0.4.22",
+                "pr": 531
+            }
+        ],
+        "timestamp": 1524044013
+    },
+    {
+        "version": "0.4.0",
+        "changes": [
+            {
+                "note": "Changed the config key `web3Provider` to `provider` to be consistent with other tools",
+                "pr": 501
+            }
+        ],
+        "timestamp": 1523462196
+    },
+    {
+        "version": "0.3.5",
+        "changes": [
+            {
+                "note": "Don't try to write contract artifact if an error occured",
+                "pr": 485
+            }
+        ],
+        "timestamp": 1522673609
+    },
+    {
+        "version": "0.3.4",
+        "changes": [
+            {
+                "note": "Create solc_bin directory if does not exist before attempting to compile",
+                "pr": 491
+            }
+        ],
+        "timestamp": 1522658513
+    },
+    {
+        "version": "0.3.1",
+        "changes": [
+            {
+                "note": "Add TS types for `yargs`"
+            }
+        ],
+        "timestamp": 1521298800
+    },
+    {
+        "version": "0.3.0",
+        "changes": [
+            {
+                "note": "Add support for Solidity 0.4.20 and 0.4.21"
+            },
+            {
+                "note": "Replace `jsonrpcPort` config with `jsonrpcUrl`",
+                "pr": 426
+            },
+            {
+                "note": "Replace `jsonrpc-port` CLI option with `jsonrpc-url`",
+                "pr": 426
+            },
+            {
+                "note": "Export the `Compiler`",
+                "pr": 426
+            },
+            {
+                "note": "Load solc from remote source instead of having it locally",
+                "pr": 426
+            },
+            {
+                "note": "Add `bytecode`, `runtime_bytecode`, `source_map`, `source_map_runtime` and `sources` fields to artifacts",
+                "pr": 426
+            },
+            {
+                "note": "Remove 0x-specific `migrate` command",
+                "pr": 426
+            },
+            {
+                "note": "Allow deployer to accept a provider instead of port and host. This makes it possible to run it with in-process ganache-core",
+                "pr": 426
+            },
+            {
+                "note": "Consolidate all `console.log` calls into `logUtils` in the `@0xproject/utils` package",
+                "pr": 452
+            },
+            {
+                "note": "Add `#!/usr/bin/env node` pragma above `cli.ts` script to fix command-line error."
+            }
+        ],
+        "timestamp": 1521298800
+    },
+    {
+        "version": "0.2.0",
+        "changes": [
+            {
+                "note": "Check dependencies when determining if contracts should be recompiled",
+                "pr": 408
+            },
+            {
+                "note": "Improve an error message for when deployer is supplied with an incorrect number of constructor arguments",
+                "pr": 419
+            }
+        ],
+        "timestamp": 1520089200
+    },
+    {
+        "version": "0.1.0",
+        "changes": [
+            {
+                "note": "Add the ability to pass in specific contracts to compile in CLI",
+                "pr": 400
+            }
+        ],
+        "timestamp": 1518706800
+    },
+    {
+        "version": "0.0.8",
+        "changes": [
+            {
+                "note": "Fix publishing issue where .npmignore was not properly excluding undesired content",
+                "pr": 389
+            }
+        ],
+        "timestamp": 1518102000
+    }
+]

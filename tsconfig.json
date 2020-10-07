@@ -1,0 +1,43 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es6",
+        "lib": ["es2017", "dom", "esnext.asynciterable", "es2018.promise"],
+        "experimentalDecorators": true,
+        "downlevelIteration": true,
+        "noImplicitReturns": true,
+        "pretty": true,
+        "skipLibCheck": true,
+        "typeRoots": ["node_modules/@0x/typescript-typings/types", "node_modules/@types"],
+        "strict": true,
+        // These settings are required for TypeScript project references
+        "declaration": true,
+        "declarationMap": true,
+        "sourceMap": true
+    },
+    // The root of the project is just a list of references and does not contain
+    // any top-level TypeScript code.
+    "include": [],
+    "references": [
+        { "path": "./abi-gen" },
+        { "path": "./assert" },
+        { "path": "./base-contract" },
+        { "path": "./contracts-gen" },
+        { "path": "./dev-utils" },
+        { "path": "./ethereum-types" },
+        { "path": "./json-schemas" },
+        { "path": "./monorepo-scripts" },
+        { "path": "./sol-compiler" },
+        { "path": "./sol-coverage" },
+        { "path": "./sol-profiler" },
+        { "path": "./sol-trace" },
+        { "path": "./sol-tracing-utils" },
+        { "path": "./sol-resolver" },
+        { "path": "./subproviders" },
+        { "path": "./tslint-config" },
+        { "path": "./types" },
+        { "path": "./typescript-typings" },
+        { "path": "./utils" },
+        { "path": "./web3-wrapper" }
+    ]
+}
