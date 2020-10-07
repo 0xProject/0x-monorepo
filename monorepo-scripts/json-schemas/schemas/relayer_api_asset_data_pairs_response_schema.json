@@ -1,0 +1,13 @@
+{
+    "id": "/relayerApiAssetDataPairsResponseSchema",
+    "type": "object",
+    "allOf": [
+        { "$ref": "/paginatedCollectionSchema" },
+        {
+            "properties": {
+                "records": { "$ref": "/relayerApiAssetDataPairsSchema" }
+            },
+            "required": ["records"]
+        }
+    ]
+}

@@ -1,0 +1,6 @@
+{
+    "extends": ["@0x/tslint-config"],
+    "linterOptions": {
+        "exclude": ["./test-cli/fixtures/**/*", "**/lib/**/*"]
+    }
+}

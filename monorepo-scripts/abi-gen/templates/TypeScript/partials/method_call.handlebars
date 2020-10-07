@@ -1,0 +1,22 @@
+async callAsync(
+    callData: Partial<CallData> = {},
+    defaultBlock?: BlockParam,
+): Promise<{{> return_type outputs=outputs}}> {
+    BaseContract._assertCallParams(callData, defaultBlock);
+    {{#ifEquals this.stateMutability "pure" }}
+    let rawCallResult;
+    if (self._deployedBytecodeIfExists) {
+        rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+    } else {
+        rawCallResult = await self._performCallAsync({ data: this.getABIEncodedTransactionData(), ...callData }, defaultBlock);
+    }
+    {{else}}
+    const rawCallResult = await self._performCallAsync({ data: this.getABIEncodedTransactionData(), ...callData }, defaultBlock);
+    {{/ifEquals}}
+    const abiEncoder = self._lookupAbiEncoder(functionSignature);
+    BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
+    return abiEncoder.strictDecodeReturnValue<{{> return_type outputs=outputs}}>(rawCallResult);
+},
+getABIEncodedTransactionData(): string {
+    return self._strictEncodeArguments(functionSignature, [{{> normalized_params inputs=inputs}}]);
+},

@@ -1,0 +1,765 @@
+[
+    {
+        "timestamp": 1594788383,
+        "version": "6.2.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1592969527,
+        "version": "6.2.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1582623685,
+        "version": "6.2.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "6.2.0",
+        "changes": [
+            {
+                "note": "Ignore bytecode with unlinked library references in constructor",
+                "pr": 2463
+            },
+            {
+                "note": "Add exported function `linkLibrariesInBytecode()`",
+                "pr": 2463
+            }
+        ],
+        "timestamp": 1581204851
+    },
+    {
+        "timestamp": 1580988106,
+        "version": "6.1.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "6.1.1",
+        "changes": [
+            {
+                "note": "Throw Error when revert is StringRevertError",
+                "pr": 2453
+            }
+        ],
+        "timestamp": 1580811564
+    },
+    {
+        "version": "6.1.0",
+        "changes": [
+            {
+                "note": "Support catching empty reverts on live networks.",
+                "pr": 2433
+            }
+        ],
+        "timestamp": 1579682890
+    },
+    {
+        "timestamp": 1578272714,
+        "version": "6.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1576540892,
+        "version": "6.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1575931811,
+        "version": "6.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "6.0.0",
+        "changes": [
+            {
+                "note": "Moved shared logic into `BaseContract` helpers to reduce size.",
+                "pr": 2343
+            },
+            {
+                "note": "Make `evmExecAsync` protected and rename to `_evmExecAsync`",
+                "pr": 2243
+            },
+            {
+                "note": "Remove duplicate types `IndexedFilterValues`, `DecodedLogEvent`, `EventCallback`",
+                "pr": 2243
+            },
+            {
+                "note": "Added ContractFunctionObj type and supporting types",
+                "pr": 2325
+            },
+            {
+                "note": "Added AwaitTransactionSuccessOpts and SendTransactionOpts",
+                "pr": 2325
+            },
+            {
+                "note": "Automatically decode and throw rich reverts in `_throwIfRevertWithReasonCallResult`",
+                "pr": 1761
+            },
+            {
+                "note": "Remove dependency on ethers.js",
+                "pr": 1761
+            },
+            {
+                "note": "Add more RevertError decoding functions",
+                "pr": 1819
+            },
+            {
+                "note": "Make the Promise returned by `awaitTransactionSuccessAsync` compatible with base Promise type",
+                "pr": 1885
+            },
+            {
+                "note": "Properly encode `BigNumber` indexed filter values in `getTopicsForIndexedArgs()`",
+                "pr": 2155
+            }
+        ],
+        "timestamp": 1575296764
+    },
+    {
+        "version": "5.5.0-beta.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1575290197
+    },
+    {
+        "version": "5.5.0-beta.3",
+        "changes": [
+            {
+                "note": "Moved shared logic into `BaseContract` helpers to reduce size.",
+                "pr": 2343
+            }
+        ],
+        "timestamp": 1574238768
+    },
+    {
+        "version": "5.5.0-beta.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1574030254
+    },
+    {
+        "version": "5.5.0-beta.1",
+        "changes": [
+            {
+                "note": "Make `evmExecAsync` protected and rename to `_evmExecAsync`",
+                "pr": 2243
+            },
+            {
+                "note": "Remove duplicate types `IndexedFilterValues`, `DecodedLogEvent`, `EventCallback`",
+                "pr": 2243
+            },
+            {
+                "note": "Added ContractFunctionObj type and supporting types",
+                "pr": 2325
+            },
+            {
+                "note": "Added AwaitTransactionSuccessOpts and SendTransactionOpts",
+                "pr": 2325
+            }
+        ],
+        "timestamp": 1573159180
+    },
+    {
+        "version": "5.5.0-beta.0",
+        "changes": [
+            {
+                "note": "Automatically decode and throw rich reverts in `_throwIfRevertWithReasonCallResult`",
+                "pr": 1761
+            },
+            {
+                "note": "Remove dependency on ethers.js",
+                "pr": 1761
+            },
+            {
+                "note": "Add more RevertError decoding functions",
+                "pr": 1819
+            },
+            {
+                "note": "Make the Promise returned by `awaitTransactionSuccessAsync` compatible with base Promise type",
+                "pr": 1885
+            },
+            {
+                "note": "Properly encode `BigNumber` indexed filter values in `getTopicsForIndexedArgs()`",
+                "pr": 2155
+            }
+        ],
+        "timestamp": 1570135330
+    },
+    {
+        "version": "5.4.0",
+        "changes": [
+            {
+                "note": "Add `evmExecAsync` to use local EVM instead of eth_call for pure functions",
+                "pr": 2108
+            }
+        ],
+        "timestamp": 1568744790
+    },
+    {
+        "timestamp": 1567521715,
+        "version": "5.3.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "5.3.2",
+        "changes": [
+            {
+                "note": "Updated to ethereumjs-blockstream@^7.0.0",
+                "pr": 2089
+            }
+        ],
+        "timestamp": 1566446343
+    },
+    {
+        "timestamp": 1565296576,
+        "version": "5.3.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "5.3.0",
+        "changes": [
+            {
+                "note": "Updated interface to `deployFrom0xArtifactAsync` to include log decode dependencies.",
+                "pr": 1995
+            },
+            {
+                "note": "Updated interface to `deployAsync` to include log decode dependencies.",
+                "pr": 1995
+            }
+        ],
+        "timestamp": 1564604963
+    },
+    {
+        "version": "5.2.0",
+        "changes": [
+            {
+                "note": "Add SubscriptionManager",
+                "pr": 1970
+            }
+        ]
+    },
+    {
+        "timestamp": 1563957393,
+        "version": "5.1.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1563006338,
+        "version": "5.1.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "5.1.0",
+        "changes": [
+            {
+                "note": "Export `PromiseWithTransactionHash` type",
+                "pr": 1797
+            }
+        ],
+        "timestamp": 1557507213
+    },
+    {
+        "version": "5.0.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1554997931
+    },
+    {
+        "timestamp": 1553183790,
+        "version": "5.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1553091633,
+        "version": "5.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1551479279,
+        "version": "5.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1551220833,
+        "version": "5.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "5.0.0",
+        "changes": [
+            {
+                "note": "Add support for EIP1193 providers & Web3.js providers >= 1.0-beta.38",
+                "pr": 1627
+            },
+            {
+                "note": "Update provider params to type SupportedProvider which outlines all supported providers",
+                "pr": 1627
+            }
+        ],
+        "timestamp": 1551130135
+    },
+    {
+        "timestamp": 1549733923,
+        "version": "4.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "4.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1549547375
+    },
+    {
+        "timestamp": 1549452781,
+        "version": "4.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "4.0.0",
+        "changes": [
+            {
+                "note": "Upgrade the bignumber.js to v8.0.2",
+                "pr": 1517
+            }
+        ],
+        "timestamp": 1549373905
+    },
+    {
+        "timestamp": 1547561734,
+        "version": "3.0.13",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1547225310,
+        "version": "3.0.12",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1547040760,
+        "version": "3.0.11",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "3.0.10",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1544739608
+    },
+    {
+        "version": "3.0.9",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1544570656
+    },
+    {
+        "timestamp": 1543401373,
+        "version": "3.0.8",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1542821676,
+        "version": "3.0.7",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1542208198,
+        "version": "3.0.6",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1542134075,
+        "version": "3.0.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1542028948,
+        "version": "3.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "3.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1541740904
+    },
+    {
+        "timestamp": 1539871071,
+        "version": "3.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "3.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1538693146
+    },
+    {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note": "Change the way we detect BN to work with the newest ethers.js",
+                "pr": 1069
+            },
+            {
+                "note": "Add baseContract._throwIfRevertWithReasonCallResult",
+                "pr": 1069
+            }
+        ],
+        "timestamp": 1538157789
+    },
+    {
+        "timestamp": 1537907159,
+        "version": "2.0.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1537875740,
+        "version": "2.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1537541580,
+        "version": "2.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1536142250,
+        "version": "2.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1535377027,
+        "version": "2.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1535133899,
+        "version": "2.0.0",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "2.0.0-rc.1",
+        "changes": [
+            {
+                "pr": 915,
+                "note": "Added strict encoding/decoding checks for sendTransaction and call"
+            }
+        ],
+        "timestamp": 1534210131
+    },
+    {
+        "timestamp": 1532619515,
+        "version": "1.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532614997,
+        "version": "1.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532605697,
+        "version": "1.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532357734,
+        "version": "1.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532043000,
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1531919263,
+        "version": "0.3.6",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1531149657,
+        "version": "0.3.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "0.3.4",
+        "changes": [
+            {
+                "note": "Update EthersJs to fix the `value.toLowerCase()` is not a function bug caused by `ethers.js` breaking patch version https://github.com/ethers-io/ethers.js/issues/201"
+            }
+        ],
+        "timestamp": 1529397769
+    },
+    {
+        "timestamp": 1527810075,
+        "version": "0.3.3",
+        "changes": [
+            {
+                "note": "Incorrect publish that was unpublished"
+            }
+        ]
+    },
+    {
+        "timestamp": 1527008270,
+        "version": "0.3.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1525477860,
+        "version": "0.3.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "0.3.0",
+        "changes": [
+            {
+                "note": "Update ethers-contracts to ethers.js",
+                "pr": 540
+            }
+        ],
+        "timestamp": 1525428773
+    },
+    {
+        "timestamp": 1524044013,
+        "version": "0.2.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "0.2.0",
+        "changes": [
+            {
+                "note": "Contract wrappers now accept Provider and defaults instead of Web3Wrapper",
+                "pr": 501
+            }
+        ],
+        "timestamp": 1523462196
+    },
+    {
+        "version": "0.1.0",
+        "changes": [
+            {
+                "note": "Add tests for traversing ABI tree",
+                "pr": 485
+            },
+            {
+                "note": "Fix ABI tuples traversing",
+                "pr": 485
+            },
+            {
+                "note": "Fix ABI arrays traversing",
+                "pr": 485
+            }
+        ],
+        "timestamp": 1522673609
+    },
+    {
+        "timestamp": 1522658513,
+        "version": "0.0.6",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "0.0.2",
+        "changes": [
+            {
+                "note": "Initial release"
+            }
+        ],
+        "timestamp": 1520089200
+    }
+]

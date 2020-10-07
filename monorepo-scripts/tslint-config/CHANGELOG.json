@@ -1,0 +1,338 @@
+[
+    {
+        "version": "4.1.0",
+        "changes": [
+            {
+                "note": "Set `no-non-null-assertion` to false",
+                "pr": 2613
+            }
+        ],
+        "timestamp": 1594788383
+    },
+    {
+        "version": "4.0.0",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1575296764
+    },
+    {
+        "version": "3.1.0-beta.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1574030254
+    },
+    {
+        "version": "3.1.0-beta.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1573159180
+    },
+    {
+        "version": "3.1.0-beta.0",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "3.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1554997931
+    },
+    {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note": "Upgrade the bignumber.js to v8.0.2",
+                "pr": 1517
+            }
+        ],
+        "timestamp": 1549373905
+    },
+    {
+        "timestamp": 1547561734,
+        "version": "2.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1547225310,
+        "version": "2.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "2.0.0",
+        "changes": [
+            {
+                "note": "Improve async-suffix rule to check functions too, not just methods",
+                "pr": 1425
+            }
+        ],
+        "timestamp": 1544739608
+    },
+    {
+        "version": "1.0.10",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1541740904
+    },
+    {
+        "timestamp": 1539871071,
+        "version": "1.0.9",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1538693146,
+        "version": "1.0.8",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1536142250,
+        "version": "1.0.7",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1535133899,
+        "version": "1.0.6",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1534210131,
+        "version": "1.0.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532614997,
+        "version": "1.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532605697,
+        "version": "1.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532551340,
+        "version": "1.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532357734,
+        "version": "1.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532043000,
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Added a bunch of rules",
+                "pr": 883
+            }
+        ]
+    },
+    {
+        "timestamp": 1531149657,
+        "version": "0.4.21",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1529397769,
+        "version": "0.4.20",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "0.4.19",
+        "changes": [
+            {
+                "note": "Incorrect publish that was unpublished"
+            }
+        ],
+        "timestamp": 1527810075
+    },
+    {
+        "timestamp": 1527009133,
+        "version": "0.4.18",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1525428773,
+        "version": "0.4.17",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1524044013,
+        "version": "0.4.16",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1523462196,
+        "version": "0.4.15",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1522673609,
+        "version": "0.4.14",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1522658513,
+        "version": "0.4.13",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "0.4.9",
+        "changes": [
+            {
+                "note": "Move devDeps to deps to fix missed dependency issue in published package."
+            }
+        ],
+        "timestamp": 1518102000
+    },
+    {
+        "version": "0.4.8",
+        "changes": [
+            {
+                "note": "Fix publish issue where custom TSLint rules were not being included",
+                "pr": 389
+            }
+        ],
+        "timestamp": 1518102000
+    },
+    {
+        "version": "0.4.7",
+        "changes": [
+            {
+                "note": "Modified custom 'underscore-privates' rule, changing it to 'underscore-private-and-protected' requiring underscores to be prepended to both private and protected variable names",
+                "pr": 354
+            }
+        ],
+        "timestamp": 1517929200
+    },
+    {
+        "version": "0.4.0",
+        "changes": [
+            {
+                "note": "Added custom 'underscore-privates' rule, requiring underscores to be prepended to private variable names"
+            },
+            {
+                "note": "Because our tools can be used in both a TS and JS environment, we want to make the private methods of any public facing interface show up at the bottom of auto-complete lists. Additionally, we wanted to remain consistent with respect to our usage of underscores in order to enforce this rule with a linter rule, rather then manual code reviews."
+            }
+        ],
+        "timestamp": 1514386800
+    },
+    {
+        "version": "0.3.0",
+        "changes": [
+            {
+                "note": "Added rules for unused imports, variables and Async suffixes",
+                "pr": 265
+            }
+        ],
+        "timestamp": 1513695600
+    },
+    {
+        "version": "0.1.0",
+        "changes": [
+            {
+                "note": "Re-published TsLintConfig previously published under NPM package `tslint-config-0xproject`"
+            },
+            {
+                "note": "Updated to TSLint v5.8.0, requiring several rule additions to keep our conventions aligned."
+            }
+        ],
+        "timestamp": 1510585200
+    }
+]

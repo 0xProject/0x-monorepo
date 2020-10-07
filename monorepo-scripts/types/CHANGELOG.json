@@ -1,0 +1,737 @@
+[
+    {
+        "version": "3.2.0",
+        "changes": [
+            {
+                "note": "Add `ExchangeProxyMetaTransaction` and `SignedExchangeProxyMetaTransaction`",
+                "pr": 2610
+            }
+        ],
+        "timestamp": 1594788383
+    },
+    {
+        "timestamp": 1592969527,
+        "version": "3.1.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1581204851,
+        "version": "3.1.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "3.1.1",
+        "changes": [
+            {
+                "note": "Added `DydxBridgeOnlyCallableByErc20BridgeProxy` and `DydxBridgeUnrecognizedBridgeAction`",
+                "pr": 2378
+            }
+        ],
+        "timestamp": 1576540892
+    },
+    {
+        "version": "3.1.0",
+        "changes": [
+            {
+                "note": "Add `ERC20BridgeAssetData`",
+                "pr": 2373
+            }
+        ],
+        "timestamp": 1575931811
+    },
+    {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note": "Remove `SendTransactionOpts` and `AwaitTransactionSuccessOpts` types and move them to @0x/base-contracts",
+                "pr": 2325
+            },
+            {
+                "note": "Add `SendTransactionOpts` and `AwaitTransactionSuccessOpts` types for contract wrappers",
+                "pr": 2243
+            },
+            {
+                "note": "All references to network ID have been removed, and references to chain ID have been introduced instead",
+                "pr": 2313
+            },
+            {
+                "note": "Add `OrderStatus` type",
+                "pr": 1761
+            },
+            {
+                "note": "Add `OrderInfo`, `FillResults`, `MatchedFillResults`, `BatchMatchedFillResults` types",
+                "pr": 2031
+            },
+            {
+                "note": "Add status types for Staking contracts",
+                "pr": 1910
+            },
+            {
+                "note": "Add `ERC20Bridge` to `AssetProxyId`",
+                "pr": 2220
+            }
+        ],
+        "timestamp": 1575296764
+    },
+    {
+        "version": "2.5.0-beta.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1575290197
+    },
+    {
+        "version": "2.5.0-beta.2",
+        "changes": [
+            {
+                "note": "Remove `SendTransactionOpts` and `AwaitTransactionSuccessOpts` types and move them to @0x/base-contracts",
+                "pr": 2325
+            }
+        ],
+        "timestamp": 1574030254
+    },
+    {
+        "version": "2.5.0-beta.1",
+        "changes": [
+            {
+                "note": "Add `SendTransactionOpts` and `AwaitTransactionSuccessOpts` types for contract wrappers",
+                "pr": 2243
+            },
+            {
+                "note": "All references to network ID have been removed, and references to chain ID have been introduced instead",
+                "pr": 2313
+            }
+        ],
+        "timestamp": 1573159180
+    },
+    {
+        "version": "2.5.0-beta.0",
+        "changes": [
+            {
+                "note": "Add `OrderStatus` type",
+                "pr": 1761
+            },
+            {
+                "note": "Add `OrderInfo`, `FillResults`, `MatchedFillResults`, `BatchMatchedFillResults` types",
+                "pr": 2031
+            },
+            {
+                "note": "Add status types for Staking contracts",
+                "pr": 1910
+            },
+            {
+                "note": "Add `ERC20Bridge` to `AssetProxyId`",
+                "pr": 2220
+            }
+        ],
+        "timestamp": 1570135330
+    },
+    {
+        "timestamp": 1568744790,
+        "version": "2.4.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1567521715,
+        "version": "2.4.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1563957393,
+        "version": "2.4.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "2.4.0",
+        "changes": [
+            {
+                "note": "Add MarketOperation type",
+                "pr": 1914
+            }
+        ],
+        "timestamp": 1563006338
+    },
+    {
+        "version": "2.3.0",
+        "changes": [
+            {
+                "note": "Add StaticCallProxy types",
+                "pr": 1863
+            },
+            {
+                "note": "Add `InvalidStaticCallDataOffset`, `TargetNotEven`, `UnexpectedStaticCallResult`, and `InvalidAssetDataEnd` to `RevertReason` enum",
+                "pr": 1863
+            },
+            {
+                "note": "Add `domain` field to `Order`, `ZeroExTransaction`",
+                "pr": 1742
+            },
+            {
+                "note": "Rename OrderWithoutExchangeAddress to OrderWithoutDomain",
+                "pr": 1742
+            },
+            {
+                "note": "Add `chainId` field to `EIP712DomainWithDefaultSchema`",
+                "pr": 1742
+            },
+            {
+                "note": "Add `OrderStatus` type",
+                "pr": 1761
+            },
+            {
+                "note": "Add `SignatureType.OrderValidator` and `SignatureType.WalletOrderValidator`",
+                "pr": 1774
+            },
+            {
+                "note": "Update `Order` type for arbitrary fee tokens (ZEIP-28).",
+                "pr": 1819
+            },
+            {
+                "note": "Add `expirationTimeSeconds` to `ZeroExTransaction` type",
+                "pr": 1832
+            },
+            {
+                "note": "Add `TransfersSuccessful` revert reason and `OrderTransferResults` enum",
+                "pr": 1868
+            },
+            {
+                "note": "Consolidate all Validator `SignatureType`s to just `Validator`",
+                "pr": 1885
+            },
+            {
+                "note": "Add `EIP1271Wallet` to `SignatureType`",
+                "pr": 1885
+            }
+        ]
+    },
+    {
+        "version": "2.2.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1554997931
+    },
+    {
+        "timestamp": 1553183790,
+        "version": "2.2.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "2.2.0",
+        "changes": [
+            {
+                "note": "Added ERC1155 revert reasons",
+                "pr": 1657
+            },
+            {
+                "note": "Added `ERC1155AssetData`, `ERC1155AssetDataNoProxyId`, and `ERC1155AssetDataAbi`",
+                "pr": 1661
+            },
+            {
+                "note": "Add `InvalidOrigin` revert reason",
+                "pr": 1668
+            },
+            {
+                "note": "Add `RevertReason.SignatureInvalid` thrown by Coordinator",
+                "pr": 1705
+            },
+            {
+                "note": "Add `RevertReason.InvalidFreeMemoryPtr` thrown by LibAddressArray",
+                "pr": 1712
+            }
+        ],
+        "timestamp": 1553091633
+    },
+    {
+        "timestamp": 1551220833,
+        "version": "2.1.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "2.1.0",
+        "changes": [
+            {
+                "note": "Add `FromLessThanToRequired` and `ToLessThanLengthRequired` revert reasons",
+                "pr": 1604
+            }
+        ],
+        "timestamp": 1551130135
+    },
+    {
+        "version": "2.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1549547375
+    },
+    {
+        "timestamp": 1549452781,
+        "version": "2.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "2.0.0",
+        "changes": [
+            {
+                "note": "Upgrade the bignumber.js to v8.0.2",
+                "pr": 1517
+            },
+            {
+                "note": "Update `ZeroExTransaction` type and add `SignedZeroExTransaction` type",
+                "pr": 1576
+            },
+            {
+                "note": "Add `EIP712DomainWithDefaultSchema` type",
+                "pr": 1576
+            }
+        ],
+        "timestamp": 1549373905
+    },
+    {
+        "timestamp": 1547561734,
+        "version": "1.5.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1547225310,
+        "version": "1.5.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "1.5.0",
+        "changes": [
+            {
+                "note": "Added types for Dutch Auction contract",
+                "pr": 1465
+            }
+        ],
+        "timestamp": 1547040760
+    },
+    {
+        "version": "1.4.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1544739608
+    },
+    {
+        "version": "1.4.0",
+        "changes": [
+            {
+                "note": "Add `LengthMismatch` and `LengthGreaterThan3Required` revert reasons",
+                "pr": 1224
+            },
+            {
+                "note": "Add RevertReasons for DutchAuction contract",
+                "pr": 1225
+            },
+            {
+                "note": "Add MultiAsset types",
+                "pr": 1363
+            }
+        ],
+        "timestamp": 1544570656
+    },
+    {
+        "version": "1.3.0",
+        "changes": [
+            {
+                "note": "Add the `SimpleContractArtifact` type, which describes the artifact format published in the `@0x/contract-artifacts` package",
+                "pr": 1298
+            }
+        ],
+        "timestamp": 1542821676
+    },
+    {
+        "version": "1.2.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1541740904
+    },
+    {
+        "version": "1.2.0",
+        "changes": [
+            {
+                "note": "Added `EIP712Parameter` `EIP712Types` `EIP712TypedData` for EIP712 signing",
+                "pr": 1102
+            },
+            {
+                "note": "Added `ZeroExTransaction` type for Exchange executeTransaction",
+                "pr": 1102
+            },
+            {
+                "note": "Add `AssetData` union type (`type AssetData = ERC20AssetData | ERC721AssetData`)",
+                "pr": 1131
+            }
+        ],
+        "timestamp": 1539871071
+    },
+    {
+        "timestamp": 1538693146,
+        "version": "1.1.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1538475601,
+        "version": "1.1.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1538157789,
+        "version": "1.1.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1537907159,
+        "version": "1.1.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "1.1.0",
+        "changes": [
+            {
+                "note": "Add ObjectMap type",
+                "pr": 1037
+            },
+            {
+                "note": "Add SRA types from connect",
+                "pr": 1085
+            }
+        ],
+        "timestamp": 1537875740
+    },
+    {
+        "timestamp": 1537541580,
+        "version": "1.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "1.0.1",
+        "changes": [
+            {
+                "note": "Add AssetProxyOwner revert reasons",
+                "pr": 1041
+            },
+            {
+                "note": "Add MultiSigWalletWithTimeLock revert reasons",
+                "pr": 1050
+            }
+        ],
+        "timestamp": 1536142250
+    },
+    {
+        "version": "1.0.1-rc.6",
+        "changes": [
+            {
+                "note": "Add WalletError and ValidatorError revert reasons",
+                "pr": 1012
+            },
+            {
+                "note": "Remove Caller and Trezor SignatureTypes",
+                "pr": 1015
+            }
+        ],
+        "timestamp": 1535377027
+    },
+    {
+        "version": "1.0.1-rc.5",
+        "changes": [
+            {
+                "note": "Add revert reasons for ERC721Token",
+                "pr": 933
+            }
+        ],
+        "timestamp": 1535133899
+    },
+    {
+        "version": "1.0.1-rc.4",
+        "changes": [
+            {
+                "pr": 914,
+                "note": "Added SignerType to handle different signing prefix scenarios"
+            }
+        ],
+        "timestamp": 1534210131
+    },
+    {
+        "version": "1.0.1-rc.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1532619515
+    },
+    {
+        "version": "1.0.1-rc.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1532614997
+    },
+    {
+        "version": "1.0.1-rc.1",
+        "changes": [
+            {
+                "note": "Remove `ECSignatureBuffer`"
+            }
+        ],
+        "timestamp": 1532605697
+    },
+    {
+        "timestamp": 1532357734,
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532043000,
+        "version": "1.0.0-rc.1",
+        "changes": [
+            {
+                "note": "Updated types for V2 of 0x protocol"
+            },
+            {
+                "note": "Add `ECSignatureBuffer`"
+            },
+            {
+                "note": "Add Forwarder contract revert reasons"
+            }
+        ]
+    },
+    {
+        "timestamp": 1531149657,
+        "version": "0.8.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1529397769,
+        "version": "0.8.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1527009133,
+        "version": "0.8.0",
+        "changes": [
+            {
+                "note": "Change the order type to v2 format",
+                "pr": 618
+            }
+        ]
+    },
+    {
+        "version": "0.7.0",
+        "changes": [
+            {
+                "note": "Make OpCode type an enum",
+                "pr": 589
+            },
+            {
+                "note": "Moved ExchangeContractErrs, DoneCallback, Token, OrderRelevantState, OrderStateValid, OrderStateInvalid, OrderState, OrderAddresses and OrderValues types from 0x.js",
+                "pr": 579
+            }
+        ],
+        "timestamp": 1527009133
+    },
+    {
+        "timestamp": 1525477860,
+        "version": "0.6.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1525428773,
+        "version": "0.6.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1524044013,
+        "version": "0.6.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "0.6.0",
+        "changes": [
+            {
+                "note": "Add Provider type",
+                "pr": 501
+            }
+        ],
+        "timestamp": 1523462196
+    },
+    {
+        "version": "0.5.0",
+        "changes": [
+            {
+                "note": "Make `DataItem.components` optional",
+                "pr": 485
+            }
+        ],
+        "timestamp": 1522673609
+    },
+    {
+        "timestamp": 1522658513,
+        "version": "0.4.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "0.4.0",
+        "changes": [
+            {
+                "note": "Remove `JSONRPCPayload`",
+                "pr": 426
+            },
+            {
+                "note": "Consolidate `Order`, `SignedOrder`, and `ECSignature` into the `@0xproject/types` package",
+                "pr": 456
+            }
+        ],
+        "timestamp": 1521298800
+    },
+    {
+        "version": "0.3.1",
+        "changes": [
+            {
+                "note": "Added `RawLogEntry` type."
+            }
+        ],
+        "timestamp": 1520434800
+    },
+    {
+        "version": "0.3.0",
+        "changes": [
+            {
+                "note": "Add `data` to `TxData`",
+                "pr": 413
+            },
+            {
+                "note": "Add `number` as an option to `ContractEventArg`",
+                "pr": 413
+            },
+            {
+                "note": "Move web3 types from devDep to dep since required when using this package",
+                "pr": 429
+            }
+        ],
+        "timestamp": 1520089200
+    },
+    {
+        "version": "0.2.1",
+        "changes": [
+            {
+                "note": "Fix publishing issue where .npmignore was not properly excluding undesired content",
+                "pr": 389
+            }
+        ],
+        "timestamp": 1518102000
+    },
+    {
+        "version": "0.2.0",
+        "changes": [
+            {
+                "note": "Added BlockLiteralParam and BlockParam, refactored out of 0x.js types.",
+                "pr": 355
+            }
+        ],
+        "timestamp": 1517929200
+    }
+]

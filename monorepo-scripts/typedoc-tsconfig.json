@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es5",
+        "lib": ["es2017", "dom"],
+        "sourceMap": true,
+        "declaration": true,
+        "experimentalDecorators": true,
+        "downlevelIteration": true,
+        "noImplicitReturns": true,
+        "resolveJsonModule": true,
+        "pretty": true,
+        "skipLibCheck": true,
+        "typeRoots": ["node_modules/@0x/typescript-typings/types", "node_modules/@types"],
+        "strict": true
+    }
+}

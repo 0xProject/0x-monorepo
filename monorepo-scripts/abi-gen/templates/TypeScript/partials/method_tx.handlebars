@@ -1,0 +1,27 @@
+async sendTransactionAsync(
+    txData?: Partial<TxData> | undefined,
+    opts: SendTransactionOpts = { shouldValidate: true },
+): Promise<string> {
+    const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+        { data: this.getABIEncodedTransactionData(), ...txData },
+        this.estimateGasAsync.bind(this),
+    );
+    if (opts.shouldValidate !== false) {
+        await this.callAsync(txDataWithDefaults);
+    }
+    return self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+},
+awaitTransactionSuccessAsync(
+    txData?: Partial<TxData>,
+    opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
+): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+    return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
+},
+async estimateGasAsync(
+    txData?: Partial<TxData> | undefined,
+): Promise<number> {
+    const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+        { data: this.getABIEncodedTransactionData(), ...txData }
+    );
+    return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+},

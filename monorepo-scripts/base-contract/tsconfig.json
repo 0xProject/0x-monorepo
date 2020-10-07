@@ -1,0 +1,9 @@
+{
+    "extends": "../tsconfig",
+    "compilerOptions": {
+        "outDir": "lib",
+        "rootDir": "."
+    },
+    "typeRoots": ["node_modules/@0x/typescript-typings/types", "node_modules/@types"],
+    "include": ["src/**/*", "test/**/*"]
+}

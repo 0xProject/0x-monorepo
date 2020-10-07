@@ -1,0 +1,27 @@
+{
+    "id": "/relayerApiOrdersChannelSubscribePayloadSchema",
+    "type": "object",
+    "properties": {
+        "makerAssetProxyId": {
+            "$ref": "/hexSchema"
+        },
+        "takerAssetProxyId": {
+            "$ref": "/hexSchema"
+        },
+        "makerAssetAddress": {
+            "$ref": "/addressSchema"
+        },
+        "takerAssetAddress": {
+            "$ref": "/addressSchema"
+        },
+        "makerAssetData": {
+            "$ref": "/hexSchema"
+        },
+        "takerAssetData": {
+            "$ref": "/hexSchema"
+        },
+        "traderAssetData": {
+            "$ref": "/hexSchema"
+        }
+    }
+}

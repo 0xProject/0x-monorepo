@@ -1,0 +1,60 @@
+{
+    "name": "@0x/sol-profiler",
+    "version": "4.1.0",
+    "engines": {
+        "node": ">=6.12"
+    },
+    "description": "Generate profiler reports for Solidity code",
+    "main": "lib/src/index.js",
+    "types": "lib/src/index.d.ts",
+    "scripts": {
+        "build": "tsc -b",
+        "build:ci": "yarn build",
+        "lint": "tslint --format stylish --project .",
+        "fix": "tslint --fix --format stylish --project .",
+        "clean": "shx rm -rf lib src/artifacts generated_docs",
+        "diff_docs": "git diff --exit-code ./docs",
+        "s3:sync_md_docs": "aws s3 sync ./docs s3://docs-markdown/${npm_package_name}/v${npm_package_version} --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers",
+        "docs:md": "ts-doc-gen --sourceDir='$PROJECT_FILES' --output=$MD_FILE_DIR --fileExtension=mdx --tsconfig=./typedoc-tsconfig.json",
+        "docs:json": "typedoc --excludePrivate --excludeExternals --excludeProtected --ignoreCompilerErrors --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES"
+    },
+    "config": {
+        "postpublish": {
+            "assets": []
+        }
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/0xProject/0x-monorepo.git"
+    },
+    "license": "Apache-2.0",
+    "bugs": {
+        "url": "https://github.com/0xProject/0x-monorepo/issues"
+    },
+    "homepage": "https://github.com/0xProject/0x-monorepo/packages/sol-profiler/README.md",
+    "dependencies": {
+        "@0x/sol-tracing-utils": "^7.1.0",
+        "@0x/subproviders": "^6.1.1",
+        "@0x/typescript-typings": "^5.1.1",
+        "@0x/utils": "^5.5.1",
+        "@types/node": "12.12.54",
+        "ethereum-types": "^3.2.0",
+        "ethereumjs-util": "^5.1.1",
+        "lodash": "^4.17.11",
+        "web3-provider-engine": "14.0.6"
+    },
+    "devDependencies": {
+        "@0x/ts-doc-gen": "^0.0.22",
+        "@0x/tslint-config": "^4.1.0",
+        "@types/web3-provider-engine": "^14.0.0",
+        "npm-run-all": "^4.1.2",
+        "shx": "^0.2.2",
+        "tslint": "5.11.0",
+        "typedoc": "^0.15.0",
+        "typescript": "3.0.1"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "gitHead": "4f91bfd907996b2f4dd383778b50c479c2602b56"
+}

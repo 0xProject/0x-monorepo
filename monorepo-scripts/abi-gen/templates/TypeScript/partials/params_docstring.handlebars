@@ -1,0 +1,5 @@
+{{#each inputs}}
+    {{#if (getDocstringForParamTs name ../docstrings)}}
+ {{formatDocstringForParamTs name (getDocstringForParamTs name ../docstrings)}}
+    {{/if}}
+{{/each}}
