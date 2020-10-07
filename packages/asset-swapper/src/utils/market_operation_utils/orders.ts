@@ -150,7 +150,6 @@ export interface CreateOrderFromPathOpts {
     orderDomain: OrderDomain;
     contractAddresses: ContractAddresses;
     bridgeSlippage: number;
-    shouldBatchBridgeOrders: boolean;
 }
 
 export function createOrdersFromTwoHopSample(
@@ -327,47 +326,6 @@ export function createBridgeOrder(
         takerAssetAmount: slippedTakerAssetAmount,
         fillableMakerAssetAmount: slippedMakerAssetAmount,
         fillableTakerAssetAmount: slippedTakerAssetAmount,
-        ...createCommonBridgeOrderFields(opts.orderDomain),
-    };
-}
-
-export function createBatchedBridgeOrder(fills: CollapsedFill[], opts: CreateOrderFromPathOpts): OptimizedMarketOrder {
-    const [makerToken, takerToken] = getMakerTakerTokens(opts);
-    let totalMakerAssetAmount = ZERO_AMOUNT;
-    let totalTakerAssetAmount = ZERO_AMOUNT;
-    const batchedBridgeData: DexForwaderBridgeData = {
-        inputToken: takerToken,
-        calls: [],
-    };
-    for (const fill of fills) {
-        const bridgeOrder = createBridgeOrder(fill, makerToken, takerToken, opts);
-        totalMakerAssetAmount = totalMakerAssetAmount.plus(bridgeOrder.makerAssetAmount);
-        totalTakerAssetAmount = totalTakerAssetAmount.plus(bridgeOrder.takerAssetAmount);
-        const { bridgeAddress, bridgeData: orderBridgeData } = assetDataUtils.decodeAssetDataOrThrow(
-            bridgeOrder.makerAssetData,
-        ) as ERC20BridgeAssetData;
-        batchedBridgeData.calls.push({
-            target: bridgeAddress,
-            bridgeData: orderBridgeData,
-            inputTokenAmount: bridgeOrder.takerAssetAmount,
-            outputTokenAmount: bridgeOrder.makerAssetAmount,
-        });
-    }
-    const batchedBridgeAddress = opts.contractAddresses.dexForwarderBridge;
-    const batchedMakerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
-        makerToken,
-        batchedBridgeAddress,
-        dexForwarderBridgeDataEncoder.encode(batchedBridgeData),
-    );
-    return {
-        fills,
-        makerAssetData: batchedMakerAssetData,
-        takerAssetData: assetDataUtils.encodeERC20AssetData(takerToken),
-        makerAddress: batchedBridgeAddress,
-        makerAssetAmount: totalMakerAssetAmount,
-        takerAssetAmount: totalTakerAssetAmount,
-        fillableMakerAssetAmount: totalMakerAssetAmount,
-        fillableTakerAssetAmount: totalTakerAssetAmount,
         ...createCommonBridgeOrderFields(opts.orderDomain),
     };
 }
