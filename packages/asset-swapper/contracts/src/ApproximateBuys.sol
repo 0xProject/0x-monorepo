@@ -125,6 +125,7 @@ contract ApproximateBuys {
             );
         }
     }
+
     function _safeGetPartialAmountCeil(
         uint256 numerator,
         uint256 denominator,
@@ -134,28 +135,9 @@ contract ApproximateBuys {
         view
         returns (uint256 partialAmount)
     {
-        (bool success, bytes memory resultData) =
-            address(this).staticcall(abi.encodeWithSelector(
-                this._getPartialAmountCeil.selector,
-                numerator,
-                denominator,
-                target
-            ));
-        if (!success) {
-            return 0;
-        }
-        return abi.decode(resultData, (uint256));
-    }
-
-    function _getPartialAmountCeil(
-        uint256 numerator,
-        uint256 denominator,
-        uint256 target
-    )
-        public
-        pure
-        returns (uint256 partialAmount)
-    {
-        return LibMath.getPartialAmountCeil(numerator, denominator, target);
+        if (numerator == 0 || target == 0 || denominator == 0) return 0;
+        uint256 c = numerator * target;
+        if (c / numerator != target) return 0;
+        return (c + (denominator - 1)) / denominator;
     }
 }
