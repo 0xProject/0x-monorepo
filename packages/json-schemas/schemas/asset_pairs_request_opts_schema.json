@@ -1,8 +1,0 @@
-{
-    "id": "/AssetPairsRequestOptsSchema",
-    "type": "object",
-    "properties": {
-        "assetDataA": { "$ref": "/hexSchema" },
-        "assetDataB": { "$ref": "/hexSchema" }
-    }
-}

@@ -1,9 +1,0 @@
-{
-    "extends": "../../tsconfig",
-    "compilerOptions": {
-        "typeRoots": ["../../node_modules/@types"],
-        "outDir": "lib",
-        "rootDir": "src"
-    },
-    "include": ["src/**/*"]
-}
