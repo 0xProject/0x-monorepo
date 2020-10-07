@@ -1,3 +1,0 @@
-from setuptools import Command
-
-class test(Command): ...

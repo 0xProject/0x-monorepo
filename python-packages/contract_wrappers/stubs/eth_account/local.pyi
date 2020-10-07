@@ -1,3 +1,0 @@
-class LocalAccount: 
-    address: str
-    ...
