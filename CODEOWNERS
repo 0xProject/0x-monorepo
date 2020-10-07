@@ -5,20 +5,20 @@
 # https://git-scm.com/docs/gitignore#_pattern_format
 
 # Dev tools & setup
-.circleci/ @LogvinovLeon
-packages/abi-gen/ @feuGeneA
-packages/base-contract/ @xianny
-packages/abi-gen-templates/ @feuGeneA @xianny
-packages/dev-utils/ @LogvinovLeon @fabioberger
-packages/ethereum-types/ @LogvinovLeon
-packages/monorepo-scripts/ @fabioberger
-packages/sol-compiler/ @LogvinovLeon
-packages/sol-coverage/ @LogvinovLeon
-packages/sol-profiler/ @LogvinovLeon
-packages/sol-trace/ @LogvinovLeon
-packages/sol-tracing-utils/ @LogvinovLeon
-packages/sol-resolver/ @LogvinovLeon
-packages/subproviders/ @fabioberger @dekz
+.circleci/ @dorothy-zbornak
+packages/abi-gen/ @feuGeneA @dorothy-zbornak
+packages/base-contract/ @xianny @dorothy-zbornak
+packages/abi-gen-templates/ @feuGeneA @xianny @dorothy-zbornak
+packages/dev-utils/ @dorothy-zbornak @dorothy-zbornak
+packages/ethereum-types/ @dorothy-zbornak
+packages/monorepo-scripts/ @dorothy-zbornak
+packages/sol-compiler/ @dorothy-zbornak
+packages/sol-coverage/ @mzhu25
+packages/sol-profiler/ @mzhu25
+packages/sol-trace/ @mzhu25
+packages/sol-tracing-utils/ @mzhu25
+packages/sol-resolver/ @dorothy-zbornak
+packages/subproviders/ @dorothy-zbornak @dekz
 packages/verdaccio/ @albrow
-packages/web3-wrapper/ @LogvinovLeon @fabioberger
-packages/utils/ @hysz
+packages/web3-wrapper/ @dorothy-zbornak
+packages/utils/ @hysz @dorothy-zbornak
