@@ -9,19 +9,19 @@
         "contracts/*"
     ],
     "scripts": {
-        "deps_versions:ci": "node ./packages/monorepo-scripts/lib/deps_versions.js",
+        "deps_versions:ci": "node ./monorepo-scripts/lib/deps_versions.js",
         "fix": "wsrun fix $PKG --fast-exit --parallel --exclude-missing",
         "ganache": "ganache-cli -p 8545 --gasLimit 10000000 --networkId 50 -m \"${npm_package_config_mnemonic}\"",
         "prettier": "prettier --write '**/*.{ts,tsx,json,md}' --config .prettierrc",
         "prettier:ci": "prettier --list-different '**/*.{ts,tsx,json,md}' --config .prettierrc",
-        "report_coverage": "lcov-result-merger './{packages/*/coverage/lcov.info,python-packages/*/.coverage}' | coveralls",
-        "test:installation": "node ./packages/monorepo-scripts/lib/test_installation.js",
-        "test:installation:local": "IS_LOCAL_PUBLISH=true node ./packages/monorepo-scripts/lib/test_installation.js",
+        "report_coverage": "lcov-result-merger './packages/*/coverage/lcov.info' | coveralls",
+        "test:installation": "node ./monorepo-scripts/lib/test_installation.js",
+        "test:installation:local": "IS_LOCAL_PUBLISH=true node ./monorepo-scripts/lib/test_installation.js",
         "test:publish:circleci": "yarn npm-cli-login -u test -p test -e test@example.com -r http://localhost:4873 && IS_LOCAL_PUBLISH=true run-s script:publish test:installation:local",
         "run:publish": "run-s install:all build:monorepo_scripts script:prepublish_checks rebuild script:publish",
         "run:publish:local": "IS_LOCAL_PUBLISH=true yarn run:publish",
-        "script:prepublish_checks": "node ./packages/monorepo-scripts/lib/prepublish_checks.js",
-        "script:publish": "node ./packages/monorepo-scripts/lib/publish.js",
+        "script:prepublish_checks": "node ./monorepo-scripts/lib/prepublish_checks.js",
+        "script:publish": "node ./monorepo-scripts/lib/publish.js",
         "install:all": "yarn install",
         "wsrun": "wsrun",
         "lerna": "lerna",
@@ -41,7 +41,7 @@
         "rebuild": "run-s clean build",
         "test": "wsrun test $PKG --fast-exit --serial --exclude-missing --exclude @0x/orderbook",
         "test:contracts": "wsrun test -p ${npm_package_config_contractsPackages} -c --fast-exit --exclude-missing",
-        "generate_doc": "node ./packages/monorepo-scripts/lib/doc_generate.js",
+        "generate_doc": "node ./monorepo-scripts/lib/doc_generate.js",
         "upload_md_docs": "aws s3 rm --recursive s3://docs-markdown; wsrun s3:sync_md_docs --exclude-missing",
         "diff_md_docs:ci": "wsrun diff_docs --exclude-missing",
         "test:generate_docs:circleci": "for i in ${npm_package_config_packagesWithDocPages}; do yarn generate_doc --package $i || break -1; done;",
@@ -53,30 +53,14 @@
     "config": {
         "contractsPackages": "@0x/contracts-asset-proxy @0x/contracts-dev-utils @0x/contracts-erc20 @0x/contracts-erc721 @0x/contracts-erc1155 @0x/contracts-exchange @0x/contracts-exchange-forwarder @0x/contracts-exchange-libs @0x/contracts-integrations @0x/contracts-multisig @0x/contracts-staking @0x/contracts-test-utils @0x/contracts-utils @0x/contracts-coordinator @0x/contracts-broker @0x/contracts-zero-ex",
         "mnemonic": "concert load couple harbor equip island argue ramp clarify fence smart topic",
-        "packagesWithDocPages": "0x.js @0x/contract-wrappers @0x/connect @0x/json-schemas @0x/subproviders @0x/web3-wrapper @0x/order-utils @0x/sol-compiler @0x/sol-coverage @0x/sol-profiler @0x/sol-trace @0x/dev-utils @0x/asset-swapper @0x/migrations @0x/orderbook @0x/contracts-asset-proxy @0x/contracts-coordinator @0x/contracts-dev-utils @0x/contracts-erc20 @0x/contracts-erc721 @0x/contracts-erc1155 @0x/contracts-exchange @0x/contracts-exchange-forwarder @0x/contracts-exchange-libs @0x/contracts-extensions @0x/contracts-staking @0x/contracts-zero-ex",
+        "packagesWithDocPages": "@0x/contract-wrappers @0x/order-utils @0x/migrations @0x/contracts-asset-proxy @0x/contracts-coordinator @0x/contracts-dev-utils @0x/contracts-erc20 @0x/contracts-erc721 @0x/contracts-erc1155 @0x/contracts-exchange @0x/contracts-exchange-forwarder @0x/contracts-exchange-libs @0x/contracts-extensions @0x/contracts-staking @0x/contracts-zero-ex",
         "ignoreDependencyVersions": "@types/styled-components @types/node",
-        "ignoreDependencyVersionsForPackage": "instant contract-wrappers"
-    },
-    "bundlewatch": {
-        "files": [
-            {
-                "path": "packages/0x.js/_bundles/index.min.js",
-                "maxSize": "1300kB"
-            }
-        ],
-        "ci": {
-            "trackBranches": [
-                "master",
-                "development"
-            ],
-            "repoBranchBase": "development"
-        }
+        "ignoreDependencyVersionsForPackage": "contract-wrappers"
     },
     "devDependencies": {
         "@0x-lerna-fork/lerna": "3.16.10",
         "@0xproject/npm-cli-login": "^0.0.11",
         "async-child-process": "^1.1.1",
-        "bundlewatch": "^0.2.1",
         "coveralls": "^3.0.0",
         "ganache-cli": "6.8.0-istanbul.0",
         "lcov-result-merger": "^3.0.0",
