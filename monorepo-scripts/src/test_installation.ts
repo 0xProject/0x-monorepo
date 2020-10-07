@@ -8,6 +8,7 @@ import { exec as execAsync } from 'promisify-child-process';
 import * as rimraf from 'rimraf';
 import { promisify } from 'util';
 
+import { constants } from './constants';
 import { Changelog, Package } from './types';
 import { utils } from './utils/utils';
 
@@ -52,7 +53,7 @@ const FIVE_MB = 1024 * 1024 * 5;
 (async () => {
     const IS_LOCAL_PUBLISH = process.env.IS_LOCAL_PUBLISH === 'true';
     const registry = IS_LOCAL_PUBLISH ? 'http://localhost:4873/' : 'https://registry.npmjs.org/';
-    const monorepoRootPath = path.join(__dirname, '../../..');
+    const monorepoRootPath = constants.monorepoRootPath;
     // We sort error messages according to package topology so that we can see
     // them in a more intuitive order. E.g. if package A has an error and
     // package B imports it, the tests for both package A and package B will
