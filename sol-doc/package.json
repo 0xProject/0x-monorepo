@@ -1,0 +1,63 @@
+{
+    "name": "@0x/sol-doc",
+    "version": "3.1.8",
+    "description": "Solidity documentation generator",
+    "main": "lib/src/index.js",
+    "types": "lib/src/index.d.js",
+    "scripts": {
+        "start": "node ./lib/src/cli.js",
+        "build": "tsc",
+        "build:ci": "yarn build",
+        "test": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js --timeout 6000 --exit",
+        "test:circleci": "yarn test:coverage",
+        "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
+        "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
+        "lint": "tslint --format stylish --project .",
+        "fix": "tslint --fix --format stylish --project .",
+        "clean": "shx rm -rf lib docs/*",
+        "generate-protocol-docs": "COMMIT=`git rev-parse --short HEAD`; mkdir -p ${npm_package_config_outputDir}; yarn start `echo ${npm_package_config_sources} | sed -r 's/(\\S+?)\\b/--source \\1/g'` --root ../ --root ../node_modules/@0x/contracts-=contracts/ `echo ${npm_package_config_contracts} | sed -r 's/(\\w+?)\\b/--contract \\1/g'` --md ${npm_package_config_outputDir}/reference.mdx --md-url-prefix \"${npm_package_config_repoBlobRoot}/${COMMIT}\"",
+        "s3:sync_md_docs": "aws s3 sync ${npm_package_config_outputDir} s3://docs-markdown/${npm_package_config_s3DocsPath} --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers"
+    },
+    "config": {
+        "outputDir": "./docs",
+        "repoBlobRoot": "https://github.com/0xProject/0x-monorepo/blob",
+        "sources": "../contracts/exchange/contracts/src/Exchange.sol ../contracts/exchange-forwarder/contracts/src/Forwarder.sol ../../contracts/staking/contracts/src/Staking.sol ../contracts/coordinator/contracts/src/Coordinator.sol",
+        "contracts": "Exchange Forwarder Staking Coordinator",
+        "s3DocsPath": "@0x/contracts-docs/v3.0.0"
+    },
+    "bin": {
+        "sol-doc": "bin/sol-doc.js"
+    },
+    "repository": "https://github.com/0xProject/0x-monorepo.git",
+    "author": "F. Eugene Aumson",
+    "license": "Apache-2.0",
+    "dependencies": {
+        "@0x/sol-compiler": "^4.1.1",
+        "@0x/types": "^3.2.0",
+        "@0x/utils": "^5.5.1",
+        "@types/node": "12.12.54",
+        "ethereum-types": "^3.2.0",
+        "ethereumjs-util": "^5.1.1",
+        "glob": "^7.1.2",
+        "yargs": "^10.0.3"
+    },
+    "devDependencies": {
+        "@0x/dev-utils": "^3.3.0",
+        "@0x/tslint-config": "^4.1.0",
+        "@types/mocha": "^5.2.7",
+        "chai": "^4.0.1",
+        "chai-as-promised": "^7.1.0",
+        "chai-bignumber": "^3.0.0",
+        "dirty-chai": "^2.0.1",
+        "lodash": "^4.17.11",
+        "make-promises-safe": "^1.1.0",
+        "mocha": "^6.2.0",
+        "shx": "^0.2.2",
+        "source-map-support": "^0.5.0",
+        "tslint": "5.11.0"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "gitHead": "4f91bfd907996b2f4dd383778b50c479c2602b56"
+}

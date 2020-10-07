@@ -79,11 +79,11 @@ TODO.md
 .vscode
 
 # generated contract artifacts/
-packages/sol-tracing-utils/test/fixtures/artifacts/
+sol-tracing-utils/test/fixtures/artifacts/
 
 # solc-bin in sol-compiler
-packages/sol-compiler/solc_bin/
+sol-compiler/solc_bin/
 # Doc README copy
-packages/*/docs/README.md
+*/docs/README.md
 
 .DS_Store

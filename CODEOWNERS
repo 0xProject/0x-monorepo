@@ -6,19 +6,19 @@
 
 # Dev tools & setup
 .circleci/ @dorothy-zbornak
-packages/abi-gen/ @feuGeneA @dorothy-zbornak
-packages/base-contract/ @xianny @dorothy-zbornak
-packages/abi-gen-templates/ @feuGeneA @xianny @dorothy-zbornak
-packages/dev-utils/ @dorothy-zbornak @dorothy-zbornak
-packages/ethereum-types/ @dorothy-zbornak
-packages/monorepo-scripts/ @dorothy-zbornak
-packages/sol-compiler/ @dorothy-zbornak
-packages/sol-coverage/ @mzhu25
-packages/sol-profiler/ @mzhu25
-packages/sol-trace/ @mzhu25
-packages/sol-tracing-utils/ @mzhu25
-packages/sol-resolver/ @dorothy-zbornak
-packages/subproviders/ @dorothy-zbornak @dekz
-packages/verdaccio/ @albrow
-packages/web3-wrapper/ @dorothy-zbornak
-packages/utils/ @hysz @dorothy-zbornak
+abi-gen/ @feuGeneA @dorothy-zbornak
+base-contract/ @xianny @dorothy-zbornak
+abi-gen-templates/ @feuGeneA @xianny @dorothy-zbornak
+dev-utils/ @dorothy-zbornak @dorothy-zbornak
+ethereum-types/ @dorothy-zbornak
+monorepo-scripts/ @dorothy-zbornak
+sol-compiler/ @dorothy-zbornak
+sol-coverage/ @mzhu25
+sol-profiler/ @mzhu25
+sol-trace/ @mzhu25
+sol-tracing-utils/ @mzhu25
+sol-resolver/ @dorothy-zbornak
+subproviders/ @dorothy-zbornak @dekz
+verdaccio/ @albrow
+web3-wrapper/ @dorothy-zbornak
+utils/ @hysz @dorothy-zbornak

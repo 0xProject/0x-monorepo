@@ -23,7 +23,7 @@ jobs:
                   paths:
                       - ~/repo
             - store_artifacts:
-                  path: ~/repo/packages/abi-gen/test-cli/output
+                  path: ~/repo/abi-gen/test-cli/output
     test-publish:
         resource_class: medium+
         docker:
@@ -72,43 +72,43 @@ jobs:
             - save_cache:
                   key: coverage-abi-gen-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
-                      - ~/repo/packages/abi-gen/coverage/lcov.info
+                      - ~/repo/abi-gen/coverage/lcov.info
             - save_cache:
                   key: coverage-assert-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
-                      - ~/repo/packages/assert/coverage/lcov.info
+                      - ~/repo/assert/coverage/lcov.info
             - save_cache:
                   key: coverage-base-contract-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
-                      - ~/repo/packages/base-contract/coverage/lcov.info
+                      - ~/repo/base-contract/coverage/lcov.info
             - save_cache:
                   key: coverage-dev-utils-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
-                      - ~/repo/packages/dev-utils/coverage/lcov.info
+                      - ~/repo/dev-utils/coverage/lcov.info
             - save_cache:
                   key: coverage-json-schemas-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
-                      - ~/repo/packages/json-schemas/coverage/lcov.info
+                      - ~/repo/json-schemas/coverage/lcov.info
             - save_cache:
                   key: coverage-sol-compiler-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
-                      - ~/repo/packages/sol-compiler/coverage/lcov.info
+                      - ~/repo/sol-compiler/coverage/lcov.info
             - save_cache:
                   key: coverage-sol-tracing-utils-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
-                      - ~/repo/packages/sol-tracing-utils/coverage/lcov.info
+                      - ~/repo/sol-tracing-utils/coverage/lcov.info
             - save_cache:
                   key: coverage-sol-doc-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
-                      - ~/repo/packages/sol-doc/coverage/lcov.info
+                      - ~/repo/sol-doc/coverage/lcov.info
             - save_cache:
                   key: coverage-subproviders-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
-                      - ~/repo/packages/subproviders/coverage/lcov.info
+                      - ~/repo/subproviders/coverage/lcov.info
             - save_cache:
                   key: coverage-web3-wrapper-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
-                      - ~/repo/packages/web3-wrapper/coverage/lcov.info
+                      - ~/repo/web3-wrapper/coverage/lcov.info
     static-tests:
         resource_class: large
         working_directory: ~/repo
