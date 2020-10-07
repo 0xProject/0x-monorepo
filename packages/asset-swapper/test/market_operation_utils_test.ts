@@ -265,23 +265,6 @@ describe('MarketOperationUtils tests', () => {
         return rates;
     }
 
-    function getSortedOrderSources(side: MarketOperation, orders: OptimizedMarketOrder[]): ERC20BridgeSource[][] {
-        return (
-            orders
-                // Sort fills by descending rate.
-                .map(o => {
-                    return o.fills
-                        .slice()
-                        .sort((a, b) =>
-                            side === MarketOperation.Sell
-                                ? b.output.div(b.input).comparedTo(a.output.div(a.input))
-                                : b.input.div(b.output).comparedTo(a.input.div(a.output)),
-                        )
-                        .map(f => f.source);
-                })
-        );
-    }
-
     const NUM_SAMPLES = 3;
 
     interface RatesBySource {

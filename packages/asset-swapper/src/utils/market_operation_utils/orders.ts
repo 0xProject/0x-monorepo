@@ -1,7 +1,7 @@
 import { ContractAddresses } from '@0x/contract-addresses';
 import { assetDataUtils, ERC20AssetData, generatePseudoRandomSalt, orderCalculationUtils } from '@0x/order-utils';
 import { RFQTIndicativeQuote } from '@0x/quote-server';
-import { ERC20BridgeAssetData, SignedOrder } from '@0x/types';
+import { SignedOrder } from '@0x/types';
 import { AbiEncoder, BigNumber } from '@0x/utils';
 
 import { MarketOperation, SignedOrderWithFillableAmounts } from '../../types';
@@ -39,30 +39,6 @@ import {
 } from './types';
 
 // tslint:disable completed-docs no-unnecessary-type-assertion
-
-interface DexForwaderBridgeData {
-    inputToken: string;
-    calls: Array<{
-        target: string;
-        inputTokenAmount: BigNumber;
-        outputTokenAmount: BigNumber;
-        bridgeData: string;
-    }>;
-}
-
-const dexForwarderBridgeDataEncoder = AbiEncoder.create([
-    { name: 'inputToken', type: 'address' },
-    {
-        name: 'calls',
-        type: 'tuple[]',
-        components: [
-            { name: 'target', type: 'address' },
-            { name: 'inputTokenAmount', type: 'uint256' },
-            { name: 'outputTokenAmount', type: 'uint256' },
-            { name: 'bridgeData', type: 'bytes' },
-        ],
-    },
-]);
 
 export function createDummyOrderForSampler(
     makerAssetData: string,
