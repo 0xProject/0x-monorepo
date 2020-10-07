@@ -36,6 +36,7 @@
         "@0x/tslint-config": "^4.1.0",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^5.2.7",
+        "@types/node": "12.12.54",
         "make-promises-safe": "^1.1.0",
         "mocha": "^6.2.0",
         "npm-run-all": "^4.1.2",

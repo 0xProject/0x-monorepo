@@ -44,6 +44,7 @@
         "@0x/dev-utils": "^3.3.0",
         "@0x/tslint-config": "^4.1.0",
         "@types/mocha": "^5.2.7",
+        "@types/node": "12.12.54",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
         "chai-bignumber": "^3.0.0",

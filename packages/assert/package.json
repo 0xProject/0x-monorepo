@@ -33,6 +33,7 @@
         "@0x/tslint-config": "^4.1.0",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^5.2.7",
+        "@types/node": "12.12.54",
         "@types/valid-url": "^1.0.2",
         "chai": "^4.0.1",
         "dirty-chai": "^2.0.1",

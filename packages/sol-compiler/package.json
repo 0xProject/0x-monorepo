@@ -51,6 +51,7 @@
         "@0x/tslint-config": "^4.1.0",
         "@types/mkdirp": "^0.5.2",
         "@types/mocha": "^5.2.7",
+        "@types/node": "12.12.54",
         "@types/pluralize": "^0.0.29",
         "@types/require-from-string": "^1.2.0",
         "@types/semver": "5.5.0",
