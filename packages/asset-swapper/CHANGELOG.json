@@ -133,6 +133,18 @@
             {
                 "note": "Respect max slippage in EP consumer",
                 "pr": 2712
+            },
+            {
+                "note": "Introduced Path class, exchangeProxyOverhead parameter",
+                "pr": 2691
+            },
+            {
+                "note": "Added `Shell`",
+                "pr": 2722
+            },
+            {
+                "note": "Fix exchange proxy overhead gas being scaled by gas price",
+                "pr": 2723
             }
         ]
     },

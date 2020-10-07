@@ -9,6 +9,10 @@
             {
                 "note": "Add EP flavor of `IllegalReentrancyError`.",
                 "pr": 2657
+            },
+            {
+                "note": "Added LiquidityProviderFeature errors",
+                "pr": 2691
             }
         ]
     },

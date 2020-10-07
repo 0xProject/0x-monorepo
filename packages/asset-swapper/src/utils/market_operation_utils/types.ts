@@ -43,6 +43,7 @@ export enum ERC20BridgeSource {
     MStable = 'mStable',
     Mooniswap = 'Mooniswap',
     MultiHop = 'MultiHop',
+    Shell = 'Shell',
     Swerve = 'Swerve',
     SushiSwap = 'SushiSwap',
 }
@@ -159,16 +160,6 @@ export interface DexSample<TFillData extends FillData = FillData> extends Source
 }
 
 /**
- * Flags for `Fill` objects.
- */
-export enum FillFlags {
-    ConflictsWithKyber = 0x1,
-    Kyber = 0x2,
-    ConflictsWithMultiBridge = 0x4,
-    MultiBridge = 0x8,
-}
-
-/**
  * Represents a node on a fill path.
  */
 export interface Fill<TFillData extends FillData = FillData> extends SourceInfo<TFillData> {
@@ -176,8 +167,8 @@ export interface Fill<TFillData extends FillData = FillData> extends SourceInfo<
     // This is generated when the path is generated and is useful to distinguish
     // paths that have the same `source` IDs but are distinct (e.g., Curves).
     sourcePathId: string;
-    // See `FillFlags`.
-    flags: FillFlags;
+    // See `SOURCE_FLAGS`.
+    flags: number;
     // Input fill amount (taker asset amount in a sell, maker asset amount in a buy).
     input: BigNumber;
     // Output fill amount (maker asset amount in a sell, taker asset amount in a buy).
@@ -236,6 +227,7 @@ export interface GetMarketOrdersRfqtOpts extends RfqtRequestOpts {
 
 export type FeeEstimate = (fillData?: FillData) => number | BigNumber;
 export type FeeSchedule = Partial<{ [key in ERC20BridgeSource]: FeeEstimate }>;
+export type ExchangeProxyOverhead = (sourceFlags: number) => BigNumber;
 
 /**
  * Options for `getMarketSellOrdersAsync()` and `getMarketBuyOrdersAsync()`.
@@ -290,6 +282,7 @@ export interface GetMarketOrdersOpts {
      * Estimated gas consumed by each liquidity source.
      */
     gasSchedule: FeeSchedule;
+    exchangeProxyOverhead: ExchangeProxyOverhead;
     /**
      * Whether to pad the quote with a redundant fallback quote using different
      * sources. Defaults to `true`.
@@ -323,7 +316,7 @@ export interface SourceQuoteOperation<TFillData extends FillData = FillData>
 
 export interface OptimizerResult {
     optimizedOrders: OptimizedMarketOrder[];
-    isTwoHop: boolean;
+    sourceFlags: number;
     liquidityDelivered: CollapsedFill[] | DexSample<MultiHopFillData>;
 }
 
@@ -365,6 +358,7 @@ export interface GenerateOptimizedOrdersOpts {
     maxFallbackSlippage?: number;
     excludedSources?: ERC20BridgeSource[];
     feeSchedule?: FeeSchedule;
+    exchangeProxyOverhead?: ExchangeProxyOverhead;
     allowFallback?: boolean;
     shouldBatchBridgeOrders?: boolean;
 }

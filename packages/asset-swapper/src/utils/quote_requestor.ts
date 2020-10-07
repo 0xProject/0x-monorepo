@@ -3,13 +3,13 @@ import { assetDataUtils, orderCalculationUtils, SignedOrder } from '@0x/order-ut
 import { RFQTFirmQuote, RFQTIndicativeQuote, TakerRequest } from '@0x/quote-server';
 import { TakerRequestQueryParams } from '@0x/quote-server/lib/src/types';
 import { ERC20AssetData } from '@0x/types';
-import { BigNumber, logUtils } from '@0x/utils';
+import { BigNumber } from '@0x/utils';
 import Axios, { AxiosInstance } from 'axios';
 import { Agent as HttpAgent } from 'http';
 import { Agent as HttpsAgent } from 'https';
 
 import { constants } from '../constants';
-import { MarketOperation, RfqtMakerAssetOfferings, RfqtRequestOpts } from '../types';
+import { LogFunction, MarketOperation, RfqtMakerAssetOfferings, RfqtRequestOpts } from '../types';
 
 import { ONE_SECOND_MS } from './market_operation_utils/constants';
 import { RfqMakerBlacklist } from './rfq_maker_blacklist';
@@ -108,8 +108,6 @@ function convertIfAxiosError(error: any): Error | object /* axios' .d.ts has Axi
     }
 }
 
-export type LogFunction = (obj: object, msg?: string, ...args: any[]) => void;
-
 export class QuoteRequestor {
     private readonly _schemaValidator: SchemaValidator = new SchemaValidator();
     private readonly _orderSignatureToMakerUri: { [orderSignature: string]: string } = {};
@@ -149,12 +147,12 @@ export class QuoteRequestor {
 
     constructor(
         private readonly _rfqtAssetOfferings: RfqtMakerAssetOfferings,
-        private readonly _warningLogger: LogFunction = (obj, msg) =>
-            logUtils.warn(`${msg ? `${msg}: ` : ''}${JSON.stringify(obj)}`),
-        private readonly _infoLogger: LogFunction = (obj, msg) =>
-            logUtils.log(`${msg ? `${msg}: ` : ''}${JSON.stringify(obj)}`),
+        private readonly _warningLogger: LogFunction = constants.DEFAULT_WARNING_LOGGER,
+        private readonly _infoLogger: LogFunction = constants.DEFAULT_INFO_LOGGER,
         private readonly _expiryBufferMs: number = constants.DEFAULT_SWAP_QUOTER_OPTS.expiryBufferMs,
-    ) {}
+    ) {
+        rfqMakerBlacklist.infoLogger = this._infoLogger;
+    }
 
     public async requestRfqtFirmQuotesAsync(
         makerAssetData: string,
@@ -425,7 +423,7 @@ export class QuoteRequestor {
                                 },
                             },
                         });
-                        rfqMakerBlacklist.logTimeoutOrLackThereof(url, latencyMs > maxResponseTimeMs);
+                        rfqMakerBlacklist.logTimeoutOrLackThereof(url, latencyMs >= maxResponseTimeMs);
                         result.push({ response: response.data, makerUri: url });
                     } catch (err) {
                         const latencyMs = Date.now() - timeBeforeAwait;
@@ -441,7 +439,7 @@ export class QuoteRequestor {
                                 },
                             },
                         });
-                        rfqMakerBlacklist.logTimeoutOrLackThereof(url, latencyMs > maxResponseTimeMs);
+                        rfqMakerBlacklist.logTimeoutOrLackThereof(url, latencyMs >= maxResponseTimeMs);
                         this._warningLogger(
                             convertIfAxiosError(err),
                             `Failed to get RFQ-T ${quoteType} quote from market maker endpoint ${url} for API key ${

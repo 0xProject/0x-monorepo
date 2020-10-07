@@ -26,6 +26,7 @@ import "./mixins/MixinKyber.sol";
 import "./mixins/MixinMooniswap.sol";
 import "./mixins/MixinMStable.sol";
 import "./mixins/MixinOasis.sol";
+import "./mixins/MixinShell.sol";
 import "./mixins/MixinUniswap.sol";
 import "./mixins/MixinUniswapV2.sol";
 import "./mixins/MixinZeroExBridge.sol";
@@ -38,6 +39,7 @@ contract BridgeAdapter is
     MixinMooniswap,
     MixinMStable,
     MixinOasis,
+    MixinShell,
     MixinUniswap,
     MixinUniswapV2,
     MixinZeroExBridge
@@ -49,6 +51,7 @@ contract BridgeAdapter is
     address private immutable MOONISWAP_BRIDGE_ADDRESS;
     address private immutable MSTABLE_BRIDGE_ADDRESS;
     address private immutable OASIS_BRIDGE_ADDRESS;
+    address private immutable SHELL_BRIDGE_ADDRESS;
     address private immutable UNISWAP_BRIDGE_ADDRESS;
     address private immutable UNISWAP_V2_BRIDGE_ADDRESS;
 
@@ -76,6 +79,7 @@ contract BridgeAdapter is
         MixinMooniswap(addresses)
         MixinMStable(addresses)
         MixinOasis(addresses)
+        MixinShell(addresses)
         MixinUniswap(addresses)
         MixinUniswapV2(addresses)
         MixinZeroExBridge()
@@ -86,6 +90,7 @@ contract BridgeAdapter is
         MOONISWAP_BRIDGE_ADDRESS = addresses.mooniswapBridge;
         MSTABLE_BRIDGE_ADDRESS = addresses.mStableBridge;
         OASIS_BRIDGE_ADDRESS = addresses.oasisBridge;
+        SHELL_BRIDGE_ADDRESS = addresses.shellBridge;
         UNISWAP_BRIDGE_ADDRESS = addresses.uniswapBridge;
         UNISWAP_V2_BRIDGE_ADDRESS = addresses.uniswapV2Bridge;
     }
@@ -155,6 +160,12 @@ contract BridgeAdapter is
             );
         } else if (bridgeAddress == OASIS_BRIDGE_ADDRESS) {
             boughtAmount = _tradeOasis(
+                buyToken,
+                sellAmount,
+                bridgeData
+            );
+        } else if (bridgeAddress == SHELL_BRIDGE_ADDRESS) {
+            boughtAmount = _tradeShell(
                 buyToken,
                 sellAmount,
                 bridgeData

@@ -349,7 +349,7 @@ function fromIntermediateQuoteFillResult(ir: IntermediateQuoteFillResult, quoteI
     };
 }
 
-export function getFlattenedFillsFromOrders(orders: OptimizedMarketOrder[]): CollapsedFill[] {
+function getFlattenedFillsFromOrders(orders: OptimizedMarketOrder[]): CollapsedFill[] {
     const fills: CollapsedFill[] = [];
     for (const o of orders) {
         fills.push(...o.fills);
