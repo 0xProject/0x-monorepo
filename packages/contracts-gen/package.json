@@ -32,6 +32,7 @@
         "@0x/types": "^3.2.0",
         "@0x/typescript-typings": "^5.1.1",
         "@0x/utils": "^5.5.1",
+        "@types/node": "12.12.54",
         "ethereum-types": "^3.2.0",
         "lodash": "^4.17.11",
         "mkdirp": "^0.5.1",
@@ -41,7 +42,6 @@
     "devDependencies": {
         "@0x/tslint-config": "^4.1.0",
         "@types/mkdirp": "^0.5.2",
-        "@types/node": "12.12.54",
         "@types/prettier": "^1.15.2",
         "shx": "^0.2.2",
         "tslint": "5.11.0",
