@@ -24,8 +24,7 @@ interface ParsedDependencies {
 
 const PACKAGE_JSON_GLOB = env.PACKAGE_JSON_GLOB || './*/package.json';
 
-const config = utils.readJSONFile<PackageJSON>('./package.json')
-    .config as PackageJSONConfig; // tslint:disable-line no-unnecessary-type-assertion
+const config = utils.readJSONFile<PackageJSON>('./package.json').config as PackageJSONConfig; // tslint:disable-line no-unnecessary-type-assertion
 const dependenciesWithIgnoredVersions: string[] = (config.ignoreDependencyVersions || ('' as string)).split(' ');
 const packagesWithIgnoredVersions: string[] = (config.ignoreDependencyVersionsForPackage || ('' as string)).split(' ');
 
