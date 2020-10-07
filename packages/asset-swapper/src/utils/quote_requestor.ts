@@ -337,10 +337,9 @@ export class QuoteRequestor {
         const result: Array<{ response: ResponseT; makerUri: string }> = [];
         await Promise.all(
             Object.keys(this._rfqtAssetOfferings).map(async url => {
-                if (
-                    this._makerSupportsPair(url, makerAssetData, takerAssetData) &&
-                    !rfqMakerBlacklist.isMakerBlacklisted(url)
-                ) {
+                if (rfqMakerBlacklist.isMakerBlacklisted(url)) {
+                    this._infoLogger({ rfqtMakerInteraction: { url, quoteType, isBlacklisted: true } });
+                } else if (this._makerSupportsPair(url, makerAssetData, takerAssetData)) {
                     const requestParamsWithBigNumbers = {
                         takerAddress: options.takerAddress,
                         ...inferQueryParams(marketOperation, makerAssetData, takerAssetData, assetFillAmount),
@@ -358,7 +357,8 @@ export class QuoteRequestor {
                             : undefined,
                     };
 
-                    const partialLogEntry = { url, quoteType, requestParams };
+                    const partialLogEntry = { url, quoteType, requestParams, isBlacklisted: false };
+
                     const timeBeforeAwait = Date.now();
                     const maxResponseTimeMs =
                         options.makerEndpointMaxResponseTimeMs === undefined
