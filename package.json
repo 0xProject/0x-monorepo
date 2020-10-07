@@ -13,7 +13,7 @@
         "ganache": "ganache-cli -p 8545 --gasLimit 10000000 --networkId 50 -m \"${npm_package_config_mnemonic}\"",
         "prettier": "prettier --write '**/*.{ts,tsx,json,md}' --config .prettierrc",
         "prettier:ci": "prettier --list-different '**/*.{ts,tsx,json,md}' --config .prettierrc",
-        "report_coverage": "lcov-result-merger './{*/coverage/lcov.info}' | coveralls",
+        "report_coverage": "lcov-result-merger './*/coverage/lcov.info' | coveralls",
         "test:installation": "node ./monorepo-scripts/lib/test_installation.js",
         "test:installation:local": "IS_LOCAL_PUBLISH=true node ./monorepo-scripts/lib/test_installation.js",
         "test:publish:circleci": "yarn npm-cli-login -u test -p test -e test@example.com -r http://localhost:4873 && IS_LOCAL_PUBLISH=true run-s script:publish test:installation:local",
