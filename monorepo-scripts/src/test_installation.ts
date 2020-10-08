@@ -7,18 +7,13 @@ import * as path from 'path';
 import { exec as execAsync } from 'promisify-child-process';
 import * as rimraf from 'rimraf';
 import { promisify } from 'util';
+import * as yargs from 'yargs';
 
 import { constants } from './constants';
 import { Changelog, Package } from './types';
 import { utils } from './utils/utils';
 
-// Packages might not be runnable if they are command-line tools or only run in browsers.
-const UNRUNNABLE_PACKAGES = ['@0x/abi-gen'];
-// HACK(fabio): Temporarily adding '@0x/contracts-coordinator', '@0x/contracts-extensions' since they
-// aren't working in the V3 branch yet.
-// TODO(dorothy-zbornak): Remove '@0x/contracts-coordinator', '@0x/contracts-extensions' after updating
-// these packages for 3.0.
-const UNINSTALLABLE_PACKAGES = ['@0x/contracts-coordinator', '@0x/contracts-extensions'];
+const ARGV = yargs.option('skip-install', { type: 'array', default: [] }).argv;
 
 const mkdirpAsync = promisify(mkdirp);
 const rimrafAsync = promisify(rimraf);
@@ -65,7 +60,7 @@ const FIVE_MB = 1024 * 1024 * 5;
             !pkg.packageJson.private &&
             pkg.packageJson.main !== undefined &&
             pkg.packageJson.main.endsWith('.js') &&
-            !UNINSTALLABLE_PACKAGES.includes(pkg.packageJson.name)
+            !ARGV.skipInstall.includes(pkg.packageJson.name)
         );
     });
     const CHUNK_SIZE = 15;
@@ -153,12 +148,9 @@ async function testInstallPackageAsync(
     const tscBinaryPath = path.join(monorepoRootPath, './node_modules/typescript/bin/tsc');
     await execAsync(tscBinaryPath, { cwd: testDirectory });
     utils.log(`Successfully compiled with ${packageName} as a dependency`);
-    const isUnrunnablePkg = _.includes(UNRUNNABLE_PACKAGES, packageName);
-    if (!isUnrunnablePkg) {
-        const transpiledIndexFilePath = path.join(testDirectory, 'index.js');
-        utils.log(`Running test script with ${packageName} imported`);
-        await execAsync(`node ${transpiledIndexFilePath}`, { maxBuffer: FIVE_MB });
-        utils.log(`Successfully ran test script with ${packageName} imported`);
-    }
+    const transpiledIndexFilePath = path.join(testDirectory, 'index.js');
+    utils.log(`Running test script with ${packageName} imported`);
+    await execAsync(`node ${transpiledIndexFilePath}`, { maxBuffer: FIVE_MB });
+    utils.log(`Successfully ran test script with ${packageName} imported`);
     await rimrafAsync(testDirectory);
 }
