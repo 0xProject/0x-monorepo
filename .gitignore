@@ -113,8 +113,6 @@ contracts/dev-utils/generated-artifacts/
 contracts/dev-utils/test/generated-artifacts/
 contracts/zero-ex/generated-artifacts/
 contracts/zero-ex/test/generated-artifacts/
-packages/sol-tracing-utils/test/fixtures/artifacts/
-python-packages/contract_artifacts/src/zero_ex/contract_artifacts/artifacts/
 
 # generated truffle contract artifacts/
 contracts/broker/build/
@@ -169,24 +167,6 @@ contracts/dev-utils/generated-wrappers/
 contracts/dev-utils/test/generated-wrappers/
 contracts/zero-ex/generated-wrappers/
 contracts/zero-ex/test/generated-wrappers/
-python-packages/contract_wrappers/src/zero_ex/contract_wrappers/*/__init__.py
-
-# solc-bin in sol-compiler
-packages/sol-compiler/solc_bin/
-
-# python stuff
-.eggs
-.mypy_cache
-.tox
-python-packages/*/build
-python-packages/*/dist
-__pycache__
-python-packages/*/src/*.egg-info
-python-packages/*/.coverage
-
-# python keeps package-local copies of json schemas and contract addresses
-python-packages/json_schemas/src/zero_ex/json_schemas/schemas
-python-packages/contract_addresses/src/zero_ex/contract_addresses/addresses.json
 
 # Doc README copy
 packages/*/docs/README.md

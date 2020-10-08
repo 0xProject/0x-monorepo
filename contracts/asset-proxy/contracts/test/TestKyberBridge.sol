@@ -201,6 +201,33 @@ contract TestKyberBridge is
         return _nextFillAmount;
     }
 
+    function tradeWithHint(
+        address sellTokenAddress,
+        uint256 sellAmount,
+        address buyTokenAddress,
+        address payable recipientAddress,
+        uint256 maxBuyTokenAmount,
+        uint256 minConversionRate,
+        address payable walletId,
+        bytes calldata hint
+    )
+        external
+        payable
+        returns (uint256 boughtAmount)
+    {
+        emit KyberBridgeTrade(
+            msg.value,
+            sellTokenAddress,
+            sellAmount,
+            buyTokenAddress,
+            recipientAddress,
+            maxBuyTokenAmount,
+            minConversionRate,
+            walletId
+        );
+        return _nextFillAmount;
+    }
+
     function createToken(uint8 decimals)
         external
         returns (address tokenAddress)

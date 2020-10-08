@@ -91,7 +91,7 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0x/asset-swapper": "^4.6.0",
+        "@0x/asset-swapper": "0xProject/gitpkg-registry#0x-asset-swapper-v4.6.0-36546480b",
         "@0x/base-contract": "^6.2.4",
         "@0x/contracts-asset-proxy": "^3.4.0",
         "@0x/contracts-erc1155": "^2.1.7",

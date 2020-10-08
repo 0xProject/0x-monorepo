@@ -1,9 +1,0 @@
-{
-    "id": "/OrderbookRequestSchema",
-    "type": "object",
-    "properties": {
-        "baseAssetData": { "$ref": "/hexSchema" },
-        "quoteAssetData": { "$ref": "/hexSchema" }
-    },
-    "required": ["baseAssetData", "quoteAssetData"]
-}

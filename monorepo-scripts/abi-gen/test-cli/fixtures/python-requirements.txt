@@ -1,8 +1,0 @@
-black
-eth_utils
-hexbytes
-mypy
-mypy_extensions
-pylint
-web3
-../../python-packages/contract_wrappers
