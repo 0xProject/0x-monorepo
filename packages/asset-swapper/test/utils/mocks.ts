@@ -6,7 +6,6 @@ import { BigNumber } from '@0x/utils';
 import * as TypeMoq from 'typemoq';
 
 import { SwapQuoter } from '../../src/swap_quoter';
-import { SignedOrderWithFillableAmounts } from '../../src/types';
 import { ProtocolFeeUtils } from '../../src/utils/protocol_fee_utils';
 
 // tslint:disable: max-classes-per-file
@@ -73,26 +72,10 @@ export const protocolFeeUtilsMock = (): TypeMoq.IMock<ProtocolFeeUtils> => {
     return mockProtocolFeeUtils as any;
 };
 
-const mockGetSignedOrdersWithFillableAmountsAsyncAsync = (
-    mockedSwapQuoter: TypeMoq.IMock<SwapQuoter>,
-    makerAssetData: string,
-    takerAssetData: string,
-    signedOrders: SignedOrderWithFillableAmounts[],
-): void => {
-    mockedSwapQuoter
-        .setup(async a => a.getSignedOrdersWithFillableAmountsAsync(makerAssetData, takerAssetData))
-        .returns(async () => signedOrders)
-        .verifiable(TypeMoq.Times.once());
-};
-
 export const mockedSwapQuoterWithFillableAmounts = (
     provider: Web3ProviderEngine,
     orderbook: Orderbook,
-    makerAssetData: string,
-    takerAssetData: string,
-    signedOrders: SignedOrderWithFillableAmounts[],
 ): TypeMoq.IMock<SwapQuoter> => {
     const mockedAssetQuoter = partiallyMockedSwapQuoter(provider, orderbook);
-    mockGetSignedOrdersWithFillableAmountsAsyncAsync(mockedAssetQuoter, makerAssetData, takerAssetData, signedOrders);
     return mockedAssetQuoter;
 };

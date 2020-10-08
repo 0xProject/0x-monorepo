@@ -1,7 +1,7 @@
 import { MarketBuySwapQuote, MarketSellSwapQuote, Orderbook, SwapQuoter } from '@0x/asset-swapper';
 import { blockchainTests, expect, Numberish } from '@0x/contracts-test-utils';
 import { assetDataUtils } from '@0x/order-utils';
-import { FillResults, SignedOrder } from '@0x/types';
+import { FillResults, MarketOperation, SignedOrder } from '@0x/types';
 import { BigNumber, logUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
@@ -155,10 +155,11 @@ blockchainTests.live('Aggregator Mainnet Tests', env => {
                 const fillAmount = fromTokenUnits(takerSymbol, new BigNumber(fillValue).div(tokens[takerSymbol].price));
                 it(`sell ${toTokenUnits(takerSymbol, fillAmount)} ${takerSymbol} for ${makerSymbol}`, async () => {
                     const [quote, takerOrders] = await Promise.all([
-                        swapQuoter.getMarketSellSwapQuoteAsync(
+                        swapQuoter.getSwapQuoteAsync(
                             tokens[makerSymbol].address,
                             tokens[takerSymbol].address,
                             fillAmount,
+                            MarketOperation.Sell,
                             { gasPrice: GAS_PRICE },
                         ),
                         getTakerOrdersAsync(takerSymbol),
@@ -199,10 +200,11 @@ blockchainTests.live('Aggregator Mainnet Tests', env => {
                 const fillAmount = fromTokenUnits(makerSymbol, new BigNumber(fillValue).div(tokens[makerSymbol].price));
                 it(`buy ${toTokenUnits(makerSymbol, fillAmount)} ${makerSymbol} with ${takerSymbol}`, async () => {
                     const [quote, takerOrders] = await Promise.all([
-                        swapQuoter.getMarketBuySwapQuoteAsync(
+                        swapQuoter.getSwapQuoteAsync(
                             tokens[makerSymbol].address,
                             tokens[takerSymbol].address,
                             fillAmount,
+                            MarketOperation.Buy,
                             { gasPrice: GAS_PRICE },
                         ),
                         getTakerOrdersAsync(takerSymbol),

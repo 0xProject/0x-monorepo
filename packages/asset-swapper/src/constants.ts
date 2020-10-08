@@ -26,6 +26,11 @@ const ONE_MINUTE_MS = ONE_SECOND_MS * ONE_MINUTE_SECS;
 const DEFAULT_PER_PAGE = 1000;
 const ZERO_AMOUNT = new BigNumber(0);
 
+export const DEFAULT_INFO_LOGGER: LogFunction = (obj, msg) =>
+    logUtils.log(`${msg ? `${msg}: ` : ''}${JSON.stringify(obj)}`);
+export const DEFAULT_WARNING_LOGGER: LogFunction = (obj, msg) =>
+    logUtils.warn(`${msg ? `${msg}: ` : ''}${JSON.stringify(obj)}`);
+
 const DEFAULT_ORDER_PRUNER_OPTS: OrderPrunerOpts = {
     expiryBufferMs: 120000, // 2 minutes
     permittedOrderFeeTypes: new Set<OrderPrunerPermittedFeeTypes>([
@@ -50,6 +55,8 @@ const DEFAULT_SWAP_QUOTER_OPTS: SwapQuoterOpts = {
     rfqt: {
         takerApiKeyWhitelist: [],
         makerAssetOfferings: {},
+        infoLogger: DEFAULT_INFO_LOGGER,
+        warningLogger: DEFAULT_WARNING_LOGGER,
     },
 };
 
@@ -89,11 +96,6 @@ const DEFAULT_SWAP_QUOTE_REQUEST_OPTS: SwapQuoteRequestOpts = {
 const DEFAULT_RFQT_REQUEST_OPTS: Partial<RfqtRequestOpts> = {
     makerEndpointMaxResponseTimeMs: 1000,
 };
-
-export const DEFAULT_INFO_LOGGER: LogFunction = (obj, msg) =>
-    logUtils.log(`${msg ? `${msg}: ` : ''}${JSON.stringify(obj)}`);
-export const DEFAULT_WARNING_LOGGER: LogFunction = (obj, msg) =>
-    logUtils.warn(`${msg ? `${msg}: ` : ''}${JSON.stringify(obj)}`);
 
 export const constants = {
     ETH_GAS_STATION_API_URL,

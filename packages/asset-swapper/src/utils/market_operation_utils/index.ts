@@ -349,20 +349,25 @@ export class MarketOperationUtils {
     }
 
     /**
-     * gets the orders required for a market sell operation by (potentially) merging native orders with
+     * gets the orders required for a market sell or buy operation by (potentially) merging native orders with
      * generated bridge orders.
      * @param nativeOrders Native orders.
-     * @param takerAmount Amount of taker asset to sell.
+     * @param fillAmount Amount of taker asset to sell (when getting sell orders) or amount of maker asset to buy (when getting buy orders)
+     * @param marketOperation Buy or Sell
      * @param opts Options object.
      * @return object with optimized orders and a QuoteReport
      */
-    public async getMarketSellOrdersAsync(
+    public async getMarketOrdersAsync(
         nativeOrders: SignedOrder[],
-        takerAmount: BigNumber,
+        fillAmount: BigNumber,
+        marketOperation: MarketOperation,
         opts?: Partial<GetMarketOrdersOpts>,
     ): Promise<OptimizerResult> {
         const _opts = { ...DEFAULT_GET_MARKET_ORDERS_OPTS, ...opts };
-        const marketSideLiquidity = await this.getMarketSellLiquidityAsync(nativeOrders, takerAmount, _opts);
+        const marketSideLiquidity =
+            marketOperation === MarketOperation.Sell
+                ? await this.getMarketSellLiquidityAsync(nativeOrders, fillAmount, _opts)
+                : await this.getMarketBuyLiquidityAsync(nativeOrders, fillAmount, _opts);
         const optimizerResult = await this._generateOptimizedOrdersAsync(marketSideLiquidity, {
             bridgeSlippage: _opts.bridgeSlippage,
             maxFallbackSlippage: _opts.maxFallbackSlippage,
@@ -373,41 +378,6 @@ export class MarketOperationUtils {
         });
 
         // Compute Quote Report and return the results.
-        let quoteReport: QuoteReport | undefined;
-        if (_opts.shouldGenerateQuoteReport) {
-            quoteReport = MarketOperationUtils._computeQuoteReport(
-                nativeOrders,
-                _opts.rfqt ? _opts.rfqt.quoteRequestor : undefined,
-                marketSideLiquidity,
-                optimizerResult,
-            );
-        }
-        return { ...optimizerResult, quoteReport };
-    }
-
-    /**
-     * gets the orders required for a market buy operation by (potentially) merging native orders with
-     * generated bridge orders.
-     * @param nativeOrders Native orders.
-     * @param makerAmount Amount of maker asset to buy.
-     * @param opts Options object.
-     * @return object with optimized orders and a QuoteReport
-     */
-    public async getMarketBuyOrdersAsync(
-        nativeOrders: SignedOrder[],
-        makerAmount: BigNumber,
-        opts?: Partial<GetMarketOrdersOpts>,
-    ): Promise<OptimizerResult> {
-        const _opts = { ...DEFAULT_GET_MARKET_ORDERS_OPTS, ...opts };
-        const marketSideLiquidity = await this.getMarketBuyLiquidityAsync(nativeOrders, makerAmount, _opts);
-        const optimizerResult = await this._generateOptimizedOrdersAsync(marketSideLiquidity, {
-            bridgeSlippage: _opts.bridgeSlippage,
-            maxFallbackSlippage: _opts.maxFallbackSlippage,
-            excludedSources: _opts.excludedSources,
-            feeSchedule: _opts.feeSchedule,
-            exchangeProxyOverhead: _opts.exchangeProxyOverhead,
-            allowFallback: _opts.allowFallback,
-        });
         let quoteReport: QuoteReport | undefined;
         if (_opts.shouldGenerateQuoteReport) {
             quoteReport = MarketOperationUtils._computeQuoteReport(

@@ -228,7 +228,7 @@ export type FeeSchedule = Partial<{ [key in ERC20BridgeSource]: FeeEstimate }>;
 export type ExchangeProxyOverhead = (sourceFlags: number) => BigNumber;
 
 /**
- * Options for `getMarketSellOrdersAsync()` and `getMarketBuyOrdersAsync()`.
+ * Options for `getMarketOrdersAsync()`.
  */
 export interface GetMarketOrdersOpts {
     /**

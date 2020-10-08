@@ -3,12 +3,7 @@ import { BigNumber } from '@0x/utils';
 import { MarketOperation } from '../../types';
 
 import { POSITIVE_INF, SOURCE_FLAGS, ZERO_AMOUNT } from './constants';
-import {
-    createBridgeOrder,
-    createNativeOrder,
-    CreateOrderFromPathOpts,
-    getMakerTakerTokens,
-} from './orders';
+import { createBridgeOrder, createNativeOrder, CreateOrderFromPathOpts, getMakerTakerTokens } from './orders';
 import { getCompleteRate, getRate } from './rate_utils';
 import {
     CollapsedFill,
