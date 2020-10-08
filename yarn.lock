@@ -748,9 +748,10 @@
     uuid "^3.3.2"
     websocket "^1.0.29"
 
-"@0x/quote-server@^2.0.2":
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/@0x/quote-server/-/quote-server-2.0.2.tgz#60d0665c1cad378c9abb89b5491bdc55b4c8412c"
+"@0x/quote-server@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@0x/quote-server/-/quote-server-2.1.0.tgz#48b4da703116bf373728789ae67dd647616e8332"
+  integrity sha512-b6zDzpF3KygXyRGOREpLklSObJXvhYVSuVVOXQToR94unkzJtY5wsNSC6aRGiKsgDevLA0kDuiz55Ym3UOSxhg==
   dependencies:
     "@0x/json-schemas" "^5.0.7"
     "@0x/order-utils" "^10.2.4"
