@@ -10,7 +10,7 @@ import * as EncoderMath from '../utils/math';
 
 export class UIntDataType extends AbstractBlobDataType {
     private static readonly _MATCHER = RegExp(
-        '^uint(8|16|24|32|40|48|56|64|72|88|96|104|112|120|128|136|144|152|160|168|176|184|192|200|208|216|224|232|240|248|256){0,1}$',
+        '^uint(8|16|24|32|40|48|56|64|72|80|88|96|104|112|120|128|136|144|152|160|168|176|184|192|200|208|216|224|232|240|248|256){0,1}$',
     );
     private static readonly _SIZE_KNOWN_AT_COMPILE_TIME: boolean = true;
     private static readonly _MAX_WIDTH: number = 256;

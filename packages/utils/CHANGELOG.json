@@ -13,6 +13,10 @@
             {
                 "note": "Added LiquidityProviderFeature errors",
                 "pr": 2691
+            },
+            {
+                "note": "Added abi encoder support for uint80 lol",
+                "pr": 2728
             }
         ]
     },
