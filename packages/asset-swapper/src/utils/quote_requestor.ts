@@ -373,22 +373,23 @@ export class QuoteRequestor {
         options: RfqtRequestOpts,
         quoteType: 'firm' | 'indicative',
     ): Promise<Array<{ response: ResponseT; makerUri: string }>> {
+        const requestParams = QuoteRequestor.makeQueryParameters(
+            options.takerAddress,
+            marketOperation,
+            makerAssetData,
+            takerAssetData,
+            assetFillAmount,
+            comparisonPrice,
+        );
+
         const result: Array<{ response: ResponseT; makerUri: string }> = [];
         await Promise.all(
             Object.keys(this._rfqtAssetOfferings).map(async url => {
-                if (
-                    this._makerSupportsPair(url, makerAssetData, takerAssetData) &&
-                    !rfqMakerBlacklist.isMakerBlacklisted(url)
-                ) {
-                    const requestParams = QuoteRequestor.makeQueryParameters(
-                        options.takerAddress,
-                        marketOperation,
-                        makerAssetData,
-                        takerAssetData,
-                        assetFillAmount,
-                        comparisonPrice,
-                    );
-                    const partialLogEntry = { url, quoteType, requestParams };
+                const isBlacklisted = rfqMakerBlacklist.isMakerBlacklisted(url);
+                const partialLogEntry = { url, quoteType, requestParams, isBlacklisted };
+                if (isBlacklisted) {
+                    this._infoLogger({ rfqtMakerInteraction: { ...partialLogEntry } });
+                } else if (this._makerSupportsPair(url, makerAssetData, takerAssetData)) {
                     const timeBeforeAwait = Date.now();
                     const maxResponseTimeMs =
                         options.makerEndpointMaxResponseTimeMs === undefined
