@@ -1,7 +1,7 @@
 import { schemas, SchemaValidator } from '@0x/json-schemas';
 import { assetDataUtils, orderCalculationUtils, SignedOrder } from '@0x/order-utils';
 import { RFQTFirmQuote, RFQTIndicativeQuote, TakerRequest } from '@0x/quote-server';
-import { TakerRequestQueryParams } from '@0x/quote-server/lib/src/types';
+import { TakerRequestQueryParams } from '@0x/quote-server';
 import { ERC20AssetData } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import Axios, { AxiosInstance } from 'axios';
