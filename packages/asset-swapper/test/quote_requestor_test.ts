@@ -1,5 +1,6 @@
 import { tokenUtils } from '@0x/dev-utils';
 import { assetDataUtils } from '@0x/order-utils';
+import { TakerRequestQueryParams } from '@0x/quote-server';
 import { StatusCodes } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
@@ -35,11 +36,11 @@ describe('QuoteRequestor', async () => {
             // Set up RFQT responses
             // tslint:disable-next-line:array-type
             const mockedRequests: MockedRfqtFirmQuoteResponse[] = [];
-            const expectedParams = {
+            const expectedParams: TakerRequestQueryParams = {
                 sellTokenAddress: takerToken,
                 buyTokenAddress: makerToken,
                 sellAmountBaseUnits: '10000',
-                buyAmountBaseUnits: undefined,
+                comparisonPrice: undefined,
                 takerAddress,
             };
             // Successful response
@@ -209,11 +210,11 @@ describe('QuoteRequestor', async () => {
             // Set up RFQT responses
             // tslint:disable-next-line:array-type
             const mockedRequests: MockedRfqtIndicativeQuoteResponse[] = [];
-            const expectedParams = {
+            const expectedParams: TakerRequestQueryParams = {
                 sellTokenAddress: takerToken,
                 buyTokenAddress: makerToken,
                 sellAmountBaseUnits: '10000',
-                buyAmountBaseUnits: undefined,
+                comparisonPrice: undefined,
                 takerAddress,
             };
             // Successful response
@@ -308,11 +309,11 @@ describe('QuoteRequestor', async () => {
             // Set up RFQT responses
             // tslint:disable-next-line:array-type
             const mockedRequests: MockedRfqtIndicativeQuoteResponse[] = [];
-            const expectedParams = {
+            const expectedParams: TakerRequestQueryParams = {
                 sellTokenAddress: takerToken,
                 buyTokenAddress: makerToken,
                 buyAmountBaseUnits: '10000',
-                sellAmountBaseUnits: undefined,
+                comparisonPrice: undefined,
                 takerAddress,
             };
             // Successful response
