@@ -147,7 +147,7 @@
                 "pr": 2723
             },
             {
-                "note": "Remove v0-specifc code from asset-swapper",
+                "note": "Remove 0x-API swap/v0-specifc code from asset-swapper",
                 "pr": 2725
             }
         ]
