@@ -334,31 +334,31 @@ export class QuoteRequestor {
         options: RfqtRequestOpts,
         quoteType: 'firm' | 'indicative',
     ): Promise<Array<{ response: ResponseT; makerUri: string }>> {
+        const requestParamsWithBigNumbers = {
+            takerAddress: options.takerAddress,
+            ...inferQueryParams(marketOperation, makerAssetData, takerAssetData, assetFillAmount),
+        };
+
+        // convert BigNumbers to strings
+        // so they are digestible by axios
+        const requestParams = {
+            ...requestParamsWithBigNumbers,
+            sellAmountBaseUnits: requestParamsWithBigNumbers.sellAmountBaseUnits
+                ? requestParamsWithBigNumbers.sellAmountBaseUnits.toString()
+                : undefined,
+            buyAmountBaseUnits: requestParamsWithBigNumbers.buyAmountBaseUnits
+                ? requestParamsWithBigNumbers.buyAmountBaseUnits.toString()
+                : undefined,
+        };
+
         const result: Array<{ response: ResponseT; makerUri: string }> = [];
         await Promise.all(
             Object.keys(this._rfqtAssetOfferings).map(async url => {
-                if (
-                    this._makerSupportsPair(url, makerAssetData, takerAssetData) &&
-                    !rfqMakerBlacklist.isMakerBlacklisted(url)
-                ) {
-                    const requestParamsWithBigNumbers = {
-                        takerAddress: options.takerAddress,
-                        ...inferQueryParams(marketOperation, makerAssetData, takerAssetData, assetFillAmount),
-                    };
-
-                    // convert BigNumbers to strings
-                    // so they are digestible by axios
-                    const requestParams = {
-                        ...requestParamsWithBigNumbers,
-                        sellAmountBaseUnits: requestParamsWithBigNumbers.sellAmountBaseUnits
-                            ? requestParamsWithBigNumbers.sellAmountBaseUnits.toString()
-                            : undefined,
-                        buyAmountBaseUnits: requestParamsWithBigNumbers.buyAmountBaseUnits
-                            ? requestParamsWithBigNumbers.buyAmountBaseUnits.toString()
-                            : undefined,
-                    };
-
-                    const partialLogEntry = { url, quoteType, requestParams };
+                const isBlacklisted = rfqMakerBlacklist.isMakerBlacklisted(url);
+                const partialLogEntry = { url, quoteType, requestParams, isBlacklisted };
+                if (isBlacklisted) {
+                    this._infoLogger({ rfqtMakerInteraction: { ...partialLogEntry } });
+                } else if (this._makerSupportsPair(url, makerAssetData, takerAssetData)) {
                     const timeBeforeAwait = Date.now();
                     const maxResponseTimeMs =
                         options.makerEndpointMaxResponseTimeMs === undefined
