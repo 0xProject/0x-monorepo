@@ -288,11 +288,6 @@ export interface GetMarketOrdersOpts {
     allowFallback: boolean;
     rfqt?: GetMarketOrdersRfqtOpts;
     /**
-     * Whether to combine contiguous bridge orders into a single DexForwarderBridge
-     * order. Defaults to `true`.
-     */
-    shouldBatchBridgeOrders: boolean;
-    /**
      * Whether to generate a quote report
      */
     shouldGenerateQuoteReport: boolean;

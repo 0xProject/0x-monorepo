@@ -145,6 +145,10 @@
             {
                 "note": "Fix exchange proxy overhead gas being scaled by gas price",
                 "pr": 2723
+            },
+            {
+                "note": "Remove 0x-API swap/v0-specifc code from asset-swapper",
+                "pr": 2725
             }
         ]
     },

@@ -3,13 +3,7 @@ import { BigNumber } from '@0x/utils';
 import { MarketOperation } from '../../types';
 
 import { POSITIVE_INF, SOURCE_FLAGS, ZERO_AMOUNT } from './constants';
-import {
-    createBatchedBridgeOrder,
-    createBridgeOrder,
-    createNativeOrder,
-    CreateOrderFromPathOpts,
-    getMakerTakerTokens,
-} from './orders';
+import { createBridgeOrder, createNativeOrder, CreateOrderFromPathOpts, getMakerTakerTokens } from './orders';
 import { getCompleteRate, getRate } from './rate_utils';
 import {
     CollapsedFill,
@@ -123,14 +117,9 @@ export class Path {
                 }
                 contiguousBridgeFills.push(collapsedFills[j]);
             }
-            // Always use DexForwarderBridge unless configured not to
-            if (!opts.shouldBatchBridgeOrders) {
-                this.orders.push(createBridgeOrder(contiguousBridgeFills[0], makerToken, takerToken, opts));
-                i += 1;
-            } else {
-                this.orders.push(createBatchedBridgeOrder(contiguousBridgeFills, opts));
-                i += contiguousBridgeFills.length;
-            }
+
+            this.orders.push(createBridgeOrder(contiguousBridgeFills[0], makerToken, takerToken, opts));
+            i += 1;
         }
         return this as CollapsedPath;
     }
