@@ -293,7 +293,7 @@ export function createBridgeOrder(
             makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
                 makerToken,
                 bridgeAddress,
-                createDODOBridgeData(takerToken, dodoFillData.poolAddress, dodoFillData.sellBase),
+                createDODOBridgeData(takerToken, dodoFillData.poolAddress, dodoFillData.isSellBase),
             );
             break;
         default:
@@ -366,13 +366,13 @@ function createMooniswapBridgeData(takerToken: string, poolAddress: string): str
     return encoder.encode({ takerToken, poolAddress });
 }
 
-function createDODOBridgeData(takerToken: string, poolAddress: string, sellBase: boolean): string {
+function createDODOBridgeData(takerToken: string, poolAddress: string, isSellBase: boolean): string {
     const encoder = AbiEncoder.create([
         { name: 'takerToken', type: 'address' },
         { name: 'poolAddress', type: 'address' },
-        { name: 'sellBase', type: 'bool' },
+        { name: 'isSellBase', type: 'bool' },
     ]);
-    return encoder.encode({ takerToken, poolAddress, sellBase });
+    return encoder.encode({ takerToken, poolAddress, isSellBase });
 }
 
 function createCurveBridgeData(

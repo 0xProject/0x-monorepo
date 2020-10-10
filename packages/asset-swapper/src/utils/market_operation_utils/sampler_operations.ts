@@ -772,12 +772,12 @@ export class SamplerOperations {
             function: this._samplerContract.sampleSellsFromDODO,
             params: [takerToken, makerToken, takerFillAmounts],
             callback: (callResults: string, fillData: DODOFillData): BigNumber[] => {
-                const [sellBase, pool, samples] = this._samplerContract.getABIDecodedReturnData<
+                const [isSellBase, pool, samples] = this._samplerContract.getABIDecodedReturnData<
                     [boolean, string, BigNumber[]]
                 >('sampleSellsFromDODO', callResults);
-                fillData.sellBase = sellBase;
+                fillData.isSellBase = isSellBase;
                 fillData.poolAddress = pool;
-                console.log({ source: ERC20BridgeSource.Dodo, pool, samples, sellBase });
+                console.log({ source: ERC20BridgeSource.Dodo, pool, samples, isSellBase });
                 return samples;
             },
         });

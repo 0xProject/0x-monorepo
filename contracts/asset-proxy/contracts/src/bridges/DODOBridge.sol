@@ -24,13 +24,25 @@ import "@0x/contracts-erc20/contracts/src/LibERC20Token.sol";
 import "@0x/contracts-exchange-libs/contracts/src/IWallet.sol";
 import "@0x/contracts-utils/contracts/src/DeploymentConstants.sol";
 import "../interfaces/IERC20Bridge.sol";
-import "./DODOHelper.sol";
+
+
+interface IDODOHelper {
+
+    function querySellQuoteToken(address dodo, uint256 amount) external view returns (uint256);
+}
+
+interface IDODO {
+
+    function sellBaseToken(uint256 amount, uint256 minReceiveQuote, bytes calldata data) external returns (uint256);
+
+    function buyBaseToken(uint256 amount, uint256 maxPayQuote, bytes calldata data) external returns (uint256);
+
+}
 
 
 // solhint-disable space-after-comma
 // solhint-disable not-rely-on-time
 contract DODOBridge is
-    DODOHelper,
     IERC20Bridge,
     IWallet,
     DeploymentConstants
@@ -40,7 +52,7 @@ contract DODOBridge is
         address fromTokenAddress;
         uint256 fromTokenBalance;
         address pool;
-        bool sellBase;
+        bool isSellBase;
     }
 
     /// @dev Callback for `IERC20Bridge`. Tries to buy `amount` of
@@ -64,7 +76,7 @@ contract DODOBridge is
     {
         TransferState memory state;
         // Decode the bridge data to get the `fromTokenAddress`.
-        (state.fromTokenAddress, state.pool, state.sellBase) = abi.decode(bridgeData, (address, address, bool));
+        (state.fromTokenAddress, state.pool, state.isSellBase) = abi.decode(bridgeData, (address, address, bool));
         require(state.pool != address(0), "DODOBridge/InvalidPool");
         IDODO exchange = IDODO(state.pool);
         // Get our balance of `fromTokenAddress` token.
@@ -78,7 +90,7 @@ contract DODOBridge is
         );
 
         uint256 boughtAmount;
-        if (state.sellBase) {
+        if (state.isSellBase) {
             boughtAmount = exchange.sellBaseToken(
                 // amount to sell
                 state.fromTokenBalance,
@@ -86,12 +98,9 @@ contract DODOBridge is
                 1,
                 new bytes(0)
             );
-
-            // Transfer funds to `to`
-            IERC20Token(toTokenAddress).transfer(to, boughtAmount);
         } else {
             // Need to re-calculate the sell quote amount into buyBase
-            boughtAmount = this.querySellQuoteToken(address(exchange), state.fromTokenBalance);
+            boughtAmount = IDODOHelper(0x533dA777aeDCE766CEAe696bf90f8541A4bA80Eb).querySellQuoteToken(address(exchange), state.fromTokenBalance);
             uint256 soldAmount = exchange.buyBaseToken(
                 // amount to buy
                 boughtAmount,
@@ -99,13 +108,11 @@ contract DODOBridge is
                 state.fromTokenBalance,
                 new bytes(0)
             );
-
-            IERC20Token(toTokenAddress).transfer(to, boughtAmount);
-            // Transfer funds to `to`
-            // IERC20Token(toTokenAddress).transfer(to, boughtAmount);
             // Change
             // IERC20Token(fromTokenAddress).transfer(to, fromTokenBalance-soldAmount);
         }
+        // Transfer funds to `to`
+        IERC20Token(toTokenAddress).transfer(to, boughtAmount);
 
 
         emit ERC20BridgeTransfer(

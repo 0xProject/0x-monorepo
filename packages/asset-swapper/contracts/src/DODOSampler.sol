@@ -20,7 +20,6 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/DeploymentConstants.sol";
-import "./DODOHelper.sol";
 import "./SamplerUtils.sol";
 
 
@@ -29,8 +28,16 @@ interface IDODOZoo {
     function getDODO(address baseToken, address quoteToken) external view returns (address);
 }
 
+interface IDODOHelper {
+
+    function querySellQuoteToken(address dodo, uint256 amount) external view returns (uint256);
+}
+
+interface IDODO {
+    function querySellBaseToken(uint256 amount) external view returns (uint256);
+}
+
 contract DODOSampler is
-    DODOHelper,
     DeploymentConstants,
     SamplerUtils
 {
@@ -87,7 +94,7 @@ contract DODOSampler is
             sellBase = false;
             // We are Selling the Quote, need to do some hackery
             for (uint256 i = 0; i < numSamples; i++) {
-                uint256 buyAmount = this.querySellQuoteToken(pool, takerTokenAmounts[i]);
+                uint256 buyAmount = IDODOHelper(0x533dA777aeDCE766CEAe696bf90f8541A4bA80Eb).querySellQuoteToken(pool, takerTokenAmounts[i]);
                 //(bool didSucceed, bytes memory resultData) =
                 //    address(this).staticcall.gas(DODO_CALL_GAS)(
                 //        abi.encodeWithSelector(
