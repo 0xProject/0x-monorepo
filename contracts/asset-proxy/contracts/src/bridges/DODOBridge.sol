@@ -31,6 +31,7 @@ interface IDODOHelper {
     function querySellQuoteToken(address dodo, uint256 amount) external view returns (uint256);
 }
 
+
 interface IDODO {
 
     function sellBaseToken(uint256 amount, uint256 minReceiveQuote, bytes calldata data) external returns (uint256);
@@ -40,8 +41,6 @@ interface IDODO {
 }
 
 
-// solhint-disable space-after-comma
-// solhint-disable not-rely-on-time
 contract DODOBridge is
     IERC20Bridge,
     IWallet,
