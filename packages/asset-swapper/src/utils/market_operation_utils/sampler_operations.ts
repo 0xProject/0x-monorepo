@@ -781,6 +781,7 @@ export class SamplerOperations {
             },
         });
     }
+
     public getDODOBuyQuotes(
         makerToken: string,
         takerToken: string,
@@ -797,7 +798,6 @@ export class SamplerOperations {
                 >('sampleBuysFromDODO', callResults);
                 fillData.isSellBase = isSellBase;
                 fillData.poolAddress = pool;
-                console.log({ fillData, samples });
                 return samples;
             },
         });

@@ -34,7 +34,6 @@ interface IDODOHelper {
 
 interface IDODO {
     function querySellBaseToken(uint256 amount) external view returns (uint256);
-    function queryBuyBaseToken(uint256 amount) external view returns (uint256);
 }
 
 contract DODOSampler is
@@ -66,52 +65,32 @@ contract DODOSampler is
         makerTokenAmounts = new uint256[](numSamples);
 
         pool = IDODOZoo(_getDODORegistryAddress()).getDODO(takerToken, makerToken);
+        address baseToken;
         // If pool exists we have the correct order of Base/Quote
         if (pool != address(0)) {
+            baseToken = takerToken;
             sellBase = true;
-            for (uint256 i = 0; i < numSamples; i++) {
-                (bool didSucceed, bytes memory resultData) =
-                    pool.staticcall.gas(DODO_CALL_GAS)(
-                        abi.encodeWithSelector(
-                            IDODO(0).querySellBaseToken.selector,
-                            takerTokenAmounts[i]
-                        ));
-                uint256 buyAmount = 0;
-                if (didSucceed) {
-                    buyAmount = abi.decode(resultData, (uint256));
-                }
-                // Exit early if the amount is too high for the source to serve
-                if (buyAmount == 0) {
-                    break;
-                }
-                makerTokenAmounts[i] = buyAmount;
-            }
         } else {
             pool = IDODOZoo(_getDODORegistryAddress()).getDODO(makerToken, takerToken);
             // No pool either direction
             if (address(pool) == address(0)) {
                 return (sellBase, pool, makerTokenAmounts);
             }
+            baseToken = makerToken;
             sellBase = false;
-            // We are Selling the Quote, need to do some hackery via the DODO Helper
-            for (uint256 i = 0; i < numSamples; i++) {
-                (bool didSucceed, bytes memory resultData) =
-                    _getDODOHelperAddress().staticcall.gas(DODO_CALL_GAS)(
-                        abi.encodeWithSelector(
-                            IDODOHelper(0).querySellQuoteToken.selector,
-                            pool,
-                            takerTokenAmounts[i]
-                        ));
-                uint256 buyAmount = 0;
-                if (didSucceed) {
-                    buyAmount = abi.decode(resultData, (uint256));
-                }
-                // Exit early if the amount is too high for the source to serve
-                if (buyAmount == 0) {
-                    break;
-                }
-                makerTokenAmounts[i] = buyAmount;
+        }
+
+        for (uint256 i = 0; i < numSamples; i++) {
+            uint256 buyAmount = _sampleSellForApproximateBuyFromDODO(
+                abi.encode(takerToken, pool, baseToken), // taker token data
+                abi.encode(makerToken, pool, baseToken), // maker token data
+                takerTokenAmounts[i]
+            );
+            // Exit early if the amount is too high for the source to serve
+            if (buyAmount == 0) {
+                break;
             }
+            makerTokenAmounts[i] = buyAmount;
         }
     }
 
@@ -137,19 +116,11 @@ contract DODOSampler is
         // Pool is BASE/QUOTE
         // Look up the pool from the taker/maker combination
         pool = IDODOZoo(_getDODORegistryAddress()).getDODO(takerToken, makerToken);
+        address baseToken;
         // If pool exists we have the correct order of Base/Quote
         if (pool != address(0)) {
+            baseToken = takerToken;
             sellBase = true;
-            // We are selling the base but wanting to buy a specific amount of the quote
-            // DODO does not support a buyQuote query
-            takerTokenAmounts = _sampleApproximateBuys(
-                ApproximateBuyQuoteOpts({
-                    makerTokenData: abi.encode(makerToken, pool, takerToken),
-                    takerTokenData: abi.encode(takerToken, pool, takerToken),
-                    getSellQuoteCallback: _sampleSellForApproximateBuyFromDODO
-                }),
-                makerTokenAmounts
-            );
         } else {
             // Look up the pool from the maker/taker combination
             pool = IDODOZoo(_getDODORegistryAddress()).getDODO(makerToken, takerToken);
@@ -157,27 +128,18 @@ contract DODOSampler is
             if (address(pool) == address(0)) {
                 return (sellBase, pool, takerTokenAmounts);
             }
-            // We are selling the quote but wanting to buy a specific amount of the base
-            // DODO Supports a buyBase query
+            baseToken = makerToken;
             sellBase = false;
-            for (uint256 i = 0; i < numSamples; i++) {
-                (bool didSucceed, bytes memory resultData) =
-                    pool.staticcall.gas(DODO_CALL_GAS)(
-                        abi.encodeWithSelector(
-                            IDODO(0).queryBuyBaseToken.selector,
-                            makerTokenAmounts[i]
-                        ));
-                uint256 sellAmount = 0;
-                if (didSucceed) {
-                    sellAmount = abi.decode(resultData, (uint256));
-                }
-                // Exit early if the amount is too high for the source to serve
-                if (sellAmount == 0) {
-                    break;
-                }
-                takerTokenAmounts[i] = sellAmount;
-            }
         }
+
+        takerTokenAmounts = _sampleApproximateBuys(
+            ApproximateBuyQuoteOpts({
+                makerTokenData: abi.encode(makerToken, pool, baseToken),
+                takerTokenData: abi.encode(takerToken, pool, baseToken),
+                getSellQuoteCallback: _sampleSellForApproximateBuyFromDODO
+            }),
+            makerTokenAmounts
+        );
     }
 
     function _sampleSellForApproximateBuyFromDODO(
@@ -206,7 +168,7 @@ contract DODOSampler is
                         sellAmount
                     ));
         } else {
-            // If quote token then use helper
+            // If quote token then use helper, this is less accurate
             (didSucceed, resultData) =
                 _getDODOHelperAddress().staticcall.gas(DODO_CALL_GAS)(
                     abi.encodeWithSelector(
