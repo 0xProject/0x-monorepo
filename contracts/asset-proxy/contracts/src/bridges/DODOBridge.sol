@@ -100,16 +100,17 @@ contract DODOBridge is
             );
         } else {
             // Need to re-calculate the sell quote amount into buyBase
-            boughtAmount = IDODOHelper(0x533dA777aeDCE766CEAe696bf90f8541A4bA80Eb).querySellQuoteToken(address(exchange), state.fromTokenBalance);
-            uint256 soldAmount = exchange.buyBaseToken(
+            boughtAmount = IDODOHelper(_getDODOHelperAddress()).querySellQuoteToken(
+                address(exchange),
+                state.fromTokenBalance
+            );
+            exchange.buyBaseToken(
                 // amount to buy
                 boughtAmount,
                 // max pay amount
                 state.fromTokenBalance,
                 new bytes(0)
             );
-            // Change
-            // IERC20Token(fromTokenAddress).transfer(to, fromTokenBalance-soldAmount);
         }
         // Transfer funds to `to`
         IERC20Token(toTokenAddress).transfer(to, boughtAmount);

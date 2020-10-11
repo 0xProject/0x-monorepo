@@ -777,7 +777,27 @@ export class SamplerOperations {
                 >('sampleSellsFromDODO', callResults);
                 fillData.isSellBase = isSellBase;
                 fillData.poolAddress = pool;
-                console.log({ source: ERC20BridgeSource.Dodo, pool, samples, isSellBase });
+                return samples;
+            },
+        });
+    }
+    public getDODOBuyQuotes(
+        makerToken: string,
+        takerToken: string,
+        makerFillAmounts: BigNumber[],
+    ): SourceQuoteOperation<DODOFillData> {
+        return new SamplerContractOperation({
+            source: ERC20BridgeSource.Dodo,
+            contract: this._samplerContract,
+            function: this._samplerContract.sampleBuysFromDODO,
+            params: [takerToken, makerToken, makerFillAmounts],
+            callback: (callResults: string, fillData: DODOFillData): BigNumber[] => {
+                const [isSellBase, pool, samples] = this._samplerContract.getABIDecodedReturnData<
+                    [boolean, string, BigNumber[]]
+                >('sampleBuysFromDODO', callResults);
+                fillData.isSellBase = isSellBase;
+                fillData.poolAddress = pool;
+                console.log({ fillData, samples });
                 return samples;
             },
         });
@@ -1113,6 +1133,8 @@ export class SamplerOperations {
                                 );
                         case ERC20BridgeSource.Shell:
                             return this.getShellBuyQuotes(makerToken, takerToken, makerFillAmounts);
+                        case ERC20BridgeSource.Dodo:
+                            return this.getDODOBuyQuotes(makerToken, takerToken, makerFillAmounts);
                         default:
                             throw new Error(`Unsupported buy sample source: ${source}`);
                     }

@@ -188,7 +188,7 @@ function getBridgeAddressFromFill(fill: CollapsedFill, opts: CreateOrderFromPath
         case ERC20BridgeSource.Shell:
             return opts.contractAddresses.shellBridge;
         case ERC20BridgeSource.Dodo:
-            return '0xd0d0d0d011111111111111111111111111111111';
+            return opts.contractAddresses.dodoBridge;
         default:
             break;
     }
