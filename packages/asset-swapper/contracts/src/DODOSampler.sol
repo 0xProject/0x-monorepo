@@ -134,21 +134,24 @@ contract DODOSampler is
         uint256 numSamples = makerTokenAmounts.length;
         takerTokenAmounts = new uint256[](numSamples);
 
+        // Pool is BASE/QUOTE
+        // Look up the pool from the taker/maker combination
         pool = IDODOZoo(_getDODORegistryAddress()).getDODO(takerToken, makerToken);
         // If pool exists we have the correct order of Base/Quote
         if (pool != address(0)) {
             sellBase = true;
             // We are selling the base but wanting to buy a specific amount of the quote
             // DODO does not support a buyQuote query
-            //takerTokenAmounts = _sampleApproximateBuys(
-            //    ApproximateBuyQuoteOpts({
-            //        makerTokenData: abi.encode(makerToken, pool),
-            //        takerTokenData: abi.encode(takerToken, pool),
-            //        getSellQuoteCallback: _sampleSellForApproximateBuyFromDODO
-            //    }),
-            //    makerTokenAmounts
-            //);
+            takerTokenAmounts = _sampleApproximateBuys(
+                ApproximateBuyQuoteOpts({
+                    makerTokenData: abi.encode(makerToken, pool, takerToken),
+                    takerTokenData: abi.encode(takerToken, pool, takerToken),
+                    getSellQuoteCallback: _sampleSellForApproximateBuyFromDODO
+                }),
+                makerTokenAmounts
+            );
         } else {
+            // Look up the pool from the maker/taker combination
             pool = IDODOZoo(_getDODORegistryAddress()).getDODO(makerToken, takerToken);
             // No pool either direction
             if (address(pool) == address(0)) {
@@ -186,27 +189,37 @@ contract DODOSampler is
         view
         returns (uint256)
     {
-        // Here we are selling the base token but wanting a specific amount of Quote
-        // there is no queryBuyQuoteToken support in either DODO or DODOHelper so
-        // we approximate by selling the base token
-        //(address _takerToken, address pool) = abi.decode(takerTokenData, (address, address));
-        //(bool didSucceed, bytes memory resultData) =
-        //    //_getDODOHelperAddress().staticcall.gas(DODO_CALL_GAS)(
-        //    //    abi.encodeWithSelector(
-        //    //        IDODOHelper(0).querySellQuoteToken.selector,
-        //    //        pool,
-        //    //        sellAmount
-        //    //    ));
-        //    pool.staticcall.gas(DODO_CALL_GAS)(
-        //        abi.encodeWithSelector(
-        //            IDODO(0).querySellBaseToken.selector,
-        //            _toSingleValueArray(sellAmount)
-        //        ));
-        //if (!didSucceed) {
-        //    return 0;
-        //}
-        //// solhint-disable-next-line indent
-        //return abi.decode(resultData, (uint256));
+        (address takerToken, address pool, address baseToken) = abi.decode(
+            takerTokenData,
+            (address, address, address)
+        );
+
+        bool didSucceed;
+        bytes memory resultData;
+        // We will get called to sell both the taker token and also to sell the maker token
+        if (takerToken == baseToken) {
+            // If base token then use the original query on the pool
+            (didSucceed, resultData) =
+                pool.staticcall.gas(DODO_CALL_GAS)(
+                    abi.encodeWithSelector(
+                        IDODO(0).querySellBaseToken.selector,
+                        sellAmount
+                    ));
+        } else {
+            // If quote token then use helper
+            (didSucceed, resultData) =
+                _getDODOHelperAddress().staticcall.gas(DODO_CALL_GAS)(
+                    abi.encodeWithSelector(
+                        IDODOHelper(0).querySellQuoteToken.selector,
+                        pool,
+                        sellAmount
+                    ));
+        }
+        if (!didSucceed) {
+            return 0;
+        }
+        // solhint-disable-next-line indent
+        return abi.decode(resultData, (uint256));
     }
 
 }
