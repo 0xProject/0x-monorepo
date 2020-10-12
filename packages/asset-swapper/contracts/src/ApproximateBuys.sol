@@ -78,16 +78,22 @@ contract ApproximateBuys {
         for (uint256 i = 0; i < makerTokenAmounts.length; i++) {
             for (uint256 iter = 0; iter < APPROXIMATE_BUY_MAX_ITERATIONS; iter++) {
                 // adjustedSellAmount = previousSellAmount * (target/actual) * JUMP_MULTIPLIER
-                sellAmount = LibMath.getPartialAmountCeil(
+                sellAmount = _safeGetPartialAmountCeil(
                     makerTokenAmounts[i],
                     buyAmount,
                     sellAmount
                 );
-                sellAmount = LibMath.getPartialAmountCeil(
+                if (sellAmount == 0) {
+                    break;
+                }
+                sellAmount = _safeGetPartialAmountCeil(
                     (ONE_HUNDED_PERCENT_BPS + APPROXIMATE_BUY_TARGET_EPSILON_BPS),
                     ONE_HUNDED_PERCENT_BPS,
                     sellAmount
                 );
+                if (sellAmount == 0) {
+                    break;
+                }
                 uint256 _buyAmount = opts.getSellQuoteCallback(
                     opts.takerTokenData,
                     opts.makerTokenData,
@@ -112,11 +118,26 @@ contract ApproximateBuys {
             // We do our best to close in on the requested amount, but we can either over buy or under buy and exit
             // if we hit a max iteration limit
             // We scale the sell amount to get the approximate target
-            takerTokenAmounts[i] = LibMath.getPartialAmountCeil(
+            takerTokenAmounts[i] = _safeGetPartialAmountCeil(
                 makerTokenAmounts[i],
                 buyAmount,
                 sellAmount
             );
         }
+    }
+
+    function _safeGetPartialAmountCeil(
+        uint256 numerator,
+        uint256 denominator,
+        uint256 target
+    )
+        internal
+        view
+        returns (uint256 partialAmount)
+    {
+        if (numerator == 0 || target == 0 || denominator == 0) return 0;
+        uint256 c = numerator * target;
+        if (c / numerator != target) return 0;
+        return (c + (denominator - 1)) / denominator;
     }
 }

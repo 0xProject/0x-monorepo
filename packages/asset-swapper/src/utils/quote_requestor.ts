@@ -2,13 +2,13 @@ import { schemas, SchemaValidator } from '@0x/json-schemas';
 import { assetDataUtils, orderCalculationUtils, SignedOrder } from '@0x/order-utils';
 import { RFQTFirmQuote, RFQTIndicativeQuote, TakerRequest } from '@0x/quote-server';
 import { ERC20AssetData } from '@0x/types';
-import { BigNumber, logUtils } from '@0x/utils';
+import { BigNumber } from '@0x/utils';
 import Axios, { AxiosInstance } from 'axios';
 import { Agent as HttpAgent } from 'http';
 import { Agent as HttpsAgent } from 'https';
 
 import { constants } from '../constants';
-import { MarketOperation, RfqtMakerAssetOfferings, RfqtRequestOpts } from '../types';
+import { LogFunction, MarketOperation, RfqtMakerAssetOfferings, RfqtRequestOpts } from '../types';
 
 import { ONE_SECOND_MS } from './market_operation_utils/constants';
 import { RfqMakerBlacklist } from './rfq_maker_blacklist';
@@ -107,20 +107,18 @@ function convertIfAxiosError(error: any): Error | object /* axios' .d.ts has Axi
     }
 }
 
-export type LogFunction = (obj: object, msg?: string, ...args: any[]) => void;
-
 export class QuoteRequestor {
     private readonly _schemaValidator: SchemaValidator = new SchemaValidator();
     private readonly _orderSignatureToMakerUri: { [orderSignature: string]: string } = {};
 
     constructor(
         private readonly _rfqtAssetOfferings: RfqtMakerAssetOfferings,
-        private readonly _warningLogger: LogFunction = (obj, msg) =>
-            logUtils.warn(`${msg ? `${msg}: ` : ''}${JSON.stringify(obj)}`),
-        private readonly _infoLogger: LogFunction = (obj, msg) =>
-            logUtils.log(`${msg ? `${msg}: ` : ''}${JSON.stringify(obj)}`),
+        private readonly _warningLogger: LogFunction = constants.DEFAULT_WARNING_LOGGER,
+        private readonly _infoLogger: LogFunction = constants.DEFAULT_INFO_LOGGER,
         private readonly _expiryBufferMs: number = constants.DEFAULT_SWAP_QUOTER_OPTS.expiryBufferMs,
-    ) {}
+    ) {
+        rfqMakerBlacklist.infoLogger = this._infoLogger;
+    }
 
     public async requestRfqtFirmQuotesAsync(
         makerAssetData: string,
@@ -336,31 +334,31 @@ export class QuoteRequestor {
         options: RfqtRequestOpts,
         quoteType: 'firm' | 'indicative',
     ): Promise<Array<{ response: ResponseT; makerUri: string }>> {
+        const requestParamsWithBigNumbers = {
+            takerAddress: options.takerAddress,
+            ...inferQueryParams(marketOperation, makerAssetData, takerAssetData, assetFillAmount),
+        };
+
+        // convert BigNumbers to strings
+        // so they are digestible by axios
+        const requestParams = {
+            ...requestParamsWithBigNumbers,
+            sellAmountBaseUnits: requestParamsWithBigNumbers.sellAmountBaseUnits
+                ? requestParamsWithBigNumbers.sellAmountBaseUnits.toString()
+                : undefined,
+            buyAmountBaseUnits: requestParamsWithBigNumbers.buyAmountBaseUnits
+                ? requestParamsWithBigNumbers.buyAmountBaseUnits.toString()
+                : undefined,
+        };
+
         const result: Array<{ response: ResponseT; makerUri: string }> = [];
         await Promise.all(
             Object.keys(this._rfqtAssetOfferings).map(async url => {
-                if (
-                    this._makerSupportsPair(url, makerAssetData, takerAssetData) &&
-                    !rfqMakerBlacklist.isMakerBlacklisted(url)
-                ) {
-                    const requestParamsWithBigNumbers = {
-                        takerAddress: options.takerAddress,
-                        ...inferQueryParams(marketOperation, makerAssetData, takerAssetData, assetFillAmount),
-                    };
-
-                    // convert BigNumbers to strings
-                    // so they are digestible by axios
-                    const requestParams = {
-                        ...requestParamsWithBigNumbers,
-                        sellAmountBaseUnits: requestParamsWithBigNumbers.sellAmountBaseUnits
-                            ? requestParamsWithBigNumbers.sellAmountBaseUnits.toString()
-                            : undefined,
-                        buyAmountBaseUnits: requestParamsWithBigNumbers.buyAmountBaseUnits
-                            ? requestParamsWithBigNumbers.buyAmountBaseUnits.toString()
-                            : undefined,
-                    };
-
-                    const partialLogEntry = { url, quoteType, requestParams };
+                const isBlacklisted = rfqMakerBlacklist.isMakerBlacklisted(url);
+                const partialLogEntry = { url, quoteType, requestParams, isBlacklisted };
+                if (isBlacklisted) {
+                    this._infoLogger({ rfqtMakerInteraction: { ...partialLogEntry } });
+                } else if (this._makerSupportsPair(url, makerAssetData, takerAssetData)) {
                     const timeBeforeAwait = Date.now();
                     const maxResponseTimeMs =
                         options.makerEndpointMaxResponseTimeMs === undefined
@@ -395,7 +393,7 @@ export class QuoteRequestor {
                                 },
                             },
                         });
-                        rfqMakerBlacklist.logTimeoutOrLackThereof(url, latencyMs > maxResponseTimeMs);
+                        rfqMakerBlacklist.logTimeoutOrLackThereof(url, latencyMs >= maxResponseTimeMs);
                         result.push({ response: response.data, makerUri: url });
                     } catch (err) {
                         const latencyMs = Date.now() - timeBeforeAwait;
@@ -411,7 +409,7 @@ export class QuoteRequestor {
                                 },
                             },
                         });
-                        rfqMakerBlacklist.logTimeoutOrLackThereof(url, latencyMs > maxResponseTimeMs);
+                        rfqMakerBlacklist.logTimeoutOrLackThereof(url, latencyMs >= maxResponseTimeMs);
                         this._warningLogger(
                             convertIfAxiosError(err),
                             `Failed to get RFQ-T ${quoteType} quote from market maker endpoint ${url} for API key ${

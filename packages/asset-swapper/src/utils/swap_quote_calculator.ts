@@ -16,6 +16,7 @@ import {
 } from '../types';
 
 import { MarketOperationUtils } from './market_operation_utils';
+import { SOURCE_FLAGS } from './market_operation_utils/constants';
 import { convertNativeOrderToFullyFillableOptimizedOrders } from './market_operation_utils/orders';
 import {
     ERC20BridgeSource,
@@ -24,10 +25,9 @@ import {
     GetMarketOrdersOpts,
     OptimizedMarketOrder,
 } from './market_operation_utils/types';
-import { getTokenFromAssetData, isSupportedAssetDataInOrders } from './utils';
-
 import { QuoteReport } from './quote_report_generator';
 import { QuoteFillResult, simulateBestCaseFill, simulateWorstCaseFill } from './quote_simulation';
+import { getTokenFromAssetData, isSupportedAssetDataInOrders } from './utils';
 
 // TODO(dave4506) How do we want to reintroduce InsufficientAssetLiquidityError?
 export class SwapQuoteCalculator {
@@ -130,70 +130,75 @@ export class SwapQuoteCalculator {
 
         let optimizedOrders: OptimizedMarketOrder[];
         let quoteReport: QuoteReport | undefined;
-        let isTwoHop = false;
+        let sourceFlags: number = 0;
 
-        {
-            // Scale fees by gas price.
-            const _opts: GetMarketOrdersOpts = {
-                ...opts,
-                feeSchedule: _.mapValues(opts.feeSchedule, gasCost => (fillData?: FillData) =>
-                    gasCost === undefined ? 0 : gasPrice.times(gasCost(fillData)),
-                ),
-            };
+        // Scale fees by gas price.
+        const _opts: GetMarketOrdersOpts = {
+            ...opts,
+            feeSchedule: _.mapValues(opts.feeSchedule, gasCost => (fillData?: FillData) =>
+                gasCost === undefined ? 0 : gasPrice.times(gasCost(fillData)),
+            ),
+            exchangeProxyOverhead: flags => gasPrice.times(opts.exchangeProxyOverhead(flags)),
+        };
 
-            const firstOrderMakerAssetData = !!prunedOrders[0]
-                ? assetDataUtils.decodeAssetDataOrThrow(prunedOrders[0].makerAssetData)
-                : { assetProxyId: '' };
+        const firstOrderMakerAssetData = !!prunedOrders[0]
+            ? assetDataUtils.decodeAssetDataOrThrow(prunedOrders[0].makerAssetData)
+            : { assetProxyId: '' };
 
-            if (firstOrderMakerAssetData.assetProxyId === AssetProxyId.ERC721) {
-                // HACK: to conform ERC721 orders to the output of market operation utils, assumes complete fillable
-                optimizedOrders = prunedOrders.map(o => convertNativeOrderToFullyFillableOptimizedOrders(o));
+        if (firstOrderMakerAssetData.assetProxyId === AssetProxyId.ERC721) {
+            // HACK: to conform ERC721 orders to the output of market operation utils, assumes complete fillable
+            optimizedOrders = prunedOrders.map(o => convertNativeOrderToFullyFillableOptimizedOrders(o));
+        } else {
+            if (operation === MarketOperation.Buy) {
+                const buyResult = await this._marketOperationUtils.getMarketBuyOrdersAsync(
+                    prunedOrders,
+                    assetFillAmount,
+                    _opts,
+                );
+                optimizedOrders = buyResult.optimizedOrders;
+                quoteReport = buyResult.quoteReport;
+                sourceFlags = buyResult.sourceFlags;
             } else {
-                if (operation === MarketOperation.Buy) {
-                    const buyResult = await this._marketOperationUtils.getMarketBuyOrdersAsync(
-                        prunedOrders,
-                        assetFillAmount,
-                        _opts,
-                    );
-                    optimizedOrders = buyResult.optimizedOrders;
-                    quoteReport = buyResult.quoteReport;
-                    isTwoHop = buyResult.isTwoHop;
-                } else {
-                    const sellResult = await this._marketOperationUtils.getMarketSellOrdersAsync(
-                        prunedOrders,
-                        assetFillAmount,
-                        _opts,
-                    );
-                    optimizedOrders = sellResult.optimizedOrders;
-                    quoteReport = sellResult.quoteReport;
-                    isTwoHop = sellResult.isTwoHop;
-                }
+                const sellResult = await this._marketOperationUtils.getMarketSellOrdersAsync(
+                    prunedOrders,
+                    assetFillAmount,
+                    _opts,
+                );
+                optimizedOrders = sellResult.optimizedOrders;
+                quoteReport = sellResult.quoteReport;
+                sourceFlags = sellResult.sourceFlags;
             }
         }
 
         // assetData information for the result
         const { makerAssetData, takerAssetData } = prunedOrders[0];
-        return isTwoHop
-            ? createTwoHopSwapQuote(
-                  makerAssetData,
-                  takerAssetData,
-                  optimizedOrders,
-                  operation,
-                  assetFillAmount,
-                  gasPrice,
-                  opts.gasSchedule,
-                  quoteReport,
-              )
-            : createSwapQuote(
-                  makerAssetData,
-                  takerAssetData,
-                  optimizedOrders,
-                  operation,
-                  assetFillAmount,
-                  gasPrice,
-                  opts.gasSchedule,
-                  quoteReport,
-              );
+        const swapQuote =
+            sourceFlags === SOURCE_FLAGS[ERC20BridgeSource.MultiHop]
+                ? createTwoHopSwapQuote(
+                      makerAssetData,
+                      takerAssetData,
+                      optimizedOrders,
+                      operation,
+                      assetFillAmount,
+                      gasPrice,
+                      opts.gasSchedule,
+                      quoteReport,
+                  )
+                : createSwapQuote(
+                      makerAssetData,
+                      takerAssetData,
+                      optimizedOrders,
+                      operation,
+                      assetFillAmount,
+                      gasPrice,
+                      opts.gasSchedule,
+                      quoteReport,
+                  );
+        // Use the raw gas, not scaled by gas price
+        const exchangeProxyOverhead = opts.exchangeProxyOverhead(sourceFlags).toNumber();
+        swapQuote.bestCaseQuoteInfo.gas += exchangeProxyOverhead;
+        swapQuote.worstCaseQuoteInfo.gas += exchangeProxyOverhead;
+        return swapQuote;
     }
 }
 

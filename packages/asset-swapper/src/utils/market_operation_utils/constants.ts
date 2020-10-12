@@ -3,7 +3,7 @@ import { BigNumber } from '@0x/utils';
 import { SourceFilters } from './source_filters';
 import { CurveFunctionSelectors, CurveInfo, ERC20BridgeSource, GetMarketOrdersOpts } from './types';
 
-// tslint:disable: custom-no-magic-numbers
+// tslint:disable: custom-no-magic-numbers no-bitwise
 
 /**
  * Valid sources for market sell.
@@ -22,6 +22,7 @@ export const SELL_SOURCE_FILTER = new SourceFilters([
     ERC20BridgeSource.Mooniswap,
     ERC20BridgeSource.Swerve,
     ERC20BridgeSource.SushiSwap,
+    ERC20BridgeSource.Shell,
     ERC20BridgeSource.MultiHop,
 ]);
 
@@ -40,6 +41,7 @@ export const BUY_SOURCE_FILTER = new SourceFilters(
         // ERC20BridgeSource.Bancor, // FIXME: Disabled until Bancor SDK supports buy quotes
         ERC20BridgeSource.MStable,
         ERC20BridgeSource.Mooniswap,
+        ERC20BridgeSource.Shell,
         ERC20BridgeSource.Swerve,
         ERC20BridgeSource.SushiSwap,
         ERC20BridgeSource.MultiHop,
@@ -58,8 +60,8 @@ export const DEFAULT_GET_MARKET_ORDERS_OPTS: GetMarketOrdersOpts = {
     sampleDistributionBase: 1.05,
     feeSchedule: {},
     gasSchedule: {},
+    exchangeProxyOverhead: () => ZERO_AMOUNT,
     allowFallback: true,
-    shouldBatchBridgeOrders: true,
     shouldGenerateQuoteReport: false,
 };
 
@@ -67,6 +69,11 @@ export const DEFAULT_GET_MARKET_ORDERS_OPTS: GetMarketOrdersOpts = {
  * Sources to poll for ETH fee price estimates.
  */
 export const FEE_QUOTE_SOURCES = [ERC20BridgeSource.Uniswap, ERC20BridgeSource.UniswapV2];
+
+export const SOURCE_FLAGS: { [source in ERC20BridgeSource]: number } = Object.assign(
+    {},
+    ...Object.values(ERC20BridgeSource).map((source: ERC20BridgeSource, index) => ({ [source]: 1 << index })),
+);
 
 /**
  * Mainnet Curve configuration

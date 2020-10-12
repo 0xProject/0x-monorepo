@@ -24,6 +24,7 @@ import * as IExchange from '../test/generated-artifacts/IExchange.json';
 import * as IFeature from '../test/generated-artifacts/IFeature.json';
 import * as IFlashWallet from '../test/generated-artifacts/IFlashWallet.json';
 import * as IGasToken from '../test/generated-artifacts/IGasToken.json';
+import * as ILiquidityProviderFeature from '../test/generated-artifacts/ILiquidityProviderFeature.json';
 import * as IMetaTransactionsFeature from '../test/generated-artifacts/IMetaTransactionsFeature.json';
 import * as InitialMigration from '../test/generated-artifacts/InitialMigration.json';
 import * as IOwnableFeature from '../test/generated-artifacts/IOwnableFeature.json';
@@ -37,6 +38,8 @@ import * as IZeroEx from '../test/generated-artifacts/IZeroEx.json';
 import * as LibBootstrap from '../test/generated-artifacts/LibBootstrap.json';
 import * as LibCommonRichErrors from '../test/generated-artifacts/LibCommonRichErrors.json';
 import * as LibERC20Transformer from '../test/generated-artifacts/LibERC20Transformer.json';
+import * as LibLiquidityProviderRichErrors from '../test/generated-artifacts/LibLiquidityProviderRichErrors.json';
+import * as LibLiquidityProviderStorage from '../test/generated-artifacts/LibLiquidityProviderStorage.json';
 import * as LibMetaTransactionsRichErrors from '../test/generated-artifacts/LibMetaTransactionsRichErrors.json';
 import * as LibMetaTransactionsStorage from '../test/generated-artifacts/LibMetaTransactionsStorage.json';
 import * as LibMigrate from '../test/generated-artifacts/LibMigrate.json';
@@ -55,6 +58,7 @@ import * as LibTokenSpenderStorage from '../test/generated-artifacts/LibTokenSpe
 import * as LibTransformERC20RichErrors from '../test/generated-artifacts/LibTransformERC20RichErrors.json';
 import * as LibTransformERC20Storage from '../test/generated-artifacts/LibTransformERC20Storage.json';
 import * as LibWalletRichErrors from '../test/generated-artifacts/LibWalletRichErrors.json';
+import * as LiquidityProviderFeature from '../test/generated-artifacts/LiquidityProviderFeature.json';
 import * as LogMetadataTransformer from '../test/generated-artifacts/LogMetadataTransformer.json';
 import * as MetaTransactionsFeature from '../test/generated-artifacts/MetaTransactionsFeature.json';
 import * as MixinAdapterAddresses from '../test/generated-artifacts/MixinAdapterAddresses.json';
@@ -64,6 +68,7 @@ import * as MixinKyber from '../test/generated-artifacts/MixinKyber.json';
 import * as MixinMooniswap from '../test/generated-artifacts/MixinMooniswap.json';
 import * as MixinMStable from '../test/generated-artifacts/MixinMStable.json';
 import * as MixinOasis from '../test/generated-artifacts/MixinOasis.json';
+import * as MixinShell from '../test/generated-artifacts/MixinShell.json';
 import * as MixinUniswap from '../test/generated-artifacts/MixinUniswap.json';
 import * as MixinUniswapV2 from '../test/generated-artifacts/MixinUniswapV2.json';
 import * as MixinZeroExBridge from '../test/generated-artifacts/MixinZeroExBridge.json';
@@ -71,6 +76,7 @@ import * as OwnableFeature from '../test/generated-artifacts/OwnableFeature.json
 import * as PayTakerTransformer from '../test/generated-artifacts/PayTakerTransformer.json';
 import * as SignatureValidatorFeature from '../test/generated-artifacts/SignatureValidatorFeature.json';
 import * as SimpleFunctionRegistryFeature from '../test/generated-artifacts/SimpleFunctionRegistryFeature.json';
+import * as TestBridge from '../test/generated-artifacts/TestBridge.json';
 import * as TestCallTarget from '../test/generated-artifacts/TestCallTarget.json';
 import * as TestDelegateCaller from '../test/generated-artifacts/TestDelegateCaller.json';
 import * as TestFillQuoteTransformerBridge from '../test/generated-artifacts/TestFillQuoteTransformerBridge.json';
@@ -104,6 +110,7 @@ export const artifacts = {
     IZeroEx: IZeroEx as ContractArtifact,
     ZeroEx: ZeroEx as ContractArtifact,
     LibCommonRichErrors: LibCommonRichErrors as ContractArtifact,
+    LibLiquidityProviderRichErrors: LibLiquidityProviderRichErrors as ContractArtifact,
     LibMetaTransactionsRichErrors: LibMetaTransactionsRichErrors as ContractArtifact,
     LibOwnableRichErrors: LibOwnableRichErrors as ContractArtifact,
     LibProxyRichErrors: LibProxyRichErrors as ContractArtifact,
@@ -120,6 +127,7 @@ export const artifacts = {
     BootstrapFeature: BootstrapFeature as ContractArtifact,
     IBootstrapFeature: IBootstrapFeature as ContractArtifact,
     IFeature: IFeature as ContractArtifact,
+    ILiquidityProviderFeature: ILiquidityProviderFeature as ContractArtifact,
     IMetaTransactionsFeature: IMetaTransactionsFeature as ContractArtifact,
     IOwnableFeature: IOwnableFeature as ContractArtifact,
     ISignatureValidatorFeature: ISignatureValidatorFeature as ContractArtifact,
@@ -127,6 +135,7 @@ export const artifacts = {
     ITokenSpenderFeature: ITokenSpenderFeature as ContractArtifact,
     ITransformERC20Feature: ITransformERC20Feature as ContractArtifact,
     IUniswapFeature: IUniswapFeature as ContractArtifact,
+    LiquidityProviderFeature: LiquidityProviderFeature as ContractArtifact,
     MetaTransactionsFeature: MetaTransactionsFeature as ContractArtifact,
     OwnableFeature: OwnableFeature as ContractArtifact,
     SignatureValidatorFeature: SignatureValidatorFeature as ContractArtifact,
@@ -142,6 +151,7 @@ export const artifacts = {
     InitialMigration: InitialMigration as ContractArtifact,
     LibBootstrap: LibBootstrap as ContractArtifact,
     LibMigrate: LibMigrate as ContractArtifact,
+    LibLiquidityProviderStorage: LibLiquidityProviderStorage as ContractArtifact,
     LibMetaTransactionsStorage: LibMetaTransactionsStorage as ContractArtifact,
     LibOwnableStorage: LibOwnableStorage as ContractArtifact,
     LibProxyStorage: LibProxyStorage as ContractArtifact,
@@ -167,6 +177,7 @@ export const artifacts = {
     MixinMStable: MixinMStable as ContractArtifact,
     MixinMooniswap: MixinMooniswap as ContractArtifact,
     MixinOasis: MixinOasis as ContractArtifact,
+    MixinShell: MixinShell as ContractArtifact,
     MixinUniswap: MixinUniswap as ContractArtifact,
     MixinUniswapV2: MixinUniswapV2 as ContractArtifact,
     MixinZeroExBridge: MixinZeroExBridge as ContractArtifact,
@@ -174,6 +185,7 @@ export const artifacts = {
     IExchange: IExchange as ContractArtifact,
     IGasToken: IGasToken as ContractArtifact,
     ITestSimpleFunctionRegistryFeature: ITestSimpleFunctionRegistryFeature as ContractArtifact,
+    TestBridge: TestBridge as ContractArtifact,
     TestCallTarget: TestCallTarget as ContractArtifact,
     TestDelegateCaller: TestDelegateCaller as ContractArtifact,
     TestFillQuoteTransformerBridge: TestFillQuoteTransformerBridge as ContractArtifact,

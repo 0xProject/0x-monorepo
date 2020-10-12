@@ -29,6 +29,10 @@
             {
                 "note": "Added `CreamBridge`",
                 "pr": 2715
+            },
+            {
+                "note": "Added `ShellBridge`",
+                "pr": 2722
             }
         ]
     },
