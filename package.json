@@ -1,6 +1,6 @@
 {
     "private": true,
-    "name": "0x-monorepo",
+    "name": "@0x/protocol-repo",
     "engines": {
         "node": ">=6.12"
     },
@@ -9,26 +9,25 @@
         "contracts/*"
     ],
     "scripts": {
-        "deps_versions:ci": "node ./monorepo-scripts/lib/deps_versions.js",
+        "deps_versions:ci": "node ./node_modules/@0x/monorepo-scripts/lib/deps_versions.js",
         "fix": "wsrun fix $PKG --fast-exit --parallel --exclude-missing",
         "ganache": "ganache-cli -p 8545 --gasLimit 10000000 --networkId 50 -m \"${npm_package_config_mnemonic}\"",
         "prettier": "prettier --write '**/*.{ts,tsx,json,md}' --config .prettierrc",
         "prettier:ci": "prettier --list-different '**/*.{ts,tsx,json,md}' --config .prettierrc",
         "report_coverage": "lcov-result-merger './packages/*/coverage/lcov.info' | coveralls",
-        "test:installation": "node ./monorepo-scripts/lib/test_installation.js",
-        "test:installation:local": "IS_LOCAL_PUBLISH=true node ./monorepo-scripts/lib/test_installation.js",
+        "test:installation": "node ./node_modules/@0x/monorepo-scripts/lib/test_installation.js",
+        "test:installation:local": "IS_LOCAL_PUBLISH=true node ./node_modules/@0x/monorepo-scripts/lib/test_installation.js",
         "test:publish:circleci": "yarn npm-cli-login -u test -p test -e test@example.com -r http://localhost:4873 && IS_LOCAL_PUBLISH=true run-s script:publish test:installation:local",
-        "run:publish": "run-s install:all build:monorepo_scripts script:prepublish_checks rebuild script:publish",
+        "run:publish": "run-s install:all script:prepublish_checks rebuild script:publish",
         "run:publish:local": "IS_LOCAL_PUBLISH=true yarn run:publish",
-        "script:prepublish_checks": "node ./monorepo-scripts/lib/prepublish_checks.js",
-        "script:publish": "node ./monorepo-scripts/lib/publish.js",
+        "script:prepublish_checks": "node ./node_modules/@0x/monorepo-scripts/lib/prepublish_checks.js",
+        "script:publish": "node ./node_modules/@0x/monorepo-scripts/lib/publish.js",
         "install:all": "yarn install",
         "wsrun": "wsrun",
         "lerna": "lerna",
         "build": "lerna link && wsrun build $PKG -r --stages --fast-exit --exclude-missing",
         "build:ci": "lerna link && wsrun build:ci $PKG --fast-exit -r --stages --exclude-missing",
         "build:contracts": "lerna link && wsrun build -p ${npm_package_config_contractsPackages} -c --fast-exit -r --stages --exclude-missing",
-        "build:monorepo_scripts": "cd monorepo-scripts && yarn build",
         "build:ts": "tsc -b",
         "watch:ts": "tsc -b -w",
         "clean": "wsrun clean $PKG --fast-exit -r --parallel --exclude-missing",
@@ -43,7 +42,7 @@
         "test:all": "wsrun test $PKG --fast-exit --serial --exclude-missing",
         "test:contracts": "wsrun test --serial -p $(echo ${npm_package_config_contractsPackages} ${npm_package_config_ignoreTestsForPackages} | tr ' ' '\n' | sort | uniq -u | tr '\n' ' ') -c --fast-exit --exclude-missing",
         "test:contracts:all": "wsrun test --serial -p ${npm_package_config_contractsPackages} -c --fast-exit --exclude-missing",
-        "generate_doc": "node ./monorepo-scripts/lib/doc_generate.js",
+        "generate_doc": "node ./node_modules/@0x/monorepo-scripts/lib/doc_generate.js",
         "upload_md_docs": "aws s3 rm --recursive s3://docs-markdown; wsrun s3:sync_md_docs --exclude-missing",
         "diff_md_docs:ci": "wsrun diff_docs --exclude-missing",
         "test:generate_docs:circleci": "for i in ${npm_package_config_packagesWithDocPages}; do yarn generate_doc --package $i || break -1; done;",
@@ -62,6 +61,7 @@
         "ignoreDependencyVersionsForPackage": "contract-wrappers"
     },
     "devDependencies": {
+        "@0x/monorepo-scripts": "^2.0.0",
         "@0x-lerna-fork/lerna": "3.16.10",
         "@0xproject/npm-cli-login": "^0.0.11",
         "async-child-process": "^1.1.1",
