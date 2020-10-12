@@ -298,23 +298,6 @@ describe('MarketOperationUtils tests', () => {
         return rates;
     }
 
-    function getSortedOrderSources(side: MarketOperation, orders: OptimizedMarketOrder[]): ERC20BridgeSource[][] {
-        return (
-            orders
-                // Sort fills by descending rate.
-                .map(o => {
-                    return o.fills
-                        .slice()
-                        .sort((a, b) =>
-                            side === MarketOperation.Sell
-                                ? b.output.div(b.input).comparedTo(a.output.div(a.input))
-                                : b.input.div(b.output).comparedTo(a.input.div(a.output)),
-                        )
-                        .map(f => f.source);
-                })
-        );
-    }
-
     const NUM_SAMPLES = 3;
 
     interface RatesBySource {
@@ -507,7 +490,6 @@ describe('MarketOperationUtils tests', () => {
                 maxFallbackSlippage: 100,
                 excludedSources: DEFAULT_EXCLUDED,
                 allowFallback: false,
-                shouldBatchBridgeOrders: false,
             };
 
             beforeEach(() => {
@@ -1273,7 +1255,6 @@ describe('MarketOperationUtils tests', () => {
                         excludedSources: SELL_SOURCES.concat(ERC20BridgeSource.Bancor),
                         numSamples: 4,
                         bridgeSlippage: 0,
-                        shouldBatchBridgeOrders: false,
                     },
                 );
                 const result = ordersAndReport.optimizedOrders;
@@ -1291,37 +1272,6 @@ describe('MarketOperationUtils tests', () => {
                 expect(getSellQuotesParams.liquidityProviderAddress).is.eql(registryAddress);
             });
 
-            it('batches contiguous bridge sources', async () => {
-                const rates: RatesBySource = {};
-                rates[ERC20BridgeSource.Uniswap] = [1, 0.01, 0.01, 0.01];
-                rates[ERC20BridgeSource.Native] = [0.5, 0.01, 0.01, 0.01];
-                rates[ERC20BridgeSource.Eth2Dai] = [0.49, 0.01, 0.01, 0.01];
-                rates[ERC20BridgeSource.Curve] = [0.48, 0.01, 0.01, 0.01];
-                replaceSamplerOps({
-                    getSellQuotes: createGetMultipleSellQuotesOperationFromRates(rates),
-                });
-                const improvedOrdersResponse = await marketOperationUtils.getMarketSellOrdersAsync(
-                    createOrdersFromSellRates(FILL_AMOUNT, rates[ERC20BridgeSource.Native]),
-                    FILL_AMOUNT,
-                    {
-                        ...DEFAULT_OPTS,
-                        numSamples: 4,
-                        excludedSources: [
-                            ERC20BridgeSource.Kyber,
-                            ..._.without(DEFAULT_OPTS.excludedSources, ERC20BridgeSource.Curve),
-                        ],
-                        shouldBatchBridgeOrders: true,
-                    },
-                );
-                const improvedOrders = improvedOrdersResponse.optimizedOrders;
-                expect(improvedOrders).to.be.length(3);
-                const orderFillSources = getSortedOrderSources(MarketOperation.Sell, improvedOrders);
-                expect(orderFillSources).to.deep.eq([
-                    [ERC20BridgeSource.Uniswap],
-                    [ERC20BridgeSource.Native],
-                    [ERC20BridgeSource.Eth2Dai, ERC20BridgeSource.Curve],
-                ]);
-            });
             it('factors in exchange proxy gas overhead', async () => {
                 // Uniswap has a slightly better rate than LiquidityProvider,
                 // but LiquidityProvider is better accounting for the EP gas overhead.
@@ -1380,7 +1330,6 @@ describe('MarketOperationUtils tests', () => {
                 maxFallbackSlippage: 100,
                 excludedSources: DEFAULT_EXCLUDED,
                 allowFallback: false,
-                shouldBatchBridgeOrders: false,
             };
 
             beforeEach(() => {
@@ -1732,31 +1681,6 @@ describe('MarketOperationUtils tests', () => {
                 expect(orderSources.slice(firstSources.length).sort()).to.deep.eq(secondSources.sort());
             });
 
-            it('batches contiguous bridge sources', async () => {
-                const rates: RatesBySource = { ...ZERO_RATES };
-                rates[ERC20BridgeSource.Native] = [0.3, 0.01, 0.01, 0.01];
-                rates[ERC20BridgeSource.Eth2Dai] = [0.49, 0.02, 0.01, 0.01];
-                rates[ERC20BridgeSource.Uniswap] = [0.48, 0.01, 0.01, 0.01];
-                replaceSamplerOps({
-                    getBuyQuotes: createGetMultipleBuyQuotesOperationFromRates(rates),
-                });
-                const improvedOrdersResponse = await marketOperationUtils.getMarketBuyOrdersAsync(
-                    createOrdersFromBuyRates(FILL_AMOUNT, rates[ERC20BridgeSource.Native]),
-                    FILL_AMOUNT,
-                    {
-                        ...DEFAULT_OPTS,
-                        numSamples: 4,
-                        shouldBatchBridgeOrders: true,
-                    },
-                );
-                const improvedOrders = improvedOrdersResponse.optimizedOrders;
-                expect(improvedOrders).to.be.length(2);
-                const orderFillSources = getSortedOrderSources(MarketOperation.Sell, improvedOrders);
-                expect(orderFillSources).to.deep.eq([
-                    [ERC20BridgeSource.Eth2Dai, ERC20BridgeSource.Uniswap],
-                    [ERC20BridgeSource.Native],
-                ]);
-            });
             it('factors in exchange proxy gas overhead', async () => {
                 // Uniswap has a slightly better rate than LiquidityProvider,
                 // but LiquidityProvider is better accounting for the EP gas overhead.

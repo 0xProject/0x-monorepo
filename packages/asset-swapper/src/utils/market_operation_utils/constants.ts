@@ -62,7 +62,6 @@ export const DEFAULT_GET_MARKET_ORDERS_OPTS: GetMarketOrdersOpts = {
     gasSchedule: {},
     exchangeProxyOverhead: () => ZERO_AMOUNT,
     allowFallback: true,
-    shouldBatchBridgeOrders: true,
     shouldGenerateQuoteReport: false,
 };
 

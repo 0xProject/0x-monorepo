@@ -1,7 +1,7 @@
 import { ContractAddresses } from '@0x/contract-addresses';
 import { assetDataUtils, ERC20AssetData, generatePseudoRandomSalt, orderCalculationUtils } from '@0x/order-utils';
 import { RFQTIndicativeQuote } from '@0x/quote-server';
-import { ERC20BridgeAssetData, SignedOrder } from '@0x/types';
+import { SignedOrder } from '@0x/types';
 import { AbiEncoder, BigNumber } from '@0x/utils';
 
 import { MarketOperation, SignedOrderWithFillableAmounts } from '../../types';
@@ -39,30 +39,6 @@ import {
 } from './types';
 
 // tslint:disable completed-docs no-unnecessary-type-assertion
-
-interface DexForwaderBridgeData {
-    inputToken: string;
-    calls: Array<{
-        target: string;
-        inputTokenAmount: BigNumber;
-        outputTokenAmount: BigNumber;
-        bridgeData: string;
-    }>;
-}
-
-const dexForwarderBridgeDataEncoder = AbiEncoder.create([
-    { name: 'inputToken', type: 'address' },
-    {
-        name: 'calls',
-        type: 'tuple[]',
-        components: [
-            { name: 'target', type: 'address' },
-            { name: 'inputTokenAmount', type: 'uint256' },
-            { name: 'outputTokenAmount', type: 'uint256' },
-            { name: 'bridgeData', type: 'bytes' },
-        ],
-    },
-]);
 
 export function createDummyOrderForSampler(
     makerAssetData: string,
@@ -159,7 +135,6 @@ export interface CreateOrderFromPathOpts {
     orderDomain: OrderDomain;
     contractAddresses: ContractAddresses;
     bridgeSlippage: number;
-    shouldBatchBridgeOrders: boolean;
 }
 
 export function createOrdersFromTwoHopSample(
@@ -336,47 +311,6 @@ export function createBridgeOrder(
         takerAssetAmount: slippedTakerAssetAmount,
         fillableMakerAssetAmount: slippedMakerAssetAmount,
         fillableTakerAssetAmount: slippedTakerAssetAmount,
-        ...createCommonBridgeOrderFields(opts.orderDomain),
-    };
-}
-
-export function createBatchedBridgeOrder(fills: CollapsedFill[], opts: CreateOrderFromPathOpts): OptimizedMarketOrder {
-    const [makerToken, takerToken] = getMakerTakerTokens(opts);
-    let totalMakerAssetAmount = ZERO_AMOUNT;
-    let totalTakerAssetAmount = ZERO_AMOUNT;
-    const batchedBridgeData: DexForwaderBridgeData = {
-        inputToken: takerToken,
-        calls: [],
-    };
-    for (const fill of fills) {
-        const bridgeOrder = createBridgeOrder(fill, makerToken, takerToken, opts);
-        totalMakerAssetAmount = totalMakerAssetAmount.plus(bridgeOrder.makerAssetAmount);
-        totalTakerAssetAmount = totalTakerAssetAmount.plus(bridgeOrder.takerAssetAmount);
-        const { bridgeAddress, bridgeData: orderBridgeData } = assetDataUtils.decodeAssetDataOrThrow(
-            bridgeOrder.makerAssetData,
-        ) as ERC20BridgeAssetData;
-        batchedBridgeData.calls.push({
-            target: bridgeAddress,
-            bridgeData: orderBridgeData,
-            inputTokenAmount: bridgeOrder.takerAssetAmount,
-            outputTokenAmount: bridgeOrder.makerAssetAmount,
-        });
-    }
-    const batchedBridgeAddress = opts.contractAddresses.dexForwarderBridge;
-    const batchedMakerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
-        makerToken,
-        batchedBridgeAddress,
-        dexForwarderBridgeDataEncoder.encode(batchedBridgeData),
-    );
-    return {
-        fills,
-        makerAssetData: batchedMakerAssetData,
-        takerAssetData: assetDataUtils.encodeERC20AssetData(takerToken),
-        makerAddress: batchedBridgeAddress,
-        makerAssetAmount: totalMakerAssetAmount,
-        takerAssetAmount: totalTakerAssetAmount,
-        fillableMakerAssetAmount: totalMakerAssetAmount,
-        fillableTakerAssetAmount: totalTakerAssetAmount,
         ...createCommonBridgeOrderFields(opts.orderDomain),
     };
 }

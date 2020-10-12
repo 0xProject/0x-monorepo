@@ -459,7 +459,6 @@ export class MarketOperationUtils {
                             excludedSources: _opts.excludedSources,
                             feeSchedule: _opts.feeSchedule,
                             allowFallback: _opts.allowFallback,
-                            shouldBatchBridgeOrders: _opts.shouldBatchBridgeOrders,
                         },
                     );
                     return optimizedOrders;
@@ -497,7 +496,6 @@ export class MarketOperationUtils {
             orderDomain: this._orderDomain,
             contractAddresses: this.contractAddresses,
             bridgeSlippage: opts.bridgeSlippage || 0,
-            shouldBatchBridgeOrders: !!opts.shouldBatchBridgeOrders,
         };
 
         // Convert native orders and dex quotes into `Fill` objects.

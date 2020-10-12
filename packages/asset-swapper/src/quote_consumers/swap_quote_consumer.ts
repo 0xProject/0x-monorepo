@@ -18,15 +18,11 @@ import { assert } from '../utils/assert';
 import { swapQuoteConsumerUtils } from '../utils/swap_quote_consumer_utils';
 
 import { ExchangeProxySwapQuoteConsumer } from './exchange_proxy_swap_quote_consumer';
-import { ExchangeSwapQuoteConsumer } from './exchange_swap_quote_consumer';
-import { ForwarderSwapQuoteConsumer } from './forwarder_swap_quote_consumer';
 
 export class SwapQuoteConsumer implements SwapQuoteConsumerBase {
     public readonly provider: ZeroExProvider;
     public readonly chainId: number;
 
-    private readonly _exchangeConsumer: ExchangeSwapQuoteConsumer;
-    private readonly _forwarderConsumer: ForwarderSwapQuoteConsumer;
     private readonly _contractAddresses: ContractAddresses;
     private readonly _exchangeProxyConsumer: ExchangeProxySwapQuoteConsumer;
 
@@ -45,8 +41,6 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase {
         this.provider = provider;
         this.chainId = chainId;
         this._contractAddresses = options.contractAddresses || getContractAddressesForChainOrThrow(chainId);
-        this._exchangeConsumer = new ExchangeSwapQuoteConsumer(supportedProvider, this._contractAddresses, options);
-        this._forwarderConsumer = new ForwarderSwapQuoteConsumer(supportedProvider, this._contractAddresses, options);
         this._exchangeProxyConsumer = new ExchangeProxySwapQuoteConsumer(
             supportedProvider,
             this._contractAddresses,
@@ -100,13 +94,12 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase {
     }
 
     private async _getConsumerForSwapQuoteAsync(opts: Partial<SwapQuoteGetOutputOpts>): Promise<SwapQuoteConsumerBase> {
+        // ( akroeger)leaving this switch to use different contracts in the future
         switch (opts.useExtensionContract) {
-            case ExtensionContractType.Forwarder:
-                return this._forwarderConsumer;
             case ExtensionContractType.ExchangeProxy:
                 return this._exchangeProxyConsumer;
             default:
-                return this._exchangeConsumer;
+                return this._exchangeProxyConsumer;
         }
     }
 }
