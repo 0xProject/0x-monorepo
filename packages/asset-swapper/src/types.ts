@@ -358,7 +358,7 @@ export enum OrderPrunerPermittedFeeTypes {
 export interface MockedRfqtFirmQuoteResponse {
     endpoint: string;
     requestApiKey: string;
-    requestParams: TakerRequestQueryParams,
+    requestParams: TakerRequestQueryParams;
     responseData: any;
     responseCode: number;
 }
@@ -369,7 +369,7 @@ export interface MockedRfqtFirmQuoteResponse {
 export interface MockedRfqtIndicativeQuoteResponse {
     endpoint: string;
     requestApiKey: string;
-    requestParams: TakerRequestQueryParams,
+    requestParams: TakerRequestQueryParams;
     responseData: any;
     responseCode: number;
 }
