@@ -58,6 +58,10 @@ contract DeploymentConstants {
     address constant private MOONISWAP_REGISTRY = 0x71CD6666064C3A1354a3B4dca5fA1E2D3ee7D303;
     /// @dev Mainnet address of the Shell contract
     address constant private SHELL_CONTRACT = 0x2E703D658f8dd21709a7B458967aB4081F8D3d05;
+    /// @dev Mainnet address of the DODO Registry (ZOO) contract
+    address constant private DODO_REGISTRY = 0x3A97247DF274a17C59A3bd12735ea3FcDFb49950;
+    /// @dev Mainnet address of the DODO Helper contract
+    address constant private DODO_HELPER = 0x533dA777aeDCE766CEAe696bf90f8541A4bA80Eb;
 
     // // Ropsten addresses ///////////////////////////////////////////////////////
     // /// @dev Mainnet address of the WETH contract.
@@ -307,5 +311,25 @@ contract DeploymentConstants {
         returns (address)
     {
         return SHELL_CONTRACT;
+    }
+
+    /// @dev An overridable way to retrieve the DODO Registry contract address.
+    /// @return registry The DODO Registry contract address.
+    function _getDODORegistryAddress()
+        internal
+        view
+        returns (address)
+    {
+        return DODO_REGISTRY;
+    }
+
+    /// @dev An overridable way to retrieve the DODO Helper contract address.
+    /// @return registry The DODO Helper contract address.
+    function _getDODOHelperAddress()
+        internal
+        view
+        returns (address)
+    {
+        return DODO_HELPER;
     }
 }

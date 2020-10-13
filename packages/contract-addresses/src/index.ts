@@ -45,6 +45,7 @@ export interface ContractAddresses {
     mooniswapBridge: string;
     sushiswapBridge: string;
     shellBridge: string;
+    dodoBridge: string;
     transformers: {
         wethTransformer: string;
         payTakerTransformer: string;

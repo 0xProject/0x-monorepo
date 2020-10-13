@@ -21,6 +21,7 @@ import {
     CurveFillData,
     CurveInfo,
     DexSample,
+    DODOFillData,
     ERC20BridgeSource,
     HopInfo,
     KyberFillData,
@@ -520,7 +521,7 @@ export class SamplerOperations {
         makerToken: string,
         takerToken: string,
         takerFillAmounts: BigNumber[],
-    ): SourceQuoteOperation {
+    ): SourceQuoteOperation<MooniswapFillData> {
         return new SamplerContractOperation({
             source: ERC20BridgeSource.Mooniswap,
             contract: this._samplerContract,
@@ -541,7 +542,7 @@ export class SamplerOperations {
         makerToken: string,
         takerToken: string,
         makerFillAmounts: BigNumber[],
-    ): SourceQuoteOperation {
+    ): SourceQuoteOperation<MooniswapFillData> {
         return new SamplerContractOperation({
             source: ERC20BridgeSource.Mooniswap,
             contract: this._samplerContract,
@@ -757,6 +758,48 @@ export class SamplerOperations {
             contract: this._samplerContract,
             function: this._samplerContract.sampleBuysFromShell,
             params: [takerToken, makerToken, makerFillAmounts],
+        });
+    }
+
+    public getDODOSellQuotes(
+        makerToken: string,
+        takerToken: string,
+        takerFillAmounts: BigNumber[],
+    ): SourceQuoteOperation<DODOFillData> {
+        return new SamplerContractOperation({
+            source: ERC20BridgeSource.Dodo,
+            contract: this._samplerContract,
+            function: this._samplerContract.sampleSellsFromDODO,
+            params: [takerToken, makerToken, takerFillAmounts],
+            callback: (callResults: string, fillData: DODOFillData): BigNumber[] => {
+                const [isSellBase, pool, samples] = this._samplerContract.getABIDecodedReturnData<
+                    [boolean, string, BigNumber[]]
+                >('sampleSellsFromDODO', callResults);
+                fillData.isSellBase = isSellBase;
+                fillData.poolAddress = pool;
+                return samples;
+            },
+        });
+    }
+
+    public getDODOBuyQuotes(
+        makerToken: string,
+        takerToken: string,
+        makerFillAmounts: BigNumber[],
+    ): SourceQuoteOperation<DODOFillData> {
+        return new SamplerContractOperation({
+            source: ERC20BridgeSource.Dodo,
+            contract: this._samplerContract,
+            function: this._samplerContract.sampleBuysFromDODO,
+            params: [takerToken, makerToken, makerFillAmounts],
+            callback: (callResults: string, fillData: DODOFillData): BigNumber[] => {
+                const [isSellBase, pool, samples] = this._samplerContract.getABIDecodedReturnData<
+                    [boolean, string, BigNumber[]]
+                >('sampleBuysFromDODO', callResults);
+                fillData.isSellBase = isSellBase;
+                fillData.poolAddress = pool;
+                return samples;
+            },
         });
     }
 
@@ -999,6 +1042,8 @@ export class SamplerOperations {
                                 );
                         case ERC20BridgeSource.Shell:
                             return this.getShellSellQuotes(makerToken, takerToken, takerFillAmounts);
+                        case ERC20BridgeSource.Dodo:
+                            return this.getDODOSellQuotes(makerToken, takerToken, takerFillAmounts);
                         default:
                             throw new Error(`Unsupported sell sample source: ${source}`);
                     }
@@ -1088,6 +1133,8 @@ export class SamplerOperations {
                                 );
                         case ERC20BridgeSource.Shell:
                             return this.getShellBuyQuotes(makerToken, takerToken, makerFillAmounts);
+                        case ERC20BridgeSource.Dodo:
+                            return this.getDODOBuyQuotes(makerToken, takerToken, makerFillAmounts);
                         default:
                             throw new Error(`Unsupported buy sample source: ${source}`);
                     }
