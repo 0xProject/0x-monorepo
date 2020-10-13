@@ -1,0 +1,102 @@
+{
+    "schemaVersion": "2.0.0",
+    "contractName": "FixinEIP712",
+    "compilerOutput": {
+        "abi": [
+            {
+                "inputs": [],
+                "name": "EIP712_DOMAIN_SEPARATOR",
+                "outputs": [
+                    {
+                        "internalType": "bytes32",
+                        "name": "",
+                        "type": "bytes32"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ],
+        "devdoc": {
+            "details": "EIP712 helpers for features.",
+            "kind": "dev",
+            "methods": {},
+            "stateVariables": {
+                "EIP712_DOMAIN_SEPARATOR": {
+                    "details": "The domain hash separator for the entire exchange proxy."
+                }
+            },
+            "version": 1
+        },
+        "evm": {
+            "bytecode": {
+                "linkReferences": {},
+                "object": "0x",
+                "opcodes": "",
+                "sourceMap": ""
+            },
+            "deployedBytecode": {
+                "immutableReferences": {},
+                "linkReferences": {},
+                "object": "0x",
+                "opcodes": "",
+                "sourceMap": ""
+            }
+        }
+    },
+    "sourceTreeHashHex": "0x66555520265515d219e582ef130286591556f4bcc6e6c5bcf181f70b7d267371",
+    "sources": {
+        "./FixinEIP712.sol": {
+            "id": 33
+        },
+        "@0x/contracts-utils/contracts/src/v06/errors/LibRichErrorsV06.sol": {
+            "id": 97
+        },
+        "../errors/LibCommonRichErrors.sol": {
+            "id": 2
+        },
+        "../errors/LibOwnableRichErrors.sol": {
+            "id": 4
+        }
+    },
+    "sourceCodes": {
+        "./FixinEIP712.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\npragma experimental ABIEncoderV2;\n\nimport \"@0x/contracts-utils/contracts/src/v06/errors/LibRichErrorsV06.sol\";\nimport \"../errors/LibCommonRichErrors.sol\";\nimport \"../errors/LibOwnableRichErrors.sol\";\n\n\n/// @dev EIP712 helpers for features.\nabstract contract FixinEIP712 {\n\n    /// @dev The domain hash separator for the entire exchange proxy.\n    bytes32 public immutable EIP712_DOMAIN_SEPARATOR;\n\n    constructor(address zeroExAddress) internal {\n        // Compute `EIP712_DOMAIN_SEPARATOR`\n        {\n            uint256 chainId;\n            assembly { chainId := chainid() }\n            EIP712_DOMAIN_SEPARATOR = keccak256(\n                abi.encode(\n                    keccak256(\n                        \"EIP712Domain(\"\n                            \"string name,\"\n                            \"string version,\"\n                            \"uint256 chainId,\"\n                            \"address verifyingContract\"\n                        \")\"\n                    ),\n                    keccak256(\"ZeroEx\"),\n                    keccak256(\"1.0.0\"),\n                    chainId,\n                    zeroExAddress\n                )\n            );\n        }\n    }\n\n    function _getEIP712Hash(bytes32 structHash)\n        internal\n        view\n        returns (bytes32 eip712Hash)\n    {\n        return keccak256(abi.encodePacked(\n            hex\"1901\",\n            EIP712_DOMAIN_SEPARATOR,\n            structHash\n        ));\n    }\n}\n",
+        "@0x/contracts-utils/contracts/src/v06/errors/LibRichErrorsV06.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\n\n\nlibrary LibRichErrorsV06 {\n\n    // bytes4(keccak256(\"Error(string)\"))\n    bytes4 internal constant STANDARD_ERROR_SELECTOR = 0x08c379a0;\n\n    // solhint-disable func-name-mixedcase\n    /// @dev ABI encode a standard, string revert error payload.\n    ///      This is the same payload that would be included by a `revert(string)`\n    ///      solidity statement. It has the function signature `Error(string)`.\n    /// @param message The error string.\n    /// @return The ABI encoded error.\n    function StandardError(string memory message)\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            STANDARD_ERROR_SELECTOR,\n            bytes(message)\n        );\n    }\n    // solhint-enable func-name-mixedcase\n\n    /// @dev Reverts an encoded rich revert reason `errorData`.\n    /// @param errorData ABI encoded error data.\n    function rrevert(bytes memory errorData)\n        internal\n        pure\n    {\n        assembly {\n            revert(add(errorData, 0x20), mload(errorData))\n        }\n    }\n}\n",
+        "../errors/LibCommonRichErrors.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\n\n\nlibrary LibCommonRichErrors {\n\n    // solhint-disable func-name-mixedcase\n\n    function OnlyCallableBySelfError(address sender)\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"OnlyCallableBySelfError(address)\")),\n            sender\n        );\n    }\n\n    function IllegalReentrancyError(bytes4 selector, uint256 reentrancyFlags)\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"IllegalReentrancyError(bytes4,uint256)\")),\n            selector,\n            reentrancyFlags\n        );\n    }\n}\n",
+        "../errors/LibOwnableRichErrors.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\n\n\nlibrary LibOwnableRichErrors {\n\n    // solhint-disable func-name-mixedcase\n\n    function OnlyOwnerError(\n        address sender,\n        address owner\n    )\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"OnlyOwnerError(address,address)\")),\n            sender,\n            owner\n        );\n    }\n\n    function TransferOwnerToZeroError()\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"TransferOwnerToZeroError()\"))\n        );\n    }\n\n    function MigrateCallFailedError(address target, bytes memory resultData)\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"MigrateCallFailedError(address,bytes)\")),\n            target,\n            resultData\n        );\n    }\n}\n"
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "0.6.12+commit.27d51765",
+        "settings": {
+            "remappings": [
+                "@0x/contracts-utils=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-utils",
+                "@0x/contracts-erc20=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-erc20"
+            ],
+            "optimizer": {
+                "enabled": true,
+                "runs": 1000000,
+                "details": {
+                    "yul": true,
+                    "deduplicate": true,
+                    "cse": true,
+                    "constantOptimizer": true
+                }
+            },
+            "outputSelection": {
+                "*": {
+                    "*": [
+                        "abi",
+                        "devdoc",
+                        "evm.bytecode.object",
+                        "evm.bytecode.sourceMap",
+                        "evm.deployedBytecode.object",
+                        "evm.deployedBytecode.sourceMap"
+                    ]
+                }
+            },
+            "evmVersion": "istanbul"
+        }
+    },
+    "chains": {}
+}

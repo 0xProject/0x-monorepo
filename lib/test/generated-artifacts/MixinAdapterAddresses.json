@@ -1,0 +1,70 @@
+{
+    "schemaVersion": "2.0.0",
+    "contractName": "MixinAdapterAddresses",
+    "compilerOutput": {
+        "abi": [],
+        "devdoc": {
+            "kind": "dev",
+            "methods": {},
+            "version": 1
+        },
+        "evm": {
+            "bytecode": {
+                "linkReferences": {},
+                "object": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea2646970667358221220b9613d2c809ef1b7ebeff3bb7c3c73e1d3a2ba96784e1fe47711134f102ae3df64736f6c634300060c0033",
+                "opcodes": "PUSH1 0x80 PUSH1 0x40 MSTORE CALLVALUE DUP1 ISZERO PUSH1 0xF JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH1 0x3F DUP1 PUSH1 0x1D PUSH1 0x0 CODECOPY PUSH1 0x0 RETURN INVALID PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 0xB9 PUSH2 0x3D2C DUP1 SWAP15 CALL 0xB7 0xEB 0xEF RETURN 0xBB PUSH29 0x3C73E1D3A2BA96784E1FE47711134F102AE3DF64736F6C634300060C00 CALLER ",
+                "sourceMap": "605:605:55:-:0;;;;;;;;;;;;;;;;;;;"
+            },
+            "deployedBytecode": {
+                "immutableReferences": {},
+                "linkReferences": {},
+                "object": "0x6080604052600080fdfea2646970667358221220b9613d2c809ef1b7ebeff3bb7c3c73e1d3a2ba96784e1fe47711134f102ae3df64736f6c634300060c0033",
+                "opcodes": "PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 0xB9 PUSH2 0x3D2C DUP1 SWAP15 CALL 0xB7 0xEB 0xEF RETURN 0xBB PUSH29 0x3C73E1D3A2BA96784E1FE47711134F102AE3DF64736F6C634300060C00 CALLER ",
+                "sourceMap": "605:605:55:-:0;;;;;"
+            }
+        }
+    },
+    "sourceTreeHashHex": "0x0373d279e347c513a424716d2afd5431f274745cc2b05edf48338c900d028197",
+    "sources": {
+        "./MixinAdapterAddresses.sol": {
+            "id": 55
+        }
+    },
+    "sourceCodes": {
+        "./MixinAdapterAddresses.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\n\ncontract MixinAdapterAddresses\n{\n\n    struct AdapterAddresses {\n        // Bridges\n        address balancerBridge;\n        address curveBridge;\n        address kyberBridge;\n        address mooniswapBridge;\n        address mStableBridge;\n        address oasisBridge;\n        address shellBridge;\n        address uniswapBridge;\n        address uniswapV2Bridge;\n        // Exchanges\n        address kyberNetworkProxy;\n        address oasis;\n        address uniswapV2Router;\n        address uniswapExchangeFactory;\n        address mStable;\n        address shell;\n        // Other\n        address weth;\n    }\n}\n"
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "0.6.12+commit.27d51765",
+        "settings": {
+            "remappings": [
+                "@0x/contracts-utils=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-utils",
+                "@0x/contracts-erc20=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-erc20"
+            ],
+            "optimizer": {
+                "enabled": true,
+                "runs": 1000000,
+                "details": {
+                    "yul": true,
+                    "deduplicate": true,
+                    "cse": true,
+                    "constantOptimizer": true
+                }
+            },
+            "outputSelection": {
+                "*": {
+                    "*": [
+                        "abi",
+                        "devdoc",
+                        "evm.bytecode.object",
+                        "evm.bytecode.sourceMap",
+                        "evm.deployedBytecode.object",
+                        "evm.deployedBytecode.sourceMap"
+                    ]
+                }
+            },
+            "evmVersion": "istanbul"
+        }
+    },
+    "chains": {}
+}

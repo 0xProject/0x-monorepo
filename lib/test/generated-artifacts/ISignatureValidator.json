@@ -1,0 +1,144 @@
+{
+    "schemaVersion": "2.0.0",
+    "contractName": "ISignatureValidator",
+    "compilerOutput": {
+        "abi": [
+            {
+                "inputs": [
+                    {
+                        "internalType": "bytes32",
+                        "name": "hash",
+                        "type": "bytes32"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "signer",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "bytes",
+                        "name": "signature",
+                        "type": "bytes"
+                    }
+                ],
+                "name": "isValidHashSignature",
+                "outputs": [
+                    {
+                        "internalType": "bool",
+                        "name": "isValid",
+                        "type": "bool"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "bytes32",
+                        "name": "hash",
+                        "type": "bytes32"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "signer",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "bytes",
+                        "name": "signature",
+                        "type": "bytes"
+                    }
+                ],
+                "name": "validateHashSignature",
+                "outputs": [],
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ],
+        "devdoc": {
+            "details": "Feature for validating signatures.",
+            "kind": "dev",
+            "methods": {
+                "isValidHashSignature(bytes32,address,bytes)": {
+                    "details": "Check that `hash` was signed by `signer` given `signature`.",
+                    "params": {
+                        "hash": "The hash that was signed.",
+                        "signature": "The signature. The last byte of this signature should        be a member of the `SignatureType` enum.",
+                        "signer": "The signer of the hash."
+                    },
+                    "returns": {
+                        "isValid": "`true` on success."
+                    }
+                },
+                "validateHashSignature(bytes32,address,bytes)": {
+                    "details": "Validate that `hash` was signed by `signer` given `signature`.      Reverts otherwise.",
+                    "params": {
+                        "hash": "The hash that was signed.",
+                        "signature": "The signature. The last byte of this signature should        be a member of the `SignatureType` enum.",
+                        "signer": "The signer of the hash."
+                    }
+                }
+            },
+            "version": 1
+        },
+        "evm": {
+            "bytecode": {
+                "linkReferences": {},
+                "object": "0x",
+                "opcodes": "",
+                "sourceMap": ""
+            },
+            "deployedBytecode": {
+                "immutableReferences": {},
+                "linkReferences": {},
+                "object": "0x",
+                "opcodes": "",
+                "sourceMap": ""
+            }
+        }
+    },
+    "sourceTreeHashHex": "0xb5df0770630e588c4b4311f00c2a86f2e6b71f9e2a94ef5c9941c3ab37ca3740",
+    "sources": {
+        "./ISignatureValidator.sol": {
+            "id": 20
+        }
+    },
+    "sourceCodes": {
+        "./ISignatureValidator.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\npragma experimental ABIEncoderV2;\n\n\n/// @dev Feature for validating signatures.\ninterface ISignatureValidator {\n\n   /// @dev Allowed signature types.\n    enum SignatureType {\n        Illegal,                     // 0x00, default value\n        Invalid,                     // 0x01\n        EIP712,                      // 0x02\n        EthSign,                     // 0x03\n        NSignatureTypes              // 0x04, number of signature types. Always leave at end.\n    }\n\n    /// @dev Validate that `hash` was signed by `signer` given `signature`.\n    ///      Reverts otherwise.\n    /// @param hash The hash that was signed.\n    /// @param signer The signer of the hash.\n    /// @param signature The signature. The last byte of this signature should\n    ///        be a member of the `SignatureType` enum.\n    function validateHashSignature(\n        bytes32 hash,\n        address signer,\n        bytes calldata signature\n    )\n        external\n        view;\n\n    /// @dev Check that `hash` was signed by `signer` given `signature`.\n    /// @param hash The hash that was signed.\n    /// @param signer The signer of the hash.\n    /// @param signature The signature. The last byte of this signature should\n    ///        be a member of the `SignatureType` enum.\n    /// @return isValid `true` on success.\n    function isValidHashSignature(\n        bytes32 hash,\n        address signer,\n        bytes calldata signature\n    )\n        external\n        view\n        returns (bool isValid);\n}\n"
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "0.6.11+commit.5ef660b1",
+        "settings": {
+            "remappings": [
+                "@0x/contracts-utils=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-utils",
+                "@0x/contracts-erc20=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-erc20"
+            ],
+            "optimizer": {
+                "enabled": true,
+                "runs": 1000000,
+                "details": {
+                    "yul": true,
+                    "deduplicate": true,
+                    "cse": true,
+                    "constantOptimizer": true
+                }
+            },
+            "outputSelection": {
+                "*": {
+                    "*": [
+                        "abi",
+                        "devdoc",
+                        "evm.bytecode.object",
+                        "evm.bytecode.sourceMap",
+                        "evm.deployedBytecode.object",
+                        "evm.deployedBytecode.sourceMap"
+                    ]
+                }
+            },
+            "evmVersion": "istanbul"
+        }
+    },
+    "chains": {}
+}

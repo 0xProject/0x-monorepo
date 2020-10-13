@@ -1,0 +1,571 @@
+{
+    "schemaVersion": "2.0.0",
+    "contractName": "IMetaTransactionsFeature",
+    "compilerOutput": {
+        "abi": [
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": false,
+                        "internalType": "bytes32",
+                        "name": "hash",
+                        "type": "bytes32"
+                    },
+                    {
+                        "indexed": true,
+                        "internalType": "bytes4",
+                        "name": "selector",
+                        "type": "bytes4"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "signer",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "sender",
+                        "type": "address"
+                    }
+                ],
+                "name": "MetaTransactionExecuted",
+                "type": "event"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "sender",
+                        "type": "address"
+                    },
+                    {
+                        "components": [
+                            {
+                                "internalType": "address payable",
+                                "name": "signer",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "sender",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "minGasPrice",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "maxGasPrice",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "expirationTimeSeconds",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "salt",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "bytes",
+                                "name": "callData",
+                                "type": "bytes"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "value",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "contract IERC20TokenV06",
+                                "name": "feeToken",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "feeAmount",
+                                "type": "uint256"
+                            }
+                        ],
+                        "internalType": "struct IMetaTransactionsFeature.MetaTransactionData",
+                        "name": "mtx",
+                        "type": "tuple"
+                    },
+                    {
+                        "internalType": "bytes",
+                        "name": "signature",
+                        "type": "bytes"
+                    }
+                ],
+                "name": "_executeMetaTransaction",
+                "outputs": [
+                    {
+                        "internalType": "bytes",
+                        "name": "returnResult",
+                        "type": "bytes"
+                    }
+                ],
+                "stateMutability": "payable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "components": [
+                            {
+                                "internalType": "address payable",
+                                "name": "signer",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "sender",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "minGasPrice",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "maxGasPrice",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "expirationTimeSeconds",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "salt",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "bytes",
+                                "name": "callData",
+                                "type": "bytes"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "value",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "contract IERC20TokenV06",
+                                "name": "feeToken",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "feeAmount",
+                                "type": "uint256"
+                            }
+                        ],
+                        "internalType": "struct IMetaTransactionsFeature.MetaTransactionData[]",
+                        "name": "mtxs",
+                        "type": "tuple[]"
+                    },
+                    {
+                        "internalType": "bytes[]",
+                        "name": "signatures",
+                        "type": "bytes[]"
+                    }
+                ],
+                "name": "batchExecuteMetaTransactions",
+                "outputs": [
+                    {
+                        "internalType": "bytes[]",
+                        "name": "returnResults",
+                        "type": "bytes[]"
+                    }
+                ],
+                "stateMutability": "payable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "components": [
+                            {
+                                "internalType": "address payable",
+                                "name": "signer",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "sender",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "minGasPrice",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "maxGasPrice",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "expirationTimeSeconds",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "salt",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "bytes",
+                                "name": "callData",
+                                "type": "bytes"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "value",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "contract IERC20TokenV06",
+                                "name": "feeToken",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "feeAmount",
+                                "type": "uint256"
+                            }
+                        ],
+                        "internalType": "struct IMetaTransactionsFeature.MetaTransactionData",
+                        "name": "mtx",
+                        "type": "tuple"
+                    },
+                    {
+                        "internalType": "bytes",
+                        "name": "signature",
+                        "type": "bytes"
+                    }
+                ],
+                "name": "executeMetaTransaction",
+                "outputs": [
+                    {
+                        "internalType": "bytes",
+                        "name": "returnResult",
+                        "type": "bytes"
+                    }
+                ],
+                "stateMutability": "payable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "components": [
+                            {
+                                "internalType": "address payable",
+                                "name": "signer",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "sender",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "minGasPrice",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "maxGasPrice",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "expirationTimeSeconds",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "salt",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "bytes",
+                                "name": "callData",
+                                "type": "bytes"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "value",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "contract IERC20TokenV06",
+                                "name": "feeToken",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "feeAmount",
+                                "type": "uint256"
+                            }
+                        ],
+                        "internalType": "struct IMetaTransactionsFeature.MetaTransactionData",
+                        "name": "mtx",
+                        "type": "tuple"
+                    }
+                ],
+                "name": "getMetaTransactionExecutedBlock",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "blockNumber",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "components": [
+                            {
+                                "internalType": "address payable",
+                                "name": "signer",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "sender",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "minGasPrice",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "maxGasPrice",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "expirationTimeSeconds",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "salt",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "bytes",
+                                "name": "callData",
+                                "type": "bytes"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "value",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "contract IERC20TokenV06",
+                                "name": "feeToken",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "feeAmount",
+                                "type": "uint256"
+                            }
+                        ],
+                        "internalType": "struct IMetaTransactionsFeature.MetaTransactionData",
+                        "name": "mtx",
+                        "type": "tuple"
+                    }
+                ],
+                "name": "getMetaTransactionHash",
+                "outputs": [
+                    {
+                        "internalType": "bytes32",
+                        "name": "mtxHash",
+                        "type": "bytes32"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "bytes32",
+                        "name": "mtxHash",
+                        "type": "bytes32"
+                    }
+                ],
+                "name": "getMetaTransactionHashExecutedBlock",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "blockNumber",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ],
+        "devdoc": {
+            "details": "Meta-transactions feature.",
+            "events": {
+                "MetaTransactionExecuted(bytes32,bytes4,address,address)": {
+                    "details": "Emitted whenever a meta-transaction is executed via      `executeMetaTransaction()` or `executeMetaTransactions()`.",
+                    "params": {
+                        "hash": "The meta-transaction hash.",
+                        "selector": "The selector of the function being executed.",
+                        "sender": "Who executed the meta-transaction.",
+                        "signer": "Who to execute the meta-transaction on behalf of."
+                    }
+                }
+            },
+            "kind": "dev",
+            "methods": {
+                "_executeMetaTransaction(address,(address,address,uint256,uint256,uint256,uint256,bytes,uint256,address,uint256),bytes)": {
+                    "details": "Execute a meta-transaction via `sender`. Privileged variant.      Only callable from within.",
+                    "params": {
+                        "mtx": "The meta-transaction.",
+                        "sender": "Who is executing the meta-transaction..",
+                        "signature": "The signature by `mtx.signer`."
+                    },
+                    "returns": {
+                        "returnResult": "The ABI-encoded result of the underlying call."
+                    }
+                },
+                "batchExecuteMetaTransactions((address,address,uint256,uint256,uint256,uint256,bytes,uint256,address,uint256)[],bytes[])": {
+                    "details": "Execute multiple meta-transactions.",
+                    "params": {
+                        "mtxs": "The meta-transactions.",
+                        "signatures": "The signature by each respective `mtx.signer`."
+                    },
+                    "returns": {
+                        "returnResults": "The ABI-encoded results of the underlying calls."
+                    }
+                },
+                "executeMetaTransaction((address,address,uint256,uint256,uint256,uint256,bytes,uint256,address,uint256),bytes)": {
+                    "details": "Execute a single meta-transaction.",
+                    "params": {
+                        "mtx": "The meta-transaction.",
+                        "signature": "The signature by `mtx.signer`."
+                    },
+                    "returns": {
+                        "returnResult": "The ABI-encoded result of the underlying call."
+                    }
+                },
+                "getMetaTransactionExecutedBlock((address,address,uint256,uint256,uint256,uint256,bytes,uint256,address,uint256))": {
+                    "details": "Get the block at which a meta-transaction has been executed.",
+                    "params": {
+                        "mtx": "The meta-transaction."
+                    },
+                    "returns": {
+                        "blockNumber": "The block height when the meta-transactioin was executed."
+                    }
+                },
+                "getMetaTransactionHash((address,address,uint256,uint256,uint256,uint256,bytes,uint256,address,uint256))": {
+                    "details": "Get the EIP712 hash of a meta-transaction.",
+                    "params": {
+                        "mtx": "The meta-transaction."
+                    },
+                    "returns": {
+                        "mtxHash": "The EIP712 hash of `mtx`."
+                    }
+                },
+                "getMetaTransactionHashExecutedBlock(bytes32)": {
+                    "details": "Get the block at which a meta-transaction hash has been executed.",
+                    "params": {
+                        "mtxHash": "The meta-transaction hash."
+                    },
+                    "returns": {
+                        "blockNumber": "The block height when the meta-transactioin was executed."
+                    }
+                }
+            },
+            "version": 1
+        },
+        "evm": {
+            "bytecode": {
+                "linkReferences": {},
+                "object": "0x",
+                "opcodes": "",
+                "sourceMap": ""
+            },
+            "deployedBytecode": {
+                "immutableReferences": {},
+                "linkReferences": {},
+                "object": "0x",
+                "opcodes": "",
+                "sourceMap": ""
+            }
+        }
+    },
+    "sourceTreeHashHex": "0xdd6ed22af8ecc98f00c6fe7316db407a17abbd035898170c2bfb33277e7bddd1",
+    "sources": {
+        "./IMetaTransactionsFeature.sol": {
+            "id": 19
+        },
+        "@0x/contracts-erc20/contracts/src/v06/IERC20TokenV06.sol": {
+            "id": 85
+        }
+    },
+    "sourceCodes": {
+        "./IMetaTransactionsFeature.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\npragma experimental ABIEncoderV2;\n\nimport \"@0x/contracts-erc20/contracts/src/v06/IERC20TokenV06.sol\";\n\n\n/// @dev Meta-transactions feature.\ninterface IMetaTransactionsFeature {\n\n    /// @dev Describes an exchange proxy meta transaction.\n    struct MetaTransactionData {\n        // Signer of meta-transaction. On whose behalf to execute the MTX.\n        address payable signer;\n        // Required sender, or NULL for anyone.\n        address sender;\n        // Minimum gas price.\n        uint256 minGasPrice;\n        // Maximum gas price.\n        uint256 maxGasPrice;\n        // MTX is invalid after this time.\n        uint256 expirationTimeSeconds;\n        // Nonce to make this MTX unique.\n        uint256 salt;\n        // Encoded call data to a function on the exchange proxy.\n        bytes callData;\n        // Amount of ETH to attach to the call.\n        uint256 value;\n        // ERC20 fee `signer` pays `sender`.\n        IERC20TokenV06 feeToken;\n        // ERC20 fee amount.\n        uint256 feeAmount;\n    }\n\n    /// @dev Emitted whenever a meta-transaction is executed via\n    ///      `executeMetaTransaction()` or `executeMetaTransactions()`.\n    /// @param hash The meta-transaction hash.\n    /// @param selector The selector of the function being executed.\n    /// @param signer Who to execute the meta-transaction on behalf of.\n    /// @param sender Who executed the meta-transaction.\n    event MetaTransactionExecuted(\n        bytes32 hash,\n        bytes4 indexed selector,\n        address signer,\n        address sender\n    );\n\n    /// @dev Execute a single meta-transaction.\n    /// @param mtx The meta-transaction.\n    /// @param signature The signature by `mtx.signer`.\n    /// @return returnResult The ABI-encoded result of the underlying call.\n    function executeMetaTransaction(\n        MetaTransactionData calldata mtx,\n        bytes calldata signature\n    )\n        external\n        payable\n        returns (bytes memory returnResult);\n\n    /// @dev Execute multiple meta-transactions.\n    /// @param mtxs The meta-transactions.\n    /// @param signatures The signature by each respective `mtx.signer`.\n    /// @return returnResults The ABI-encoded results of the underlying calls.\n    function batchExecuteMetaTransactions(\n        MetaTransactionData[] calldata mtxs,\n        bytes[] calldata signatures\n    )\n        external\n        payable\n        returns (bytes[] memory returnResults);\n\n    /// @dev Execute a meta-transaction via `sender`. Privileged variant.\n    ///      Only callable from within.\n    /// @param sender Who is executing the meta-transaction..\n    /// @param mtx The meta-transaction.\n    /// @param signature The signature by `mtx.signer`.\n    /// @return returnResult The ABI-encoded result of the underlying call.\n    function _executeMetaTransaction(\n        address sender,\n        MetaTransactionData calldata mtx,\n        bytes calldata signature\n    )\n        external\n        payable\n        returns (bytes memory returnResult);\n\n    /// @dev Get the block at which a meta-transaction has been executed.\n    /// @param mtx The meta-transaction.\n    /// @return blockNumber The block height when the meta-transactioin was executed.\n    function getMetaTransactionExecutedBlock(MetaTransactionData calldata mtx)\n        external\n        view\n        returns (uint256 blockNumber);\n\n    /// @dev Get the block at which a meta-transaction hash has been executed.\n    /// @param mtxHash The meta-transaction hash.\n    /// @return blockNumber The block height when the meta-transactioin was executed.\n    function getMetaTransactionHashExecutedBlock(bytes32 mtxHash)\n        external\n        view\n        returns (uint256 blockNumber);\n\n    /// @dev Get the EIP712 hash of a meta-transaction.\n    /// @param mtx The meta-transaction.\n    /// @return mtxHash The EIP712 hash of `mtx`.\n    function getMetaTransactionHash(MetaTransactionData calldata mtx)\n        external\n        view\n        returns (bytes32 mtxHash);\n}\n",
+        "@0x/contracts-erc20/contracts/src/v06/IERC20TokenV06.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\n\n\ninterface IERC20TokenV06 {\n\n    // solhint-disable no-simple-event-func-name\n    event Transfer(\n        address indexed from,\n        address indexed to,\n        uint256 value\n    );\n\n    event Approval(\n        address indexed owner,\n        address indexed spender,\n        uint256 value\n    );\n\n    /// @dev send `value` token to `to` from `msg.sender`\n    /// @param to The address of the recipient\n    /// @param value The amount of token to be transferred\n    /// @return True if transfer was successful\n    function transfer(address to, uint256 value)\n        external\n        returns (bool);\n\n    /// @dev send `value` token to `to` from `from` on the condition it is approved by `from`\n    /// @param from The address of the sender\n    /// @param to The address of the recipient\n    /// @param value The amount of token to be transferred\n    /// @return True if transfer was successful\n    function transferFrom(\n        address from,\n        address to,\n        uint256 value\n    )\n        external\n        returns (bool);\n\n    /// @dev `msg.sender` approves `spender` to spend `value` tokens\n    /// @param spender The address of the account able to transfer the tokens\n    /// @param value The amount of wei to be approved for transfer\n    /// @return Always true if the call has enough gas to complete execution\n    function approve(address spender, uint256 value)\n        external\n        returns (bool);\n\n    /// @dev Query total supply of token\n    /// @return Total supply of token\n    function totalSupply()\n        external\n        view\n        returns (uint256);\n\n    /// @dev Get the balance of `owner`.\n    /// @param owner The address from which the balance will be retrieved\n    /// @return Balance of owner\n    function balanceOf(address owner)\n        external\n        view\n        returns (uint256);\n\n    /// @dev Get the allowance for `spender` to spend from `owner`.\n    /// @param owner The address of the account owning tokens\n    /// @param spender The address of the account able to transfer the tokens\n    /// @return Amount of remaining tokens allowed to spent\n    function allowance(address owner, address spender)\n        external\n        view\n        returns (uint256);\n\n    /// @dev Get the number of decimals this token has.\n    function decimals()\n        external\n        view\n        returns (uint8);\n}\n"
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "0.6.12+commit.27d51765",
+        "settings": {
+            "remappings": [
+                "@0x/contracts-utils=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-utils",
+                "@0x/contracts-erc20=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-erc20"
+            ],
+            "optimizer": {
+                "enabled": true,
+                "runs": 1000000,
+                "details": {
+                    "yul": true,
+                    "deduplicate": true,
+                    "cse": true,
+                    "constantOptimizer": true
+                }
+            },
+            "outputSelection": {
+                "*": {
+                    "*": [
+                        "abi",
+                        "devdoc",
+                        "evm.bytecode.object",
+                        "evm.bytecode.sourceMap",
+                        "evm.deployedBytecode.object",
+                        "evm.deployedBytecode.sourceMap"
+                    ]
+                }
+            },
+            "evmVersion": "istanbul"
+        }
+    },
+    "chains": {}
+}

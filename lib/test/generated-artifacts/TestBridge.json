@@ -1,0 +1,242 @@
+{
+    "schemaVersion": "2.0.0",
+    "contractName": "TestBridge",
+    "compilerOutput": {
+        "abi": [
+            {
+                "inputs": [
+                    {
+                        "internalType": "contract IERC20TokenV06",
+                        "name": "xAsset_",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "contract IERC20TokenV06",
+                        "name": "yAsset_",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "nonpayable",
+                "type": "constructor"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "inputToken",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "outputToken",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "inputTokenAmount",
+                        "type": "uint256"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "outputTokenAmount",
+                        "type": "uint256"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "from",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "to",
+                        "type": "address"
+                    }
+                ],
+                "name": "ERC20BridgeTransfer",
+                "type": "event"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "tokenAddress",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "from",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "to",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "bytes",
+                        "name": "bridgeData",
+                        "type": "bytes"
+                    }
+                ],
+                "name": "bridgeTransferFrom",
+                "outputs": [
+                    {
+                        "internalType": "bytes4",
+                        "name": "success",
+                        "type": "bytes4"
+                    }
+                ],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "xAsset",
+                "outputs": [
+                    {
+                        "internalType": "contract IERC20TokenV06",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "yAsset",
+                "outputs": [
+                    {
+                        "internalType": "contract IERC20TokenV06",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ],
+        "devdoc": {
+            "kind": "dev",
+            "methods": {
+                "bridgeTransferFrom(address,address,address,uint256,bytes)": {
+                    "details": "Transfers `amount` of the ERC20 `tokenAddress` from `from` to `to`.",
+                    "params": {
+                        "amount": "Amount of asset to transfer.",
+                        "bridgeData": "Arbitrary asset data needed by the bridge contract.",
+                        "from": "Address to transfer asset from.",
+                        "to": "Address to transfer asset to.",
+                        "tokenAddress": "The address of the ERC20 token to transfer."
+                    },
+                    "returns": {
+                        "success": "The magic bytes `0xdc1600f3` if successful."
+                    }
+                }
+            },
+            "version": 1
+        },
+        "evm": {
+            "bytecode": {
+                "linkReferences": {},
+                "object": "0x60c060405234801561001057600080fd5b506040516104fc3803806104fc83398101604081905261002f9161006a565b6001600160601b0319606092831b8116608052911b1660a05261009e565b80516001600160a01b038116811461006457600080fd5b92915050565b6000806040838503121561007c578182fd5b610086848461004d565b9150610095846020850161004d565b90509250929050565b60805160601c60a05160601c6104286100d46000398061010a528061022a5250806091528060e4528061024e52506104286000f3fe608060405234801561001057600080fd5b50600436106100415760003560e01c8063c2df82e614610046578063c858540a1461006f578063f280726b14610084575b600080fd5b61005961005436600461029a565b61008c565b60405161006691906103c5565b60405180910390f35b610077610228565b604051610066919061035d565b61007761024c565b6000807f000000000000000000000000000000000000000000000000000000000000000073ffffffffffffffffffffffffffffffffffffffff168873ffffffffffffffffffffffffffffffffffffffff1614610108577f000000000000000000000000000000000000000000000000000000000000000061012a565b7f00000000000000000000000000000000000000000000000000000000000000005b905060008173ffffffffffffffffffffffffffffffffffffffff166370a08231306040518263ffffffff1660e01b8152600401610167919061035d565b60206040518083038186803b15801561017f57600080fd5b505afa158015610193573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906101b79190610345565b90507f349fc08071558d8e3aa92dec9396e4e9f2dfecd6bb9065759d1932e7da43b8a9828a83898c8c6040516101f29695949392919061037e565b60405180910390a1507fdecaf0000000000000000000000000000000000000000000000000000000000098975050505050505050565b7f000000000000000000000000000000000000000000000000000000000000000081565b7f000000000000000000000000000000000000000000000000000000000000000081565b803573ffffffffffffffffffffffffffffffffffffffff8116811461029457600080fd5b92915050565b60008060008060008060a087890312156102b2578182fd5b6102bc8888610270565b95506102cb8860208901610270565b94506102da8860408901610270565b935060608701359250608087013567ffffffffffffffff808211156102fd578384fd5b818901915089601f830112610310578384fd5b81358181111561031e578485fd5b8a602082850101111561032f578485fd5b6020830194508093505050509295509295509295565b600060208284031215610356578081fd5b5051919050565b73ffffffffffffffffffffffffffffffffffffffff91909116815260200190565b73ffffffffffffffffffffffffffffffffffffffff96871681529486166020860152604085019390935260608401919091528316608083015290911660a082015260c00190565b7fffffffff000000000000000000000000000000000000000000000000000000009190911681526020019056fea264697066735822122089a61c9f5dfa81c40d5d7dc13cbcf63f6db9bd855627fc9ac24263d6c2c05bd864736f6c634300060c0033",
+                "opcodes": "PUSH1 0xC0 PUSH1 0x40 MSTORE CALLVALUE DUP1 ISZERO PUSH2 0x10 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH1 0x40 MLOAD PUSH2 0x4FC CODESIZE SUB DUP1 PUSH2 0x4FC DUP4 CODECOPY DUP2 ADD PUSH1 0x40 DUP2 SWAP1 MSTORE PUSH2 0x2F SWAP2 PUSH2 0x6A JUMP JUMPDEST PUSH1 0x1 PUSH1 0x1 PUSH1 0x60 SHL SUB NOT PUSH1 0x60 SWAP3 DUP4 SHL DUP2 AND PUSH1 0x80 MSTORE SWAP2 SHL AND PUSH1 0xA0 MSTORE PUSH2 0x9E JUMP JUMPDEST DUP1 MLOAD PUSH1 0x1 PUSH1 0x1 PUSH1 0xA0 SHL SUB DUP2 AND DUP2 EQ PUSH2 0x64 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST SWAP3 SWAP2 POP POP JUMP JUMPDEST PUSH1 0x0 DUP1 PUSH1 0x40 DUP4 DUP6 SUB SLT ISZERO PUSH2 0x7C JUMPI DUP2 DUP3 REVERT JUMPDEST PUSH2 0x86 DUP5 DUP5 PUSH2 0x4D JUMP JUMPDEST SWAP2 POP PUSH2 0x95 DUP5 PUSH1 0x20 DUP6 ADD PUSH2 0x4D JUMP JUMPDEST SWAP1 POP SWAP3 POP SWAP3 SWAP1 POP JUMP JUMPDEST PUSH1 0x80 MLOAD PUSH1 0x60 SHR PUSH1 0xA0 MLOAD PUSH1 0x60 SHR PUSH2 0x428 PUSH2 0xD4 PUSH1 0x0 CODECOPY DUP1 PUSH2 0x10A MSTORE DUP1 PUSH2 0x22A MSTORE POP DUP1 PUSH1 0x91 MSTORE DUP1 PUSH1 0xE4 MSTORE DUP1 PUSH2 0x24E MSTORE POP PUSH2 0x428 PUSH1 0x0 RETURN INVALID PUSH1 0x80 PUSH1 0x40 MSTORE CALLVALUE DUP1 ISZERO PUSH2 0x10 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH1 0x4 CALLDATASIZE LT PUSH2 0x41 JUMPI PUSH1 0x0 CALLDATALOAD PUSH1 0xE0 SHR DUP1 PUSH4 0xC2DF82E6 EQ PUSH2 0x46 JUMPI DUP1 PUSH4 0xC858540A EQ PUSH2 0x6F JUMPI DUP1 PUSH4 0xF280726B EQ PUSH2 0x84 JUMPI JUMPDEST PUSH1 0x0 DUP1 REVERT JUMPDEST PUSH2 0x59 PUSH2 0x54 CALLDATASIZE PUSH1 0x4 PUSH2 0x29A JUMP JUMPDEST PUSH2 0x8C JUMP JUMPDEST PUSH1 0x40 MLOAD PUSH2 0x66 SWAP2 SWAP1 PUSH2 0x3C5 JUMP JUMPDEST PUSH1 0x40 MLOAD DUP1 SWAP2 SUB SWAP1 RETURN JUMPDEST PUSH2 0x77 PUSH2 0x228 JUMP JUMPDEST PUSH1 0x40 MLOAD PUSH2 0x66 SWAP2 SWAP1 PUSH2 0x35D JUMP JUMPDEST PUSH2 0x77 PUSH2 0x24C JUMP JUMPDEST PUSH1 0x0 DUP1 PUSH32 0x0 PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND DUP9 PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND EQ PUSH2 0x108 JUMPI PUSH32 0x0 PUSH2 0x12A JUMP JUMPDEST PUSH32 0x0 JUMPDEST SWAP1 POP PUSH1 0x0 DUP2 PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND PUSH4 0x70A08231 ADDRESS PUSH1 0x40 MLOAD DUP3 PUSH4 0xFFFFFFFF AND PUSH1 0xE0 SHL DUP2 MSTORE PUSH1 0x4 ADD PUSH2 0x167 SWAP2 SWAP1 PUSH2 0x35D JUMP JUMPDEST PUSH1 0x20 PUSH1 0x40 MLOAD DUP1 DUP4 SUB DUP2 DUP7 DUP1 EXTCODESIZE ISZERO DUP1 ISZERO PUSH2 0x17F JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP GAS STATICCALL ISZERO DUP1 ISZERO PUSH2 0x193 JUMPI RETURNDATASIZE PUSH1 0x0 DUP1 RETURNDATACOPY RETURNDATASIZE PUSH1 0x0 REVERT JUMPDEST POP POP POP POP PUSH1 0x40 MLOAD RETURNDATASIZE PUSH1 0x1F NOT PUSH1 0x1F DUP3 ADD AND DUP3 ADD DUP1 PUSH1 0x40 MSTORE POP DUP2 ADD SWAP1 PUSH2 0x1B7 SWAP2 SWAP1 PUSH2 0x345 JUMP JUMPDEST SWAP1 POP PUSH32 0x349FC08071558D8E3AA92DEC9396E4E9F2DFECD6BB9065759D1932E7DA43B8A9 DUP3 DUP11 DUP4 DUP10 DUP13 DUP13 PUSH1 0x40 MLOAD PUSH2 0x1F2 SWAP7 SWAP6 SWAP5 SWAP4 SWAP3 SWAP2 SWAP1 PUSH2 0x37E JUMP JUMPDEST PUSH1 0x40 MLOAD DUP1 SWAP2 SUB SWAP1 LOG1 POP PUSH32 0xDECAF00000000000000000000000000000000000000000000000000000000000 SWAP9 SWAP8 POP POP POP POP POP POP POP POP JUMP JUMPDEST PUSH32 0x0 DUP2 JUMP JUMPDEST PUSH32 0x0 DUP2 JUMP JUMPDEST DUP1 CALLDATALOAD PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF DUP2 AND DUP2 EQ PUSH2 0x294 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST SWAP3 SWAP2 POP POP JUMP JUMPDEST PUSH1 0x0 DUP1 PUSH1 0x0 DUP1 PUSH1 0x0 DUP1 PUSH1 0xA0 DUP8 DUP10 SUB SLT ISZERO PUSH2 0x2B2 JUMPI DUP2 DUP3 REVERT JUMPDEST PUSH2 0x2BC DUP9 DUP9 PUSH2 0x270 JUMP JUMPDEST SWAP6 POP PUSH2 0x2CB DUP9 PUSH1 0x20 DUP10 ADD PUSH2 0x270 JUMP JUMPDEST SWAP5 POP PUSH2 0x2DA DUP9 PUSH1 0x40 DUP10 ADD PUSH2 0x270 JUMP JUMPDEST SWAP4 POP PUSH1 0x60 DUP8 ADD CALLDATALOAD SWAP3 POP PUSH1 0x80 DUP8 ADD CALLDATALOAD PUSH8 0xFFFFFFFFFFFFFFFF DUP1 DUP3 GT ISZERO PUSH2 0x2FD JUMPI DUP4 DUP5 REVERT JUMPDEST DUP2 DUP10 ADD SWAP2 POP DUP10 PUSH1 0x1F DUP4 ADD SLT PUSH2 0x310 JUMPI DUP4 DUP5 REVERT JUMPDEST DUP2 CALLDATALOAD DUP2 DUP2 GT ISZERO PUSH2 0x31E JUMPI DUP5 DUP6 REVERT JUMPDEST DUP11 PUSH1 0x20 DUP3 DUP6 ADD ADD GT ISZERO PUSH2 0x32F JUMPI DUP5 DUP6 REVERT JUMPDEST PUSH1 0x20 DUP4 ADD SWAP5 POP DUP1 SWAP4 POP POP POP POP SWAP3 SWAP6 POP SWAP3 SWAP6 POP SWAP3 SWAP6 JUMP JUMPDEST PUSH1 0x0 PUSH1 0x20 DUP3 DUP5 SUB SLT ISZERO PUSH2 0x356 JUMPI DUP1 DUP2 REVERT JUMPDEST POP MLOAD SWAP2 SWAP1 POP JUMP JUMPDEST PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF SWAP2 SWAP1 SWAP2 AND DUP2 MSTORE PUSH1 0x20 ADD SWAP1 JUMP JUMPDEST PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF SWAP7 DUP8 AND DUP2 MSTORE SWAP5 DUP7 AND PUSH1 0x20 DUP7 ADD MSTORE PUSH1 0x40 DUP6 ADD SWAP4 SWAP1 SWAP4 MSTORE PUSH1 0x60 DUP5 ADD SWAP2 SWAP1 SWAP2 MSTORE DUP4 AND PUSH1 0x80 DUP4 ADD MSTORE SWAP1 SWAP2 AND PUSH1 0xA0 DUP3 ADD MSTORE PUSH1 0xC0 ADD SWAP1 JUMP JUMPDEST PUSH32 0xFFFFFFFF00000000000000000000000000000000000000000000000000000000 SWAP2 SWAP1 SWAP2 AND DUP2 MSTORE PUSH1 0x20 ADD SWAP1 JUMP INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 DUP10 0xA6 SHR SWAP16 0x5D STATICCALL DUP2 0xC4 0xD 0x5D PUSH30 0xC13CBCF63F6DB9BD855627FC9AC24263D6C2C05BD864736F6C634300060C STOP CALLER ",
+                "sourceMap": "752:1349:67:-:0;;;887:138;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;-1:-1:-1;;;;;;976:16:67;;;;;;;;1002;;;;;752:1349;;5:180:-1;106:13;;-1:-1;;;;;971:54;;1119:58;;1109:2;;1191:1;;1181:12;1109:2;91:94;;;;:::o;192:491::-;;;370:2;358:9;349:7;345:23;341:32;338:2;;;-1:-1;;376:12;338:2;438:87;517:7;493:22;438:87;:::i;:::-;428:97;;580:87;659:7;562:2;639:9;635:22;580:87;:::i;:::-;570:97;;332:351;;;;;:::o;:::-;752:1349:67;;;;;;;;;;;;;;;;"
+            },
+            "deployedBytecode": {
+                "immutableReferences": {
+                    "8667": [
+                        {
+                            "length": 32,
+                            "start": 145
+                        },
+                        {
+                            "length": 32,
+                            "start": 228
+                        },
+                        {
+                            "length": 32,
+                            "start": 590
+                        }
+                    ],
+                    "8669": [
+                        {
+                            "length": 32,
+                            "start": 266
+                        },
+                        {
+                            "length": 32,
+                            "start": 554
+                        }
+                    ]
+                },
+                "linkReferences": {},
+                "object": "0x608060405234801561001057600080fd5b50600436106100415760003560e01c8063c2df82e614610046578063c858540a1461006f578063f280726b14610084575b600080fd5b61005961005436600461029a565b61008c565b60405161006691906103c5565b60405180910390f35b610077610228565b604051610066919061035d565b61007761024c565b6000807f000000000000000000000000000000000000000000000000000000000000000073ffffffffffffffffffffffffffffffffffffffff168873ffffffffffffffffffffffffffffffffffffffff1614610108577f000000000000000000000000000000000000000000000000000000000000000061012a565b7f00000000000000000000000000000000000000000000000000000000000000005b905060008173ffffffffffffffffffffffffffffffffffffffff166370a08231306040518263ffffffff1660e01b8152600401610167919061035d565b60206040518083038186803b15801561017f57600080fd5b505afa158015610193573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906101b79190610345565b90507f349fc08071558d8e3aa92dec9396e4e9f2dfecd6bb9065759d1932e7da43b8a9828a83898c8c6040516101f29695949392919061037e565b60405180910390a1507fdecaf0000000000000000000000000000000000000000000000000000000000098975050505050505050565b7f000000000000000000000000000000000000000000000000000000000000000081565b7f000000000000000000000000000000000000000000000000000000000000000081565b803573ffffffffffffffffffffffffffffffffffffffff8116811461029457600080fd5b92915050565b60008060008060008060a087890312156102b2578182fd5b6102bc8888610270565b95506102cb8860208901610270565b94506102da8860408901610270565b935060608701359250608087013567ffffffffffffffff808211156102fd578384fd5b818901915089601f830112610310578384fd5b81358181111561031e578485fd5b8a602082850101111561032f578485fd5b6020830194508093505050509295509295509295565b600060208284031215610356578081fd5b5051919050565b73ffffffffffffffffffffffffffffffffffffffff91909116815260200190565b73ffffffffffffffffffffffffffffffffffffffff96871681529486166020860152604085019390935260608401919091528316608083015290911660a082015260c00190565b7fffffffff000000000000000000000000000000000000000000000000000000009190911681526020019056fea264697066735822122089a61c9f5dfa81c40d5d7dc13cbcf63f6db9bd855627fc9ac24263d6c2c05bd864736f6c634300060c0033",
+                "opcodes": "PUSH1 0x80 PUSH1 0x40 MSTORE CALLVALUE DUP1 ISZERO PUSH2 0x10 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH1 0x4 CALLDATASIZE LT PUSH2 0x41 JUMPI PUSH1 0x0 CALLDATALOAD PUSH1 0xE0 SHR DUP1 PUSH4 0xC2DF82E6 EQ PUSH2 0x46 JUMPI DUP1 PUSH4 0xC858540A EQ PUSH2 0x6F JUMPI DUP1 PUSH4 0xF280726B EQ PUSH2 0x84 JUMPI JUMPDEST PUSH1 0x0 DUP1 REVERT JUMPDEST PUSH2 0x59 PUSH2 0x54 CALLDATASIZE PUSH1 0x4 PUSH2 0x29A JUMP JUMPDEST PUSH2 0x8C JUMP JUMPDEST PUSH1 0x40 MLOAD PUSH2 0x66 SWAP2 SWAP1 PUSH2 0x3C5 JUMP JUMPDEST PUSH1 0x40 MLOAD DUP1 SWAP2 SUB SWAP1 RETURN JUMPDEST PUSH2 0x77 PUSH2 0x228 JUMP JUMPDEST PUSH1 0x40 MLOAD PUSH2 0x66 SWAP2 SWAP1 PUSH2 0x35D JUMP JUMPDEST PUSH2 0x77 PUSH2 0x24C JUMP JUMPDEST PUSH1 0x0 DUP1 PUSH32 0x0 PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND DUP9 PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND EQ PUSH2 0x108 JUMPI PUSH32 0x0 PUSH2 0x12A JUMP JUMPDEST PUSH32 0x0 JUMPDEST SWAP1 POP PUSH1 0x0 DUP2 PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND PUSH4 0x70A08231 ADDRESS PUSH1 0x40 MLOAD DUP3 PUSH4 0xFFFFFFFF AND PUSH1 0xE0 SHL DUP2 MSTORE PUSH1 0x4 ADD PUSH2 0x167 SWAP2 SWAP1 PUSH2 0x35D JUMP JUMPDEST PUSH1 0x20 PUSH1 0x40 MLOAD DUP1 DUP4 SUB DUP2 DUP7 DUP1 EXTCODESIZE ISZERO DUP1 ISZERO PUSH2 0x17F JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP GAS STATICCALL ISZERO DUP1 ISZERO PUSH2 0x193 JUMPI RETURNDATASIZE PUSH1 0x0 DUP1 RETURNDATACOPY RETURNDATASIZE PUSH1 0x0 REVERT JUMPDEST POP POP POP POP PUSH1 0x40 MLOAD RETURNDATASIZE PUSH1 0x1F NOT PUSH1 0x1F DUP3 ADD AND DUP3 ADD DUP1 PUSH1 0x40 MSTORE POP DUP2 ADD SWAP1 PUSH2 0x1B7 SWAP2 SWAP1 PUSH2 0x345 JUMP JUMPDEST SWAP1 POP PUSH32 0x349FC08071558D8E3AA92DEC9396E4E9F2DFECD6BB9065759D1932E7DA43B8A9 DUP3 DUP11 DUP4 DUP10 DUP13 DUP13 PUSH1 0x40 MLOAD PUSH2 0x1F2 SWAP7 SWAP6 SWAP5 SWAP4 SWAP3 SWAP2 SWAP1 PUSH2 0x37E JUMP JUMPDEST PUSH1 0x40 MLOAD DUP1 SWAP2 SUB SWAP1 LOG1 POP PUSH32 0xDECAF00000000000000000000000000000000000000000000000000000000000 SWAP9 SWAP8 POP POP POP POP POP POP POP POP JUMP JUMPDEST PUSH32 0x0 DUP2 JUMP JUMPDEST PUSH32 0x0 DUP2 JUMP JUMPDEST DUP1 CALLDATALOAD PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF DUP2 AND DUP2 EQ PUSH2 0x294 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST SWAP3 SWAP2 POP POP JUMP JUMPDEST PUSH1 0x0 DUP1 PUSH1 0x0 DUP1 PUSH1 0x0 DUP1 PUSH1 0xA0 DUP8 DUP10 SUB SLT ISZERO PUSH2 0x2B2 JUMPI DUP2 DUP3 REVERT JUMPDEST PUSH2 0x2BC DUP9 DUP9 PUSH2 0x270 JUMP JUMPDEST SWAP6 POP PUSH2 0x2CB DUP9 PUSH1 0x20 DUP10 ADD PUSH2 0x270 JUMP JUMPDEST SWAP5 POP PUSH2 0x2DA DUP9 PUSH1 0x40 DUP10 ADD PUSH2 0x270 JUMP JUMPDEST SWAP4 POP PUSH1 0x60 DUP8 ADD CALLDATALOAD SWAP3 POP PUSH1 0x80 DUP8 ADD CALLDATALOAD PUSH8 0xFFFFFFFFFFFFFFFF DUP1 DUP3 GT ISZERO PUSH2 0x2FD JUMPI DUP4 DUP5 REVERT JUMPDEST DUP2 DUP10 ADD SWAP2 POP DUP10 PUSH1 0x1F DUP4 ADD SLT PUSH2 0x310 JUMPI DUP4 DUP5 REVERT JUMPDEST DUP2 CALLDATALOAD DUP2 DUP2 GT ISZERO PUSH2 0x31E JUMPI DUP5 DUP6 REVERT JUMPDEST DUP11 PUSH1 0x20 DUP3 DUP6 ADD ADD GT ISZERO PUSH2 0x32F JUMPI DUP5 DUP6 REVERT JUMPDEST PUSH1 0x20 DUP4 ADD SWAP5 POP DUP1 SWAP4 POP POP POP POP SWAP3 SWAP6 POP SWAP3 SWAP6 POP SWAP3 SWAP6 JUMP JUMPDEST PUSH1 0x0 PUSH1 0x20 DUP3 DUP5 SUB SLT ISZERO PUSH2 0x356 JUMPI DUP1 DUP2 REVERT JUMPDEST POP MLOAD SWAP2 SWAP1 POP JUMP JUMPDEST PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF SWAP2 SWAP1 SWAP2 AND DUP2 MSTORE PUSH1 0x20 ADD SWAP1 JUMP JUMPDEST PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF SWAP7 DUP8 AND DUP2 MSTORE SWAP5 DUP7 AND PUSH1 0x20 DUP7 ADD MSTORE PUSH1 0x40 DUP6 ADD SWAP4 SWAP1 SWAP4 MSTORE PUSH1 0x60 DUP5 ADD SWAP2 SWAP1 SWAP2 MSTORE DUP4 AND PUSH1 0x80 DUP4 ADD MSTORE SWAP1 SWAP2 AND PUSH1 0xA0 DUP3 ADD MSTORE PUSH1 0xC0 ADD SWAP1 JUMP JUMPDEST PUSH32 0xFFFFFFFF00000000000000000000000000000000000000000000000000000000 SWAP2 SWAP1 SWAP2 AND DUP2 MSTORE PUSH1 0x20 ADD SWAP1 JUMP INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 DUP10 0xA6 SHR SWAP16 0x5D STATICCALL DUP2 0xC4 0xD 0x5D PUSH30 0xC13CBCF63F6DB9BD855627FC9AC24263D6C2C05BD864736F6C634300060C STOP CALLER ",
+                "sourceMap": "752:1349:67:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1481:618;;;;;;:::i;:::-;;:::i;:::-;;;;;;;:::i;:::-;;;;;;;;842:38;;;:::i;:::-;;;;;;;:::i;798:::-;;;:::i;1481:618::-;1697:14;1727:25;1779:6;1755:31;;:12;:31;;;:49;;1798:6;1755:49;;;1789:6;1755:49;1727:77;;1814:25;1842:10;:20;;;1871:4;1842:35;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;1814:63;;1892:173;1933:10;1958:12;1984:17;2015:6;2035:4;2053:2;1892:173;;;;;;;;;;;:::i;:::-;;;;;;;;-1:-1:-1;2075:17:67;;1481:618;-1:-1:-1;;;;;;;;1481:618:67:o;842:38::-;;;:::o;798:::-;;;:::o;5:130:-1:-;72:20;;4296:42;4285:54;;4801:35;;4791:2;;4850:1;;4840:12;4791:2;57:78;;;;:::o;778:867::-;;;;;;;969:3;957:9;948:7;944:23;940:33;937:2;;;-1:-1;;976:12;937:2;1038:53;1083:7;1059:22;1038:53;:::i;:::-;1028:63;;1146:53;1191:7;1128:2;1171:9;1167:22;1146:53;:::i;:::-;1136:63;;1254:53;1299:7;1236:2;1279:9;1275:22;1254:53;:::i;:::-;1244:63;;1344:2;1387:9;1383:22;567:20;1352:63;;1480:3;1469:9;1465:19;1452:33;1505:18;;1497:6;1494:30;1491:2;;;-1:-1;;1527:12;1491:2;1612:6;1601:9;1597:22;;;270:3;263:4;255:6;251:17;247:27;237:2;;-1:-1;;278:12;237:2;321:6;308:20;1505:18;340:6;337:30;334:2;;;-1:-1;;370:12;334:2;465:3;1128:2;445:17;406:6;431:32;;428:41;425:2;;;-1:-1;;472:12;425:2;1128;406:6;402:17;1547:82;;;;;;;;931:714;;;;;;;;:::o;1652:263::-;;1767:2;1755:9;1746:7;1742:23;1738:32;1735:2;;;-1:-1;;1773:12;1735:2;-1:-1;715:13;;1729:186;-1:-1;1729:186::o;2458:222::-;4296:42;4285:54;;;;1993:37;;2585:2;2570:18;;2556:124::o;2687:780::-;4296:42;4285:54;;;1993:37;;4285:54;;;3119:2;3104:18;;1993:37;3202:2;3187:18;;2409:37;;;;3285:2;3270:18;;2409:37;;;;4285:54;;3368:3;3353:19;;1993:37;4285:54;;;3452:3;3437:19;;1993:37;2954:3;2939:19;;2925:542::o;3474:218::-;4144:66;4133:78;;;;2111:36;;3599:2;3584:18;;3570:122::o"
+            }
+        }
+    },
+    "sourceTreeHashHex": "0x98093f8bc6b5ba3a1459e4a1d4a5e7ae732ce581911533b7fe029a808e7b1428",
+    "sources": {
+        "./TestBridge.sol": {
+            "id": 67
+        },
+        "@0x/contracts-erc20/contracts/src/v06/IERC20TokenV06.sol": {
+            "id": 76
+        },
+        "../src/vendor/v3/IERC20Bridge.sol": {
+            "id": 66
+        }
+    },
+    "sourceCodes": {
+        "./TestBridge.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\npragma experimental ABIEncoderV2;\n\nimport \"@0x/contracts-erc20/contracts/src/v06/IERC20TokenV06.sol\";\nimport \"../src/vendor/v3/IERC20Bridge.sol\";\n\n\ncontract TestBridge is\n    IERC20Bridge\n{\n    IERC20TokenV06 public immutable xAsset;\n    IERC20TokenV06 public immutable yAsset;\n\n    constructor(IERC20TokenV06 xAsset_, IERC20TokenV06 yAsset_)\n        public\n    {\n        xAsset = xAsset_;\n        yAsset = yAsset_;\n    }\n\n    /// @dev Transfers `amount` of the ERC20 `tokenAddress` from `from` to `to`.\n    /// @param tokenAddress The address of the ERC20 token to transfer.\n    /// @param from Address to transfer asset from.\n    /// @param to Address to transfer asset to.\n    /// @param amount Amount of asset to transfer.\n    /// @param bridgeData Arbitrary asset data needed by the bridge contract.\n    /// @return success The magic bytes `0xdc1600f3` if successful.\n    function bridgeTransferFrom(\n        address tokenAddress,\n        address from,\n        address to,\n        uint256 amount,\n        bytes calldata bridgeData\n    )\n        external\n        override\n        returns (bytes4 success)\n    {\n        IERC20TokenV06 takerToken = tokenAddress == address(xAsset) ? yAsset : xAsset;\n        uint256 takerTokenBalance = takerToken.balanceOf(address(this));\n        emit ERC20BridgeTransfer(\n            address(takerToken),\n            tokenAddress,\n            takerTokenBalance,\n            amount,\n            from,\n            to\n        );\n        return 0xdecaf000;\n    }\n}\n",
+        "@0x/contracts-erc20/contracts/src/v06/IERC20TokenV06.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\n\n\ninterface IERC20TokenV06 {\n\n    // solhint-disable no-simple-event-func-name\n    event Transfer(\n        address indexed from,\n        address indexed to,\n        uint256 value\n    );\n\n    event Approval(\n        address indexed owner,\n        address indexed spender,\n        uint256 value\n    );\n\n    /// @dev send `value` token to `to` from `msg.sender`\n    /// @param to The address of the recipient\n    /// @param value The amount of token to be transferred\n    /// @return True if transfer was successful\n    function transfer(address to, uint256 value)\n        external\n        returns (bool);\n\n    /// @dev send `value` token to `to` from `from` on the condition it is approved by `from`\n    /// @param from The address of the sender\n    /// @param to The address of the recipient\n    /// @param value The amount of token to be transferred\n    /// @return True if transfer was successful\n    function transferFrom(\n        address from,\n        address to,\n        uint256 value\n    )\n        external\n        returns (bool);\n\n    /// @dev `msg.sender` approves `spender` to spend `value` tokens\n    /// @param spender The address of the account able to transfer the tokens\n    /// @param value The amount of wei to be approved for transfer\n    /// @return Always true if the call has enough gas to complete execution\n    function approve(address spender, uint256 value)\n        external\n        returns (bool);\n\n    /// @dev Query total supply of token\n    /// @return Total supply of token\n    function totalSupply()\n        external\n        view\n        returns (uint256);\n\n    /// @dev Get the balance of `owner`.\n    /// @param owner The address from which the balance will be retrieved\n    /// @return Balance of owner\n    function balanceOf(address owner)\n        external\n        view\n        returns (uint256);\n\n    /// @dev Get the allowance for `spender` to spend from `owner`.\n    /// @param owner The address of the account owning tokens\n    /// @param spender The address of the account able to transfer the tokens\n    /// @return Amount of remaining tokens allowed to spent\n    function allowance(address owner, address spender)\n        external\n        view\n        returns (uint256);\n\n    /// @dev Get the number of decimals this token has.\n    function decimals()\n        external\n        view\n        returns (uint8);\n}\n",
+        "../src/vendor/v3/IERC20Bridge.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\n\ninterface IERC20Bridge {\n\n    /// @dev Emitted when a trade occurs.\n    /// @param inputToken The token the bridge is converting from.\n    /// @param outputToken The token the bridge is converting to.\n    /// @param inputTokenAmount Amount of input token.\n    /// @param outputTokenAmount Amount of output token.\n    /// @param from The `from` address in `bridgeTransferFrom()`\n    /// @param to The `to` address in `bridgeTransferFrom()`\n    event ERC20BridgeTransfer(\n        address inputToken,\n        address outputToken,\n        uint256 inputTokenAmount,\n        uint256 outputTokenAmount,\n        address from,\n        address to\n    );\n\n    /// @dev Transfers `amount` of the ERC20 `tokenAddress` from `from` to `to`.\n    /// @param tokenAddress The address of the ERC20 token to transfer.\n    /// @param from Address to transfer asset from.\n    /// @param to Address to transfer asset to.\n    /// @param amount Amount of asset to transfer.\n    /// @param bridgeData Arbitrary asset data needed by the bridge contract.\n    /// @return success The magic bytes `0xdc1600f3` if successful.\n    function bridgeTransferFrom(\n        address tokenAddress,\n        address from,\n        address to,\n        uint256 amount,\n        bytes calldata bridgeData\n    )\n        external\n        returns (bytes4 success);\n}\n"
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "0.6.12+commit.27d51765",
+        "settings": {
+            "remappings": [
+                "@0x/contracts-utils=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-utils",
+                "@0x/contracts-erc20=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-erc20"
+            ],
+            "optimizer": {
+                "enabled": true,
+                "runs": 1000000,
+                "details": {
+                    "yul": true,
+                    "deduplicate": true,
+                    "cse": true,
+                    "constantOptimizer": true
+                }
+            },
+            "outputSelection": {
+                "*": {
+                    "*": [
+                        "abi",
+                        "devdoc",
+                        "evm.bytecode.object",
+                        "evm.bytecode.sourceMap",
+                        "evm.deployedBytecode.object",
+                        "evm.deployedBytecode.sourceMap"
+                    ]
+                }
+            },
+            "evmVersion": "istanbul"
+        }
+    },
+    "chains": {}
+}

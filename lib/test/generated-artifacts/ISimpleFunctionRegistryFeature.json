@@ -1,0 +1,220 @@
+{
+    "schemaVersion": "2.0.0",
+    "contractName": "ISimpleFunctionRegistryFeature",
+    "compilerOutput": {
+        "abi": [
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "bytes4",
+                        "name": "selector",
+                        "type": "bytes4"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "oldImpl",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "newImpl",
+                        "type": "address"
+                    }
+                ],
+                "name": "ProxyFunctionUpdated",
+                "type": "event"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "bytes4",
+                        "name": "selector",
+                        "type": "bytes4"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "impl",
+                        "type": "address"
+                    }
+                ],
+                "name": "extend",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "bytes4",
+                        "name": "selector",
+                        "type": "bytes4"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "idx",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "getRollbackEntryAtIndex",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "impl",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "bytes4",
+                        "name": "selector",
+                        "type": "bytes4"
+                    }
+                ],
+                "name": "getRollbackLength",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "rollbackLength",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "bytes4",
+                        "name": "selector",
+                        "type": "bytes4"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "targetImpl",
+                        "type": "address"
+                    }
+                ],
+                "name": "rollback",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }
+        ],
+        "devdoc": {
+            "details": "Basic registry management features.",
+            "events": {
+                "ProxyFunctionUpdated(bytes4,address,address)": {
+                    "details": "A function implementation was updated via `extend()` or `rollback()`.",
+                    "params": {
+                        "newImpl": "The replacement implementation contract address.",
+                        "oldImpl": "The implementation contract address being replaced.",
+                        "selector": "The function selector."
+                    }
+                }
+            },
+            "kind": "dev",
+            "methods": {
+                "extend(bytes4,address)": {
+                    "details": "Register or replace a function.",
+                    "params": {
+                        "impl": "The implementation contract for the function.",
+                        "selector": "The function selector."
+                    }
+                },
+                "getRollbackEntryAtIndex(bytes4,uint256)": {
+                    "details": "Retrieve an entry in the rollback history for a function.",
+                    "params": {
+                        "idx": "The index in the rollback history.",
+                        "selector": "The function selector."
+                    },
+                    "returns": {
+                        "impl": "An implementation address for the function at         index `idx`."
+                    }
+                },
+                "getRollbackLength(bytes4)": {
+                    "details": "Retrieve the length of the rollback history for a function.",
+                    "params": {
+                        "selector": "The function selector."
+                    },
+                    "returns": {
+                        "rollbackLength": "The number of items in the rollback history for         the function."
+                    }
+                },
+                "rollback(bytes4,address)": {
+                    "details": "Roll back to a prior implementation of a function.",
+                    "params": {
+                        "selector": "The function selector.",
+                        "targetImpl": "The address of an older implementation of the function."
+                    }
+                }
+            },
+            "version": 1
+        },
+        "evm": {
+            "bytecode": {
+                "linkReferences": {},
+                "object": "0x",
+                "opcodes": "",
+                "sourceMap": ""
+            },
+            "deployedBytecode": {
+                "immutableReferences": {},
+                "linkReferences": {},
+                "object": "0x",
+                "opcodes": "",
+                "sourceMap": ""
+            }
+        }
+    },
+    "sourceTreeHashHex": "0xf2811a9636231882ed8048bd5d089ccdf07644071c9555323a0eea0816233351",
+    "sources": {
+        "./ISimpleFunctionRegistryFeature.sol": {
+            "id": 22
+        }
+    },
+    "sourceCodes": {
+        "./ISimpleFunctionRegistryFeature.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\npragma experimental ABIEncoderV2;\n\n\n/// @dev Basic registry management features.\ninterface ISimpleFunctionRegistryFeature {\n\n    /// @dev A function implementation was updated via `extend()` or `rollback()`.\n    /// @param selector The function selector.\n    /// @param oldImpl The implementation contract address being replaced.\n    /// @param newImpl The replacement implementation contract address.\n    event ProxyFunctionUpdated(bytes4 indexed selector, address oldImpl, address newImpl);\n\n    /// @dev Roll back to a prior implementation of a function.\n    /// @param selector The function selector.\n    /// @param targetImpl The address of an older implementation of the function.\n    function rollback(bytes4 selector, address targetImpl) external;\n\n    /// @dev Register or replace a function.\n    /// @param selector The function selector.\n    /// @param impl The implementation contract for the function.\n    function extend(bytes4 selector, address impl) external;\n\n    /// @dev Retrieve the length of the rollback history for a function.\n    /// @param selector The function selector.\n    /// @return rollbackLength The number of items in the rollback history for\n    ///         the function.\n    function getRollbackLength(bytes4 selector)\n        external\n        view\n        returns (uint256 rollbackLength);\n\n    /// @dev Retrieve an entry in the rollback history for a function.\n    /// @param selector The function selector.\n    /// @param idx The index in the rollback history.\n    /// @return impl An implementation address for the function at\n    ///         index `idx`.\n    function getRollbackEntryAtIndex(bytes4 selector, uint256 idx)\n        external\n        view\n        returns (address impl);\n}\n"
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "0.6.12+commit.27d51765",
+        "settings": {
+            "remappings": [
+                "@0x/contracts-utils=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-utils",
+                "@0x/contracts-erc20=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-erc20"
+            ],
+            "optimizer": {
+                "enabled": true,
+                "runs": 1000000,
+                "details": {
+                    "yul": true,
+                    "deduplicate": true,
+                    "cse": true,
+                    "constantOptimizer": true
+                }
+            },
+            "outputSelection": {
+                "*": {
+                    "*": [
+                        "abi",
+                        "devdoc",
+                        "evm.bytecode.object",
+                        "evm.bytecode.sourceMap",
+                        "evm.deployedBytecode.object",
+                        "evm.deployedBytecode.sourceMap"
+                    ]
+                }
+            },
+            "evmVersion": "istanbul"
+        }
+    },
+    "chains": {}
+}

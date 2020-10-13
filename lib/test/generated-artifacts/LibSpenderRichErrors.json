@@ -1,0 +1,70 @@
+{
+    "schemaVersion": "2.0.0",
+    "contractName": "LibSpenderRichErrors",
+    "compilerOutput": {
+        "abi": [],
+        "devdoc": {
+            "kind": "dev",
+            "methods": {},
+            "version": 1
+        },
+        "evm": {
+            "bytecode": {
+                "linkReferences": {},
+                "object": "0x60566023600b82828239805160001a607314601657fe5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea26469706673582212201d166befecbf78c1ec5e5eaff4679314c5c3182eaf7f9591f44723a87dbe25c364736f6c634300060b0033",
+                "opcodes": "PUSH1 0x56 PUSH1 0x23 PUSH1 0xB DUP3 DUP3 DUP3 CODECOPY DUP1 MLOAD PUSH1 0x0 BYTE PUSH1 0x73 EQ PUSH1 0x16 JUMPI INVALID JUMPDEST ADDRESS PUSH1 0x0 MSTORE PUSH1 0x73 DUP2 MSTORE8 DUP3 DUP2 RETURN INVALID PUSH20 0x0 ADDRESS EQ PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 SAR AND PUSH12 0xEFECBF78C1EC5E5EAFF46793 EQ 0xC5 0xC3 XOR 0x2E 0xAF PUSH32 0x9591F44723A87DBE25C364736F6C634300060B00330000000000000000000000 ",
+                "sourceMap": "606:582:7:-:0;;;;;;;;;;;;;;;;;;;;;;;;;"
+            },
+            "deployedBytecode": {
+                "immutableReferences": {},
+                "linkReferences": {},
+                "object": "0x73000000000000000000000000000000000000000030146080604052600080fdfea26469706673582212201d166befecbf78c1ec5e5eaff4679314c5c3182eaf7f9591f44723a87dbe25c364736f6c634300060b0033",
+                "opcodes": "PUSH20 0x0 ADDRESS EQ PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 SAR AND PUSH12 0xEFECBF78C1EC5E5EAFF46793 EQ 0xC5 0xC3 XOR 0x2E 0xAF PUSH32 0x9591F44723A87DBE25C364736F6C634300060B00330000000000000000000000 ",
+                "sourceMap": "606:582:7:-:0;;;;;;;;"
+            }
+        }
+    },
+    "sourceTreeHashHex": "0x2ac8a5b588bf62cab7a9540a5190cb43c0a14580ac17d71992a6a7e8c6a3fd9c",
+    "sources": {
+        "./LibSpenderRichErrors.sol": {
+            "id": 7
+        }
+    },
+    "sourceCodes": {
+        "./LibSpenderRichErrors.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\n\n\nlibrary LibSpenderRichErrors {\n\n    // solhint-disable func-name-mixedcase\n\n    function SpenderERC20TransferFromFailedError(\n        address token,\n        address owner,\n        address to,\n        uint256 amount,\n        bytes memory errorData\n    )\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"SpenderERC20TransferFromFailedError(address,address,address,uint256,bytes)\")),\n            token,\n            owner,\n            to,\n            amount,\n            errorData\n        );\n    }\n}\n"
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "0.6.11+commit.5ef660b1",
+        "settings": {
+            "remappings": [
+                "@0x/contracts-utils=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-utils",
+                "@0x/contracts-erc20=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-erc20"
+            ],
+            "optimizer": {
+                "enabled": true,
+                "runs": 1000000,
+                "details": {
+                    "yul": true,
+                    "deduplicate": true,
+                    "cse": true,
+                    "constantOptimizer": true
+                }
+            },
+            "outputSelection": {
+                "*": {
+                    "*": [
+                        "abi",
+                        "devdoc",
+                        "evm.bytecode.object",
+                        "evm.bytecode.sourceMap",
+                        "evm.deployedBytecode.object",
+                        "evm.deployedBytecode.sourceMap"
+                    ]
+                }
+            },
+            "evmVersion": "istanbul"
+        }
+    },
+    "chains": {}
+}

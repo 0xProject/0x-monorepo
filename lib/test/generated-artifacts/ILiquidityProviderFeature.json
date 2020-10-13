@@ -1,0 +1,202 @@
+{
+    "schemaVersion": "2.0.0",
+    "contractName": "ILiquidityProviderFeature",
+    "compilerOutput": {
+        "abi": [
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "xAsset",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "yAsset",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "providerAddress",
+                        "type": "address"
+                    }
+                ],
+                "name": "LiquidityProviderForMarketUpdated",
+                "type": "event"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "xAsset",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "yAsset",
+                        "type": "address"
+                    }
+                ],
+                "name": "getLiquidityProviderForMarket",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "providerAddress",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "makerToken",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "takerToken",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address payable",
+                        "name": "recipient",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "sellAmount",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "minBuyAmount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "sellToLiquidityProvider",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "boughtAmount",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "payable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "xAsset",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "yAsset",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "providerAddress",
+                        "type": "address"
+                    }
+                ],
+                "name": "setLiquidityProviderForMarket",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }
+        ],
+        "devdoc": {
+            "details": "Feature to swap directly with an on-chain liquidity provider.",
+            "kind": "dev",
+            "methods": {
+                "getLiquidityProviderForMarket(address,address)": {
+                    "details": "Returns the address of the liquidity provider for a market given     (xAsset, yAsset), or reverts if pool does not exist.",
+                    "params": {
+                        "xAsset": "First asset managed by the liquidity provider.",
+                        "yAsset": "Second asset managed by the liquidity provider."
+                    },
+                    "returns": {
+                        "providerAddress": "Address of the liquidity provider."
+                    }
+                },
+                "setLiquidityProviderForMarket(address,address,address)": {
+                    "details": "Sets address of the liquidity provider for a market given      (xAsset, yAsset).",
+                    "params": {
+                        "providerAddress": "Address of the liquidity provider.",
+                        "xAsset": "First asset managed by the liquidity provider.",
+                        "yAsset": "Second asset managed by the liquidity provider."
+                    }
+                }
+            },
+            "version": 1
+        },
+        "evm": {
+            "bytecode": {
+                "linkReferences": {},
+                "object": "0x",
+                "opcodes": "",
+                "sourceMap": ""
+            },
+            "deployedBytecode": {
+                "immutableReferences": {},
+                "linkReferences": {},
+                "object": "0x",
+                "opcodes": "",
+                "sourceMap": ""
+            }
+        }
+    },
+    "sourceTreeHashHex": "0xd9b69190d2e1f967c427ccce70e2f7982b69c998b6f6717e3b00a107d7ef9007",
+    "sources": {
+        "./ILiquidityProviderFeature.sol": {
+            "id": 19
+        }
+    },
+    "sourceCodes": {
+        "./ILiquidityProviderFeature.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\npragma experimental ABIEncoderV2;\n\n\n/// @dev Feature to swap directly with an on-chain liquidity provider.\ninterface ILiquidityProviderFeature {\n    event LiquidityProviderForMarketUpdated(\n        address indexed xAsset,\n        address indexed yAsset,\n        address providerAddress\n    );\n\n    function sellToLiquidityProvider(\n        address makerToken,\n        address takerToken,\n        address payable recipient,\n        uint256 sellAmount,\n        uint256 minBuyAmount\n    )\n        external\n        payable\n        returns (uint256 boughtAmount);\n\n    /// @dev Sets address of the liquidity provider for a market given\n    ///      (xAsset, yAsset).\n    /// @param xAsset First asset managed by the liquidity provider.\n    /// @param yAsset Second asset managed by the liquidity provider.\n    /// @param providerAddress Address of the liquidity provider.\n    function setLiquidityProviderForMarket(\n        address xAsset,\n        address yAsset,\n        address providerAddress\n    )\n        external;\n\n    /// @dev Returns the address of the liquidity provider for a market given\n    ///     (xAsset, yAsset), or reverts if pool does not exist.\n    /// @param xAsset First asset managed by the liquidity provider.\n    /// @param yAsset Second asset managed by the liquidity provider.\n    /// @return providerAddress Address of the liquidity provider.\n    function getLiquidityProviderForMarket(\n        address xAsset,\n        address yAsset\n    )\n        external\n        view\n        returns (address providerAddress);\n}\n"
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "0.6.12+commit.27d51765",
+        "settings": {
+            "remappings": [
+                "@0x/contracts-utils=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-utils",
+                "@0x/contracts-erc20=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-erc20"
+            ],
+            "optimizer": {
+                "enabled": true,
+                "runs": 1000000,
+                "details": {
+                    "yul": true,
+                    "deduplicate": true,
+                    "cse": true,
+                    "constantOptimizer": true
+                }
+            },
+            "outputSelection": {
+                "*": {
+                    "*": [
+                        "abi",
+                        "devdoc",
+                        "evm.bytecode.object",
+                        "evm.bytecode.sourceMap",
+                        "evm.deployedBytecode.object",
+                        "evm.deployedBytecode.sourceMap"
+                    ]
+                }
+            },
+            "evmVersion": "istanbul"
+        }
+    },
+    "chains": {}
+}

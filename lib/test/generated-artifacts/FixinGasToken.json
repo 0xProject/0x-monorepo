@@ -1,0 +1,82 @@
+{
+    "schemaVersion": "2.0.0",
+    "contractName": "FixinGasToken",
+    "compilerOutput": {
+        "abi": [],
+        "devdoc": {
+            "kind": "dev",
+            "methods": {},
+            "stateVariables": {
+                "GST_ADDRESS": {
+                    "details": "Mainnet address of the GST2 contract"
+                },
+                "GST_COLLECTOR_ADDRESS": {
+                    "details": "Mainnet address of the GST Collector"
+                }
+            },
+            "version": 1
+        },
+        "evm": {
+            "bytecode": {
+                "linkReferences": {},
+                "object": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea26469706673582212202d9533c348c4bcb92c908eaebf98ff0175db26853a56237841a630e6c29888ec64736f6c634300060b0033",
+                "opcodes": "PUSH1 0x80 PUSH1 0x40 MSTORE CALLVALUE DUP1 ISZERO PUSH1 0xF JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH1 0x3F DUP1 PUSH1 0x1D PUSH1 0x0 CODECOPY PUSH1 0x0 RETURN INVALID PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 0x2D SWAP6 CALLER 0xC3 0x48 0xC4 0xBC 0xB9 0x2C SWAP1 DUP15 0xAE 0xBF SWAP9 SELFDESTRUCT ADD PUSH22 0xDB26853A56237841A630E6C29888EC64736F6C634300 MOD SIGNEXTEND STOP CALLER ",
+                "sourceMap": "643:937:32:-:0;;;;;;;;;;;;;;;;;;;"
+            },
+            "deployedBytecode": {
+                "immutableReferences": {},
+                "linkReferences": {},
+                "object": "0x6080604052600080fdfea26469706673582212202d9533c348c4bcb92c908eaebf98ff0175db26853a56237841a630e6c29888ec64736f6c634300060b0033",
+                "opcodes": "PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 0x2D SWAP6 CALLER 0xC3 0x48 0xC4 0xBC 0xB9 0x2C SWAP1 DUP15 0xAE 0xBF SWAP9 SELFDESTRUCT ADD PUSH22 0xDB26853A56237841A630E6C29888EC64736F6C634300 MOD SIGNEXTEND STOP CALLER ",
+                "sourceMap": "643:937:32:-:0;;;;;"
+            }
+        }
+    },
+    "sourceTreeHashHex": "0x79936c46f7608f115a9a8406ed5e6236568429064de481835a2105fcc0c948b2",
+    "sources": {
+        "./FixinGasToken.sol": {
+            "id": 32
+        },
+        "../vendor/v3/IGasToken.sol": {
+            "id": 53
+        }
+    },
+    "sourceCodes": {
+        "./FixinGasToken.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\n\nimport \"../vendor/v3/IGasToken.sol\";\n\ncontract FixinGasToken\n{\n    /// @dev Mainnet address of the GST2 contract\n    address constant private GST_ADDRESS = 0x0000000000b3F879cb30FE243b4Dfee438691c04;\n    /// @dev Mainnet address of the GST Collector\n    address constant private GST_COLLECTOR_ADDRESS = 0x000000D3b08566BE75A6DB803C03C85C0c1c5B96;\n\n    /// @dev Frees gas tokens using the balance of `from`. Amount freed is based\n    ///     on the gas consumed in the function\n    modifier freesGasTokensFromCollector() {\n        uint256 gasBefore = gasleft();\n        _;\n        // (gasUsed + FREE_BASE) / (2 * REIMBURSE - FREE_TOKEN)\n        //            14154             24000        6870\n        uint256 value = (gasBefore - gasleft() + 14154) / 41130;\n        GST_ADDRESS.call(\n            abi.encodeWithSelector(\n                IGasToken(address(0)).freeFromUpTo.selector,\n                GST_COLLECTOR_ADDRESS,\n                value\n            )\n        );\n    }\n}\n",
+        "../vendor/v3/IGasToken.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\n\ninterface IGasToken {\n\n    /// @dev Frees up to `value` sub-tokens\n    /// @param value The amount of tokens to free\n    /// @return freed How many tokens were freed\n    function freeUpTo(uint256 value) external returns (uint256 freed);\n\n    /// @dev Frees up to `value` sub-tokens owned by `from`\n    /// @param from The owner of tokens to spend\n    /// @param value The amount of tokens to free\n    /// @return freed How many tokens were freed\n    function freeFromUpTo(address from, uint256 value) external returns (uint256 freed);\n\n    /// @dev Mints `value` amount of tokens\n    /// @param value The amount of tokens to mint\n    function mint(uint256 value) external;\n}\n"
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "0.6.11+commit.5ef660b1",
+        "settings": {
+            "remappings": [
+                "@0x/contracts-utils=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-utils",
+                "@0x/contracts-erc20=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-erc20"
+            ],
+            "optimizer": {
+                "enabled": true,
+                "runs": 1000000,
+                "details": {
+                    "yul": true,
+                    "deduplicate": true,
+                    "cse": true,
+                    "constantOptimizer": true
+                }
+            },
+            "outputSelection": {
+                "*": {
+                    "*": [
+                        "abi",
+                        "devdoc",
+                        "evm.bytecode.object",
+                        "evm.bytecode.sourceMap",
+                        "evm.deployedBytecode.object",
+                        "evm.deployedBytecode.sourceMap"
+                    ]
+                }
+            },
+            "evmVersion": "istanbul"
+        }
+    },
+    "chains": {}
+}

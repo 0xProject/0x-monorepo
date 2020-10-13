@@ -1,0 +1,70 @@
+{
+    "schemaVersion": "2.0.0",
+    "contractName": "LibMetaTransactionsRichErrors",
+    "compilerOutput": {
+        "abi": [],
+        "devdoc": {
+            "kind": "dev",
+            "methods": {},
+            "version": 1
+        },
+        "evm": {
+            "bytecode": {
+                "linkReferences": {},
+                "object": "0x60566023600b82828239805160001a607314601657fe5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220ff0c0fc120e915a8c33bccc877a1724642d5966b918fddedaa3a039edea4384664736f6c634300060b0033",
+                "opcodes": "PUSH1 0x56 PUSH1 0x23 PUSH1 0xB DUP3 DUP3 DUP3 CODECOPY DUP1 MLOAD PUSH1 0x0 BYTE PUSH1 0x73 EQ PUSH1 0x16 JUMPI INVALID JUMPDEST ADDRESS PUSH1 0x0 MSTORE PUSH1 0x73 DUP2 MSTORE8 DUP3 DUP2 RETURN INVALID PUSH20 0x0 ADDRESS EQ PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 SELFDESTRUCT 0xC 0xF 0xC1 KECCAK256 0xE9 ISZERO 0xA8 0xC3 EXTCODESIZE 0xCC 0xC8 PUSH24 0xA1724642D5966B918FDDEDAA3A039EDEA4384664736F6C63 NUMBER STOP MOD SIGNEXTEND STOP CALLER ",
+                "sourceMap": "606:3764:2:-:0;;;;;;;;;;;;;;;;;;;;;;;;;"
+            },
+            "deployedBytecode": {
+                "immutableReferences": {},
+                "linkReferences": {},
+                "object": "0x73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220ff0c0fc120e915a8c33bccc877a1724642d5966b918fddedaa3a039edea4384664736f6c634300060b0033",
+                "opcodes": "PUSH20 0x0 ADDRESS EQ PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 SELFDESTRUCT 0xC 0xF 0xC1 KECCAK256 0xE9 ISZERO 0xA8 0xC3 EXTCODESIZE 0xCC 0xC8 PUSH24 0xA1724642D5966B918FDDEDAA3A039EDEA4384664736F6C63 NUMBER STOP MOD SIGNEXTEND STOP CALLER ",
+                "sourceMap": "606:3764:2:-:0;;;;;;;;"
+            }
+        }
+    },
+    "sourceTreeHashHex": "0x6b28903cf22b38f8e300bc77197e738afc10e99e868e7d0559863eb912218dd3",
+    "sources": {
+        "./LibMetaTransactionsRichErrors.sol": {
+            "id": 2
+        }
+    },
+    "sourceCodes": {
+        "./LibMetaTransactionsRichErrors.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\n\n\nlibrary LibMetaTransactionsRichErrors {\n\n    // solhint-disable func-name-mixedcase\n\n    function InvalidMetaTransactionsArrayLengthsError(\n        uint256 mtxCount,\n        uint256 signatureCount\n    )\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"InvalidMetaTransactionsArrayLengthsError(uint256,uint256)\")),\n            mtxCount,\n            signatureCount\n        );\n    }\n\n    function MetaTransactionUnsupportedFunctionError(\n        bytes32 mtxHash,\n        bytes4 selector\n    )\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"MetaTransactionUnsupportedFunctionError(bytes32,bytes4)\")),\n            mtxHash,\n            selector\n        );\n    }\n\n    function MetaTransactionWrongSenderError(\n        bytes32 mtxHash,\n        address sender,\n        address expectedSender\n    )\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"MetaTransactionWrongSenderError(bytes32,address,address)\")),\n            mtxHash,\n            sender,\n            expectedSender\n        );\n    }\n\n    function MetaTransactionExpiredError(\n        bytes32 mtxHash,\n        uint256 time,\n        uint256 expirationTime\n    )\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"MetaTransactionExpiredError(bytes32,uint256,uint256)\")),\n            mtxHash,\n            time,\n            expirationTime\n        );\n    }\n\n    function MetaTransactionGasPriceError(\n        bytes32 mtxHash,\n        uint256 gasPrice,\n        uint256 minGasPrice,\n        uint256 maxGasPrice\n    )\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"MetaTransactionGasPriceError(bytes32,uint256,uint256,uint256)\")),\n            mtxHash,\n            gasPrice,\n            minGasPrice,\n            maxGasPrice\n        );\n    }\n\n    function MetaTransactionInsufficientEthError(\n        bytes32 mtxHash,\n        uint256 ethBalance,\n        uint256 ethRequired\n    )\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"MetaTransactionInsufficientEthError(bytes32,uint256,uint256)\")),\n            mtxHash,\n            ethBalance,\n            ethRequired\n        );\n    }\n\n    function MetaTransactionInvalidSignatureError(\n        bytes32 mtxHash,\n        bytes memory signature,\n        bytes memory errData\n    )\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"MetaTransactionInvalidSignatureError(bytes32,bytes,bytes)\")),\n            mtxHash,\n            signature,\n            errData\n        );\n    }\n\n    function MetaTransactionAlreadyExecutedError(\n        bytes32 mtxHash,\n        uint256 executedBlockNumber\n    )\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"MetaTransactionAlreadyExecutedError(bytes32,uint256)\")),\n            mtxHash,\n            executedBlockNumber\n        );\n    }\n\n    function MetaTransactionCallFailedError(\n        bytes32 mtxHash,\n        bytes memory callData,\n        bytes memory returnData\n    )\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"MetaTransactionCallFailedError(bytes32,bytes,bytes)\")),\n            mtxHash,\n            callData,\n            returnData\n        );\n    }\n}\n"
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "0.6.11+commit.5ef660b1",
+        "settings": {
+            "remappings": [
+                "@0x/contracts-utils=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-utils",
+                "@0x/contracts-erc20=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-erc20"
+            ],
+            "optimizer": {
+                "enabled": true,
+                "runs": 1000000,
+                "details": {
+                    "yul": true,
+                    "deduplicate": true,
+                    "cse": true,
+                    "constantOptimizer": true
+                }
+            },
+            "outputSelection": {
+                "*": {
+                    "*": [
+                        "abi",
+                        "devdoc",
+                        "evm.bytecode.object",
+                        "evm.bytecode.sourceMap",
+                        "evm.deployedBytecode.object",
+                        "evm.deployedBytecode.sourceMap"
+                    ]
+                }
+            },
+            "evmVersion": "istanbul"
+        }
+    },
+    "chains": {}
+}

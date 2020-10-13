@@ -1,0 +1,180 @@
+{
+    "schemaVersion": "2.0.0",
+    "contractName": "IERC20Bridge",
+    "compilerOutput": {
+        "abi": [
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "inputToken",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "outputToken",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "inputTokenAmount",
+                        "type": "uint256"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "outputTokenAmount",
+                        "type": "uint256"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "from",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "to",
+                        "type": "address"
+                    }
+                ],
+                "name": "ERC20BridgeTransfer",
+                "type": "event"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "tokenAddress",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "from",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "to",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "bytes",
+                        "name": "bridgeData",
+                        "type": "bytes"
+                    }
+                ],
+                "name": "bridgeTransferFrom",
+                "outputs": [
+                    {
+                        "internalType": "bytes4",
+                        "name": "success",
+                        "type": "bytes4"
+                    }
+                ],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }
+        ],
+        "devdoc": {
+            "events": {
+                "ERC20BridgeTransfer(address,address,uint256,uint256,address,address)": {
+                    "details": "Emitted when a trade occurs.",
+                    "params": {
+                        "from": "The `from` address in `bridgeTransferFrom()`",
+                        "inputToken": "The token the bridge is converting from.",
+                        "inputTokenAmount": "Amount of input token.",
+                        "outputToken": "The token the bridge is converting to.",
+                        "outputTokenAmount": "Amount of output token.",
+                        "to": "The `to` address in `bridgeTransferFrom()`"
+                    }
+                }
+            },
+            "kind": "dev",
+            "methods": {
+                "bridgeTransferFrom(address,address,address,uint256,bytes)": {
+                    "details": "Transfers `amount` of the ERC20 `tokenAddress` from `from` to `to`.",
+                    "params": {
+                        "amount": "Amount of asset to transfer.",
+                        "bridgeData": "Arbitrary asset data needed by the bridge contract.",
+                        "from": "Address to transfer asset from.",
+                        "to": "Address to transfer asset to.",
+                        "tokenAddress": "The address of the ERC20 token to transfer."
+                    },
+                    "returns": {
+                        "success": "The magic bytes `0xdc1600f3` if successful."
+                    }
+                }
+            },
+            "version": 1
+        },
+        "evm": {
+            "bytecode": {
+                "linkReferences": {},
+                "object": "0x",
+                "opcodes": "",
+                "sourceMap": ""
+            },
+            "deployedBytecode": {
+                "immutableReferences": {},
+                "linkReferences": {},
+                "object": "0x",
+                "opcodes": "",
+                "sourceMap": ""
+            }
+        }
+    },
+    "sourceTreeHashHex": "0xe614168919ac0524bbb240a113d288130d0fccc592d78d9038893edf2afaff51",
+    "sources": {
+        "./IERC20Bridge.sol": {
+            "id": 51
+        }
+    },
+    "sourceCodes": {
+        "./IERC20Bridge.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\n\ninterface IERC20Bridge {\n\n    /// @dev Emitted when a trade occurs.\n    /// @param inputToken The token the bridge is converting from.\n    /// @param outputToken The token the bridge is converting to.\n    /// @param inputTokenAmount Amount of input token.\n    /// @param outputTokenAmount Amount of output token.\n    /// @param from The `from` address in `bridgeTransferFrom()`\n    /// @param to The `to` address in `bridgeTransferFrom()`\n    event ERC20BridgeTransfer(\n        address inputToken,\n        address outputToken,\n        uint256 inputTokenAmount,\n        uint256 outputTokenAmount,\n        address from,\n        address to\n    );\n\n    /// @dev Transfers `amount` of the ERC20 `tokenAddress` from `from` to `to`.\n    /// @param tokenAddress The address of the ERC20 token to transfer.\n    /// @param from Address to transfer asset from.\n    /// @param to Address to transfer asset to.\n    /// @param amount Amount of asset to transfer.\n    /// @param bridgeData Arbitrary asset data needed by the bridge contract.\n    /// @return success The magic bytes `0xdc1600f3` if successful.\n    function bridgeTransferFrom(\n        address tokenAddress,\n        address from,\n        address to,\n        uint256 amount,\n        bytes calldata bridgeData\n    )\n        external\n        returns (bytes4 success);\n}\n"
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "0.6.11+commit.5ef660b1",
+        "settings": {
+            "remappings": [
+                "@0x/contracts-utils=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-utils",
+                "@0x/contracts-erc20=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-erc20"
+            ],
+            "optimizer": {
+                "enabled": true,
+                "runs": 1000000,
+                "details": {
+                    "yul": true,
+                    "deduplicate": true,
+                    "cse": true,
+                    "constantOptimizer": true
+                }
+            },
+            "outputSelection": {
+                "*": {
+                    "*": [
+                        "abi",
+                        "devdoc",
+                        "evm.bytecode.object",
+                        "evm.bytecode.sourceMap",
+                        "evm.deployedBytecode.object",
+                        "evm.deployedBytecode.sourceMap"
+                    ]
+                }
+            },
+            "evmVersion": "istanbul"
+        }
+    },
+    "chains": {}
+}

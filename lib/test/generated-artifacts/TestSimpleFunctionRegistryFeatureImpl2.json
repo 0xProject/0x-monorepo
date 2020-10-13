@@ -1,0 +1,112 @@
+{
+    "schemaVersion": "2.0.0",
+    "contractName": "TestSimpleFunctionRegistryFeatureImpl2",
+    "compilerOutput": {
+        "abi": [
+            {
+                "inputs": [],
+                "name": "testFn",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "id",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "pure",
+                "type": "function"
+            }
+        ],
+        "devdoc": {
+            "kind": "dev",
+            "methods": {},
+            "version": 1
+        },
+        "evm": {
+            "bytecode": {
+                "linkReferences": {},
+                "object": "0x60a0604052348015600f57600080fd5b5030606081901b608052608c61002960003950608c6000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c806381a1923314602d575b600080fd5b60336047565b604051603e9190604d565b60405180910390f35b61053a90565b9081526020019056fea2646970667358221220f35bd67d4d51814e49bc75c37558f8a2df312dabd08e38b6baf88bfcd89af5c764736f6c634300060c0033",
+                "opcodes": "PUSH1 0xA0 PUSH1 0x40 MSTORE CALLVALUE DUP1 ISZERO PUSH1 0xF JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP ADDRESS PUSH1 0x60 DUP2 SWAP1 SHL PUSH1 0x80 MSTORE PUSH1 0x8C PUSH2 0x29 PUSH1 0x0 CODECOPY POP PUSH1 0x8C PUSH1 0x0 RETURN INVALID PUSH1 0x80 PUSH1 0x40 MSTORE CALLVALUE DUP1 ISZERO PUSH1 0xF JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH1 0x4 CALLDATASIZE LT PUSH1 0x28 JUMPI PUSH1 0x0 CALLDATALOAD PUSH1 0xE0 SHR DUP1 PUSH4 0x81A19233 EQ PUSH1 0x2D JUMPI JUMPDEST PUSH1 0x0 DUP1 REVERT JUMPDEST PUSH1 0x33 PUSH1 0x47 JUMP JUMPDEST PUSH1 0x40 MLOAD PUSH1 0x3E SWAP2 SWAP1 PUSH1 0x4D JUMP JUMPDEST PUSH1 0x40 MLOAD DUP1 SWAP2 SUB SWAP1 RETURN JUMPDEST PUSH2 0x53A SWAP1 JUMP JUMPDEST SWAP1 DUP2 MSTORE PUSH1 0x20 ADD SWAP1 JUMP INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 RETURN JUMPDEST 0xD6 PUSH30 0x4D51814E49BC75C37558F8A2DF312DABD08E38B6BAF88BFCD89AF5C76473 PUSH16 0x6C634300060C00330000000000000000 ",
+                "sourceMap": "681:184:72:-:0;;;;;;;;;;;;-1:-1:-1;1859:4:36;1833:31;;;;;;681:184:72;;;;;;;"
+            },
+            "deployedBytecode": {
+                "immutableReferences": {},
+                "linkReferences": {},
+                "object": "0x6080604052348015600f57600080fd5b506004361060285760003560e01c806381a1923314602d575b600080fd5b60336047565b604051603e9190604d565b60405180910390f35b61053a90565b9081526020019056fea2646970667358221220f35bd67d4d51814e49bc75c37558f8a2df312dabd08e38b6baf88bfcd89af5c764736f6c634300060c0033",
+                "opcodes": "PUSH1 0x80 PUSH1 0x40 MSTORE CALLVALUE DUP1 ISZERO PUSH1 0xF JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH1 0x4 CALLDATASIZE LT PUSH1 0x28 JUMPI PUSH1 0x0 CALLDATALOAD PUSH1 0xE0 SHR DUP1 PUSH4 0x81A19233 EQ PUSH1 0x2D JUMPI JUMPDEST PUSH1 0x0 DUP1 REVERT JUMPDEST PUSH1 0x33 PUSH1 0x47 JUMP JUMPDEST PUSH1 0x40 MLOAD PUSH1 0x3E SWAP2 SWAP1 PUSH1 0x4D JUMP JUMPDEST PUSH1 0x40 MLOAD DUP1 SWAP2 SUB SWAP1 RETURN JUMPDEST PUSH2 0x53A SWAP1 JUMP JUMPDEST SWAP1 DUP2 MSTORE PUSH1 0x20 ADD SWAP1 JUMP INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 RETURN JUMPDEST 0xD6 PUSH30 0x4D51814E49BC75C37558F8A2DF312DABD08E38B6BAF88BFCD89AF5C76473 PUSH16 0x6C634300060C00330000000000000000 ",
+                "sourceMap": "681:184:72:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;754:109;;;:::i;:::-;;;;;;;:::i;:::-;;;;;;;;;852:4;754:109;:::o;125:222:-1:-;76:37;;;252:2;237:18;;223:124::o"
+            }
+        }
+    },
+    "sourceTreeHashHex": "0xbe6938444cce30fcf037475b56e06a8af5e5b70f7af40c34924190e57607d15d",
+    "sources": {
+        "./TestSimpleFunctionRegistryFeatureImpl2.sol": {
+            "id": 72
+        },
+        "../src/fixins/FixinCommon.sol": {
+            "id": 36
+        },
+        "@0x/contracts-utils/contracts/src/v06/errors/LibRichErrorsV06.sol": {
+            "id": 86
+        },
+        "../src/errors/LibCommonRichErrors.sol": {
+            "id": 2
+        },
+        "../src/errors/LibOwnableRichErrors.sol": {
+            "id": 5
+        },
+        "../src/features/IOwnableFeature.sol": {
+            "id": 21
+        },
+        "@0x/contracts-utils/contracts/src/v06/interfaces/IOwnableV06.sol": {
+            "id": 89
+        },
+        "../src/features/ISimpleFunctionRegistryFeature.sol": {
+            "id": 23
+        }
+    },
+    "sourceCodes": {
+        "./TestSimpleFunctionRegistryFeatureImpl2.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\npragma experimental ABIEncoderV2;\n\nimport \"../src/fixins/FixinCommon.sol\";\n\n\ncontract TestSimpleFunctionRegistryFeatureImpl2 is\n    FixinCommon\n{\n    function testFn()\n        external\n        pure\n        returns (uint256 id)\n    {\n        return 1338;\n    }\n}\n",
+        "../src/fixins/FixinCommon.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\npragma experimental ABIEncoderV2;\n\nimport \"@0x/contracts-utils/contracts/src/v06/errors/LibRichErrorsV06.sol\";\nimport \"../errors/LibCommonRichErrors.sol\";\nimport \"../errors/LibOwnableRichErrors.sol\";\nimport \"../features/IOwnableFeature.sol\";\nimport \"../features/ISimpleFunctionRegistryFeature.sol\";\n\n\n/// @dev Common feature utilities.\nabstract contract FixinCommon {\n\n    using LibRichErrorsV06 for bytes;\n\n    /// @dev The implementation address of this feature.\n    address internal immutable _implementation;\n\n    /// @dev The caller must be this contract.\n    modifier onlySelf() virtual {\n        if (msg.sender != address(this)) {\n            LibCommonRichErrors.OnlyCallableBySelfError(msg.sender).rrevert();\n        }\n        _;\n    }\n\n    /// @dev The caller of this function must be the owner.\n    modifier onlyOwner() virtual {\n        {\n            address owner = IOwnableFeature(address(this)).owner();\n            if (msg.sender != owner) {\n                LibOwnableRichErrors.OnlyOwnerError(\n                    msg.sender,\n                    owner\n                ).rrevert();\n            }\n        }\n        _;\n    }\n\n    constructor() internal {\n        // Remember this feature's original address.\n        _implementation = address(this);\n    }\n\n    /// @dev Registers a function implemented by this feature at `_implementation`.\n    ///      Can and should only be called within a `migrate()`.\n    /// @param selector The selector of the function whose implementation\n    ///        is at `_implementation`.\n    function _registerFeatureFunction(bytes4 selector)\n        internal\n    {\n        ISimpleFunctionRegistryFeature(address(this)).extend(selector, _implementation);\n    }\n\n    /// @dev Encode a feature version as a `uint256`.\n    /// @param major The major version number of the feature.\n    /// @param minor The minor version number of the feature.\n    /// @param revision The revision number of the feature.\n    /// @return encodedVersion The encoded version number.\n    function _encodeVersion(uint32 major, uint32 minor, uint32 revision)\n        internal\n        pure\n        returns (uint256 encodedVersion)\n    {\n        return (uint256(major) << 64) | (uint256(minor) << 32) | uint256(revision);\n    }\n}\n",
+        "@0x/contracts-utils/contracts/src/v06/errors/LibRichErrorsV06.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\n\n\nlibrary LibRichErrorsV06 {\n\n    // bytes4(keccak256(\"Error(string)\"))\n    bytes4 internal constant STANDARD_ERROR_SELECTOR = 0x08c379a0;\n\n    // solhint-disable func-name-mixedcase\n    /// @dev ABI encode a standard, string revert error payload.\n    ///      This is the same payload that would be included by a `revert(string)`\n    ///      solidity statement. It has the function signature `Error(string)`.\n    /// @param message The error string.\n    /// @return The ABI encoded error.\n    function StandardError(string memory message)\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            STANDARD_ERROR_SELECTOR,\n            bytes(message)\n        );\n    }\n    // solhint-enable func-name-mixedcase\n\n    /// @dev Reverts an encoded rich revert reason `errorData`.\n    /// @param errorData ABI encoded error data.\n    function rrevert(bytes memory errorData)\n        internal\n        pure\n    {\n        assembly {\n            revert(add(errorData, 0x20), mload(errorData))\n        }\n    }\n}\n",
+        "../src/errors/LibCommonRichErrors.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\n\n\nlibrary LibCommonRichErrors {\n\n    // solhint-disable func-name-mixedcase\n\n    function OnlyCallableBySelfError(address sender)\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"OnlyCallableBySelfError(address)\")),\n            sender\n        );\n    }\n\n    function IllegalReentrancyError(bytes4 selector, uint256 reentrancyFlags)\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"IllegalReentrancyError(bytes4,uint256)\")),\n            selector,\n            reentrancyFlags\n        );\n    }\n}\n",
+        "../src/errors/LibOwnableRichErrors.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\n\n\nlibrary LibOwnableRichErrors {\n\n    // solhint-disable func-name-mixedcase\n\n    function OnlyOwnerError(\n        address sender,\n        address owner\n    )\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"OnlyOwnerError(address,address)\")),\n            sender,\n            owner\n        );\n    }\n\n    function TransferOwnerToZeroError()\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"TransferOwnerToZeroError()\"))\n        );\n    }\n\n    function MigrateCallFailedError(address target, bytes memory resultData)\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"MigrateCallFailedError(address,bytes)\")),\n            target,\n            resultData\n        );\n    }\n}\n",
+        "../src/features/IOwnableFeature.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\npragma experimental ABIEncoderV2;\n\nimport \"@0x/contracts-utils/contracts/src/v06/interfaces/IOwnableV06.sol\";\n\n\n// solhint-disable no-empty-blocks\n/// @dev Owner management and migration features.\ninterface IOwnableFeature is\n    IOwnableV06\n{\n    /// @dev Emitted when `migrate()` is called.\n    /// @param caller The caller of `migrate()`.\n    /// @param migrator The migration contract.\n    /// @param newOwner The address of the new owner.\n    event Migrated(address caller, address migrator, address newOwner);\n\n    /// @dev Execute a migration function in the context of the ZeroEx contract.\n    ///      The result of the function being called should be the magic bytes\n    ///      0x2c64c5ef (`keccack('MIGRATE_SUCCESS')`). Only callable by the owner.\n    ///      The owner will be temporarily set to `address(this)` inside the call.\n    ///      Before returning, the owner will be set to `newOwner`.\n    /// @param target The migrator contract address.\n    /// @param newOwner The address of the new owner.\n    /// @param data The call data.\n    function migrate(address target, bytes calldata data, address newOwner) external;\n}\n",
+        "@0x/contracts-utils/contracts/src/v06/interfaces/IOwnableV06.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\n\n\ninterface IOwnableV06 {\n\n    /// @dev Emitted by Ownable when ownership is transferred.\n    /// @param previousOwner The previous owner of the contract.\n    /// @param newOwner The new owner of the contract.\n    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);\n\n    /// @dev Transfers ownership of the contract to a new address.\n    /// @param newOwner The address that will become the owner.\n    function transferOwnership(address newOwner) external;\n\n    /// @dev The owner of this contract.\n    /// @return ownerAddress The owner address.\n    function owner() external view returns (address ownerAddress);\n}\n",
+        "../src/features/ISimpleFunctionRegistryFeature.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\npragma experimental ABIEncoderV2;\n\n\n/// @dev Basic registry management features.\ninterface ISimpleFunctionRegistryFeature {\n\n    /// @dev A function implementation was updated via `extend()` or `rollback()`.\n    /// @param selector The function selector.\n    /// @param oldImpl The implementation contract address being replaced.\n    /// @param newImpl The replacement implementation contract address.\n    event ProxyFunctionUpdated(bytes4 indexed selector, address oldImpl, address newImpl);\n\n    /// @dev Roll back to a prior implementation of a function.\n    /// @param selector The function selector.\n    /// @param targetImpl The address of an older implementation of the function.\n    function rollback(bytes4 selector, address targetImpl) external;\n\n    /// @dev Register or replace a function.\n    /// @param selector The function selector.\n    /// @param impl The implementation contract for the function.\n    function extend(bytes4 selector, address impl) external;\n\n    /// @dev Retrieve the length of the rollback history for a function.\n    /// @param selector The function selector.\n    /// @return rollbackLength The number of items in the rollback history for\n    ///         the function.\n    function getRollbackLength(bytes4 selector)\n        external\n        view\n        returns (uint256 rollbackLength);\n\n    /// @dev Retrieve an entry in the rollback history for a function.\n    /// @param selector The function selector.\n    /// @param idx The index in the rollback history.\n    /// @return impl An implementation address for the function at\n    ///         index `idx`.\n    function getRollbackEntryAtIndex(bytes4 selector, uint256 idx)\n        external\n        view\n        returns (address impl);\n}\n"
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "0.6.12+commit.27d51765",
+        "settings": {
+            "remappings": [
+                "@0x/contracts-utils=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-utils",
+                "@0x/contracts-erc20=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-erc20"
+            ],
+            "optimizer": {
+                "enabled": true,
+                "runs": 1000000,
+                "details": {
+                    "yul": true,
+                    "deduplicate": true,
+                    "cse": true,
+                    "constantOptimizer": true
+                }
+            },
+            "outputSelection": {
+                "*": {
+                    "*": [
+                        "abi",
+                        "devdoc",
+                        "evm.bytecode.object",
+                        "evm.bytecode.sourceMap",
+                        "evm.deployedBytecode.object",
+                        "evm.deployedBytecode.sourceMap"
+                    ]
+                }
+            },
+            "evmVersion": "istanbul"
+        }
+    },
+    "chains": {}
+}

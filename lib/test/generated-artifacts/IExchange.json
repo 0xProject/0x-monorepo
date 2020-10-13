@@ -1,0 +1,259 @@
+{
+    "schemaVersion": "2.0.0",
+    "contractName": "IExchange",
+    "compilerOutput": {
+        "abi": [
+            {
+                "inputs": [
+                    {
+                        "components": [
+                            {
+                                "internalType": "address",
+                                "name": "makerAddress",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "takerAddress",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "feeRecipientAddress",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "senderAddress",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "makerAssetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "takerAssetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "makerFee",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "takerFee",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "expirationTimeSeconds",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "salt",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "bytes",
+                                "name": "makerAssetData",
+                                "type": "bytes"
+                            },
+                            {
+                                "internalType": "bytes",
+                                "name": "takerAssetData",
+                                "type": "bytes"
+                            },
+                            {
+                                "internalType": "bytes",
+                                "name": "makerFeeAssetData",
+                                "type": "bytes"
+                            },
+                            {
+                                "internalType": "bytes",
+                                "name": "takerFeeAssetData",
+                                "type": "bytes"
+                            }
+                        ],
+                        "internalType": "struct IExchange.Order",
+                        "name": "order",
+                        "type": "tuple"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "takerAssetFillAmount",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "bytes",
+                        "name": "signature",
+                        "type": "bytes"
+                    }
+                ],
+                "name": "fillOrder",
+                "outputs": [
+                    {
+                        "components": [
+                            {
+                                "internalType": "uint256",
+                                "name": "makerAssetFilledAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "takerAssetFilledAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "makerFeePaid",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "takerFeePaid",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "protocolFeePaid",
+                                "type": "uint256"
+                            }
+                        ],
+                        "internalType": "struct IExchange.FillResults",
+                        "name": "fillResults",
+                        "type": "tuple"
+                    }
+                ],
+                "stateMutability": "payable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "bytes4",
+                        "name": "assetProxyId",
+                        "type": "bytes4"
+                    }
+                ],
+                "name": "getAssetProxy",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "proxyAddress",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "protocolFeeMultiplier",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "multiplier",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ],
+        "devdoc": {
+            "details": "Interface to the V3 Exchange.",
+            "kind": "dev",
+            "methods": {
+                "fillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),uint256,bytes)": {
+                    "details": "Fills the input order.",
+                    "params": {
+                        "order": "Order struct containing order specifications.",
+                        "signature": "Proof that order has been created by maker.",
+                        "takerAssetFillAmount": "Desired amount of takerAsset to sell."
+                    },
+                    "returns": {
+                        "fillResults": "Amounts filled and fees paid by maker and taker."
+                    }
+                },
+                "getAssetProxy(bytes4)": {
+                    "details": "Gets an asset proxy.",
+                    "params": {
+                        "assetProxyId": "Id of the asset proxy."
+                    },
+                    "returns": {
+                        "proxyAddress": "The asset proxy registered to assetProxyId.         Returns 0x0 if no proxy is registered."
+                    }
+                },
+                "protocolFeeMultiplier()": {
+                    "details": "Returns the protocolFeeMultiplier",
+                    "returns": {
+                        "multiplier": "The multiplier for protocol fees."
+                    }
+                }
+            },
+            "version": 1
+        },
+        "evm": {
+            "bytecode": {
+                "linkReferences": {},
+                "object": "0x",
+                "opcodes": "",
+                "sourceMap": ""
+            },
+            "deployedBytecode": {
+                "immutableReferences": {},
+                "linkReferences": {},
+                "object": "0x",
+                "opcodes": "",
+                "sourceMap": ""
+            }
+        }
+    },
+    "sourceTreeHashHex": "0xcf2dc6ce2d443cde6eb280c1004e9459c86fff52ec04029d40bf37a55e1f1b34",
+    "sources": {
+        "./IExchange.sol": {
+            "id": 52
+        }
+    },
+    "sourceCodes": {
+        "./IExchange.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\npragma experimental ABIEncoderV2;\n\n\n/// @dev Interface to the V3 Exchange.\ninterface IExchange {\n\n    /// @dev V3 Order structure.\n    struct Order {\n        // Address that created the order.\n        address makerAddress;\n        // Address that is allowed to fill the order.\n        // If set to 0, any address is allowed to fill the order.\n        address takerAddress;\n        // Address that will recieve fees when order is filled.\n        address feeRecipientAddress;\n        // Address that is allowed to call Exchange contract methods that affect this order.\n        // If set to 0, any address is allowed to call these methods.\n        address senderAddress;\n        // Amount of makerAsset being offered by maker. Must be greater than 0.\n        uint256 makerAssetAmount;\n        // Amount of takerAsset being bid on by maker. Must be greater than 0.\n        uint256 takerAssetAmount;\n        // Fee paid to feeRecipient by maker when order is filled.\n        uint256 makerFee;\n        // Fee paid to feeRecipient by taker when order is filled.\n        uint256 takerFee;\n        // Timestamp in seconds at which order expires.\n        uint256 expirationTimeSeconds;\n        // Arbitrary number to facilitate uniqueness of the order's hash.\n        uint256 salt;\n        // Encoded data that can be decoded by a specified proxy contract when transferring makerAsset.\n        // The leading bytes4 references the id of the asset proxy.\n        bytes makerAssetData;\n        // Encoded data that can be decoded by a specified proxy contract when transferring takerAsset.\n        // The leading bytes4 references the id of the asset proxy.\n        bytes takerAssetData;\n        // Encoded data that can be decoded by a specified proxy contract when transferring makerFeeAsset.\n        // The leading bytes4 references the id of the asset proxy.\n        bytes makerFeeAssetData;\n        // Encoded data that can be decoded by a specified proxy contract when transferring takerFeeAsset.\n        // The leading bytes4 references the id of the asset proxy.\n        bytes takerFeeAssetData;\n    }\n\n    /// @dev V3 `fillOrder()` results.`\n    struct FillResults {\n        // Total amount of makerAsset(s) filled.\n        uint256 makerAssetFilledAmount;\n        // Total amount of takerAsset(s) filled.\n        uint256 takerAssetFilledAmount;\n        // Total amount of fees paid by maker(s) to feeRecipient(s).\n        uint256 makerFeePaid;\n        // Total amount of fees paid by taker to feeRecipients(s).\n        uint256 takerFeePaid;\n        // Total amount of fees paid by taker to the staking contract.\n        uint256 protocolFeePaid;\n    }\n\n    /// @dev Fills the input order.\n    /// @param order Order struct containing order specifications.\n    /// @param takerAssetFillAmount Desired amount of takerAsset to sell.\n    /// @param signature Proof that order has been created by maker.\n    /// @return fillResults Amounts filled and fees paid by maker and taker.\n    function fillOrder(\n        Order calldata order,\n        uint256 takerAssetFillAmount,\n        bytes calldata signature\n    )\n        external\n        payable\n        returns (FillResults memory fillResults);\n\n    /// @dev Returns the protocolFeeMultiplier\n    /// @return multiplier The multiplier for protocol fees.\n    function protocolFeeMultiplier()\n        external\n        view\n        returns (uint256 multiplier);\n\n    /// @dev Gets an asset proxy.\n    /// @param assetProxyId Id of the asset proxy.\n    /// @return proxyAddress The asset proxy registered to assetProxyId.\n    ///         Returns 0x0 if no proxy is registered.\n    function getAssetProxy(bytes4 assetProxyId)\n        external\n        view\n        returns (address proxyAddress);\n}\n"
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "0.6.11+commit.5ef660b1",
+        "settings": {
+            "remappings": [
+                "@0x/contracts-utils=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-utils",
+                "@0x/contracts-erc20=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-erc20"
+            ],
+            "optimizer": {
+                "enabled": true,
+                "runs": 1000000,
+                "details": {
+                    "yul": true,
+                    "deduplicate": true,
+                    "cse": true,
+                    "constantOptimizer": true
+                }
+            },
+            "outputSelection": {
+                "*": {
+                    "*": [
+                        "abi",
+                        "devdoc",
+                        "evm.bytecode.object",
+                        "evm.bytecode.sourceMap",
+                        "evm.deployedBytecode.object",
+                        "evm.deployedBytecode.sourceMap"
+                    ]
+                }
+            },
+            "evmVersion": "istanbul"
+        }
+    },
+    "chains": {}
+}

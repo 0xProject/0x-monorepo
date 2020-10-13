@@ -1,0 +1,98 @@
+{
+    "schemaVersion": "2.0.0",
+    "contractName": "IBootstrapFeature",
+    "compilerOutput": {
+        "abi": [
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "target",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "bytes",
+                        "name": "callData",
+                        "type": "bytes"
+                    }
+                ],
+                "name": "bootstrap",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }
+        ],
+        "devdoc": {
+            "details": "Detachable `bootstrap()` feature.",
+            "kind": "dev",
+            "methods": {
+                "bootstrap(address,bytes)": {
+                    "details": "Bootstrap the initial feature set of this contract by delegatecalling      into `target`. Before exiting the `bootstrap()` function will      deregister itself from the proxy to prevent being called again.",
+                    "params": {
+                        "callData": "The call data to execute on `target`.",
+                        "target": "The bootstrapper contract address."
+                    }
+                }
+            },
+            "version": 1
+        },
+        "evm": {
+            "bytecode": {
+                "linkReferences": {},
+                "object": "0x",
+                "opcodes": "",
+                "sourceMap": ""
+            },
+            "deployedBytecode": {
+                "immutableReferences": {},
+                "linkReferences": {},
+                "object": "0x",
+                "opcodes": "",
+                "sourceMap": ""
+            }
+        }
+    },
+    "sourceTreeHashHex": "0xdf7d45150704f4fdcb26f7c41890b76645925afa4cd4715182ef51a4dfcb2d23",
+    "sources": {
+        "./IBootstrapFeature.sol": {
+            "id": 17
+        }
+    },
+    "sourceCodes": {
+        "./IBootstrapFeature.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\npragma experimental ABIEncoderV2;\n\n\n/// @dev Detachable `bootstrap()` feature.\ninterface IBootstrapFeature {\n\n    /// @dev Bootstrap the initial feature set of this contract by delegatecalling\n    ///      into `target`. Before exiting the `bootstrap()` function will\n    ///      deregister itself from the proxy to prevent being called again.\n    /// @param target The bootstrapper contract address.\n    /// @param callData The call data to execute on `target`.\n    function bootstrap(address target, bytes calldata callData) external;\n}\n"
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "0.6.12+commit.27d51765",
+        "settings": {
+            "remappings": [
+                "@0x/contracts-utils=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-utils",
+                "@0x/contracts-erc20=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-erc20"
+            ],
+            "optimizer": {
+                "enabled": true,
+                "runs": 1000000,
+                "details": {
+                    "yul": true,
+                    "deduplicate": true,
+                    "cse": true,
+                    "constantOptimizer": true
+                }
+            },
+            "outputSelection": {
+                "*": {
+                    "*": [
+                        "abi",
+                        "devdoc",
+                        "evm.bytecode.object",
+                        "evm.bytecode.sourceMap",
+                        "evm.deployedBytecode.object",
+                        "evm.deployedBytecode.sourceMap"
+                    ]
+                }
+            },
+            "evmVersion": "istanbul"
+        }
+    },
+    "chains": {}
+}

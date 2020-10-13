@@ -1,0 +1,153 @@
+{
+    "schemaVersion": "2.0.0",
+    "contractName": "IGasToken",
+    "compilerOutput": {
+        "abi": [
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "from",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "freeFromUpTo",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "freed",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "freeUpTo",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "freed",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "mint",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }
+        ],
+        "devdoc": {
+            "kind": "dev",
+            "methods": {
+                "freeFromUpTo(address,uint256)": {
+                    "details": "Frees up to `value` sub-tokens owned by `from`",
+                    "params": {
+                        "from": "The owner of tokens to spend",
+                        "value": "The amount of tokens to free"
+                    },
+                    "returns": {
+                        "freed": "How many tokens were freed"
+                    }
+                },
+                "freeUpTo(uint256)": {
+                    "details": "Frees up to `value` sub-tokens",
+                    "params": {
+                        "value": "The amount of tokens to free"
+                    },
+                    "returns": {
+                        "freed": "How many tokens were freed"
+                    }
+                },
+                "mint(uint256)": {
+                    "details": "Mints `value` amount of tokens",
+                    "params": {
+                        "value": "The amount of tokens to mint"
+                    }
+                }
+            },
+            "version": 1
+        },
+        "evm": {
+            "bytecode": {
+                "linkReferences": {},
+                "object": "0x",
+                "opcodes": "",
+                "sourceMap": ""
+            },
+            "deployedBytecode": {
+                "immutableReferences": {},
+                "linkReferences": {},
+                "object": "0x",
+                "opcodes": "",
+                "sourceMap": ""
+            }
+        }
+    },
+    "sourceTreeHashHex": "0xf4da056c1c81214517888ae4f3281d43044ebc48e0b148d503130417a10896c7",
+    "sources": {
+        "./IGasToken.sol": {
+            "id": 53
+        }
+    },
+    "sourceCodes": {
+        "./IGasToken.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\n\ninterface IGasToken {\n\n    /// @dev Frees up to `value` sub-tokens\n    /// @param value The amount of tokens to free\n    /// @return freed How many tokens were freed\n    function freeUpTo(uint256 value) external returns (uint256 freed);\n\n    /// @dev Frees up to `value` sub-tokens owned by `from`\n    /// @param from The owner of tokens to spend\n    /// @param value The amount of tokens to free\n    /// @return freed How many tokens were freed\n    function freeFromUpTo(address from, uint256 value) external returns (uint256 freed);\n\n    /// @dev Mints `value` amount of tokens\n    /// @param value The amount of tokens to mint\n    function mint(uint256 value) external;\n}\n"
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "0.6.11+commit.5ef660b1",
+        "settings": {
+            "remappings": [
+                "@0x/contracts-utils=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-utils",
+                "@0x/contracts-erc20=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-erc20"
+            ],
+            "optimizer": {
+                "enabled": true,
+                "runs": 1000000,
+                "details": {
+                    "yul": true,
+                    "deduplicate": true,
+                    "cse": true,
+                    "constantOptimizer": true
+                }
+            },
+            "outputSelection": {
+                "*": {
+                    "*": [
+                        "abi",
+                        "devdoc",
+                        "evm.bytecode.object",
+                        "evm.bytecode.sourceMap",
+                        "evm.deployedBytecode.object",
+                        "evm.deployedBytecode.sourceMap"
+                    ]
+                }
+            },
+            "evmVersion": "istanbul"
+        }
+    },
+    "chains": {}
+}

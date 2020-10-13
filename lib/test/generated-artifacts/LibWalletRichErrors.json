@@ -1,0 +1,70 @@
+{
+    "schemaVersion": "2.0.0",
+    "contractName": "LibWalletRichErrors",
+    "compilerOutput": {
+        "abi": [],
+        "devdoc": {
+            "kind": "dev",
+            "methods": {},
+            "version": 1
+        },
+        "evm": {
+            "bytecode": {
+                "linkReferences": {},
+                "object": "0x60566023600b82828239805160001a607314601657fe5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea26469706673582212206d428c5156ca1100fa25d5573e08e58bacb795e9f9f7ed69ff2de3bb07a224a464736f6c634300060b0033",
+                "opcodes": "PUSH1 0x56 PUSH1 0x23 PUSH1 0xB DUP3 DUP3 DUP3 CODECOPY DUP1 MLOAD PUSH1 0x0 BYTE PUSH1 0x73 EQ PUSH1 0x16 JUMPI INVALID JUMPDEST ADDRESS PUSH1 0x0 MSTORE PUSH1 0x73 DUP2 MSTORE8 DUP3 DUP2 RETURN INVALID PUSH20 0x0 ADDRESS EQ PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 PUSH14 0x428C5156CA1100FA25D5573E08E5 DUP12 0xAC 0xB7 SWAP6 0xE9 0xF9 0xF7 0xED PUSH10 0xFF2DE3BB07A224A46473 PUSH16 0x6C634300060B00330000000000000000 ",
+                "sourceMap": "606:1083:9:-:0;;;;;;;;;;;;;;;;;;;;;;;;;"
+            },
+            "deployedBytecode": {
+                "immutableReferences": {},
+                "linkReferences": {},
+                "object": "0x73000000000000000000000000000000000000000030146080604052600080fdfea26469706673582212206d428c5156ca1100fa25d5573e08e58bacb795e9f9f7ed69ff2de3bb07a224a464736f6c634300060b0033",
+                "opcodes": "PUSH20 0x0 ADDRESS EQ PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 PUSH14 0x428C5156CA1100FA25D5573E08E5 DUP12 0xAC 0xB7 SWAP6 0xE9 0xF9 0xF7 0xED PUSH10 0xFF2DE3BB07A224A46473 PUSH16 0x6C634300060B00330000000000000000 ",
+                "sourceMap": "606:1083:9:-:0;;;;;;;;"
+            }
+        }
+    },
+    "sourceTreeHashHex": "0xb6f34c9d6909a5a8f6c6c9133a624574e2d8c5dc6bed1937138baab7c39ec9eb",
+    "sources": {
+        "./LibWalletRichErrors.sol": {
+            "id": 9
+        }
+    },
+    "sourceCodes": {
+        "./LibWalletRichErrors.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\n\n\nlibrary LibWalletRichErrors {\n\n    // solhint-disable func-name-mixedcase\n\n    function WalletExecuteCallFailedError(\n        address wallet,\n        address callTarget,\n        bytes memory callData,\n        uint256 callValue,\n        bytes memory errorData\n    )\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"WalletExecuteCallFailedError(address,address,bytes,uint256,bytes)\")),\n            wallet,\n            callTarget,\n            callData,\n            callValue,\n            errorData\n        );\n    }\n\n    function WalletExecuteDelegateCallFailedError(\n        address wallet,\n        address callTarget,\n        bytes memory callData,\n        bytes memory errorData\n    )\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"WalletExecuteDelegateCallFailedError(address,address,bytes,bytes)\")),\n            wallet,\n            callTarget,\n            callData,\n            errorData\n        );\n    }\n}\n"
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "0.6.11+commit.5ef660b1",
+        "settings": {
+            "remappings": [
+                "@0x/contracts-utils=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-utils",
+                "@0x/contracts-erc20=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-erc20"
+            ],
+            "optimizer": {
+                "enabled": true,
+                "runs": 1000000,
+                "details": {
+                    "yul": true,
+                    "deduplicate": true,
+                    "cse": true,
+                    "constantOptimizer": true
+                }
+            },
+            "outputSelection": {
+                "*": {
+                    "*": [
+                        "abi",
+                        "devdoc",
+                        "evm.bytecode.object",
+                        "evm.bytecode.sourceMap",
+                        "evm.deployedBytecode.object",
+                        "evm.deployedBytecode.sourceMap"
+                    ]
+                }
+            },
+            "evmVersion": "istanbul"
+        }
+    },
+    "chains": {}
+}

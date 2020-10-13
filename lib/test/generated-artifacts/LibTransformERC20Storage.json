@@ -1,0 +1,83 @@
+{
+    "schemaVersion": "2.0.0",
+    "contractName": "LibTransformERC20Storage",
+    "compilerOutput": {
+        "abi": [],
+        "devdoc": {
+            "details": "Storage helpers for the `TransformERC20` feature.",
+            "kind": "dev",
+            "methods": {},
+            "version": 1
+        },
+        "evm": {
+            "bytecode": {
+                "linkReferences": {},
+                "object": "0x60566023600b82828239805160001a607314601657fe5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea26469706673582212200da48dc77749af90465412ac165966d0614e0107e6e7703bcf895ba063a80abb64736f6c634300060c0033",
+                "opcodes": "PUSH1 0x56 PUSH1 0x23 PUSH1 0xB DUP3 DUP3 DUP3 CODECOPY DUP1 MLOAD PUSH1 0x0 BYTE PUSH1 0x73 EQ PUSH1 0x16 JUMPI INVALID JUMPDEST ADDRESS PUSH1 0x0 MSTORE PUSH1 0x73 DUP2 MSTORE8 DUP3 DUP2 RETURN INVALID PUSH20 0x0 ADDRESS EQ PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 0xD LOG4 DUP14 0xC7 PUSH24 0x49AF90465412AC165966D0614E0107E6E7703BCF895BA063 0xA8 EXP 0xBB PUSH5 0x736F6C6343 STOP MOD 0xC STOP CALLER ",
+                "sourceMap": "766:890:51:-:0;;;;;;;;;;;;;;;;;;;;;;;;;"
+            },
+            "deployedBytecode": {
+                "immutableReferences": {},
+                "linkReferences": {},
+                "object": "0x73000000000000000000000000000000000000000030146080604052600080fdfea26469706673582212200da48dc77749af90465412ac165966d0614e0107e6e7703bcf895ba063a80abb64736f6c634300060c0033",
+                "opcodes": "PUSH20 0x0 ADDRESS EQ PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 0xD LOG4 DUP14 0xC7 PUSH24 0x49AF90465412AC165966D0614E0107E6E7703BCF895BA063 0xA8 EXP 0xBB PUSH5 0x736F6C6343 STOP MOD 0xC STOP CALLER ",
+                "sourceMap": "766:890:51:-:0;;;;;;;;"
+            }
+        }
+    },
+    "sourceTreeHashHex": "0x16ade332b7cac6f4224bebc6f859462a4db25e56d17ce7ddb4d4a96827227fdc",
+    "sources": {
+        "./LibTransformERC20Storage.sol": {
+            "id": 51
+        },
+        "./LibStorage.sol": {
+            "id": 49
+        },
+        "../external/IFlashWallet.sol": {
+            "id": 15
+        },
+        "@0x/contracts-utils/contracts/src/v06/interfaces/IOwnableV06.sol": {
+            "id": 89
+        }
+    },
+    "sourceCodes": {
+        "./LibTransformERC20Storage.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\npragma experimental ABIEncoderV2;\n\nimport \"./LibStorage.sol\";\nimport \"../external/IFlashWallet.sol\";\n\n\n/// @dev Storage helpers for the `TransformERC20` feature.\nlibrary LibTransformERC20Storage {\n\n    /// @dev Storage bucket for this feature.\n    struct Storage {\n        // The current wallet instance.\n        IFlashWallet wallet;\n        // The transformer deployer address.\n        address transformerDeployer;\n        // The optional signer for `transformERC20()` calldata.\n        address quoteSigner;\n    }\n\n    /// @dev Get the storage bucket for this contract.\n    function getStorage() internal pure returns (Storage storage stor) {\n        uint256 storageSlot = LibStorage.getStorageSlot(\n            LibStorage.StorageId.TransformERC20\n        );\n        // Dip into assembly to change the slot pointed to by the local\n        // variable `stor`.\n        // See https://solidity.readthedocs.io/en/v0.6.8/assembly.html?highlight=slot#access-to-external-variables-functions-and-libraries\n        assembly { stor_slot := storageSlot }\n    }\n}\n",
+        "./LibStorage.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\npragma experimental ABIEncoderV2;\n\n\n/// @dev Common storage helpers\nlibrary LibStorage {\n\n    /// @dev What to bit-shift a storage ID by to get its slot.\n    ///      This gives us a maximum of 2**128 inline fields in each bucket.\n    uint256 private constant STORAGE_SLOT_EXP = 128;\n\n    /// @dev Storage IDs for feature storage buckets.\n    ///      WARNING: APPEND-ONLY.\n    enum StorageId {\n        Proxy,\n        SimpleFunctionRegistry,\n        Ownable,\n        TokenSpender,\n        TransformERC20,\n        MetaTransactions,\n        ReentrancyGuard,\n        LiquidityProvider\n    }\n\n    /// @dev Get the storage slot given a storage ID. We assign unique, well-spaced\n    ///     slots to storage bucket variables to ensure they do not overlap.\n    ///     See: https://solidity.readthedocs.io/en/v0.6.6/assembly.html#access-to-external-variables-functions-and-libraries\n    /// @param storageId An entry in `StorageId`\n    /// @return slot The storage slot.\n    function getStorageSlot(StorageId storageId)\n        internal\n        pure\n        returns (uint256 slot)\n    {\n        // This should never overflow with a reasonable `STORAGE_SLOT_EXP`\n        // because Solidity will do a range check on `storageId` during the cast.\n        return (uint256(storageId) + 1) << STORAGE_SLOT_EXP;\n    }\n}\n",
+        "../external/IFlashWallet.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\npragma experimental ABIEncoderV2;\n\nimport \"@0x/contracts-utils/contracts/src/v06/interfaces/IOwnableV06.sol\";\n\n\n/// @dev A contract that can execute arbitrary calls from its owner.\ninterface IFlashWallet {\n\n    /// @dev Execute an arbitrary call. Only an authority can call this.\n    /// @param target The call target.\n    /// @param callData The call data.\n    /// @param value Ether to attach to the call.\n    /// @return resultData The data returned by the call.\n    function executeCall(\n        address payable target,\n        bytes calldata callData,\n        uint256 value\n    )\n        external\n        payable\n        returns (bytes memory resultData);\n\n    /// @dev Execute an arbitrary delegatecall, in the context of this puppet.\n    ///      Only an authority can call this.\n    /// @param target The call target.\n    /// @param callData The call data.\n    /// @return resultData The data returned by the call.\n    function executeDelegateCall(\n        address payable target,\n        bytes calldata callData\n    )\n        external\n        payable\n        returns (bytes memory resultData);\n\n    /// @dev Allows the puppet to receive ETH.\n    receive() external payable;\n\n    /// @dev Fetch the immutable owner/deployer of this contract.\n    /// @return owner_ The immutable owner/deployer/\n    function owner() external view returns (address owner_);\n}\n",
+        "@0x/contracts-utils/contracts/src/v06/interfaces/IOwnableV06.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\n\n\ninterface IOwnableV06 {\n\n    /// @dev Emitted by Ownable when ownership is transferred.\n    /// @param previousOwner The previous owner of the contract.\n    /// @param newOwner The new owner of the contract.\n    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);\n\n    /// @dev Transfers ownership of the contract to a new address.\n    /// @param newOwner The address that will become the owner.\n    function transferOwnership(address newOwner) external;\n\n    /// @dev The owner of this contract.\n    /// @return ownerAddress The owner address.\n    function owner() external view returns (address ownerAddress);\n}\n"
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "0.6.12+commit.27d51765",
+        "settings": {
+            "remappings": [
+                "@0x/contracts-utils=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-utils",
+                "@0x/contracts-erc20=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-erc20"
+            ],
+            "optimizer": {
+                "enabled": true,
+                "runs": 1000000,
+                "details": {
+                    "yul": true,
+                    "deduplicate": true,
+                    "cse": true,
+                    "constantOptimizer": true
+                }
+            },
+            "outputSelection": {
+                "*": {
+                    "*": [
+                        "abi",
+                        "devdoc",
+                        "evm.bytecode.object",
+                        "evm.bytecode.sourceMap",
+                        "evm.deployedBytecode.object",
+                        "evm.deployedBytecode.sourceMap"
+                    ]
+                }
+            },
+            "evmVersion": "istanbul"
+        }
+    },
+    "chains": {}
+}

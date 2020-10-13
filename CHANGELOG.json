@@ -1,0 +1,119 @@
+[
+    {
+        "version": "0.3.0",
+        "changes": [
+            {
+                "note": "Internal audit fixes",
+                "pr": 2657
+            },
+            {
+                "note": "Add refund mechanism to meta-transactions",
+                "pr": 2657
+            },
+            {
+                "note": "Pass sender address to transformers",
+                "pr": 2657
+            },
+            {
+                "note": "Refund unused protocol fees to `refundReceiver` in FQT",
+                "pr": 2657
+            },
+            {
+                "note": "Fix `TransformerDeployer.kill()` calling the wrong `die()` interface.",
+                "pr": 2624
+            },
+            {
+                "note": "Address CD post-audit feedback",
+                "pr": 2657
+            },
+            {
+                "note": "Add `LogMetadataTransformer`",
+                "pr": 2657
+            },
+            {
+                "note": "Rename all feature contracts to have `Feature` suffix",
+                "pr": 2657
+            },
+            {
+                "note": "Return `IZeroExContract` in `fullMigrateAsync()`",
+                "pr": 2657
+            },
+            {
+                "note": "Add taker address enforcement to RFQT orders in FQT",
+                "pr": 2692
+            },
+            {
+                "note": "All calldata is valid if quote signer is unset in `TransformERC20`",
+                "pr": 2692
+            },
+            {
+                "note": "Add updated Kyber and Mooniswap rollup to FQT",
+                "pr": 2692
+            },
+            {
+                "note": "Add `UniswapFeature`",
+                "pr": 2703
+            },
+            {
+                "note": "Fix versioning (`_encodeVersion()`) bug",
+                "pr": 2703
+            },
+            {
+                "note": "Added LiquidityProviderFeature",
+                "pr": 2691
+            },
+            {
+                "note": "Added `Shell` into FQT",
+                "pr": 2722
+            }
+        ]
+    },
+    {
+        "version": "0.2.0",
+        "changes": [
+            {
+                "note": "Export migration tools",
+                "pr": 2612
+            },
+            {
+                "note": "Export `AffiliateFeeTransformerContract`",
+                "pr": 2622
+            },
+            {
+                "note": "Add `MetaTransactions` and `SignatureValidator` features",
+                "pr": 2610
+            },
+            {
+                "note": "Update `TransformERC20` and `MetaTransactions` to handle signed calldata.",
+                "pr": 2626
+            }
+        ],
+        "timestamp": 1594788383
+    },
+    {
+        "timestamp": 1592969527,
+        "version": "0.1.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "0.1.0",
+        "changes": [
+            {
+                "note": "Create this package",
+                "pr": 2540
+            },
+            {
+                "note": "Introduce fill `TransformERC20` feature.",
+                "pr": 2545
+            },
+            {
+                "note": "Fill Bridges directly in `FillQuoteTransformer`.",
+                "pr": 2608
+            }
+        ]
+    }
+]

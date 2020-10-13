@@ -1,0 +1,75 @@
+{
+    "schemaVersion": "2.0.0",
+    "contractName": "LibLiquidityProviderStorage",
+    "compilerOutput": {
+        "abi": [],
+        "devdoc": {
+            "details": "Storage helpers for `LiquidityProviderFeature`.",
+            "kind": "dev",
+            "methods": {},
+            "version": 1
+        },
+        "evm": {
+            "bytecode": {
+                "linkReferences": {},
+                "object": "0x60566023600b82828239805160001a607314601657fe5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220fb8871e3d3061893828c76de392caf80e20ab980143f2f13e6944ced2d49078d64736f6c634300060c0033",
+                "opcodes": "PUSH1 0x56 PUSH1 0x23 PUSH1 0xB DUP3 DUP3 DUP3 CODECOPY DUP1 MLOAD PUSH1 0x0 BYTE PUSH1 0x73 EQ PUSH1 0x16 JUMPI INVALID JUMPDEST ADDRESS PUSH1 0x0 MSTORE PUSH1 0x73 DUP2 MSTORE8 DUP3 DUP2 RETURN INVALID PUSH20 0x0 ADDRESS EQ PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 0xFB DUP9 PUSH18 0xE3D3061893828C76DE392CAF80E20AB98014 EXTCODEHASH 0x2F SGT 0xE6 SWAP5 0x4C 0xED 0x2D 0x49 SMOD DUP14 PUSH5 0x736F6C6343 STOP MOD 0xC STOP CALLER ",
+                "sourceMap": "725:880:43:-:0;;;;;;;;;;;;;;;;;;;;;;;;;"
+            },
+            "deployedBytecode": {
+                "immutableReferences": {},
+                "linkReferences": {},
+                "object": "0x73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220fb8871e3d3061893828c76de392caf80e20ab980143f2f13e6944ced2d49078d64736f6c634300060c0033",
+                "opcodes": "PUSH20 0x0 ADDRESS EQ PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 0xFB DUP9 PUSH18 0xE3D3061893828C76DE392CAF80E20AB98014 EXTCODEHASH 0x2F SGT 0xE6 SWAP5 0x4C 0xED 0x2D 0x49 SMOD DUP14 PUSH5 0x736F6C6343 STOP MOD 0xC STOP CALLER ",
+                "sourceMap": "725:880:43:-:0;;;;;;;;"
+            }
+        }
+    },
+    "sourceTreeHashHex": "0xffd9f1119422b6546dee434b1d9a92e4cf4a4dc0737cefac15ca29e3e349ca47",
+    "sources": {
+        "./LibLiquidityProviderStorage.sol": {
+            "id": 43
+        },
+        "./LibStorage.sol": {
+            "id": 49
+        }
+    },
+    "sourceCodes": {
+        "./LibLiquidityProviderStorage.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\npragma experimental ABIEncoderV2;\n\nimport \"./LibStorage.sol\";\n\n\n/// @dev Storage helpers for `LiquidityProviderFeature`.\nlibrary LibLiquidityProviderStorage {\n\n    /// @dev Storage bucket for this feature.\n    struct Storage {\n        // Mapping of taker token -> maker token -> liquidity provider address\n        // Note that addressBook[x][y] == addressBook[y][x] will always hold.\n        mapping (address => mapping (address => address)) addressBook;\n    }\n\n    /// @dev Get the storage bucket for this contract.\n    function getStorage() internal pure returns (Storage storage stor) {\n        uint256 storageSlot = LibStorage.getStorageSlot(\n            LibStorage.StorageId.LiquidityProvider\n        );\n        // Dip into assembly to change the slot pointed to by the local\n        // variable `stor`.\n        // See https://solidity.readthedocs.io/en/v0.6.8/assembly.html?highlight=slot#access-to-external-variables-functions-and-libraries\n        assembly { stor_slot := storageSlot }\n    }\n}\n",
+        "./LibStorage.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\npragma experimental ABIEncoderV2;\n\n\n/// @dev Common storage helpers\nlibrary LibStorage {\n\n    /// @dev What to bit-shift a storage ID by to get its slot.\n    ///      This gives us a maximum of 2**128 inline fields in each bucket.\n    uint256 private constant STORAGE_SLOT_EXP = 128;\n\n    /// @dev Storage IDs for feature storage buckets.\n    ///      WARNING: APPEND-ONLY.\n    enum StorageId {\n        Proxy,\n        SimpleFunctionRegistry,\n        Ownable,\n        TokenSpender,\n        TransformERC20,\n        MetaTransactions,\n        ReentrancyGuard,\n        LiquidityProvider\n    }\n\n    /// @dev Get the storage slot given a storage ID. We assign unique, well-spaced\n    ///     slots to storage bucket variables to ensure they do not overlap.\n    ///     See: https://solidity.readthedocs.io/en/v0.6.6/assembly.html#access-to-external-variables-functions-and-libraries\n    /// @param storageId An entry in `StorageId`\n    /// @return slot The storage slot.\n    function getStorageSlot(StorageId storageId)\n        internal\n        pure\n        returns (uint256 slot)\n    {\n        // This should never overflow with a reasonable `STORAGE_SLOT_EXP`\n        // because Solidity will do a range check on `storageId` during the cast.\n        return (uint256(storageId) + 1) << STORAGE_SLOT_EXP;\n    }\n}\n"
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "0.6.12+commit.27d51765",
+        "settings": {
+            "remappings": [
+                "@0x/contracts-utils=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-utils",
+                "@0x/contracts-erc20=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-erc20"
+            ],
+            "optimizer": {
+                "enabled": true,
+                "runs": 1000000,
+                "details": {
+                    "yul": true,
+                    "deduplicate": true,
+                    "cse": true,
+                    "constantOptimizer": true
+                }
+            },
+            "outputSelection": {
+                "*": {
+                    "*": [
+                        "abi",
+                        "devdoc",
+                        "evm.bytecode.object",
+                        "evm.bytecode.sourceMap",
+                        "evm.deployedBytecode.object",
+                        "evm.deployedBytecode.sourceMap"
+                    ]
+                }
+            },
+            "evmVersion": "istanbul"
+        }
+    },
+    "chains": {}
+}

@@ -1,0 +1,348 @@
+{
+    "schemaVersion": "2.0.0",
+    "contractName": "IAllowanceTarget",
+    "compilerOutput": {
+        "abi": [
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "target",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "caller",
+                        "type": "address"
+                    }
+                ],
+                "name": "AuthorizedAddressAdded",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "target",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "caller",
+                        "type": "address"
+                    }
+                ],
+                "name": "AuthorizedAddressRemoved",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "previousOwner",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "newOwner",
+                        "type": "address"
+                    }
+                ],
+                "name": "OwnershipTransferred",
+                "type": "event"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "target",
+                        "type": "address"
+                    }
+                ],
+                "name": "addAuthorizedAddress",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "idx",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "authorities",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "addr",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "addr",
+                        "type": "address"
+                    }
+                ],
+                "name": "authorized",
+                "outputs": [
+                    {
+                        "internalType": "bool",
+                        "name": "isAuthorized",
+                        "type": "bool"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address payable",
+                        "name": "target",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "bytes",
+                        "name": "callData",
+                        "type": "bytes"
+                    }
+                ],
+                "name": "executeCall",
+                "outputs": [
+                    {
+                        "internalType": "bytes",
+                        "name": "resultData",
+                        "type": "bytes"
+                    }
+                ],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "getAuthorizedAddresses",
+                "outputs": [
+                    {
+                        "internalType": "address[]",
+                        "name": "authorizedAddresses",
+                        "type": "address[]"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "owner",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "ownerAddress",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "target",
+                        "type": "address"
+                    }
+                ],
+                "name": "removeAuthorizedAddress",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "target",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "index",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "removeAuthorizedAddressAtIndex",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "newOwner",
+                        "type": "address"
+                    }
+                ],
+                "name": "transferOwnership",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }
+        ],
+        "devdoc": {
+            "details": "The allowance target for the TokenSpender feature.",
+            "kind": "dev",
+            "methods": {
+                "addAuthorizedAddress(address)": {
+                    "details": "Authorizes an address.",
+                    "params": {
+                        "target": "Address to authorize."
+                    }
+                },
+                "authorities(uint256)": {
+                    "details": "All addresseses authorized to call privileged functions.",
+                    "params": {
+                        "idx": "Index of authorized address."
+                    },
+                    "returns": {
+                        "addr": "Authorized address."
+                    }
+                },
+                "authorized(address)": {
+                    "details": "Whether an adderss is authorized to call privileged functions.",
+                    "params": {
+                        "addr": "Address to query."
+                    },
+                    "returns": {
+                        "isAuthorized": "Whether the address is authorized."
+                    }
+                },
+                "executeCall(address,bytes)": {
+                    "details": "Execute an arbitrary call. Only an authority can call this.",
+                    "params": {
+                        "callData": "The call data.",
+                        "target": "The call target."
+                    },
+                    "returns": {
+                        "resultData": "The data returned by the call."
+                    }
+                },
+                "getAuthorizedAddresses()": {
+                    "details": "Gets all authorized addresses.",
+                    "returns": {
+                        "authorizedAddresses": "Array of authorized addresses."
+                    }
+                },
+                "owner()": {
+                    "details": "The owner of this contract.",
+                    "returns": {
+                        "ownerAddress": "The owner address."
+                    }
+                },
+                "removeAuthorizedAddress(address)": {
+                    "details": "Removes authorizion of an address.",
+                    "params": {
+                        "target": "Address to remove authorization from."
+                    }
+                },
+                "removeAuthorizedAddressAtIndex(address,uint256)": {
+                    "details": "Removes authorizion of an address.",
+                    "params": {
+                        "index": "Index of target in authorities array.",
+                        "target": "Address to remove authorization from."
+                    }
+                },
+                "transferOwnership(address)": {
+                    "details": "Transfers ownership of the contract to a new address.",
+                    "params": {
+                        "newOwner": "The address that will become the owner."
+                    }
+                }
+            },
+            "version": 1
+        },
+        "evm": {
+            "bytecode": {
+                "linkReferences": {},
+                "object": "0x",
+                "opcodes": "",
+                "sourceMap": ""
+            },
+            "deployedBytecode": {
+                "immutableReferences": {},
+                "linkReferences": {},
+                "object": "0x",
+                "opcodes": "",
+                "sourceMap": ""
+            }
+        }
+    },
+    "sourceTreeHashHex": "0xbf037cf52210920a5002991b6e0242411f3486704f8212c39896a7d81625aec6",
+    "sources": {
+        "./IAllowanceTarget.sol": {
+            "id": 12
+        },
+        "@0x/contracts-utils/contracts/src/v06/interfaces/IAuthorizableV06.sol": {
+            "id": 91
+        },
+        "@0x/contracts-utils/contracts/src/v06/interfaces/IOwnableV06.sol": {
+            "id": 92
+        }
+    },
+    "sourceCodes": {
+        "./IAllowanceTarget.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\npragma experimental ABIEncoderV2;\n\nimport \"@0x/contracts-utils/contracts/src/v06/interfaces/IAuthorizableV06.sol\";\n\n\n/// @dev The allowance target for the TokenSpender feature.\ninterface IAllowanceTarget is\n    IAuthorizableV06\n{\n    /// @dev Execute an arbitrary call. Only an authority can call this.\n    /// @param target The call target.\n    /// @param callData The call data.\n    /// @return resultData The data returned by the call.\n    function executeCall(\n        address payable target,\n        bytes calldata callData\n    )\n        external\n        returns (bytes memory resultData);\n}\n",
+        "@0x/contracts-utils/contracts/src/v06/interfaces/IAuthorizableV06.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\n\nimport \"./IOwnableV06.sol\";\n\n\ninterface IAuthorizableV06 is\n    IOwnableV06\n{\n    // Event logged when a new address is authorized.\n    event AuthorizedAddressAdded(\n        address indexed target,\n        address indexed caller\n    );\n\n    // Event logged when a currently authorized address is unauthorized.\n    event AuthorizedAddressRemoved(\n        address indexed target,\n        address indexed caller\n    );\n\n    /// @dev Authorizes an address.\n    /// @param target Address to authorize.\n    function addAuthorizedAddress(address target)\n        external;\n\n    /// @dev Removes authorizion of an address.\n    /// @param target Address to remove authorization from.\n    function removeAuthorizedAddress(address target)\n        external;\n\n    /// @dev Removes authorizion of an address.\n    /// @param target Address to remove authorization from.\n    /// @param index Index of target in authorities array.\n    function removeAuthorizedAddressAtIndex(\n        address target,\n        uint256 index\n    )\n        external;\n\n    /// @dev Gets all authorized addresses.\n    /// @return authorizedAddresses Array of authorized addresses.\n    function getAuthorizedAddresses()\n        external\n        view\n        returns (address[] memory authorizedAddresses);\n\n    /// @dev Whether an adderss is authorized to call privileged functions.\n    /// @param addr Address to query.\n    /// @return isAuthorized Whether the address is authorized.\n    function authorized(address addr) external view returns (bool isAuthorized);\n\n    /// @dev All addresseses authorized to call privileged functions.\n    /// @param idx Index of authorized address.\n    /// @return addr Authorized address.\n    function authorities(uint256 idx) external view returns (address addr);\n\n}\n",
+        "@0x/contracts-utils/contracts/src/v06/interfaces/IOwnableV06.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\n\n\ninterface IOwnableV06 {\n\n    /// @dev Emitted by Ownable when ownership is transferred.\n    /// @param previousOwner The previous owner of the contract.\n    /// @param newOwner The new owner of the contract.\n    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);\n\n    /// @dev Transfers ownership of the contract to a new address.\n    /// @param newOwner The address that will become the owner.\n    function transferOwnership(address newOwner) external;\n\n    /// @dev The owner of this contract.\n    /// @return ownerAddress The owner address.\n    function owner() external view returns (address ownerAddress);\n}\n"
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "0.6.11+commit.5ef660b1",
+        "settings": {
+            "remappings": [
+                "@0x/contracts-utils=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-utils",
+                "@0x/contracts-erc20=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-erc20"
+            ],
+            "optimizer": {
+                "enabled": true,
+                "runs": 1000000,
+                "details": {
+                    "yul": true,
+                    "deduplicate": true,
+                    "cse": true,
+                    "constantOptimizer": true
+                }
+            },
+            "outputSelection": {
+                "*": {
+                    "*": [
+                        "abi",
+                        "devdoc",
+                        "evm.bytecode.object",
+                        "evm.bytecode.sourceMap",
+                        "evm.deployedBytecode.object",
+                        "evm.deployedBytecode.sourceMap"
+                    ]
+                }
+            },
+            "evmVersion": "istanbul"
+        }
+    },
+    "chains": {}
+}

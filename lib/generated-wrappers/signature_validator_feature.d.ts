@@ -1,0 +1,67 @@
+import { ContractTxFunctionObj, BaseContract } from '@0x/base-contract';
+import { ContractAbi, ContractArtifact, TxData, SupportedProvider } from 'ethereum-types';
+import { BigNumber } from '@0x/utils';
+import { SimpleContractArtifact } from '@0x/types';
+import { Web3Wrapper } from '@0x/web3-wrapper';
+export declare class SignatureValidatorFeatureContract extends BaseContract {
+    /**
+     * @ignore
+     */
+    static deployedBytecode: string | undefined;
+    static contractName: string;
+    private readonly _methodABIIndex;
+    static deployFrom0xArtifactAsync(artifact: ContractArtifact | SimpleContractArtifact, supportedProvider: SupportedProvider, txDefaults: Partial<TxData>, logDecodeDependencies: {
+        [contractName: string]: (ContractArtifact | SimpleContractArtifact);
+    }): Promise<SignatureValidatorFeatureContract>;
+    static deployWithLibrariesFrom0xArtifactAsync(artifact: ContractArtifact, libraryArtifacts: {
+        [libraryName: string]: ContractArtifact;
+    }, supportedProvider: SupportedProvider, txDefaults: Partial<TxData>, logDecodeDependencies: {
+        [contractName: string]: (ContractArtifact | SimpleContractArtifact);
+    }): Promise<SignatureValidatorFeatureContract>;
+    static deployAsync(bytecode: string, abi: ContractAbi, supportedProvider: SupportedProvider, txDefaults: Partial<TxData>, logDecodeDependencies: {
+        [contractName: string]: ContractAbi;
+    }): Promise<SignatureValidatorFeatureContract>;
+    /**
+     * @returns      The contract ABI
+     */
+    static ABI(): ContractAbi;
+    protected static _deployLibrariesAsync(artifact: ContractArtifact, libraryArtifacts: {
+        [libraryName: string]: ContractArtifact;
+    }, web3Wrapper: Web3Wrapper, txDefaults: Partial<TxData>, libraryAddresses?: {
+        [libraryName: string]: string;
+    }): Promise<{
+        [libraryName: string]: string;
+    }>;
+    getFunctionSignature(methodName: string): string;
+    getABIDecodedTransactionData<T>(methodName: string, callData: string): T;
+    getABIDecodedReturnData<T>(methodName: string, callData: string): T;
+    getSelector(methodName: string): string;
+    FEATURE_NAME(): ContractTxFunctionObj<string>;
+    FEATURE_VERSION(): ContractTxFunctionObj<BigNumber>;
+    /**
+     * Check that `hash` was signed by `signer` given `signature`.
+      * @param hash The hash that was signed.
+      * @param signer The signer of the hash.
+      * @param signature The signature. The last byte of this signature should
+     *      be a member of the `SignatureType` enum.
+     */
+    isValidHashSignature(hash: string, signer: string, signature: string): ContractTxFunctionObj<boolean>;
+    /**
+     * Initialize and register this feature.
+ * Should be delegatecalled by `Migrate.migrate()`.
+     */
+    migrate(): ContractTxFunctionObj<string>;
+    /**
+     * Validate that `hash` was signed by `signer` given `signature`.
+ * Reverts otherwise.
+      * @param hash The hash that was signed.
+      * @param signer The signer of the hash.
+      * @param signature The signature. The last byte of this signature should
+     *      be a member of the `SignatureType` enum.
+     */
+    validateHashSignature(hash: string, signer: string, signature: string): ContractTxFunctionObj<void>;
+    constructor(address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>, logDecodeDependencies?: {
+        [contractName: string]: ContractAbi;
+    }, deployedBytecode?: string | undefined);
+}
+//# sourceMappingURL=signature_validator_feature.d.ts.map
