@@ -8,6 +8,7 @@ export * from '../test/generated-wrappers/bancor_bridge';
 export * from '../test/generated-wrappers/chai_bridge';
 export * from '../test/generated-wrappers/cream_bridge';
 export * from '../test/generated-wrappers/curve_bridge';
+export * from '../test/generated-wrappers/d_o_d_o_bridge';
 export * from '../test/generated-wrappers/dex_forwarder_bridge';
 export * from '../test/generated-wrappers/dydx_bridge';
 export * from '../test/generated-wrappers/erc1155_proxy';

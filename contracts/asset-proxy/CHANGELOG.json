@@ -33,6 +33,10 @@
             {
                 "note": "Added `ShellBridge`",
                 "pr": 2722
+            },
+            {
+                "note": "Added `DODOBridge`",
+                "pr": 2701
             }
         ]
     },
