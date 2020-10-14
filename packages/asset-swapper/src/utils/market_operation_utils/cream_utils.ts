@@ -54,7 +54,7 @@ export class CreamPoolsCache {
         makerToken: string,
         isAllowedSource: boolean,
     ): { onChain: boolean; offChain: boolean } {
-        // If Balancer is excluded as a source, do not sample.
+        // If CREAM is excluded as a source, do not sample.
         if (!isAllowedSource) {
             return { onChain: false, offChain: false };
         }
@@ -63,7 +63,7 @@ export class CreamPoolsCache {
         // - Cached values are not stale
         // - There is at least one CREAM pool for this pair
         const onChain = cachedCreamPools !== undefined && cachedCreamPools.length > 0;
-        // Sample Balancer off-chain (i.e. via GraphQL query + `computeCreamBuy/SellQuote`)
+        // Sample CREAM off-chain (i.e. via GraphQL query + `computeCreamBuy/SellQuote`)
         // if cached values are stale
         const offChain = cachedCreamPools === undefined;
         return { onChain, offChain };

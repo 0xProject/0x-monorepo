@@ -520,7 +520,7 @@ export class SamplerOperations {
         makerToken: string,
         takerToken: string,
         makerFillAmounts: BigNumber[],
-    ): Promise<Array<Array<DexSample<BalancerFillData>>>> {
+    ): Promise<Array<Array<DexSample<CreamFillData>>>> {
         const pools = await this.creamPoolsCache.getPoolsForPairAsync(takerToken, makerToken);
         return pools.map(pool =>
             makerFillAmounts.map(amount => ({
@@ -1109,7 +1109,7 @@ export class SamplerOperations {
                             return this.creamPoolsCache
                                 .getCachedPoolAddressesForPair(takerToken, makerToken)!
                                 .map(poolAddress =>
-                                    this.getBalancerSellQuotes(poolAddress, makerToken, takerToken, takerFillAmounts),
+                                    this.getCreamSellQuotes(poolAddress, makerToken, takerToken, takerFillAmounts),
                                 );
                         case ERC20BridgeSource.Shell:
                             return this.getShellSellQuotes(makerToken, takerToken, takerFillAmounts);
@@ -1206,7 +1206,7 @@ export class SamplerOperations {
                             return this.creamPoolsCache
                                 .getCachedPoolAddressesForPair(takerToken, makerToken)!
                                 .map(poolAddress =>
-                                    this.getBalancerBuyQuotes(poolAddress, makerToken, takerToken, makerFillAmounts),
+                                    this.getCreamBuyQuotes(poolAddress, makerToken, takerToken, makerFillAmounts),
                                 );
                         case ERC20BridgeSource.Shell:
                             return this.getShellBuyQuotes(makerToken, takerToken, makerFillAmounts);
