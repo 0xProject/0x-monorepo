@@ -508,7 +508,7 @@ export class SamplerOperations {
         const pools = await this.creamPoolsCache.getPoolsForPairAsync(takerToken, makerToken);
         return pools.map(pool =>
             takerFillAmounts.map(amount => ({
-                source: ERC20BridgeSource.Balancer,
+                source: ERC20BridgeSource.Cream,
                 output: computeBalancerSellQuote(pool, amount),
                 input: amount,
                 fillData: { poolAddress: pool.id },
@@ -524,7 +524,7 @@ export class SamplerOperations {
         const pools = await this.creamPoolsCache.getPoolsForPairAsync(takerToken, makerToken);
         return pools.map(pool =>
             makerFillAmounts.map(amount => ({
-                source: ERC20BridgeSource.Balancer,
+                source: ERC20BridgeSource.Cream,
                 output: computeBalancerBuyQuote(pool, amount),
                 input: amount,
                 fillData: { poolAddress: pool.id },
