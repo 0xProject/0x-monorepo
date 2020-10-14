@@ -24,6 +24,7 @@ export const SELL_SOURCE_FILTER = new SourceFilters([
     ERC20BridgeSource.SushiSwap,
     ERC20BridgeSource.Shell,
     ERC20BridgeSource.MultiHop,
+    ERC20BridgeSource.Dodo,
 ]);
 
 /**
@@ -45,6 +46,7 @@ export const BUY_SOURCE_FILTER = new SourceFilters(
         ERC20BridgeSource.Swerve,
         ERC20BridgeSource.SushiSwap,
         ERC20BridgeSource.MultiHop,
+        ERC20BridgeSource.Dodo,
     ],
     [ERC20BridgeSource.MultiBridge],
 );

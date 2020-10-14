@@ -46,6 +46,7 @@ export enum ERC20BridgeSource {
     Shell = 'Shell',
     Swerve = 'Swerve',
     SushiSwap = 'SushiSwap',
+    Dodo = 'DODO',
 }
 
 // tslint:disable: enum-naming
@@ -133,6 +134,11 @@ export interface KyberFillData extends FillData {
 
 export interface MooniswapFillData extends FillData {
     poolAddress: string;
+}
+
+export interface DODOFillData extends FillData {
+    poolAddress: string;
+    isSellBase: boolean;
 }
 
 export interface Quote<TFillData = FillData> {

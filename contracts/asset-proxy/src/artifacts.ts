@@ -10,6 +10,7 @@ import * as BancorBridge from '../generated-artifacts/BancorBridge.json';
 import * as ChaiBridge from '../generated-artifacts/ChaiBridge.json';
 import * as CurveBridge from '../generated-artifacts/CurveBridge.json';
 import * as DexForwarderBridge from '../generated-artifacts/DexForwarderBridge.json';
+import * as DODOBridge from '../generated-artifacts/DODOBridge.json';
 import * as DydxBridge from '../generated-artifacts/DydxBridge.json';
 import * as ERC1155Proxy from '../generated-artifacts/ERC1155Proxy.json';
 import * as ERC20BridgeProxy from '../generated-artifacts/ERC20BridgeProxy.json';
@@ -73,6 +74,7 @@ export const artifacts = {
     BancorBridge: BancorBridge as ContractArtifact,
     ChaiBridge: ChaiBridge as ContractArtifact,
     CurveBridge: CurveBridge as ContractArtifact,
+    DODOBridge: DODOBridge as ContractArtifact,
     DexForwarderBridge: DexForwarderBridge as ContractArtifact,
     DydxBridge: DydxBridge as ContractArtifact,
     Eth2DaiBridge: Eth2DaiBridge as ContractArtifact,

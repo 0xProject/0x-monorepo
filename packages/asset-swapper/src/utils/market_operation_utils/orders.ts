@@ -24,6 +24,7 @@ import {
     CollapsedFill,
     CurveFillData,
     DexSample,
+    DODOFillData,
     ERC20BridgeSource,
     KyberFillData,
     LiquidityProviderFillData,
@@ -195,6 +196,8 @@ function getBridgeAddressFromFill(fill: CollapsedFill, opts: CreateOrderFromPath
             return opts.contractAddresses.mooniswapBridge;
         case ERC20BridgeSource.Shell:
             return opts.contractAddresses.shellBridge;
+        case ERC20BridgeSource.Dodo:
+            return opts.contractAddresses.dodoBridge;
         default:
             break;
     }
@@ -294,6 +297,14 @@ export function createBridgeOrder(
                 createMooniswapBridgeData(takerToken, mooniswapFillData.poolAddress),
             );
             break;
+        case ERC20BridgeSource.Dodo:
+            const dodoFillData = (fill as CollapsedFill<DODOFillData>).fillData!; // tslint:disable-line:no-non-null-assertion
+            makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
+                makerToken,
+                bridgeAddress,
+                createDODOBridgeData(takerToken, dodoFillData.poolAddress, dodoFillData.isSellBase),
+            );
+            break;
         default:
             makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
                 makerToken,
@@ -362,6 +373,15 @@ function createMooniswapBridgeData(takerToken: string, poolAddress: string): str
         { name: 'poolAddress', type: 'address' },
     ]);
     return encoder.encode({ takerToken, poolAddress });
+}
+
+function createDODOBridgeData(takerToken: string, poolAddress: string, isSellBase: boolean): string {
+    const encoder = AbiEncoder.create([
+        { name: 'takerToken', type: 'address' },
+        { name: 'poolAddress', type: 'address' },
+        { name: 'isSellBase', type: 'bool' },
+    ]);
+    return encoder.encode({ takerToken, poolAddress, isSellBase });
 }
 
 function createCurveBridgeData(

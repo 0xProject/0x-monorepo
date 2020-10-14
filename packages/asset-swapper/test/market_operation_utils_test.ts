@@ -38,7 +38,6 @@ import {
     GenerateOptimizedOrdersOpts,
     MarketSideLiquidity,
     NativeFillData,
-    OptimizedMarketOrder,
 } from '../src/utils/market_operation_utils/types';
 
 const MAKER_TOKEN = randomAddress();
@@ -56,6 +55,7 @@ const DEFAULT_EXCLUDED = [
     ERC20BridgeSource.SushiSwap,
     ERC20BridgeSource.MultiHop,
     ERC20BridgeSource.Shell,
+    ERC20BridgeSource.Dodo,
 ];
 const BUY_SOURCES = BUY_SOURCE_FILTER.sources;
 const SELL_SOURCES = SELL_SOURCE_FILTER.sources;
@@ -144,6 +144,8 @@ describe('MarketOperationUtils tests', () => {
                 return ERC20BridgeSource.SushiSwap;
             case contractAddresses.shellBridge.toLowerCase():
                 return ERC20BridgeSource.Shell;
+            case contractAddresses.dodoBridge.toLowerCase():
+                return ERC20BridgeSource.Dodo;
             default:
                 break;
         }
@@ -321,6 +323,7 @@ describe('MarketOperationUtils tests', () => {
         [ERC20BridgeSource.SushiSwap]: _.times(NUM_SAMPLES, () => 0),
         [ERC20BridgeSource.MultiHop]: _.times(NUM_SAMPLES, () => 0),
         [ERC20BridgeSource.Shell]: _.times(NUM_SAMPLES, () => 0),
+        [ERC20BridgeSource.Dodo]: _.times(NUM_SAMPLES, () => 0),
     };
 
     const DEFAULT_RATES: RatesBySource = {
@@ -367,6 +370,7 @@ describe('MarketOperationUtils tests', () => {
         [ERC20BridgeSource.Native]: { order: createOrder() },
         [ERC20BridgeSource.MultiHop]: {},
         [ERC20BridgeSource.Shell]: {},
+        [ERC20BridgeSource.Dodo]: {},
     };
 
     const DEFAULT_OPS = {

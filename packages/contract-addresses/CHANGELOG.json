@@ -53,6 +53,10 @@
             {
                 "note": "Deploy `ShellBridge` on Mainnet",
                 "pr": 2722
+            },
+            {
+                "note": "Deploy `DodoBridge` on Mainnet",
+                "pr": 2701
             }
         ]
     },
