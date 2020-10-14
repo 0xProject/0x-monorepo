@@ -117,7 +117,7 @@ export class QuoteRequestor {
         makerAssetData: string,
         takerAssetData: string,
         assetFillAmount: BigNumber,
-        comparisonPrice?: BigNumber | undefined,
+        comparisonPrice?: BigNumber,
     ): TakerRequestQueryParams {
         const { buyAmountBaseUnits, sellAmountBaseUnits, ...rest } = inferQueryParams(
             marketOperation,
