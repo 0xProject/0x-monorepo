@@ -601,16 +601,27 @@ export class MarketOperationUtils {
         // If RFQ liquidity is enabled, make a request to check RFQ liquidity
         const { rfqt } = _opts;
         if (rfqt && rfqt.quoteRequestor && marketSideLiquidity.quoteSourceFilters.isAllowed(ERC20BridgeSource.Native)) {
-
             // Calculate a suggested price. For now, this is simply the overall price of the aggregation.
             let comparisonPrice: BigNumber | undefined;
             if (optimizerResult) {
-                const totalMakerAmount = BigNumber.sum(...optimizerResult.optimizedOrders.map(order => order.makerAssetAmount));
-                const totalTakerAmount = BigNumber.sum(...optimizerResult.optimizedOrders.map(order => order.takerAssetAmount));
+                const totalMakerAmount = BigNumber.sum(
+                    ...optimizerResult.optimizedOrders.map(order => order.makerAssetAmount),
+                );
+                const totalTakerAmount = BigNumber.sum(
+                    ...optimizerResult.optimizedOrders.map(order => order.takerAssetAmount),
+                );
                 if (totalMakerAmount.gt(0)) {
-                    const totalMakerAmountUnitAmount = Web3Wrapper.toUnitAmount(totalMakerAmount, marketSideLiquidity.makerTokenDecimals);
-                    const totalTakerAmountUnitAmount = Web3Wrapper.toUnitAmount(totalTakerAmount, marketSideLiquidity.takerTokenDecimals);
-                    comparisonPrice = totalMakerAmountUnitAmount.div(totalTakerAmountUnitAmount).decimalPlaces(COMPARISON_PRICE_DECIMALS);
+                    const totalMakerAmountUnitAmount = Web3Wrapper.toUnitAmount(
+                        totalMakerAmount,
+                        marketSideLiquidity.makerTokenDecimals,
+                    );
+                    const totalTakerAmountUnitAmount = Web3Wrapper.toUnitAmount(
+                        totalTakerAmount,
+                        marketSideLiquidity.takerTokenDecimals,
+                    );
+                    comparisonPrice = totalMakerAmountUnitAmount
+                        .div(totalTakerAmountUnitAmount)
+                        .decimalPlaces(COMPARISON_PRICE_DECIMALS);
                 }
             }
 

@@ -119,9 +119,16 @@ export class QuoteRequestor {
         assetFillAmount: BigNumber,
         comparisonPrice?: BigNumber | undefined,
     ): TakerRequestQueryParams {
-
-        const {buyAmountBaseUnits, sellAmountBaseUnits, ...rest } = inferQueryParams(marketOperation, makerAssetData, takerAssetData, assetFillAmount);
-        const requestParamsWithBigNumbers: Pick<TakerRequestQueryParams, 'buyTokenAddress' | 'sellTokenAddress' | 'takerAddress' | 'comparisonPrice'> = {
+        const { buyAmountBaseUnits, sellAmountBaseUnits, ...rest } = inferQueryParams(
+            marketOperation,
+            makerAssetData,
+            takerAssetData,
+            assetFillAmount,
+        );
+        const requestParamsWithBigNumbers: Pick<
+            TakerRequestQueryParams,
+            'buyTokenAddress' | 'sellTokenAddress' | 'takerAddress' | 'comparisonPrice'
+        > = {
             takerAddress,
             comparisonPrice: comparisonPrice === undefined ? undefined : comparisonPrice.toString(),
             ...rest,
