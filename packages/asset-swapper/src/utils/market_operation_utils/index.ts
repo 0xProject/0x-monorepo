@@ -578,7 +578,6 @@ export class MarketOperationUtils {
             feeSchedule: _opts.feeSchedule,
             allowFallback: _opts.allowFallback,
             exchangeProxyOverhead: _opts.exchangeProxyOverhead,
-            shouldBatchBridgeOrders: _opts.shouldBatchBridgeOrders,
         };
 
         // Compute an optimized path for on-chain DEX and open-orderbook. This should not include RFQ liquidity.
