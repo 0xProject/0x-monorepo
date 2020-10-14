@@ -132,6 +132,7 @@ export {
     CurveFillData,
     CurveFunctionSelectors,
     CurveInfo,
+    CreamFillData,
     DexSample,
     DODOFillData,
     ERC20BridgeSource,
