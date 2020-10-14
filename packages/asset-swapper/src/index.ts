@@ -155,6 +155,8 @@ export {
     SushiSwapFillData,
     SwerveFillData,
     SwerveInfo,
+    SnowSwapFillData,
+    SnowSwapInfo,
     TokenAdjacencyGraph,
     UniswapV2FillData,
 } from './utils/market_operation_utils/types';

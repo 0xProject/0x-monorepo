@@ -21,6 +21,7 @@ export const SELL_SOURCE_FILTER = new SourceFilters([
     ERC20BridgeSource.MStable,
     ERC20BridgeSource.Mooniswap,
     ERC20BridgeSource.Swerve,
+    ERC20BridgeSource.SnowSwap,
     ERC20BridgeSource.SushiSwap,
     ERC20BridgeSource.Shell,
     ERC20BridgeSource.MultiHop,
@@ -45,6 +46,7 @@ export const BUY_SOURCE_FILTER = new SourceFilters(
         ERC20BridgeSource.Mooniswap,
         ERC20BridgeSource.Shell,
         ERC20BridgeSource.Swerve,
+        ERC20BridgeSource.SnowSwap,
         ERC20BridgeSource.SushiSwap,
         ERC20BridgeSource.MultiHop,
         ERC20BridgeSource.Dodo,
@@ -173,13 +175,37 @@ export const MAINNET_SWERVE_INFOS: { [name: string]: CurveInfo } = {
     swUSD: {
         exchangeFunctionSelector: CurveFunctionSelectors.exchange,
         sellQuoteFunctionSelector: CurveFunctionSelectors.get_dy_underlying,
-        buyQuoteFunctionSelector: CurveFunctionSelectors.get_dx_underlying,
+        buyQuoteFunctionSelector: CurveFunctionSelectors.None,
         poolAddress: '0x329239599afB305DA0A2eC69c58F8a6697F9F88d',
         tokens: [
             '0x6b175474e89094c44da98b954eedeac495271d0f',
             '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
             '0xdac17f958d2ee523a2206206994597c13d831ec7',
             '0x0000000000085d4780b73119b644ae5ecd22b376',
+        ],
+    },
+};
+export const MAINNET_SNOWSWAP_INFOS: { [name: string]: CurveInfo } = {
+    yVaultCurve: {
+        exchangeFunctionSelector: CurveFunctionSelectors.exchange,
+        sellQuoteFunctionSelector: CurveFunctionSelectors.get_dy_underlying,
+        buyQuoteFunctionSelector: CurveFunctionSelectors.None,
+        poolAddress: '0xBf7CCD6C446acfcc5dF023043f2167B62E81899b',
+        tokens: [
+            '0x5dbcf33d8c2e976c6b560249878e6f1491bca25c', // yUSD
+            '0x2994529c0652d127b7842094103715ec5299bbed', // ybCRV
+        ],
+    },
+    yVaultUSD: {
+        exchangeFunctionSelector: CurveFunctionSelectors.exchange,
+        sellQuoteFunctionSelector: CurveFunctionSelectors.get_dy_underlying,
+        buyQuoteFunctionSelector: CurveFunctionSelectors.None,
+        poolAddress: '0x4571753311E37dDb44faA8Fb78a6dF9a6E3c6C0B',
+        tokens: [
+            '0x597ad1e0c13bfe8025993d9e79c69e1c0233522e', // yUSDC
+            '0xacd43e627e64355f1861cec6d3a6688b31a6f952', // yDAI
+            '0x2f08119c6f07c006695e079aafc638b8789faf18', // yUSDT
+            '0x37d19d1c4e1fa9dc47bd1ea12f742a0887eda74a', // yTUSD
         ],
     },
 };

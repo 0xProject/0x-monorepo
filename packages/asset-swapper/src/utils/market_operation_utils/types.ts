@@ -44,6 +44,7 @@ export enum ERC20BridgeSource {
     MultiHop = 'MultiHop',
     Shell = 'Shell',
     Swerve = 'Swerve',
+    SnowSwap = 'SnowSwap',
     SushiSwap = 'SushiSwap',
     Dodo = 'DODO',
 }
@@ -75,6 +76,7 @@ export interface CurveInfo {
 }
 
 export interface SwerveInfo extends CurveInfo {}
+export interface SnowSwapInfo extends CurveInfo {}
 
 // Internal `fillData` field for `Fill` objects.
 export interface FillData {}
@@ -99,6 +101,12 @@ export interface SwerveFillData extends FillData {
     fromTokenIdx: number;
     toTokenIdx: number;
     pool: SwerveInfo;
+}
+
+export interface SnowSwapFillData extends FillData {
+    fromTokenIdx: number;
+    toTokenIdx: number;
+    pool: SnowSwapInfo;
 }
 
 export interface BalancerFillData extends FillData {

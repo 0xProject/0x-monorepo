@@ -43,6 +43,7 @@ const DEFAULT_EXCLUDED = [
     ERC20BridgeSource.Mooniswap,
     ERC20BridgeSource.Bancor,
     ERC20BridgeSource.Swerve,
+    ERC20BridgeSource.SnowSwap,
     ERC20BridgeSource.SushiSwap,
     ERC20BridgeSource.MultiHop,
     ERC20BridgeSource.Shell,
@@ -284,6 +285,7 @@ describe('MarketOperationUtils tests', () => {
         [ERC20BridgeSource.MStable]: _.times(NUM_SAMPLES, () => 0),
         [ERC20BridgeSource.Mooniswap]: _.times(NUM_SAMPLES, () => 0),
         [ERC20BridgeSource.Swerve]: _.times(NUM_SAMPLES, () => 0),
+        [ERC20BridgeSource.SnowSwap]: _.times(NUM_SAMPLES, () => 0),
         [ERC20BridgeSource.SushiSwap]: _.times(NUM_SAMPLES, () => 0),
         [ERC20BridgeSource.MultiHop]: _.times(NUM_SAMPLES, () => 0),
         [ERC20BridgeSource.Shell]: _.times(NUM_SAMPLES, () => 0),
@@ -319,6 +321,17 @@ describe('MarketOperationUtils tests', () => {
             toTokenIdx: 1,
         },
         [ERC20BridgeSource.Swerve]: {
+            pool: {
+                poolAddress: randomAddress(),
+                tokens: [TAKER_TOKEN, MAKER_TOKEN],
+                exchangeFunctionSelector: hexUtils.random(4),
+                sellQuoteFunctionSelector: hexUtils.random(4),
+                buyQuoteFunctionSelector: hexUtils.random(4),
+            },
+            fromTokenIdx: 0,
+            toTokenIdx: 1,
+        },
+        [ERC20BridgeSource.SnowSwap]: {
             pool: {
                 poolAddress: randomAddress(),
                 tokens: [TAKER_TOKEN, MAKER_TOKEN],

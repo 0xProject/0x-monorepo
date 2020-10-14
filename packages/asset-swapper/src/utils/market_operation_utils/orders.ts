@@ -34,6 +34,7 @@ import {
     NativeCollapsedFill,
     OptimizedMarketOrder,
     OrderDomain,
+    SnowSwapFillData,
     SushiSwapFillData,
     SwerveFillData,
     UniswapV2FillData,
@@ -173,6 +174,8 @@ function getBridgeAddressFromFill(fill: CollapsedFill, opts: CreateOrderFromPath
             return opts.contractAddresses.curveBridge;
         case ERC20BridgeSource.Swerve:
             return opts.contractAddresses.curveBridge;
+        case ERC20BridgeSource.SnowSwap:
+            return opts.contractAddresses.curveBridge;
         case ERC20BridgeSource.Bancor:
             return opts.contractAddresses.bancorBridge;
         case ERC20BridgeSource.Balancer:
@@ -232,6 +235,20 @@ export function createBridgeOrder(
                     takerToken,
                     swerveFillData.fromTokenIdx,
                     swerveFillData.toTokenIdx,
+                ),
+            );
+            break;
+        case ERC20BridgeSource.SnowSwap:
+            const snowSwapFillData = (fill as CollapsedFill<SnowSwapFillData>).fillData!; // tslint:disable-line:no-non-null-assertion
+            makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
+                makerToken,
+                bridgeAddress,
+                createCurveBridgeData(
+                    snowSwapFillData.pool.poolAddress,
+                    snowSwapFillData.pool.exchangeFunctionSelector,
+                    takerToken,
+                    snowSwapFillData.fromTokenIdx,
+                    snowSwapFillData.toTokenIdx,
                 ),
             );
             break;
