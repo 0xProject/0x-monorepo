@@ -240,7 +240,13 @@ export class MarketOperationUtils {
             offChainBalancerQuotes,
             offChainCreamQuotes,
             offChainBancorQuotes,
-        ] = await Promise.all([samplerPromise, rfqtPromise, offChainBalancerPromise, offChainCreamPromise, offChainBancorPromise]);
+        ] = await Promise.all([
+            samplerPromise,
+            rfqtPromise,
+            offChainBalancerPromise,
+            offChainCreamPromise,
+            offChainBancorPromise,
+        ]);
 
         return {
             side: MarketOperation.Sell,

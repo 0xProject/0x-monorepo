@@ -373,11 +373,7 @@ describe('MarketOperationUtils tests', () => {
                 DEFAULT_FILL_DATA[ERC20BridgeSource.Balancer],
             ),
         ],
-        getCreamSellQuotesOffChainAsync: (
-            _makerToken: string,
-            _takerToken: string,
-            takerFillAmounts: BigNumber[],
-        ) => [
+        getCreamSellQuotesOffChainAsync: (_makerToken: string, _takerToken: string, takerFillAmounts: BigNumber[]) => [
             createSamplesFromRates(
                 ERC20BridgeSource.Cream,
                 takerFillAmounts,
@@ -385,11 +381,7 @@ describe('MarketOperationUtils tests', () => {
                 DEFAULT_FILL_DATA[ERC20BridgeSource.Cream],
             ),
         ],
-        getCreamBuyQuotesOffChainAsync: (
-            _makerToken: string,
-            _takerToken: string,
-            makerFillAmounts: BigNumber[],
-        ) => [
+        getCreamBuyQuotesOffChainAsync: (_makerToken: string, _takerToken: string, makerFillAmounts: BigNumber[]) => [
             createSamplesFromRates(
                 ERC20BridgeSource.Cream,
                 makerFillAmounts,
