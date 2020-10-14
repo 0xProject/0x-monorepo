@@ -174,9 +174,9 @@ export const MAINNET_CURVE_INFOS: { [name: string]: CurveInfo } = {
 export const MAINNET_SWERVE_INFOS: { [name: string]: CurveInfo } = {
     swUSD: {
         exchangeFunctionSelector: CurveFunctionSelectors.exchange,
-        sellQuoteFunctionSelector: CurveFunctionSelectors.get_dy_underlying,
+        sellQuoteFunctionSelector: CurveFunctionSelectors.get_dy,
         buyQuoteFunctionSelector: CurveFunctionSelectors.None,
-        poolAddress: '0x329239599afB305DA0A2eC69c58F8a6697F9F88d',
+        poolAddress: '0x329239599afb305da0a2ec69c58f8a6697f9f88d',
         tokens: [
             '0x6b175474e89094c44da98b954eedeac495271d0f',
             '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
@@ -186,36 +186,36 @@ export const MAINNET_SWERVE_INFOS: { [name: string]: CurveInfo } = {
     },
 };
 export const MAINNET_SNOWSWAP_INFOS: { [name: string]: CurveInfo } = {
-    // yVaultCurve: {
-    //     exchangeFunctionSelector: CurveFunctionSelectors.exchange,
-    //     sellQuoteFunctionSelector: CurveFunctionSelectors.get_dy,
-    //     buyQuoteFunctionSelector: CurveFunctionSelectors.None,
-    //     poolAddress: '0xBf7CCD6C446acfcc5dF023043f2167B62E81899b',
-    //     tokens: [
-    //         '0x5dbcf33d8c2e976c6b560249878e6f1491bca25c', // yUSD
-    //         '0x2994529c0652d127b7842094103715ec5299bbed', // ybCRV
-    //     ],
-    // },
-    yVaultUSDUnderlying: {
-        exchangeFunctionSelector: CurveFunctionSelectors.exchange_underlying,
-        sellQuoteFunctionSelector: CurveFunctionSelectors.get_dy_underlying,
-        buyQuoteFunctionSelector: CurveFunctionSelectors.None,
-        poolAddress: '0x4571753311E37dDb44faA8Fb78a6dF9a6E3c6C0B',
-        tokens: [
-           // underlying tokens, in SnowSwaps order
-           '0x6B175474E89094C44Da98b954EedeAC495271d0F', // DAI
-           '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC
-           '0xdAC17F958D2ee523a2206206994597C13D831ec7', // USDT
-           '0x0000000000085d4780B73119b644AE5ecd22b376', // TUSD
-        ],
-    },
-    yVaultUSD: {
-        // Note we're not trading the underlying but the y representation
-        // so we use `exchange` and `get_dy`
+    yVaultCurve: {
         exchangeFunctionSelector: CurveFunctionSelectors.exchange,
         sellQuoteFunctionSelector: CurveFunctionSelectors.get_dy,
         buyQuoteFunctionSelector: CurveFunctionSelectors.None,
-        poolAddress: '0x4571753311E37dDb44faA8Fb78a6dF9a6E3c6C0B',
+        poolAddress: '0xBf7CCD6C446acfcc5dF023043f2167B62E81899b',
+        tokens: [
+            '0x5dbcf33d8c2e976c6b560249878e6f1491bca25c', // yUSD
+            '0x2994529c0652d127b7842094103715ec5299bbed', // ybCRV
+        ],
+    },
+    // yVaultUSDUnderlying: {
+    //     exchangeFunctionSelector: CurveFunctionSelectors.exchange_underlying,
+    //     sellQuoteFunctionSelector: CurveFunctionSelectors.get_dy_underlying,
+    //     buyQuoteFunctionSelector: CurveFunctionSelectors.None,
+    //     poolAddress: '0x4571753311e37ddb44faa8fb78a6df9a6e3c6c0b',
+    //     tokens: [
+    //        // underlying tokens, in SnowSwaps order
+    //        '0x6b175474e89094c44da98b954eedeac495271d0f', // DAI
+    //        '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // USDC
+    //        '0xdac17f958d2ee523a2206206994597c13d831ec7', // USDT
+    //        '0x0000000000085d4780b73119b644ae5ecd22b376', // TUSD
+    //     ],
+    // },
+    yVaultUSD: {
+        // Note we're not trading the underlying but the y representation
+        // so we use `exchange` and `get_dy`
+        exchangeFunctionSelector: CurveFunctionSelectors.exchange_underlying,
+        sellQuoteFunctionSelector: CurveFunctionSelectors.get_dy_underlying,
+        buyQuoteFunctionSelector: CurveFunctionSelectors.None,
+        poolAddress: '0x4571753311e37ddb44faa8fb78a6df9a6e3c6c0b',
         tokens: [
             // the "non" underlying tokens, in the SnowSwap defined order
             '0xacd43e627e64355f1861cec6d3a6688b31a6f952', // yDAI

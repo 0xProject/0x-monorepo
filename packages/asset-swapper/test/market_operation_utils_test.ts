@@ -310,7 +310,7 @@ describe('MarketOperationUtils tests', () => {
         [ERC20BridgeSource.Bancor]: { path: [], networkAddress: randomAddress() },
         [ERC20BridgeSource.Kyber]: { hint: '0x', reserveId: '0x' },
         [ERC20BridgeSource.Curve]: {
-            curve: {
+            pool: {
                 poolAddress: randomAddress(),
                 tokens: [TAKER_TOKEN, MAKER_TOKEN],
                 exchangeFunctionSelector: hexUtils.random(4),

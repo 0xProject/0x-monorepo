@@ -216,8 +216,8 @@ export function createBridgeOrder(
                 makerToken,
                 bridgeAddress,
                 createCurveBridgeData(
-                    curveFillData.curve.poolAddress,
-                    curveFillData.curve.exchangeFunctionSelector,
+                    curveFillData.pool.poolAddress,
+                    curveFillData.pool.exchangeFunctionSelector,
                     takerToken,
                     curveFillData.fromTokenIdx,
                     curveFillData.toTokenIdx,

@@ -94,7 +94,7 @@ export interface NativeFillData extends FillData {
 export interface CurveFillData extends FillData {
     fromTokenIdx: number;
     toTokenIdx: number;
-    curve: CurveInfo;
+    pool: CurveInfo;
 }
 
 export interface SwerveFillData extends FillData {

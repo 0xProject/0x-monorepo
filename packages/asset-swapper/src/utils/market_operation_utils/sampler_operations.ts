@@ -298,7 +298,7 @@ export class SamplerOperations {
     }
 
     public getCurveSellQuotes(
-        curve: CurveInfo,
+        pool: CurveInfo,
         fromTokenIdx: number,
         toTokenIdx: number,
         takerFillAmounts: BigNumber[],
@@ -306,7 +306,7 @@ export class SamplerOperations {
         return new SamplerContractOperation({
             source: ERC20BridgeSource.Curve,
             fillData: {
-                curve,
+                pool,
                 fromTokenIdx,
                 toTokenIdx,
             },
@@ -314,9 +314,9 @@ export class SamplerOperations {
             function: this._samplerContract.sampleSellsFromCurve,
             params: [
                 {
-                    poolAddress: curve.poolAddress,
-                    sellQuoteFunctionSelector: curve.sellQuoteFunctionSelector,
-                    buyQuoteFunctionSelector: curve.buyQuoteFunctionSelector,
+                    poolAddress: pool.poolAddress,
+                    sellQuoteFunctionSelector: pool.sellQuoteFunctionSelector,
+                    buyQuoteFunctionSelector: pool.buyQuoteFunctionSelector,
                 },
                 new BigNumber(fromTokenIdx),
                 new BigNumber(toTokenIdx),
@@ -326,7 +326,7 @@ export class SamplerOperations {
     }
 
     public getCurveBuyQuotes(
-        curve: CurveInfo,
+        pool: CurveInfo,
         fromTokenIdx: number,
         toTokenIdx: number,
         makerFillAmounts: BigNumber[],
@@ -334,7 +334,7 @@ export class SamplerOperations {
         return new SamplerContractOperation({
             source: ERC20BridgeSource.Curve,
             fillData: {
-                curve,
+                pool,
                 fromTokenIdx,
                 toTokenIdx,
             },
@@ -342,9 +342,9 @@ export class SamplerOperations {
             function: this._samplerContract.sampleBuysFromCurve,
             params: [
                 {
-                    poolAddress: curve.poolAddress,
-                    sellQuoteFunctionSelector: curve.sellQuoteFunctionSelector,
-                    buyQuoteFunctionSelector: curve.buyQuoteFunctionSelector,
+                    poolAddress: pool.poolAddress,
+                    sellQuoteFunctionSelector: pool.sellQuoteFunctionSelector,
+                    buyQuoteFunctionSelector: pool.buyQuoteFunctionSelector,
                 },
                 new BigNumber(fromTokenIdx),
                 new BigNumber(toTokenIdx),
@@ -1082,11 +1082,11 @@ export class SamplerOperations {
                                 this.getKyberSellQuotes(reserveId, makerToken, takerToken, takerFillAmounts),
                             );
                         case ERC20BridgeSource.Curve:
-                            return getCurveInfosForPair(takerToken, makerToken).map(curve =>
+                            return getCurveInfosForPair(takerToken, makerToken).map(pool =>
                                 this.getCurveSellQuotes(
-                                    curve,
-                                    curve.tokens.indexOf(takerToken),
-                                    curve.tokens.indexOf(makerToken),
+                                    pool,
+                                    pool.tokens.indexOf(takerToken),
+                                    pool.tokens.indexOf(makerToken),
                                     takerFillAmounts,
                                 ),
                             );
@@ -1100,11 +1100,11 @@ export class SamplerOperations {
                                 ),
                             );
                         case ERC20BridgeSource.SnowSwap:
-                            return getSnowSwapInfosForPair(takerToken, makerToken).map(snowswap =>
+                            return getSnowSwapInfosForPair(takerToken, makerToken).map(pool =>
                                 this.getSnowSwapSellQuotes(
-                                    snowswap,
-                                    snowswap.tokens.indexOf(takerToken),
-                                    snowswap.tokens.indexOf(makerToken),
+                                    pool,
+                                    pool.tokens.indexOf(takerToken),
+                                    pool.tokens.indexOf(makerToken),
                                     takerFillAmounts,
                                 ),
                             );
@@ -1214,11 +1214,11 @@ export class SamplerOperations {
                                 this.getKyberBuyQuotes(reserveId, makerToken, takerToken, makerFillAmounts),
                             );
                         case ERC20BridgeSource.Curve:
-                            return getCurveInfosForPair(takerToken, makerToken).map(curve =>
+                            return getCurveInfosForPair(takerToken, makerToken).map(pool =>
                                 this.getCurveBuyQuotes(
-                                    curve,
-                                    curve.tokens.indexOf(takerToken),
-                                    curve.tokens.indexOf(makerToken),
+                                    pool,
+                                    pool.tokens.indexOf(takerToken),
+                                    pool.tokens.indexOf(makerToken),
                                     makerFillAmounts,
                                 ),
                             );
@@ -1232,11 +1232,11 @@ export class SamplerOperations {
                                 ),
                             );
                         case ERC20BridgeSource.SnowSwap:
-                            return getSnowSwapInfosForPair(takerToken, makerToken).map(snowswap =>
+                            return getSnowSwapInfosForPair(takerToken, makerToken).map(pool =>
                                 this.getSnowSwapBuyQuotes(
-                                    snowswap,
-                                    snowswap.tokens.indexOf(takerToken),
-                                    snowswap.tokens.indexOf(makerToken),
+                                    pool,
+                                    pool.tokens.indexOf(takerToken),
+                                    pool.tokens.indexOf(makerToken),
                                     makerFillAmounts,
                                 ),
                             );
