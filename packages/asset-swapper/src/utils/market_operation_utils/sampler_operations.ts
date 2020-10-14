@@ -8,6 +8,7 @@ import { ERC20BridgeSamplerContract } from '../../wrappers';
 import { BalancerPoolsCache, computeBalancerBuyQuote, computeBalancerSellQuote } from './balancer_utils';
 import { BancorService } from './bancor_service';
 import { MAINNET_SUSHI_SWAP_ROUTER, MAX_UINT256, NULL_BYTES, ZERO_AMOUNT } from './constants';
+import { CreamPoolsCache } from './cream_utils';
 import { getCurveInfosForPair, getSwerveInfosForPair } from './curve_utils';
 import { getKyberReserveIdsForPair } from './kyber_utils';
 import { getMultiBridgeIntermediateToken } from './multibridge_utils';
@@ -18,6 +19,7 @@ import {
     BalancerFillData,
     BancorFillData,
     BatchedOperation,
+    CreamFillData,
     CurveFillData,
     CurveInfo,
     DexSample,
@@ -72,6 +74,7 @@ export class SamplerOperations {
         protected readonly _samplerContract: ERC20BridgeSamplerContract,
         public readonly provider?: SupportedProvider,
         public readonly balancerPoolsCache: BalancerPoolsCache = new BalancerPoolsCache(),
+        public readonly creamPoolsCache: CreamPoolsCache = new CreamPoolsCache(),
         protected readonly getBancorServiceFn?: () => BancorService, // for dependency injection in tests
     ) {}
 
@@ -456,6 +459,68 @@ export class SamplerOperations {
         makerFillAmounts: BigNumber[],
     ): Promise<Array<Array<DexSample<BalancerFillData>>>> {
         const pools = await this.balancerPoolsCache.getPoolsForPairAsync(takerToken, makerToken);
+        return pools.map(pool =>
+            makerFillAmounts.map(amount => ({
+                source: ERC20BridgeSource.Balancer,
+                output: computeBalancerBuyQuote(pool, amount),
+                input: amount,
+                fillData: { poolAddress: pool.id },
+            })),
+        );
+    }
+
+    public getCreamSellQuotes(
+        poolAddress: string,
+        makerToken: string,
+        takerToken: string,
+        takerFillAmounts: BigNumber[],
+    ): SourceQuoteOperation<CreamFillData> {
+        return new SamplerContractOperation({
+            source: ERC20BridgeSource.Cream,
+            fillData: { poolAddress },
+            contract: this._samplerContract,
+            function: this._samplerContract.sampleSellsFromBalancer,
+            params: [poolAddress, takerToken, makerToken, takerFillAmounts],
+        });
+    }
+
+    public getCreamBuyQuotes(
+        poolAddress: string,
+        makerToken: string,
+        takerToken: string,
+        makerFillAmounts: BigNumber[],
+    ): SourceQuoteOperation<CreamFillData> {
+        return new SamplerContractOperation({
+            source: ERC20BridgeSource.Cream,
+            fillData: { poolAddress },
+            contract: this._samplerContract,
+            function: this._samplerContract.sampleBuysFromBalancer,
+            params: [poolAddress, takerToken, makerToken, makerFillAmounts],
+        });
+    }
+
+    public async getCreamSellQuotesOffChainAsync(
+        makerToken: string,
+        takerToken: string,
+        takerFillAmounts: BigNumber[],
+    ): Promise<Array<Array<DexSample<CreamFillData>>>> {
+        const pools = await this.creamPoolsCache.getPoolsForPairAsync(takerToken, makerToken);
+        return pools.map(pool =>
+            takerFillAmounts.map(amount => ({
+                source: ERC20BridgeSource.Balancer,
+                output: computeBalancerSellQuote(pool, amount),
+                input: amount,
+                fillData: { poolAddress: pool.id },
+            })),
+        );
+    }
+
+    public async getCreamBuyQuotesOffChainAsync(
+        makerToken: string,
+        takerToken: string,
+        makerFillAmounts: BigNumber[],
+    ): Promise<Array<Array<DexSample<BalancerFillData>>>> {
+        const pools = await this.creamPoolsCache.getPoolsForPairAsync(takerToken, makerToken);
         return pools.map(pool =>
             makerFillAmounts.map(amount => ({
                 source: ERC20BridgeSource.Balancer,
@@ -997,6 +1062,12 @@ export class SamplerOperations {
                                 .map(poolAddress =>
                                     this.getBalancerSellQuotes(poolAddress, makerToken, takerToken, takerFillAmounts),
                                 );
+                        case ERC20BridgeSource.Cream:
+                            return this.creamPoolsCache
+                                .getCachedPoolAddressesForPair(takerToken, makerToken)!
+                                .map(poolAddress =>
+                                    this.getBalancerSellQuotes(poolAddress, makerToken, takerToken, takerFillAmounts),
+                                );
                         case ERC20BridgeSource.Shell:
                             return this.getShellSellQuotes(makerToken, takerToken, takerFillAmounts);
                         default:
@@ -1082,6 +1153,12 @@ export class SamplerOperations {
                             return this.getMooniswapBuyQuotes(makerToken, takerToken, makerFillAmounts);
                         case ERC20BridgeSource.Balancer:
                             return this.balancerPoolsCache
+                                .getCachedPoolAddressesForPair(takerToken, makerToken)!
+                                .map(poolAddress =>
+                                    this.getBalancerBuyQuotes(poolAddress, makerToken, takerToken, makerFillAmounts),
+                                );
+                        case ERC20BridgeSource.Cream:
+                            return this.creamPoolsCache
                                 .getCachedPoolAddressesForPair(takerToken, makerToken)!
                                 .map(poolAddress =>
                                     this.getBalancerBuyQuotes(poolAddress, makerToken, takerToken, makerFillAmounts),

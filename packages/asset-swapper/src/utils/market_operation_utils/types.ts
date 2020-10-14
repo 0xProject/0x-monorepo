@@ -37,6 +37,7 @@ export enum ERC20BridgeSource {
     LiquidityProvider = 'LiquidityProvider',
     MultiBridge = 'MultiBridge',
     Balancer = 'Balancer',
+    Cream = 'CREAM',
     Bancor = 'Bancor',
     MStable = 'mStable',
     Mooniswap = 'Mooniswap',
@@ -100,6 +101,10 @@ export interface SwerveFillData extends FillData {
 }
 
 export interface BalancerFillData extends FillData {
+    poolAddress: string;
+}
+
+export interface CreamFillData extends FillData {
     poolAddress: string;
 }
 

@@ -5510,6 +5510,14 @@ coveralls@^3.0.0:
     minimist "^1.2.0"
     request "^2.79.0"
 
+cream-sor@^0.3.3:
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/cream-sor/-/cream-sor-0.3.3.tgz#ae7ab50c68cfd36a89e2101187ceebbb79e1b14c"
+  integrity sha512-taQSvCUunPhwyebwbjxh1l9NDp39lsre+Q2oRMK+gqzbu+Wlbg5GAquwoV2/GLgzia70gi4x1rJCJsUmc5Kygg==
+  dependencies:
+    bignumber.js "^9.0.0"
+    isomorphic-fetch "^2.2.1"
+
 create-ecdh@^4.0.0:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/create-ecdh/-/create-ecdh-4.0.1.tgz#44223dfed533193ba5ba54e0df5709b89acf1f82"

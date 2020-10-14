@@ -6,6 +6,7 @@ import { ERC20BridgeSamplerContract } from '../../wrappers';
 
 import { BalancerPoolsCache } from './balancer_utils';
 import { BancorService } from './bancor_service';
+import { CreamPoolsCache } from './cream_utils';
 import { SamplerOperations } from './sampler_operations';
 import { BatchedOperation } from './types';
 
@@ -37,9 +38,10 @@ export class DexOrderSampler extends SamplerOperations {
         private readonly _samplerOverrides?: SamplerOverrides,
         provider?: SupportedProvider,
         balancerPoolsCache?: BalancerPoolsCache,
+        creamPoolsCache?: CreamPoolsCache,
         getBancorServiceFn?: () => BancorService,
     ) {
-        super(_samplerContract, provider, balancerPoolsCache, getBancorServiceFn);
+        super(_samplerContract, provider, balancerPoolsCache, creamPoolsCache, getBancorServiceFn);
     }
 
     /* Type overloads for `executeAsync()`. Could skip this if we would upgrade TS. */

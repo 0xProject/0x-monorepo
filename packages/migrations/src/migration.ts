@@ -325,6 +325,7 @@ export async function runMigrationsAsync(
             uniswapExchangeFactory: NULL_ADDRESS,
             mStable: NULL_ADDRESS,
             shellBridge: NULL_ADDRESS,
+            creamBridge: NULL_ADDRESS,
             shell: NULL_ADDRESS,
             weth: etherToken.address,
         },

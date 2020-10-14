@@ -46,6 +46,7 @@ contract BridgeAdapter is
 {
 
     address private immutable BALANCER_BRIDGE_ADDRESS;
+    address private immutable CREAM_BRIDGE_ADDRESS;
     address private immutable CURVE_BRIDGE_ADDRESS;
     address private immutable KYBER_BRIDGE_ADDRESS;
     address private immutable MOONISWAP_BRIDGE_ADDRESS;
@@ -93,6 +94,7 @@ contract BridgeAdapter is
         SHELL_BRIDGE_ADDRESS = addresses.shellBridge;
         UNISWAP_BRIDGE_ADDRESS = addresses.uniswapBridge;
         UNISWAP_V2_BRIDGE_ADDRESS = addresses.uniswapV2Bridge;
+        CREAM_BRIDGE_ADDRESS = addresses.creamBridge;
     }
 
     function trade(
@@ -166,6 +168,12 @@ contract BridgeAdapter is
             );
         } else if (bridgeAddress == SHELL_BRIDGE_ADDRESS) {
             boughtAmount = _tradeShell(
+                buyToken,
+                sellAmount,
+                bridgeData
+            );
+        } else if (bridgeAddress == CREAM_BRIDGE_ADDRESS) {
+            boughtAmount = _tradeBalancer(
                 buyToken,
                 sellAmount,
                 bridgeData

@@ -73,6 +73,7 @@
         "@bancor/sdk": "^0.2.9",
         "axios": "^0.19.2",
         "axios-mock-adapter": "^1.18.1",
+        "cream-sor": "^0.3.3",
         "decimal.js": "^10.2.0",
         "ethereum-types": "^3.2.0",
         "ethereumjs-util": "^5.1.1",
