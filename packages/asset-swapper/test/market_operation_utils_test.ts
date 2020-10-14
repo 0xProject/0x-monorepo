@@ -790,6 +790,7 @@ describe('MarketOperationUtils tests', () => {
                     },
                 });
                 expect(result.optimizedOrders.length).to.eql(1);
+                // tslint:disable-next-line:no-unnecessary-type-assertion
                 expect(requestedComparisonPrice!.toString()).to.eql('320');
                 expect(result.optimizedOrders[0].makerAssetAmount.toString()).to.eql('321000000');
                 expect(result.optimizedOrders[0].takerAssetAmount.toString()).to.eql('1000000000000000000');
