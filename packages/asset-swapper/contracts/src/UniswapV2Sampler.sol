@@ -53,7 +53,7 @@ contract UniswapV2Sampler is
                         path
                     ));
             uint256 buyAmount = 0;
-            if (didSucceed && resultData.length > 0) {
+            if (didSucceed) {
                 // solhint-disable-next-line indent
                 buyAmount = abi.decode(resultData, (uint256[]))[path.length - 1];
             } else {
@@ -87,7 +87,7 @@ contract UniswapV2Sampler is
                         path
                     ));
             uint256 sellAmount = 0;
-            if (didSucceed && resultData.length > 0) {
+            if (didSucceed) {
                 // solhint-disable-next-line indent
                 sellAmount = abi.decode(resultData, (uint256[]))[0];
             } else {

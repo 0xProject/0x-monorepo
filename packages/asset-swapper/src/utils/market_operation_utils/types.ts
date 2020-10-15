@@ -242,6 +242,11 @@ export interface GetMarketOrdersOpts {
      */
     excludedSources: ERC20BridgeSource[];
     /**
+     * Liquidity sources to exclude when used to calculate the cost of the route.
+     * Default is none.
+     */
+    excludedFeeSources: ERC20BridgeSource[];
+    /**
      * Liquidity sources to include. Default is none, which allows all supported
      * sources that aren't excluded by `excludedSources`.
      */
