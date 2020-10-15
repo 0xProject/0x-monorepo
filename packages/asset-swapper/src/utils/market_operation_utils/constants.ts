@@ -176,7 +176,7 @@ export const MAINNET_SWERVE_INFOS: { [name: string]: CurveInfo } = {
         exchangeFunctionSelector: CurveFunctionSelectors.exchange,
         sellQuoteFunctionSelector: CurveFunctionSelectors.get_dy,
         buyQuoteFunctionSelector: CurveFunctionSelectors.None,
-        poolAddress: '0x329239599afb305da0a2ec69c58f8a6697f9f88d',
+        poolAddress: '0x329239599afb305da0a2ec69c58f8a6697f9f88d', // _target: 0xa5407eae9ba41422680e2e00537571bcc53efbfd
         tokens: [
             '0x6b175474e89094c44da98b954eedeac495271d0f',
             '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
