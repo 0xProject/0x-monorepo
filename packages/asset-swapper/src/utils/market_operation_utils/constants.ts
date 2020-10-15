@@ -218,18 +218,19 @@ export const MAINNET_SNOWSWAP_INFOS: { [name: string]: CurveInfo } = {
             '0x37d19d1c4e1fa9dc47bd1ea12f742a0887eda74a', // yTUSD
         ],
     },
-    yVaultUSDUnderlying: {
-        exchangeFunctionSelector: CurveFunctionSelectors.exchange_underlying,
-        sellQuoteFunctionSelector: CurveFunctionSelectors.get_dy_underlying,
-        buyQuoteFunctionSelector: CurveFunctionSelectors.get_dx_underlying,
-        poolAddress: '0x4571753311e37ddb44faa8fb78a6df9a6e3c6c0b',
-        tokens: [
-           '0x6b175474e89094c44da98b954eedeac495271d0f', // DAI
-           '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // USDC
-           '0xdac17f958d2ee523a2206206994597c13d831ec7', // USDT
-           '0x0000000000085d4780b73119b644ae5ecd22b376', // TUSD
-        ],
-    },
+    // Gas is too high for these underlying tokens (3M+)
+    // yVaultUSDUnderlying: {
+    //     exchangeFunctionSelector: CurveFunctionSelectors.exchange_underlying,
+    //     sellQuoteFunctionSelector: CurveFunctionSelectors.get_dy_underlying,
+    //     buyQuoteFunctionSelector: CurveFunctionSelectors.get_dx_underlying,
+    //     poolAddress: '0x4571753311e37ddb44faa8fb78a6df9a6e3c6c0b',
+    //     tokens: [
+    //        '0x6b175474e89094c44da98b954eedeac495271d0f', // DAI
+    //        '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // USDC
+    //        '0xdac17f958d2ee523a2206206994597c13d831ec7', // USDT
+    //        '0x0000000000085d4780b73119b644ae5ecd22b376', // TUSD
+    //     ],
+    // },
 };
 
 export const MAINNET_KYBER_RESERVE_IDS: { [name: string]: string } = {
