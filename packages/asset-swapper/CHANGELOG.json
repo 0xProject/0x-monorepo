@@ -157,6 +157,10 @@
             {
                 "note": "Fix for some edge cases with `includedSources` and `MultiHop`",
                 "pr": 2730
+            },
+            {
+                "note": "Introduced `excludedFeeSources` to disable sources when determining the price of an asset in ETH",
+                "pr": 2731
             }
         ]
     },

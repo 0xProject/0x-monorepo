@@ -141,8 +141,7 @@ export class MarketOperationUtils {
         const requestFilters = new SourceFilters().exclude(_opts.excludedSources).include(_opts.includedSources);
         const quoteSourceFilters = this._sellSources.merge(requestFilters);
 
-        const feeRequestFilters = new SourceFilters().exclude(_opts.excludedFeeSources);
-        const feeSourceFilters = this._feeSources.merge(feeRequestFilters);
+        const feeSourceFilters = this._feeSources.exclude(_opts.excludedFeeSources);
 
         const {
             onChain: sampleBalancerOnChain,
@@ -260,8 +259,7 @@ export class MarketOperationUtils {
         const requestFilters = new SourceFilters().exclude(_opts.excludedSources).include(_opts.includedSources);
         const quoteSourceFilters = this._buySources.merge(requestFilters);
 
-        const feeRequestFilters = new SourceFilters().exclude(_opts.excludedFeeSources);
-        const feeSourceFilters = this._feeSources.merge(feeRequestFilters);
+        const feeSourceFilters = this._feeSources.exclude(_opts.excludedFeeSources);
 
         const {
             onChain: sampleBalancerOnChain,
@@ -450,8 +448,7 @@ export class MarketOperationUtils {
         const requestFilters = new SourceFilters().exclude(_opts.excludedSources).include(_opts.includedSources);
         const quoteSourceFilters = this._buySources.merge(requestFilters);
 
-        const feeRequestFilters = new SourceFilters().exclude(_opts.excludedFeeSources);
-        const feeSourceFilters = this._feeSources.merge(feeRequestFilters);
+        const feeSourceFilters = this._feeSources.exclude(_opts.excludedFeeSources);
 
         const ops = [
             ...batchNativeOrders.map(orders =>
