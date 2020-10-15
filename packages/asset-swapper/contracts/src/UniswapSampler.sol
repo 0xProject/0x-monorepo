@@ -193,9 +193,20 @@ contract UniswapSampler is
         view
         returns (IUniswapExchangeQuotes exchange)
     {
-        exchange = IUniswapExchangeQuotes(
-            address(IUniswapExchangeFactory(_getUniswapExchangeFactoryAddress())
-            .getExchange(tokenAddress))
-        );
+        bool didSucceed;
+        bytes memory resultData;
+        address exchangeAddress;
+        (didSucceed, resultData) =
+            address(_getUniswapExchangeFactoryAddress())
+                .staticcall.gas(UNISWAP_CALL_GAS)(
+                    abi.encodeWithSelector(
+                        IUniswapExchangeFactory(0).getExchange.selector,
+                        tokenAddress
+                    )
+                );
+        if (didSucceed && resultData.length > 0) {
+            exchangeAddress = abi.decode(resultData, (address));
+        }
+        return IUniswapExchangeQuotes(exchangeAddress);
     }
 }
