@@ -136,7 +136,7 @@ contract BridgeAdapter is
                 sellAmount,
                 bridgeData
             );
-        } else if (bridgeAddress == BALANCER_BRIDGE_ADDRESS) {
+        } else if (bridgeAddress == BALANCER_BRIDGE_ADDRESS  || bridgeAddress == CREAM_BRIDGE_ADDRESS) {
             boughtAmount = _tradeBalancer(
                 buyToken,
                 sellAmount,
@@ -168,12 +168,6 @@ contract BridgeAdapter is
             );
         } else if (bridgeAddress == SHELL_BRIDGE_ADDRESS) {
             boughtAmount = _tradeShell(
-                buyToken,
-                sellAmount,
-                bridgeData
-            );
-        } else if (bridgeAddress == CREAM_BRIDGE_ADDRESS) {
-            boughtAmount = _tradeBalancer(
                 buyToken,
                 sellAmount,
                 bridgeData

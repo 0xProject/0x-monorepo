@@ -105,10 +105,6 @@ export interface BalancerFillData extends FillData {
     poolAddress: string;
 }
 
-export interface CreamFillData extends FillData {
-    poolAddress: string;
-}
-
 export interface UniswapV2FillData extends FillData {
     tokenAddressPath: string[];
 }

@@ -159,13 +159,10 @@ export class MarketOperationUtils {
             quoteSourceFilters.isAllowed(ERC20BridgeSource.Cream),
         );
 
-        let excludedSources: ERC20BridgeSource[] = [];
-        if (!sampleCreamOnChain) {
-            excludedSources = excludedSources.concat(ERC20BridgeSource.Cream);
-        }
-        if (!sampleBalancerOnChain) {
-            excludedSources = excludedSources.concat(ERC20BridgeSource.Balancer);
-        }
+        const excludedSources = [
+            ...(!sampleCreamOnChain ? [ERC20BridgeSource.Cream] : []),
+            ...(!sampleBalancerOnChain ? [ERC20BridgeSource.Balancer] : []),
+        ];
 
         // Call the sampler contract.
         const samplerPromise = this._sampler.executeAsync(
@@ -303,13 +300,10 @@ export class MarketOperationUtils {
             quoteSourceFilters.isAllowed(ERC20BridgeSource.Cream),
         );
 
-        let excludedSources: ERC20BridgeSource[] = [];
-        if (!sampleCreamOnChain) {
-            excludedSources = excludedSources.concat(ERC20BridgeSource.Cream);
-        }
-        if (!sampleBalancerOnChain) {
-            excludedSources = excludedSources.concat(ERC20BridgeSource.Balancer);
-        }
+        const excludedSources = [
+            ...(!sampleCreamOnChain ? [ERC20BridgeSource.Cream] : []),
+            ...(!sampleBalancerOnChain ? [ERC20BridgeSource.Balancer] : []),
+        ];
 
         // Call the sampler contract.
         const samplerPromise = this._sampler.executeAsync(
