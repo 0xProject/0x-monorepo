@@ -37,7 +37,7 @@ contract CurveSampler is
 
     /// @dev Base gas limit for Curve calls. Some Curves have multiple tokens
     ///      So a reasonable ceil is 150k per token. Biggest Curve has 4 tokens.
-    uint256 constant private CURVE_CALL_GAS = 600e3; // 600k
+    uint256 constant private CURVE_CALL_GAS = 600e3; // Was 600k for Curve but SnowSwap is using 1500k+
 
     /// @dev Sample sell quotes from Curve.
     /// @param curveInfo Curve information specific to this token pair.
