@@ -600,11 +600,12 @@ export class SamplerOperations {
                     const [firstHop, secondHop, buyAmount] = this._samplerContract.getABIDecodedReturnData<
                         [HopInfo, HopInfo, BigNumber]
                     >('sampleTwoHopSell', callResults);
+                    // Ensure the hop sources are set even when the buy amount is zero
+                    fillData.firstHopSource = firstHopOps[firstHop.sourceIndex.toNumber()];
+                    fillData.secondHopSource = secondHopOps[secondHop.sourceIndex.toNumber()];
                     if (buyAmount.isZero()) {
                         return [ZERO_AMOUNT];
                     }
-                    fillData.firstHopSource = firstHopOps[firstHop.sourceIndex.toNumber()];
-                    fillData.secondHopSource = secondHopOps[secondHop.sourceIndex.toNumber()];
                     fillData.firstHopSource.handleCallResults(firstHop.returnData);
                     fillData.secondHopSource.handleCallResults(secondHop.returnData);
                     return [buyAmount];

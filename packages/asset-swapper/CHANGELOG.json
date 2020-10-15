@@ -153,6 +153,10 @@
             {
                 "note": "Added `DODO`",
                 "pr": 2701
+            },
+            {
+                "note": "Fix for some edge cases with `includedSources` and `MultiHop`",
+                "pr": 2730
             }
         ]
     },

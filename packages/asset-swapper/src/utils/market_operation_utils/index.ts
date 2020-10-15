@@ -138,7 +138,9 @@ export class MarketOperationUtils {
         const [makerToken, takerToken] = getNativeOrderTokens(nativeOrders[0]);
         const sampleAmounts = getSampleAmounts(takerAmount, _opts.numSamples, _opts.sampleDistributionBase);
         const requestFilters = new SourceFilters().exclude(_opts.excludedSources).include(_opts.includedSources);
-        const feeSourceFilters = this._feeSources.merge(requestFilters);
+        // We don't exclude from the fee sources as we always want to be able to get a price
+        // of taker to Eth or maker to Eth, especially for MultiHop
+        const feeSourceFilters = this._feeSources;
         const quoteSourceFilters = this._sellSources.merge(requestFilters);
 
         const {
@@ -576,11 +578,9 @@ export class MarketOperationUtils {
             ethToInputRate,
             exchangeProxyOverhead: opts.exchangeProxyOverhead || (() => ZERO_AMOUNT),
         };
+
         const optimalPath = await findOptimalPathAsync(side, fills, inputAmount, opts.runLimit, optimizerOpts);
-        if (optimalPath === undefined) {
-            throw new Error(AggregationError.NoOptimalPath);
-        }
-        const optimalPathRate = optimalPath.adjustedRate();
+        const optimalPathRate = optimalPath ? optimalPath.adjustedRate() : ZERO_AMOUNT;
 
         const { adjustedRate: bestTwoHopRate, quote: bestTwoHopQuote } = getBestTwoHopQuote(
             marketSideLiquidity,
@@ -594,6 +594,11 @@ export class MarketOperationUtils {
                 liquidityDelivered: bestTwoHopQuote,
                 sourceFlags: SOURCE_FLAGS[ERC20BridgeSource.MultiHop],
             };
+        }
+
+        // If there is no optimal path AND we didn't return a MultiHop quote, then throw
+        if (optimalPath === undefined) {
+            throw new Error(AggregationError.NoOptimalPath);
         }
 
         // Generate a fallback path if native orders are in the optimal path.
