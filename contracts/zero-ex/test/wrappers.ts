@@ -5,6 +5,8 @@
  */
 export * from '../test/generated-wrappers/affiliate_fee_transformer';
 export * from '../test/generated-wrappers/allowance_target';
+export * from '../test/generated-wrappers/assembly_zero_ex';
+export * from '../test/generated-wrappers/benchmark_simple_function_registry_feature';
 export * from '../test/generated-wrappers/bootstrap_feature';
 export * from '../test/generated-wrappers/bridge_adapter';
 export * from '../test/generated-wrappers/fill_quote_transformer';
@@ -14,6 +16,7 @@ export * from '../test/generated-wrappers/fixin_reentrancy_guard';
 export * from '../test/generated-wrappers/flash_wallet';
 export * from '../test/generated-wrappers/full_migration';
 export * from '../test/generated-wrappers/i_allowance_target';
+export * from '../test/generated-wrappers/i_benchmark_simple_function_registry_feature';
 export * from '../test/generated-wrappers/i_bootstrap_feature';
 export * from '../test/generated-wrappers/i_bridge_adapter';
 export * from '../test/generated-wrappers/i_erc20_bridge';

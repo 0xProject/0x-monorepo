@@ -7,6 +7,8 @@ import { ContractArtifact } from 'ethereum-types';
 
 import * as AffiliateFeeTransformer from '../test/generated-artifacts/AffiliateFeeTransformer.json';
 import * as AllowanceTarget from '../test/generated-artifacts/AllowanceTarget.json';
+import * as AssemblyZeroEx from '../test/generated-artifacts/AssemblyZeroEx.json';
+import * as BenchmarkSimpleFunctionRegistryFeature from '../test/generated-artifacts/BenchmarkSimpleFunctionRegistryFeature.json';
 import * as BootstrapFeature from '../test/generated-artifacts/BootstrapFeature.json';
 import * as BridgeAdapter from '../test/generated-artifacts/BridgeAdapter.json';
 import * as FillQuoteTransformer from '../test/generated-artifacts/FillQuoteTransformer.json';
@@ -16,6 +18,7 @@ import * as FixinReentrancyGuard from '../test/generated-artifacts/FixinReentran
 import * as FlashWallet from '../test/generated-artifacts/FlashWallet.json';
 import * as FullMigration from '../test/generated-artifacts/FullMigration.json';
 import * as IAllowanceTarget from '../test/generated-artifacts/IAllowanceTarget.json';
+import * as IBenchmarkSimpleFunctionRegistryFeature from '../test/generated-artifacts/IBenchmarkSimpleFunctionRegistryFeature.json';
 import * as IBootstrapFeature from '../test/generated-artifacts/IBootstrapFeature.json';
 import * as IBridgeAdapter from '../test/generated-artifacts/IBridgeAdapter.json';
 import * as IERC20Bridge from '../test/generated-artifacts/IERC20Bridge.json';
@@ -107,6 +110,7 @@ import * as UniswapFeature from '../test/generated-artifacts/UniswapFeature.json
 import * as WethTransformer from '../test/generated-artifacts/WethTransformer.json';
 import * as ZeroEx from '../test/generated-artifacts/ZeroEx.json';
 export const artifacts = {
+    AssemblyZeroEx: AssemblyZeroEx as ContractArtifact,
     IZeroEx: IZeroEx as ContractArtifact,
     ZeroEx: ZeroEx as ContractArtifact,
     LibCommonRichErrors: LibCommonRichErrors as ContractArtifact,
@@ -184,6 +188,8 @@ export const artifacts = {
     IERC20Bridge: IERC20Bridge as ContractArtifact,
     IExchange: IExchange as ContractArtifact,
     IGasToken: IGasToken as ContractArtifact,
+    BenchmarkSimpleFunctionRegistryFeature: BenchmarkSimpleFunctionRegistryFeature as ContractArtifact,
+    IBenchmarkSimpleFunctionRegistryFeature: IBenchmarkSimpleFunctionRegistryFeature as ContractArtifact,
     ITestSimpleFunctionRegistryFeature: ITestSimpleFunctionRegistryFeature as ContractArtifact,
     TestBridge: TestBridge as ContractArtifact,
     TestCallTarget: TestCallTarget as ContractArtifact,
