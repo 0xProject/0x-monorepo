@@ -57,6 +57,7 @@ export const DEFAULT_GET_MARKET_ORDERS_OPTS: GetMarketOrdersOpts = {
     // tslint:disable-next-line: custom-no-magic-numbers
     runLimit: 2 ** 15,
     excludedSources: [],
+    excludedFeeSources: [],
     includedSources: [],
     bridgeSlippage: 0.005,
     maxFallbackSlippage: 0.05,
