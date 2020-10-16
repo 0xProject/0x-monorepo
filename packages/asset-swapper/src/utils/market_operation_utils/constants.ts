@@ -25,6 +25,7 @@ export const SELL_SOURCE_FILTER = new SourceFilters([
     ERC20BridgeSource.Shell,
     ERC20BridgeSource.MultiHop,
     ERC20BridgeSource.Dodo,
+    ERC20BridgeSource.Cream,
 ]);
 
 /**
@@ -47,6 +48,7 @@ export const BUY_SOURCE_FILTER = new SourceFilters(
         ERC20BridgeSource.SushiSwap,
         ERC20BridgeSource.MultiHop,
         ERC20BridgeSource.Dodo,
+        ERC20BridgeSource.Cream,
     ],
     [ERC20BridgeSource.MultiBridge],
 );
@@ -55,6 +57,7 @@ export const DEFAULT_GET_MARKET_ORDERS_OPTS: GetMarketOrdersOpts = {
     // tslint:disable-next-line: custom-no-magic-numbers
     runLimit: 2 ** 15,
     excludedSources: [],
+    excludedFeeSources: [],
     includedSources: [],
     bridgeSlippage: 0.005,
     maxFallbackSlippage: 0.05,

@@ -39,6 +39,7 @@ export enum ERC20BridgeSource {
     LiquidityProvider = 'LiquidityProvider',
     MultiBridge = 'MultiBridge',
     Balancer = 'Balancer',
+    Cream = 'CREAM',
     Bancor = 'Bancor',
     MStable = 'mStable',
     Mooniswap = 'Mooniswap',
@@ -243,6 +244,11 @@ export interface GetMarketOrdersOpts {
      * Liquidity sources to exclude. Default is none.
      */
     excludedSources: ERC20BridgeSource[];
+    /**
+     * Liquidity sources to exclude when used to calculate the cost of the route.
+     * Default is none.
+     */
+    excludedFeeSources: ERC20BridgeSource[];
     /**
      * Liquidity sources to include. Default is none, which allows all supported
      * sources that aren't excluded by `excludedSources`.

@@ -504,6 +504,7 @@ describe('DexSampler tests', () => {
                 undefined, // sampler overrides
                 provider,
                 undefined, // balancer cache
+                undefined, // cream cache
                 () => bancorService,
             );
             const quotes = await dexOrderSampler.getBancorSellQuotesOffChainAsync(

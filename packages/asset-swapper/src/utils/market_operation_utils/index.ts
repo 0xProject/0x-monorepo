@@ -141,9 +141,11 @@ export class MarketOperationUtils {
         const _opts = { ...DEFAULT_GET_MARKET_ORDERS_OPTS, ...opts };
         const [makerToken, takerToken] = getNativeOrderTokens(nativeOrders[0]);
         const sampleAmounts = getSampleAmounts(takerAmount, _opts.numSamples, _opts.sampleDistributionBase);
+
         const requestFilters = new SourceFilters().exclude(_opts.excludedSources).include(_opts.includedSources);
-        const feeSourceFilters = this._feeSources.merge(requestFilters);
         const quoteSourceFilters = this._sellSources.merge(requestFilters);
+
+        const feeSourceFilters = this._feeSources.exclude(_opts.excludedFeeSources);
 
         const {
             onChain: sampleBalancerOnChain,
@@ -153,6 +155,20 @@ export class MarketOperationUtils {
             makerToken,
             quoteSourceFilters.isAllowed(ERC20BridgeSource.Balancer),
         );
+
+        const {
+            onChain: sampleCreamOnChain,
+            offChain: sampleCreamOffChain,
+        } = this._sampler.creamPoolsCache.howToSampleCream(
+            takerToken,
+            makerToken,
+            quoteSourceFilters.isAllowed(ERC20BridgeSource.Cream),
+        );
+
+        const offChainSources = [
+            ...(!sampleCreamOnChain ? [ERC20BridgeSource.Cream] : []),
+            ...(!sampleBalancerOnChain ? [ERC20BridgeSource.Balancer] : []),
+        ];
 
         // Call the sampler contract.
         const samplerPromise = this._sampler.executeAsync(
@@ -181,7 +197,7 @@ export class MarketOperationUtils {
             ),
             // Get sell quotes for taker -> maker.
             this._sampler.getSellQuotes(
-                quoteSourceFilters.exclude(sampleBalancerOnChain ? [] : ERC20BridgeSource.Balancer).sources,
+                quoteSourceFilters.exclude(offChainSources).sources,
                 makerToken,
                 takerToken,
                 sampleAmounts,
@@ -204,6 +220,10 @@ export class MarketOperationUtils {
             ? this._sampler.getBalancerSellQuotesOffChainAsync(makerToken, takerToken, sampleAmounts)
             : Promise.resolve([]);
 
+        const offChainCreamPromise = sampleCreamOffChain
+            ? this._sampler.getCreamSellQuotesOffChainAsync(makerToken, takerToken, sampleAmounts)
+            : Promise.resolve([]);
+
         const offChainBancorPromise = quoteSourceFilters.isAllowed(ERC20BridgeSource.Bancor)
             ? this._sampler.getBancorSellQuotesOffChainAsync(makerToken, takerToken, [takerAmount])
             : Promise.resolve([]);
@@ -211,8 +231,14 @@ export class MarketOperationUtils {
         const [
             [tokenDecimals, orderFillableAmounts, ethToMakerAssetRate, ethToTakerAssetRate, dexQuotes, twoHopQuotes],
             offChainBalancerQuotes,
+            offChainCreamQuotes,
             offChainBancorQuotes,
-        ] = await Promise.all([samplerPromise, offChainBalancerPromise, offChainBancorPromise]);
+        ] = await Promise.all([
+            samplerPromise,
+            offChainBalancerPromise,
+            offChainCreamPromise,
+            offChainBancorPromise,
+        ]);
 
         const [makerTokenDecimals, takerTokenDecimals] = tokenDecimals;
         return {
@@ -220,7 +246,7 @@ export class MarketOperationUtils {
             inputAmount: takerAmount,
             inputToken: takerToken,
             outputToken: makerToken,
-            dexQuotes: dexQuotes.concat([...offChainBalancerQuotes, offChainBancorQuotes]),
+            dexQuotes: dexQuotes.concat([...offChainBalancerQuotes, ...offChainCreamQuotes, offChainBancorQuotes]),
             nativeOrders,
             orderFillableAmounts,
             ethToOutputRate: ethToMakerAssetRate,
@@ -251,9 +277,11 @@ export class MarketOperationUtils {
         const _opts = { ...DEFAULT_GET_MARKET_ORDERS_OPTS, ...opts };
         const [makerToken, takerToken] = getNativeOrderTokens(nativeOrders[0]);
         const sampleAmounts = getSampleAmounts(makerAmount, _opts.numSamples, _opts.sampleDistributionBase);
+
         const requestFilters = new SourceFilters().exclude(_opts.excludedSources).include(_opts.includedSources);
-        const feeSourceFilters = this._feeSources.merge(requestFilters);
         const quoteSourceFilters = this._buySources.merge(requestFilters);
+
+        const feeSourceFilters = this._feeSources.exclude(_opts.excludedFeeSources);
 
         const {
             onChain: sampleBalancerOnChain,
@@ -263,6 +291,20 @@ export class MarketOperationUtils {
             makerToken,
             quoteSourceFilters.isAllowed(ERC20BridgeSource.Balancer),
         );
+
+        const {
+            onChain: sampleCreamOnChain,
+            offChain: sampleCreamOffChain,
+        } = this._sampler.creamPoolsCache.howToSampleCream(
+            takerToken,
+            makerToken,
+            quoteSourceFilters.isAllowed(ERC20BridgeSource.Cream),
+        );
+
+        const offChainSources = [
+            ...(!sampleCreamOnChain ? [ERC20BridgeSource.Cream] : []),
+            ...(!sampleBalancerOnChain ? [ERC20BridgeSource.Balancer] : []),
+        ];
 
         // Call the sampler contract.
         const samplerPromise = this._sampler.executeAsync(
@@ -291,7 +333,7 @@ export class MarketOperationUtils {
             ),
             // Get buy quotes for taker -> maker.
             this._sampler.getBuyQuotes(
-                quoteSourceFilters.exclude(sampleBalancerOnChain ? [] : ERC20BridgeSource.Balancer).sources,
+                quoteSourceFilters.exclude(offChainSources).sources,
                 makerToken,
                 takerToken,
                 sampleAmounts,
@@ -313,10 +355,15 @@ export class MarketOperationUtils {
             ? this._sampler.getBalancerBuyQuotesOffChainAsync(makerToken, takerToken, sampleAmounts)
             : Promise.resolve([]);
 
+        const offChainCreamPromise = sampleCreamOffChain
+            ? this._sampler.getCreamBuyQuotesOffChainAsync(makerToken, takerToken, sampleAmounts)
+            : Promise.resolve([]);
+
         const [
             [tokenDecimals, orderFillableAmounts, ethToMakerAssetRate, ethToTakerAssetRate, dexQuotes, twoHopQuotes],
             offChainBalancerQuotes,
-        ] = await Promise.all([samplerPromise, offChainBalancerPromise]);
+            offChainCreamQuotes,
+        ] = await Promise.all([samplerPromise, offChainBalancerPromise, offChainCreamPromise]);
         // Attach the MultiBridge address to the sample fillData
         (dexQuotes.find(quotes => quotes[0] && quotes[0].source === ERC20BridgeSource.MultiBridge) || []).forEach(
             q => (q.fillData = { poolAddress: this._multiBridge }),
@@ -327,7 +374,7 @@ export class MarketOperationUtils {
             inputAmount: makerAmount,
             inputToken: makerToken,
             outputToken: takerToken,
-            dexQuotes: dexQuotes.concat(offChainBalancerQuotes),
+            dexQuotes: dexQuotes.concat(offChainBalancerQuotes, offChainCreamQuotes),
             nativeOrders,
             orderFillableAmounts,
             ethToOutputRate: ethToTakerAssetRate,
@@ -394,8 +441,9 @@ export class MarketOperationUtils {
         const _opts = { ...DEFAULT_GET_MARKET_ORDERS_OPTS, ...opts };
 
         const requestFilters = new SourceFilters().exclude(_opts.excludedSources).include(_opts.includedSources);
-        const feeSourceFilters = this._feeSources.merge(requestFilters);
         const quoteSourceFilters = this._buySources.merge(requestFilters);
+
+        const feeSourceFilters = this._feeSources.exclude(_opts.excludedFeeSources);
 
         const ops = [
             ...batchNativeOrders.map(orders =>
@@ -520,11 +568,9 @@ export class MarketOperationUtils {
             ethToInputRate,
             exchangeProxyOverhead: opts.exchangeProxyOverhead || (() => ZERO_AMOUNT),
         };
+
         const optimalPath = await findOptimalPathAsync(side, fills, inputAmount, opts.runLimit, optimizerOpts);
-        if (optimalPath === undefined) {
-            throw new Error(AggregationError.NoOptimalPath);
-        }
-        const optimalPathRate = optimalPath.adjustedRate();
+        const optimalPathRate = optimalPath ? optimalPath.adjustedRate() : ZERO_AMOUNT;
 
         const { adjustedRate: bestTwoHopRate, quote: bestTwoHopQuote } = getBestTwoHopQuote(
             marketSideLiquidity,
@@ -538,6 +584,11 @@ export class MarketOperationUtils {
                 liquidityDelivered: bestTwoHopQuote,
                 sourceFlags: SOURCE_FLAGS[ERC20BridgeSource.MultiHop],
             };
+        }
+
+        // If there is no optimal path AND we didn't return a MultiHop quote, then throw
+        if (optimalPath === undefined) {
+            throw new Error(AggregationError.NoOptimalPath);
         }
 
         // Generate a fallback path if native orders are in the optimal path.

@@ -26,6 +26,7 @@ import {
     SOURCE_FLAGS,
     ZERO_AMOUNT,
 } from '../src/utils/market_operation_utils/constants';
+import { CreamPoolsCache } from '../src/utils/market_operation_utils/cream_utils';
 import { createFills } from '../src/utils/market_operation_utils/fills';
 import { DexOrderSampler } from '../src/utils/market_operation_utils/sampler';
 import { BATCH_SOURCE_FILTERS } from '../src/utils/market_operation_utils/sampler_operations';
@@ -55,6 +56,7 @@ const DEFAULT_EXCLUDED = [
     ERC20BridgeSource.SushiSwap,
     ERC20BridgeSource.MultiHop,
     ERC20BridgeSource.Shell,
+    ERC20BridgeSource.Cream,
     ERC20BridgeSource.Dodo,
 ];
 const BUY_SOURCES = BUY_SOURCE_FILTER.sources;
@@ -323,6 +325,7 @@ describe('MarketOperationUtils tests', () => {
         [ERC20BridgeSource.SushiSwap]: _.times(NUM_SAMPLES, () => 0),
         [ERC20BridgeSource.MultiHop]: _.times(NUM_SAMPLES, () => 0),
         [ERC20BridgeSource.Shell]: _.times(NUM_SAMPLES, () => 0),
+        [ERC20BridgeSource.Cream]: _.times(NUM_SAMPLES, () => 0),
         [ERC20BridgeSource.Dodo]: _.times(NUM_SAMPLES, () => 0),
     };
 
@@ -370,6 +373,7 @@ describe('MarketOperationUtils tests', () => {
         [ERC20BridgeSource.Native]: { order: createOrder() },
         [ERC20BridgeSource.MultiHop]: {},
         [ERC20BridgeSource.Shell]: {},
+        [ERC20BridgeSource.Cream]: { poolAddress: randomAddress() },
         [ERC20BridgeSource.Dodo]: {},
     };
 
@@ -411,6 +415,22 @@ describe('MarketOperationUtils tests', () => {
                 DEFAULT_FILL_DATA[ERC20BridgeSource.Balancer],
             ),
         ],
+        getCreamSellQuotesOffChainAsync: (_makerToken: string, _takerToken: string, takerFillAmounts: BigNumber[]) => [
+            createSamplesFromRates(
+                ERC20BridgeSource.Cream,
+                takerFillAmounts,
+                createDecreasingRates(takerFillAmounts.length),
+                DEFAULT_FILL_DATA[ERC20BridgeSource.Cream],
+            ),
+        ],
+        getCreamBuyQuotesOffChainAsync: (_makerToken: string, _takerToken: string, makerFillAmounts: BigNumber[]) => [
+            createSamplesFromRates(
+                ERC20BridgeSource.Cream,
+                makerFillAmounts,
+                createDecreasingRates(makerFillAmounts.length).map(r => new BigNumber(1).div(r)),
+                DEFAULT_FILL_DATA[ERC20BridgeSource.Cream],
+            ),
+        ],
         getBancorSellQuotesOffChainAsync: (_makerToken: string, _takerToken: string, takerFillAmounts: BigNumber[]) =>
             createSamplesFromRates(
                 ERC20BridgeSource.Bancor,
@@ -430,6 +450,7 @@ describe('MarketOperationUtils tests', () => {
             return ops;
         },
         balancerPoolsCache: new BalancerPoolsCache(),
+        creamPoolsCache: new CreamPoolsCache(),
     } as any) as DexOrderSampler;
 
     function replaceSamplerOps(ops: Partial<typeof DEFAULT_OPS> = {}): void {
@@ -535,6 +556,14 @@ describe('MarketOperationUtils tests', () => {
                         sourcesPolled = sourcesPolled.concat(ERC20BridgeSource.Balancer);
                         return DEFAULT_OPS.getBalancerSellQuotesOffChainAsync(makerToken, takerToken, takerFillAmounts);
                     },
+                    getCreamSellQuotesOffChainAsync: (
+                        makerToken: string,
+                        takerToken: string,
+                        takerFillAmounts: BigNumber[],
+                    ) => {
+                        sourcesPolled = sourcesPolled.concat(ERC20BridgeSource.Cream);
+                        return DEFAULT_OPS.getCreamSellQuotesOffChainAsync(makerToken, takerToken, takerFillAmounts);
+                    },
                 });
                 await marketOperationUtils.getMarketSellOrdersAsync(ORDERS, FILL_AMOUNT, {
                     ...DEFAULT_OPTS,
@@ -564,6 +593,14 @@ describe('MarketOperationUtils tests', () => {
                     ) => {
                         args.sources = args.sources.concat(ERC20BridgeSource.Balancer);
                         return DEFAULT_OPS.getBalancerSellQuotesOffChainAsync(makerToken, takerToken, takerFillAmounts);
+                    },
+                    getCreamSellQuotesOffChainAsync: (
+                        makerToken: string,
+                        takerToken: string,
+                        takerFillAmounts: BigNumber[],
+                    ) => {
+                        args.sources = args.sources.concat(ERC20BridgeSource.Cream);
+                        return DEFAULT_OPS.getCreamSellQuotesOffChainAsync(makerToken, takerToken, takerFillAmounts);
                     },
                 });
                 const registryAddress = randomAddress();
@@ -606,6 +643,14 @@ describe('MarketOperationUtils tests', () => {
                         sourcesPolled = sourcesPolled.concat(ERC20BridgeSource.Balancer);
                         return DEFAULT_OPS.getBalancerSellQuotesOffChainAsync(makerToken, takerToken, takerFillAmounts);
                     },
+                    getCreamSellQuotesOffChainAsync: (
+                        makerToken: string,
+                        takerToken: string,
+                        takerFillAmounts: BigNumber[],
+                    ) => {
+                        sourcesPolled = sourcesPolled.concat(ERC20BridgeSource.Cream);
+                        return DEFAULT_OPS.getCreamSellQuotesOffChainAsync(makerToken, takerToken, takerFillAmounts);
+                    },
                 });
                 await marketOperationUtils.getMarketSellOrdersAsync(ORDERS, FILL_AMOUNT, {
                     ...DEFAULT_OPTS,
@@ -636,6 +681,14 @@ describe('MarketOperationUtils tests', () => {
                     ) => {
                         sourcesPolled = sourcesPolled.concat(ERC20BridgeSource.Balancer);
                         return DEFAULT_OPS.getBalancerSellQuotesOffChainAsync(makerToken, takerToken, takerFillAmounts);
+                    },
+                    getCreamSellQuotesOffChainAsync: (
+                        makerToken: string,
+                        takerToken: string,
+                        takerFillAmounts: BigNumber[],
+                    ) => {
+                        sourcesPolled = sourcesPolled.concat(ERC20BridgeSource.Cream);
+                        return DEFAULT_OPS.getCreamSellQuotesOffChainAsync(makerToken, takerToken, takerFillAmounts);
                     },
                 });
                 await marketOperationUtils.getMarketSellOrdersAsync(ORDERS, FILL_AMOUNT, {
@@ -1380,6 +1433,14 @@ describe('MarketOperationUtils tests', () => {
                         sourcesPolled = sourcesPolled.concat(ERC20BridgeSource.Balancer);
                         return DEFAULT_OPS.getBalancerBuyQuotesOffChainAsync(makerToken, takerToken, makerFillAmounts);
                     },
+                    getCreamBuyQuotesOffChainAsync: (
+                        makerToken: string,
+                        takerToken: string,
+                        makerFillAmounts: BigNumber[],
+                    ) => {
+                        sourcesPolled = sourcesPolled.concat(ERC20BridgeSource.Cream);
+                        return DEFAULT_OPS.getCreamBuyQuotesOffChainAsync(makerToken, takerToken, makerFillAmounts);
+                    },
                 });
                 await marketOperationUtils.getMarketBuyOrdersAsync(ORDERS, FILL_AMOUNT, {
                     ...DEFAULT_OPTS,
@@ -1409,6 +1470,14 @@ describe('MarketOperationUtils tests', () => {
                     ) => {
                         args.sources = args.sources.concat(ERC20BridgeSource.Balancer);
                         return DEFAULT_OPS.getBalancerBuyQuotesOffChainAsync(makerToken, takerToken, makerFillAmounts);
+                    },
+                    getCreamBuyQuotesOffChainAsync: (
+                        makerToken: string,
+                        takerToken: string,
+                        makerFillAmounts: BigNumber[],
+                    ) => {
+                        args.sources = args.sources.concat(ERC20BridgeSource.Cream);
+                        return DEFAULT_OPS.getCreamBuyQuotesOffChainAsync(makerToken, takerToken, makerFillAmounts);
                     },
                 });
                 const registryAddress = randomAddress();
@@ -1451,6 +1520,14 @@ describe('MarketOperationUtils tests', () => {
                         sourcesPolled = sourcesPolled.concat(ERC20BridgeSource.Balancer);
                         return DEFAULT_OPS.getBalancerBuyQuotesOffChainAsync(makerToken, takerToken, makerFillAmounts);
                     },
+                    getCreamBuyQuotesOffChainAsync: (
+                        makerToken: string,
+                        takerToken: string,
+                        makerFillAmounts: BigNumber[],
+                    ) => {
+                        sourcesPolled = sourcesPolled.concat(ERC20BridgeSource.Cream);
+                        return DEFAULT_OPS.getCreamBuyQuotesOffChainAsync(makerToken, takerToken, makerFillAmounts);
+                    },
                 });
                 await marketOperationUtils.getMarketBuyOrdersAsync(ORDERS, FILL_AMOUNT, {
                     ...DEFAULT_OPTS,
@@ -1481,6 +1558,14 @@ describe('MarketOperationUtils tests', () => {
                     ) => {
                         sourcesPolled = sourcesPolled.concat(ERC20BridgeSource.Balancer);
                         return DEFAULT_OPS.getBalancerBuyQuotesOffChainAsync(makerToken, takerToken, makerFillAmounts);
+                    },
+                    getCreamBuyQuotesOffChainAsync: (
+                        makerToken: string,
+                        takerToken: string,
+                        makerFillAmounts: BigNumber[],
+                    ) => {
+                        sourcesPolled = sourcesPolled.concat(ERC20BridgeSource.Cream);
+                        return DEFAULT_OPS.getCreamBuyQuotesOffChainAsync(makerToken, takerToken, makerFillAmounts);
                     },
                 });
                 await marketOperationUtils.getMarketBuyOrdersAsync(ORDERS, FILL_AMOUNT, {

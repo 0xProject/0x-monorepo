@@ -153,6 +153,18 @@
             {
                 "note": "Added `DODO`",
                 "pr": 2701
+            },
+            {
+                "note": "Fix for some edge cases with `includedSources` and `MultiHop`",
+                "pr": 2730
+            },
+            {
+                "note": "Introduced `excludedFeeSources` to disable sources when determining the price of an asset in ETH",
+                "pr": 2731
+            },
+            {
+                "note": "Support DODO Trade Allowed parameter to automatically disable the pool",
+                "pr": 2732
             }
         ]
     },

@@ -65,6 +65,10 @@
             {
                 "note": "Added `Shell` into FQT",
                 "pr": 2722
+            },
+            {
+                "note": "Added `CREAM` into FQT",
+                "pr": 2715
             }
         ]
     },

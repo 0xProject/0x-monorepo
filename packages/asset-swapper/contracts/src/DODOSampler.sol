@@ -34,6 +34,7 @@ interface IDODOHelper {
 
 interface IDODO {
     function querySellBaseToken(uint256 amount) external view returns (uint256);
+    function _TRADE_ALLOWED_() external view returns (bool);
 }
 
 contract DODOSampler is
@@ -78,6 +79,11 @@ contract DODOSampler is
             }
             baseToken = makerToken;
             sellBase = false;
+        }
+
+        // DODO Pool has been disabled
+        if (!IDODO(pool)._TRADE_ALLOWED_()) {
+            return (sellBase, pool, makerTokenAmounts);
         }
 
         for (uint256 i = 0; i < numSamples; i++) {
@@ -130,6 +136,11 @@ contract DODOSampler is
             }
             baseToken = makerToken;
             sellBase = false;
+        }
+
+        // DODO Pool has been disabled
+        if (!IDODO(pool)._TRADE_ALLOWED_()) {
+            return (sellBase, pool, takerTokenAmounts);
         }
 
         takerTokenAmounts = _sampleApproximateBuys(
