@@ -161,7 +161,7 @@ export class MarketOperationUtils {
             quoteSourceFilters.isAllowed(ERC20BridgeSource.Cream),
         );
 
-        const excludedSources = [
+        const offChainSources = [
             ...(!sampleCreamOnChain ? [ERC20BridgeSource.Cream] : []),
             ...(!sampleBalancerOnChain ? [ERC20BridgeSource.Balancer] : []),
         ];
@@ -192,7 +192,7 @@ export class MarketOperationUtils {
             ),
             // Get sell quotes for taker -> maker.
             this._sampler.getSellQuotes(
-                quoteSourceFilters.exclude(excludedSources).sources,
+                quoteSourceFilters.exclude(offChainSources).sources,
                 makerToken,
                 takerToken,
                 sampleAmounts,
@@ -304,7 +304,7 @@ export class MarketOperationUtils {
             quoteSourceFilters.isAllowed(ERC20BridgeSource.Cream),
         );
 
-        const excludedSources = [
+        const offChainSources = [
             ...(!sampleCreamOnChain ? [ERC20BridgeSource.Cream] : []),
             ...(!sampleBalancerOnChain ? [ERC20BridgeSource.Balancer] : []),
         ];
@@ -335,7 +335,7 @@ export class MarketOperationUtils {
             ),
             // Get buy quotes for taker -> maker.
             this._sampler.getBuyQuotes(
-                quoteSourceFilters.exclude(excludedSources).sources,
+                quoteSourceFilters.exclude(offChainSources).sources,
                 makerToken,
                 takerToken,
                 sampleAmounts,
