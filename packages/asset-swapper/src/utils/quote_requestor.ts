@@ -44,29 +44,6 @@ function getTokenAddressOrThrow(assetData: string): string {
     throw new Error(`Decoded asset data (${JSON.stringify(decodedAssetData)}) does not contain a token address`);
 }
 
-function inferQueryParams(
-    marketOperation: MarketOperation,
-    makerAssetData: string,
-    takerAssetData: string,
-    assetFillAmount: BigNumber,
-): Pick<TakerRequest, 'buyTokenAddress' | 'sellTokenAddress' | 'buyAmountBaseUnits' | 'sellAmountBaseUnits'> {
-    if (marketOperation === MarketOperation.Buy) {
-        return {
-            buyTokenAddress: getTokenAddressOrThrow(makerAssetData),
-            sellTokenAddress: getTokenAddressOrThrow(takerAssetData),
-            buyAmountBaseUnits: assetFillAmount,
-            sellAmountBaseUnits: undefined,
-        };
-    } else {
-        return {
-            buyTokenAddress: getTokenAddressOrThrow(makerAssetData),
-            sellTokenAddress: getTokenAddressOrThrow(takerAssetData),
-            sellAmountBaseUnits: assetFillAmount,
-            buyAmountBaseUnits: undefined,
-        };
-    }
-}
-
 function hasExpectedAssetData(
     expectedMakerAssetData: string,
     expectedTakerAssetData: string,
@@ -119,19 +96,25 @@ export class QuoteRequestor {
         assetFillAmount: BigNumber,
         comparisonPrice?: BigNumber,
     ): TakerRequestQueryParams {
-        const { buyAmountBaseUnits, sellAmountBaseUnits, ...rest } = inferQueryParams(
-            marketOperation,
-            makerAssetData,
-            takerAssetData,
-            assetFillAmount,
-        );
+        const buyTokenAddress = getTokenAddressOrThrow(makerAssetData);
+        const sellTokenAddress = getTokenAddressOrThrow(takerAssetData);
+        const { buyAmountBaseUnits, sellAmountBaseUnits } = marketOperation === MarketOperation.Buy
+        ? {
+                buyAmountBaseUnits: assetFillAmount,
+                sellAmountBaseUnits: undefined,
+        } : {
+                sellAmountBaseUnits: assetFillAmount,
+                buyAmountBaseUnits: undefined,
+        };
+
         const requestParamsWithBigNumbers: Pick<
             TakerRequestQueryParams,
             'buyTokenAddress' | 'sellTokenAddress' | 'takerAddress' | 'comparisonPrice'
         > = {
             takerAddress,
             comparisonPrice: comparisonPrice === undefined ? undefined : comparisonPrice.toString(),
-            ...rest,
+            buyTokenAddress,
+            sellTokenAddress,
         };
 
         // convert BigNumbers to strings
