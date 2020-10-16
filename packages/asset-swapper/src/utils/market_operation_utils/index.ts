@@ -137,11 +137,11 @@ export class MarketOperationUtils {
         const _opts = { ...DEFAULT_GET_MARKET_ORDERS_OPTS, ...opts };
         const [makerToken, takerToken] = getNativeOrderTokens(nativeOrders[0]);
         const sampleAmounts = getSampleAmounts(takerAmount, _opts.numSamples, _opts.sampleDistributionBase);
+
         const requestFilters = new SourceFilters().exclude(_opts.excludedSources).include(_opts.includedSources);
-        // We don't exclude from the fee sources as we always want to be able to get a price
-        // of taker to Eth or maker to Eth, especially for MultiHop
-        const feeSourceFilters = this._feeSources;
         const quoteSourceFilters = this._sellSources.merge(requestFilters);
+
+        const feeSourceFilters = this._feeSources.exclude(_opts.excludedFeeSources);
 
         const {
             onChain: sampleBalancerOnChain,
@@ -255,9 +255,11 @@ export class MarketOperationUtils {
         const _opts = { ...DEFAULT_GET_MARKET_ORDERS_OPTS, ...opts };
         const [makerToken, takerToken] = getNativeOrderTokens(nativeOrders[0]);
         const sampleAmounts = getSampleAmounts(makerAmount, _opts.numSamples, _opts.sampleDistributionBase);
+
         const requestFilters = new SourceFilters().exclude(_opts.excludedSources).include(_opts.includedSources);
-        const feeSourceFilters = this._feeSources.merge(requestFilters);
         const quoteSourceFilters = this._buySources.merge(requestFilters);
+
+        const feeSourceFilters = this._feeSources.exclude(_opts.excludedFeeSources);
 
         const {
             onChain: sampleBalancerOnChain,
@@ -444,8 +446,9 @@ export class MarketOperationUtils {
         const _opts = { ...DEFAULT_GET_MARKET_ORDERS_OPTS, ...opts };
 
         const requestFilters = new SourceFilters().exclude(_opts.excludedSources).include(_opts.includedSources);
-        const feeSourceFilters = this._feeSources.merge(requestFilters);
         const quoteSourceFilters = this._buySources.merge(requestFilters);
+
+        const feeSourceFilters = this._feeSources.exclude(_opts.excludedFeeSources);
 
         const ops = [
             ...batchNativeOrders.map(orders =>
