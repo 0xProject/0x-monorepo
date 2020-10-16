@@ -406,6 +406,7 @@ export async function runMigrationsAsync(
         sushiswapBridge: NULL_ADDRESS,
         shellBridge: NULL_ADDRESS,
         dodoBridge: NULL_ADDRESS,
+        creamBridge: NULL_ADDRESS,
         exchangeProxy: exchangeProxy.address,
         exchangeProxyAllowanceTarget: exchangeProxyAllowanceTargetAddress,
         exchangeProxyTransformerDeployer: txDefaults.from,
