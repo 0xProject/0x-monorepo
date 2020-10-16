@@ -177,6 +177,8 @@ function getBridgeAddressFromFill(fill: CollapsedFill, opts: CreateOrderFromPath
             return opts.contractAddresses.bancorBridge;
         case ERC20BridgeSource.Balancer:
             return opts.contractAddresses.balancerBridge;
+        case ERC20BridgeSource.Cream:
+            return opts.contractAddresses.creamBridge;
         case ERC20BridgeSource.LiquidityProvider:
             return (fill.fillData as LiquidityProviderFillData).poolAddress;
         case ERC20BridgeSource.MultiBridge:
@@ -239,6 +241,14 @@ export function createBridgeOrder(
                 makerToken,
                 bridgeAddress,
                 createBalancerBridgeData(takerToken, balancerFillData.poolAddress),
+            );
+            break;
+        case ERC20BridgeSource.Cream:
+            const creamFillData = (fill as CollapsedFill<BalancerFillData>).fillData!; // tslint:disable-line:no-non-null-assertion
+            makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
+                makerToken,
+                bridgeAddress,
+                createBalancerBridgeData(takerToken, creamFillData.poolAddress),
             );
             break;
         case ERC20BridgeSource.Bancor:

@@ -37,6 +37,7 @@ export enum ERC20BridgeSource {
     LiquidityProvider = 'LiquidityProvider',
     MultiBridge = 'MultiBridge',
     Balancer = 'Balancer',
+    Cream = 'CREAM',
     Bancor = 'Bancor',
     MStable = 'mStable',
     Mooniswap = 'Mooniswap',

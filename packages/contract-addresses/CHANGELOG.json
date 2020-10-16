@@ -57,6 +57,10 @@
             {
                 "note": "Deploy `DodoBridge` on Mainnet",
                 "pr": 2701
+            },
+            {
+                "note": "Deploy `CreamBridge` on Mainnet",
+                "pr": 2715
             }
         ]
     },

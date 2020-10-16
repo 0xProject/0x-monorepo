@@ -24,6 +24,7 @@ contract MixinAdapterAddresses
     struct AdapterAddresses {
         // Bridges
         address balancerBridge;
+        address creamBridge;
         address curveBridge;
         address kyberBridge;
         address mooniswapBridge;
