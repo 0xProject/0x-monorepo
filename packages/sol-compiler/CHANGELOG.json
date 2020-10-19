@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.2.0",
+        "changes": [
+            {
+                "note": "Add solidity 0.7.x suppoert",
+                "pr": 2710
+            }
+        ]
+    },
+    {
         "timestamp": 1594788383,
         "version": "4.1.1",
         "changes": [
