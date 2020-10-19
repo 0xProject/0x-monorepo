@@ -157,17 +157,44 @@ contract UniswapFeature is
                     switch eq(sellToken, ETH_TOKEN_ADDRESS_32)
                         case 0 {
                             // For the first pair we need to transfer sellTokens into the
-                            // pair contract using `AllowanceTarget.executeCall()`
-                            mstore(0xB00, ALLOWANCE_TARGET_EXECUTE_CALL_SELECTOR_32)
-                            mstore(0xB04, sellToken)
-                            mstore(0xB24, 0x40)
-                            mstore(0xB44, 0x64)
-                            mstore(0xB64, TRANSFER_FROM_CALL_SELECTOR_32)
-                            mstore(0xB68, caller())
-                            mstore(0xB88, pair)
-                            mstore(0xBA8, sellAmount)
-                            if iszero(call(gas(), mload(0xA60), 0, 0xB00, 0xC8, 0x00, 0x0)) {
-                                bubbleRevert()
+                            // pair contract.
+                            mstore(0xB00, TRANSFER_FROM_CALL_SELECTOR_32)
+                            mstore(0xB04, caller())
+                            mstore(0xB24, pair)
+                            mstore(0xB44, sellAmount)
+
+                            let success := call(gas(), sellToken, 0, 0xB00, 0x64, 0, 0)
+
+                            let rdsize := returndatasize()
+
+                            returndatacopy(0xB00, 0, rdsize) // reuse memory
+
+                            // Check for ERC20 success. ERC20 tokens should return a boolean,
+                            // but some don't. We accept 0-length return data as success.
+                            success := and(
+                                success,                             // call itself succeeded
+                                or(
+                                    iszero(rdsize),                  // no return data, or
+                                    and(
+                                        eq(rdsize, 32),              // exactly 32 bytes
+                                        eq(mload(0xB00), 1)          // and the value is 1 (true)
+                                    )
+                                )
+                            )
+
+                            if iszero(success) {
+                                // Try to fall back to the allowance target.
+                                mstore(0xB00, ALLOWANCE_TARGET_EXECUTE_CALL_SELECTOR_32)
+                                mstore(0xB04, sellToken)
+                                mstore(0xB24, 0x40)
+                                mstore(0xB44, 0x64)
+                                mstore(0xB64, TRANSFER_FROM_CALL_SELECTOR_32)
+                                mstore(0xB68, caller())
+                                mstore(0xB88, pair)
+                                mstore(0xBA8, sellAmount)
+                                if iszero(call(gas(), mload(0xA60), 0, 0xB00, 0xC8, 0x00, 0x0)) {
+                                    bubbleRevert()
+                                }
                             }
                         }
                         default {
