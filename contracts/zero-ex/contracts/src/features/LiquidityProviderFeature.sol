@@ -31,7 +31,7 @@ import "../storage/LibLiquidityProviderStorage.sol";
 import "../vendor/v3/IERC20Bridge.sol";
 import "./IFeature.sol";
 import "./ILiquidityProviderFeature.sol";
-import "./ITokenSpenderFeature.sol";
+import "./libs/LibTokenSpender.sol";
 
 
 contract LiquidityProviderFeature is
@@ -97,7 +97,7 @@ contract LiquidityProviderFeature is
             weth.deposit{value: sellAmount}();
             weth.transfer(providerAddress, sellAmount);
         } else {
-            ITokenSpenderFeature(address(this))._spendERC20Tokens(
+            LibTokenSpender.spendERC20Tokens(
                 IERC20TokenV06(takerToken),
                 msg.sender,
                 providerAddress,

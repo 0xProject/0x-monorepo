@@ -52,6 +52,7 @@ export * from '../test/generated-wrappers/lib_simple_function_registry_rich_erro
 export * from '../test/generated-wrappers/lib_simple_function_registry_storage';
 export * from '../test/generated-wrappers/lib_spender_rich_errors';
 export * from '../test/generated-wrappers/lib_storage';
+export * from '../test/generated-wrappers/lib_token_spender';
 export * from '../test/generated-wrappers/lib_token_spender_storage';
 export * from '../test/generated-wrappers/lib_transform_erc20_rich_errors';
 export * from '../test/generated-wrappers/lib_transform_erc20_storage';
@@ -82,6 +83,7 @@ export * from '../test/generated-wrappers/test_fill_quote_transformer_exchange';
 export * from '../test/generated-wrappers/test_fill_quote_transformer_host';
 export * from '../test/generated-wrappers/test_full_migration';
 export * from '../test/generated-wrappers/test_initial_migration';
+export * from '../test/generated-wrappers/test_lib_token_spender';
 export * from '../test/generated-wrappers/test_meta_transactions_transform_erc20_feature';
 export * from '../test/generated-wrappers/test_migrator';
 export * from '../test/generated-wrappers/test_mint_token_erc20_transformer';

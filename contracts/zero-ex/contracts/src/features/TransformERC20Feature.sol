@@ -33,9 +33,9 @@ import "../transformers/IERC20Transformer.sol";
 import "../transformers/LibERC20Transformer.sol";
 import "./libs/LibSignedCallData.sol";
 import "./ITransformERC20Feature.sol";
-import "./ITokenSpenderFeature.sol";
 import "./IFeature.sol";
 import "./ISignatureValidatorFeature.sol";
+import "./libs/LibTokenSpender.sol";
 
 
 /// @dev Feature to composably transform between ERC20 tokens.
@@ -211,8 +211,10 @@ contract TransformERC20Feature is
         // If the input token amount is -1, transform the taker's entire
         // spendable balance.
         if (args.inputTokenAmount == uint256(-1)) {
-            args.inputTokenAmount = ITokenSpenderFeature(address(this))
-                .getSpendableERC20BalanceOf(args.inputToken, args.taker);
+            args.inputTokenAmount = LibTokenSpender.getSpendableERC20BalanceOf(
+                args.inputToken,
+                args.taker
+            );
         }
 
         TransformERC20PrivateState memory state;
@@ -315,12 +317,7 @@ contract TransformERC20Feature is
         // Transfer input tokens.
         if (!LibERC20Transformer.isTokenETH(inputToken)) {
             // Token is not ETH, so pull ERC20 tokens.
-            ITokenSpenderFeature(address(this))._spendERC20Tokens(
-                inputToken,
-                from,
-                to,
-                amount
-            );
+            LibTokenSpender.spendERC20Tokens(inputToken, from, to, amount);
         } else if (msg.value < amount) {
              // Token is ETH, so the caller must attach enough ETH to the call.
             LibTransformERC20RichErrors.InsufficientEthAttachedError(

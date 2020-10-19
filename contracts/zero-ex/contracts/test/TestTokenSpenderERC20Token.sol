@@ -37,6 +37,7 @@ contract TestTokenSpenderERC20Token is
     uint256 constant private EMPTY_RETURN_AMOUNT = 1337;
     uint256 constant private FALSE_RETURN_AMOUNT = 1338;
     uint256 constant private REVERT_RETURN_AMOUNT = 1339;
+    uint256 constant private TRIGGER_FALLBACK_SUCCESS_AMOUNT = 1340;
 
     function transferFrom(address from, address to, uint256 amount)
         public
@@ -52,6 +53,9 @@ contract TestTokenSpenderERC20Token is
         }
         if (amount == REVERT_RETURN_AMOUNT) {
             revert("TestTokenSpenderERC20Token/Revert");
+        }
+        if (amount == TRIGGER_FALLBACK_SUCCESS_AMOUNT) {
+            return false;
         }
         return true;
     }

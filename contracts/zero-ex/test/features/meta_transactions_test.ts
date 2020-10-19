@@ -17,7 +17,6 @@ import { artifacts } from '../artifacts';
 import { abis } from '../utils/abis';
 import { fullMigrateAsync } from '../utils/migration';
 import {
-    ITokenSpenderFeatureContract,
     TestMetaTransactionsTransformERC20FeatureContract,
     TestMetaTransactionsTransformERC20FeatureEvents,
     TestMintableERC20TokenContract,
@@ -33,7 +32,6 @@ blockchainTests.resets('MetaTransactions feature', env => {
     let feature: MetaTransactionsFeatureContract;
     let feeToken: TestMintableERC20TokenContract;
     let transformERC20Feature: TestMetaTransactionsTransformERC20FeatureContract;
-    let allowanceTarget: string;
 
     const MAX_FEE_AMOUNT = new BigNumber('1e18');
     const TRANSFORM_ERC20_FAILING_VALUE = new BigNumber(666);
@@ -64,14 +62,11 @@ blockchainTests.resets('MetaTransactions feature', env => {
             env.txDefaults,
             {},
         );
-        allowanceTarget = await new ITokenSpenderFeatureContract(zeroEx.address, env.provider, env.txDefaults)
-            .getAllowanceTarget()
-            .callAsync();
         // Fund signers with fee tokens.
         await Promise.all(
             signers.map(async signer => {
                 await feeToken.mint(signer, MAX_FEE_AMOUNT).awaitTransactionSuccessAsync();
-                await feeToken.approve(allowanceTarget, MAX_FEE_AMOUNT).awaitTransactionSuccessAsync({ from: signer });
+                await feeToken.approve(zeroEx.address, MAX_FEE_AMOUNT).awaitTransactionSuccessAsync({ from: signer });
             }),
         );
     });

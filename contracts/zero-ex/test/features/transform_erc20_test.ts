@@ -20,7 +20,6 @@ import { abis } from '../utils/abis';
 import { fullMigrateAsync } from '../utils/migration';
 import {
     FlashWalletContract,
-    ITokenSpenderFeatureContract,
     TestMintableERC20TokenContract,
     TestMintTokenERC20TransformerContract,
     TestMintTokenERC20TransformerEvents,
@@ -42,7 +41,6 @@ blockchainTests.resets('TransformERC20 feature', env => {
     let zeroEx: IZeroExContract;
     let feature: TransformERC20FeatureContract;
     let wallet: FlashWalletContract;
-    let allowanceTarget: string;
 
     before(async () => {
         [owner, taker, sender, transformerDeployer] = await env.getAccountAddressesAsync();
@@ -67,9 +65,6 @@ blockchainTests.resets('TransformERC20 feature', env => {
             abis,
         );
         wallet = new FlashWalletContract(await feature.getTransformWallet().callAsync(), env.provider, env.txDefaults);
-        allowanceTarget = await new ITokenSpenderFeatureContract(zeroEx.address, env.provider, env.txDefaults)
-            .getAllowanceTarget()
-            .callAsync();
         await feature.setQuoteSigner(callDataSigner).awaitTransactionSuccessAsync({ from: owner });
     });
 
@@ -173,7 +168,7 @@ blockchainTests.resets('TransformERC20 feature', env => {
                 },
                 artifacts,
             );
-            await inputToken.approve(allowanceTarget, MAX_UINT256).awaitTransactionSuccessAsync({ from: taker });
+            await inputToken.approve(zeroEx.address, MAX_UINT256).awaitTransactionSuccessAsync({ from: taker });
         });
 
         interface Transformation {

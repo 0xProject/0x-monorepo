@@ -33,7 +33,7 @@ library LibStorage {
         Proxy,
         SimpleFunctionRegistry,
         Ownable,
-        TokenSpender,
+        TokenSpender,     // now defunct but can't be removed
         TransformERC20,
         MetaTransactions,
         ReentrancyGuard,

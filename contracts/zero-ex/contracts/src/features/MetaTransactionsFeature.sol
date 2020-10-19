@@ -32,8 +32,8 @@ import "./libs/LibSignedCallData.sol";
 import "./IMetaTransactionsFeature.sol";
 import "./ITransformERC20Feature.sol";
 import "./ISignatureValidatorFeature.sol";
-import "./ITokenSpenderFeature.sol";
 import "./IFeature.sol";
+import "./libs/LibTokenSpender.sol";
 
 
 /// @dev MetaTransactions feature.
@@ -279,10 +279,10 @@ contract MetaTransactionsFeature is
 
         // Pay the fee to the sender.
         if (mtx.feeAmount > 0) {
-            ITokenSpenderFeature(address(this))._spendERC20Tokens(
+            LibTokenSpender.spendERC20Tokens(
                 mtx.feeToken,
-                mtx.signer, // From the signer.
-                sender, // To the sender.
+                mtx.signer,
+                sender,
                 mtx.feeAmount
             );
         }
