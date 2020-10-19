@@ -133,6 +133,19 @@ blockchainTests.resets('LibTokenSpender library', env => {
                 TestLibTokenSpenderEvents.FallbackCalled,
             );
         });
+
+        it('spendERC20Tokens() cannot call self', async () => {
+            const tokenFrom = randomAddress();
+            const tokenTo = randomAddress();
+            const tokenAmount = new BigNumber(123456);
+
+            const tx = tokenSpender
+                .spendERC20Tokens(tokenSpender.address, tokenFrom, tokenTo, tokenAmount)
+                .awaitTransactionSuccessAsync();
+            return expect(tx).to.revertWith(
+                new ZeroExRevertErrors.Spender.CannotInvokeSelfError()
+            );
+        });
     });
 
     describe('getSpendableERC20BalanceOf()', () => {

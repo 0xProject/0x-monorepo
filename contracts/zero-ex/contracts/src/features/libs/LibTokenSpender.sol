@@ -43,6 +43,10 @@ library LibTokenSpender {
         bool success;
         bytes memory revertData;
 
+        if (address(token) == address(this)) {
+            LibSpenderRichErrors.CannotInvokeSelfError().rrevert();
+        }
+
         assembly {
             let ptr := mload(0x40) // free memory pointer
 

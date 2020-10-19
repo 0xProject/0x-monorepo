@@ -18,7 +18,13 @@ export class SpenderERC20TransferFromFailedError extends RevertError {
     }
 }
 
-const types = [SpenderERC20TransferFromFailedError];
+export class CannotInvokeSelfError extends RevertError {
+    constructor() {
+        super('CannotInvokeSelfError', 'CannotInvokeSelfError()');
+    }
+}
+
+const types = [SpenderERC20TransferFromFailedError, CannotInvokeSelfError];
 
 // Register the types we've defined.
 for (const type of types) {
