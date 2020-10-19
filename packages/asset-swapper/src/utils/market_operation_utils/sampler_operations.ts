@@ -9,7 +9,7 @@ import { BalancerPoolsCache, computeBalancerBuyQuote, computeBalancerSellQuote }
 import { BancorService } from './bancor_service';
 import { MAINNET_SUSHI_SWAP_ROUTER, MAX_UINT256, NULL_BYTES, ZERO_AMOUNT } from './constants';
 import { CreamPoolsCache } from './cream_utils';
-import { getCurveInfosForPair, getSwerveInfosForPair } from './curve_utils';
+import { getCurveInfosForPair, getSnowSwapInfosForPair, getSwerveInfosForPair } from './curve_utils';
 import { getKyberReserveIdsForPair } from './kyber_utils';
 import { getMultiBridgeIntermediateToken } from './multibridge_utils';
 import { getIntermediateTokens } from './multihop_utils';
@@ -30,6 +30,8 @@ import {
     MooniswapFillData,
     MultiBridgeFillData,
     MultiHopFillData,
+    SnowSwapFillData,
+    SnowSwapInfo,
     SourceQuoteOperation,
     SushiSwapFillData,
     SwerveFillData,
@@ -296,7 +298,7 @@ export class SamplerOperations {
     }
 
     public getCurveSellQuotes(
-        curve: CurveInfo,
+        pool: CurveInfo,
         fromTokenIdx: number,
         toTokenIdx: number,
         takerFillAmounts: BigNumber[],
@@ -304,7 +306,7 @@ export class SamplerOperations {
         return new SamplerContractOperation({
             source: ERC20BridgeSource.Curve,
             fillData: {
-                curve,
+                pool,
                 fromTokenIdx,
                 toTokenIdx,
             },
@@ -312,9 +314,9 @@ export class SamplerOperations {
             function: this._samplerContract.sampleSellsFromCurve,
             params: [
                 {
-                    poolAddress: curve.poolAddress,
-                    sellQuoteFunctionSelector: curve.sellQuoteFunctionSelector,
-                    buyQuoteFunctionSelector: curve.buyQuoteFunctionSelector,
+                    poolAddress: pool.poolAddress,
+                    sellQuoteFunctionSelector: pool.sellQuoteFunctionSelector,
+                    buyQuoteFunctionSelector: pool.buyQuoteFunctionSelector,
                 },
                 new BigNumber(fromTokenIdx),
                 new BigNumber(toTokenIdx),
@@ -324,7 +326,7 @@ export class SamplerOperations {
     }
 
     public getCurveBuyQuotes(
-        curve: CurveInfo,
+        pool: CurveInfo,
         fromTokenIdx: number,
         toTokenIdx: number,
         makerFillAmounts: BigNumber[],
@@ -332,7 +334,7 @@ export class SamplerOperations {
         return new SamplerContractOperation({
             source: ERC20BridgeSource.Curve,
             fillData: {
-                curve,
+                pool,
                 fromTokenIdx,
                 toTokenIdx,
             },
@@ -340,9 +342,9 @@ export class SamplerOperations {
             function: this._samplerContract.sampleBuysFromCurve,
             params: [
                 {
-                    poolAddress: curve.poolAddress,
-                    sellQuoteFunctionSelector: curve.sellQuoteFunctionSelector,
-                    buyQuoteFunctionSelector: curve.buyQuoteFunctionSelector,
+                    poolAddress: pool.poolAddress,
+                    sellQuoteFunctionSelector: pool.sellQuoteFunctionSelector,
+                    buyQuoteFunctionSelector: pool.buyQuoteFunctionSelector,
                 },
                 new BigNumber(fromTokenIdx),
                 new BigNumber(toTokenIdx),
@@ -387,6 +389,62 @@ export class SamplerOperations {
     ): SourceQuoteOperation<SwerveFillData> {
         return new SamplerContractOperation({
             source: ERC20BridgeSource.Swerve,
+            fillData: {
+                pool,
+                fromTokenIdx,
+                toTokenIdx,
+            },
+            contract: this._samplerContract,
+            function: this._samplerContract.sampleBuysFromCurve,
+            params: [
+                {
+                    poolAddress: pool.poolAddress,
+                    sellQuoteFunctionSelector: pool.sellQuoteFunctionSelector,
+                    buyQuoteFunctionSelector: pool.buyQuoteFunctionSelector,
+                },
+                new BigNumber(fromTokenIdx),
+                new BigNumber(toTokenIdx),
+                makerFillAmounts,
+            ],
+        });
+    }
+
+    public getSnowSwapSellQuotes(
+        pool: SnowSwapInfo,
+        fromTokenIdx: number,
+        toTokenIdx: number,
+        takerFillAmounts: BigNumber[],
+    ): SourceQuoteOperation<SnowSwapFillData> {
+        return new SamplerContractOperation({
+            source: ERC20BridgeSource.SnowSwap,
+            fillData: {
+                pool,
+                fromTokenIdx,
+                toTokenIdx,
+            },
+            contract: this._samplerContract,
+            function: this._samplerContract.sampleSellsFromCurve,
+            params: [
+                {
+                    poolAddress: pool.poolAddress,
+                    sellQuoteFunctionSelector: pool.sellQuoteFunctionSelector,
+                    buyQuoteFunctionSelector: pool.buyQuoteFunctionSelector,
+                },
+                new BigNumber(fromTokenIdx),
+                new BigNumber(toTokenIdx),
+                takerFillAmounts,
+            ],
+        });
+    }
+
+    public getSnowSwapBuyQuotes(
+        pool: SnowSwapInfo,
+        fromTokenIdx: number,
+        toTokenIdx: number,
+        makerFillAmounts: BigNumber[],
+    ): SourceQuoteOperation<SnowSwapFillData> {
+        return new SamplerContractOperation({
+            source: ERC20BridgeSource.SnowSwap,
             fillData: {
                 pool,
                 fromTokenIdx,
@@ -1024,17 +1082,26 @@ export class SamplerOperations {
                                 this.getKyberSellQuotes(reserveId, makerToken, takerToken, takerFillAmounts),
                             );
                         case ERC20BridgeSource.Curve:
-                            return getCurveInfosForPair(takerToken, makerToken).map(curve =>
+                            return getCurveInfosForPair(takerToken, makerToken).map(pool =>
                                 this.getCurveSellQuotes(
-                                    curve,
-                                    curve.tokens.indexOf(takerToken),
-                                    curve.tokens.indexOf(makerToken),
+                                    pool,
+                                    pool.tokens.indexOf(takerToken),
+                                    pool.tokens.indexOf(makerToken),
                                     takerFillAmounts,
                                 ),
                             );
                         case ERC20BridgeSource.Swerve:
                             return getSwerveInfosForPair(takerToken, makerToken).map(pool =>
                                 this.getSwerveSellQuotes(
+                                    pool,
+                                    pool.tokens.indexOf(takerToken),
+                                    pool.tokens.indexOf(makerToken),
+                                    takerFillAmounts,
+                                ),
+                            );
+                        case ERC20BridgeSource.SnowSwap:
+                            return getSnowSwapInfosForPair(takerToken, makerToken).map(pool =>
+                                this.getSnowSwapSellQuotes(
                                     pool,
                                     pool.tokens.indexOf(takerToken),
                                     pool.tokens.indexOf(makerToken),
@@ -1147,17 +1214,26 @@ export class SamplerOperations {
                                 this.getKyberBuyQuotes(reserveId, makerToken, takerToken, makerFillAmounts),
                             );
                         case ERC20BridgeSource.Curve:
-                            return getCurveInfosForPair(takerToken, makerToken).map(curve =>
+                            return getCurveInfosForPair(takerToken, makerToken).map(pool =>
                                 this.getCurveBuyQuotes(
-                                    curve,
-                                    curve.tokens.indexOf(takerToken),
-                                    curve.tokens.indexOf(makerToken),
+                                    pool,
+                                    pool.tokens.indexOf(takerToken),
+                                    pool.tokens.indexOf(makerToken),
                                     makerFillAmounts,
                                 ),
                             );
                         case ERC20BridgeSource.Swerve:
                             return getSwerveInfosForPair(takerToken, makerToken).map(pool =>
                                 this.getSwerveBuyQuotes(
+                                    pool,
+                                    pool.tokens.indexOf(takerToken),
+                                    pool.tokens.indexOf(makerToken),
+                                    makerFillAmounts,
+                                ),
+                            );
+                        case ERC20BridgeSource.SnowSwap:
+                            return getSnowSwapInfosForPair(takerToken, makerToken).map(pool =>
+                                this.getSnowSwapBuyQuotes(
                                     pool,
                                     pool.tokens.indexOf(takerToken),
                                     pool.tokens.indexOf(makerToken),

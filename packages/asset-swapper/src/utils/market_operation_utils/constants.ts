@@ -21,6 +21,7 @@ export const SELL_SOURCE_FILTER = new SourceFilters([
     ERC20BridgeSource.MStable,
     ERC20BridgeSource.Mooniswap,
     ERC20BridgeSource.Swerve,
+    ERC20BridgeSource.SnowSwap,
     ERC20BridgeSource.SushiSwap,
     ERC20BridgeSource.Shell,
     ERC20BridgeSource.MultiHop,
@@ -45,6 +46,7 @@ export const BUY_SOURCE_FILTER = new SourceFilters(
         ERC20BridgeSource.Mooniswap,
         ERC20BridgeSource.Shell,
         ERC20BridgeSource.Swerve,
+        ERC20BridgeSource.SnowSwap,
         ERC20BridgeSource.SushiSwap,
         ERC20BridgeSource.MultiHop,
         ERC20BridgeSource.Dodo,
@@ -172,9 +174,9 @@ export const MAINNET_CURVE_INFOS: { [name: string]: CurveInfo } = {
 export const MAINNET_SWERVE_INFOS: { [name: string]: CurveInfo } = {
     swUSD: {
         exchangeFunctionSelector: CurveFunctionSelectors.exchange,
-        sellQuoteFunctionSelector: CurveFunctionSelectors.get_dy_underlying,
-        buyQuoteFunctionSelector: CurveFunctionSelectors.get_dx_underlying,
-        poolAddress: '0x329239599afB305DA0A2eC69c58F8a6697F9F88d',
+        sellQuoteFunctionSelector: CurveFunctionSelectors.get_dy,
+        buyQuoteFunctionSelector: CurveFunctionSelectors.None,
+        poolAddress: '0x329239599afb305da0a2ec69c58f8a6697f9f88d', // _target: 0xa5407eae9ba41422680e2e00537571bcc53efbfd
         tokens: [
             '0x6b175474e89094c44da98b954eedeac495271d0f',
             '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
@@ -182,6 +184,53 @@ export const MAINNET_SWERVE_INFOS: { [name: string]: CurveInfo } = {
             '0x0000000000085d4780b73119b644ae5ecd22b376',
         ],
     },
+};
+export const MAINNET_SNOWSWAP_INFOS: { [name: string]: CurveInfo } = {
+    yVaultCurve: {
+        exchangeFunctionSelector: CurveFunctionSelectors.exchange,
+        sellQuoteFunctionSelector: CurveFunctionSelectors.get_dy,
+        buyQuoteFunctionSelector: CurveFunctionSelectors.get_dx,
+        poolAddress: '0xbf7ccd6c446acfcc5df023043f2167b62e81899b',
+        tokens: [
+            '0x5dbcf33d8c2e976c6b560249878e6f1491bca25c', // yUSD
+            '0x2994529c0652d127b7842094103715ec5299bbed', // ybCRV
+        ],
+    },
+    yVaultCurveUnderlying: {
+        exchangeFunctionSelector: CurveFunctionSelectors.exchange_underlying,
+        sellQuoteFunctionSelector: CurveFunctionSelectors.get_dy_underlying,
+        buyQuoteFunctionSelector: CurveFunctionSelectors.get_dx_underlying,
+        poolAddress: '0xbf7ccd6c446acfcc5df023043f2167b62e81899b',
+        tokens: [
+            '0xdf5e0e81dff6faf3a7e52ba697820c5e32d806a8', // yCRV
+            '0x3b3ac5386837dc563660fb6a0937dfaa5924333b', // bCRV
+        ],
+    },
+    yVaultUSD: {
+        exchangeFunctionSelector: CurveFunctionSelectors.exchange,
+        sellQuoteFunctionSelector: CurveFunctionSelectors.get_dy,
+        buyQuoteFunctionSelector: CurveFunctionSelectors.get_dx,
+        poolAddress: '0x4571753311e37ddb44faa8fb78a6df9a6e3c6c0b',
+        tokens: [
+            '0xacd43e627e64355f1861cec6d3a6688b31a6f952', // yDAI
+            '0x597ad1e0c13bfe8025993d9e79c69e1c0233522e', // yUSDC
+            '0x2f08119c6f07c006695e079aafc638b8789faf18', // yUSDT
+            '0x37d19d1c4e1fa9dc47bd1ea12f742a0887eda74a', // yTUSD
+        ],
+    },
+    // Gas is too high for these underlying tokens (3M+)
+    // yVaultUSDUnderlying: {
+    //     exchangeFunctionSelector: CurveFunctionSelectors.exchange_underlying,
+    //     sellQuoteFunctionSelector: CurveFunctionSelectors.get_dy_underlying,
+    //     buyQuoteFunctionSelector: CurveFunctionSelectors.get_dx_underlying,
+    //     poolAddress: '0x4571753311e37ddb44faa8fb78a6df9a6e3c6c0b',
+    //     tokens: [
+    //        '0x6b175474e89094c44da98b954eedeac495271d0f', // DAI
+    //        '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // USDC
+    //        '0xdac17f958d2ee523a2206206994597c13d831ec7', // USDT
+    //        '0x0000000000085d4780b73119b644ae5ecd22b376', // TUSD
+    //     ],
+    // },
 };
 
 export const MAINNET_KYBER_RESERVE_IDS: { [name: string]: string } = {
