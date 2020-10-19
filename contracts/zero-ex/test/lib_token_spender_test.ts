@@ -142,9 +142,7 @@ blockchainTests.resets('LibTokenSpender library', env => {
             const tx = tokenSpender
                 .spendERC20Tokens(tokenSpender.address, tokenFrom, tokenTo, tokenAmount)
                 .awaitTransactionSuccessAsync();
-            return expect(tx).to.revertWith(
-                new ZeroExRevertErrors.Spender.CannotInvokeSelfError()
-            );
+            return expect(tx).to.revertWith("LibTokenSpender/CANNOT_INVOKE_SELF");
         });
     });
 

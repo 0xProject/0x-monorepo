@@ -43,14 +43,4 @@ library LibSpenderRichErrors {
             errorData
         );
     }
-
-    function CannotInvokeSelfError()
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            bytes4(keccak256("CannotInvokeSelfError()"))
-        );
-    }
 }

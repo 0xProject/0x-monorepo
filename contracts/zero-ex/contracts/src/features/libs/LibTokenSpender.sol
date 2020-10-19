@@ -43,9 +43,7 @@ library LibTokenSpender {
         bool success;
         bytes memory revertData;
 
-        if (address(token) == address(this)) {
-            LibSpenderRichErrors.CannotInvokeSelfError().rrevert();
-        }
+        require(address(token) != address(this), "LibTokenSpender/CANNOT_INVOKE_SELF");
 
         assembly {
             let ptr := mload(0x40) // free memory pointer
