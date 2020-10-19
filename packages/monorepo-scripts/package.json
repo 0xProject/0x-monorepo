@@ -35,7 +35,7 @@
     "devDependencies": {
         "@types/glob": "5.0.35",
         "@types/mkdirp": "^0.5.2",
-        "@types/node": "*",
+        "@types/node": "12.12.54",
         "@types/rimraf": "^2.0.2",
         "@types/semver": "5.5.0",
         "@types/yargs": "^11.0.0",
