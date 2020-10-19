@@ -45,7 +45,7 @@
     "devDependencies": {
         "@0x/ts-doc-gen": "^0.0.22",
         "@0x/tslint-config": "^4.1.0",
-        "@types/node": "*",
+        "@types/node": "12.12.54",
         "@types/web3-provider-engine": "^14.0.0",
         "npm-run-all": "^4.1.2",
         "nyc": "^11.0.1",

@@ -66,7 +66,7 @@
         "@types/loglevel": "^1.5.3",
         "@types/mkdirp": "^0.5.2",
         "@types/mocha": "^5.2.7",
-        "@types/node": "*",
+        "@types/node": "12.12.54",
         "@types/rimraf": "^2.0.2",
         "chai": "^4.0.1",
         "copyfiles": "^2.0.0",

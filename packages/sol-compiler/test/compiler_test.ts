@@ -3,8 +3,10 @@ import * as chai from 'chai';
 import { CompilerOptions, ContractArtifact } from 'ethereum-types';
 import 'mocha';
 import { join } from 'path';
+
 import { Compiler } from '../src/compiler';
 import { fsWrapper } from '../src/utils/fs_wrapper';
+
 import { exchange_binary } from './fixtures/exchange_bin';
 import { v6_contract_binary } from './fixtures/v6_contract_bin';
 import { v7_contract_binary } from './fixtures/v7_contract_bin';
