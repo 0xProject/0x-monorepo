@@ -8,7 +8,7 @@ import { BlockParamLiteral, SupportedProvider, ZeroExProvider } from 'ethereum-t
 import * as _ from 'lodash';
 
 import { artifacts } from './artifacts';
-import { constants } from './constants';
+import { constants, ENABLE_PRICE_AWARE_RFQ } from './constants';
 import {
     CalculateSwapQuoteOpts,
     LiquidityForTakerMakerAssetDataPair,
@@ -694,6 +694,31 @@ export class SwapQuoter {
                 );
             }
             opts.rfqt = undefined;
+        }
+
+        if (
+            !ENABLE_PRICE_AWARE_RFQ && // Price-aware RFQ is disabled.
+            opts.rfqt && // This is an RFQT-enabled API request
+            opts.rfqt.intentOnFilling && // The requestor is asking for a firm quote
+            opts.rfqt.apiKey &&
+            this._isApiKeyWhitelisted(opts.rfqt.apiKey) && // A valid API key was provided
+            sourceFilters.isAllowed(ERC20BridgeSource.Native) // Native liquidity is not excluded
+        ) {
+            if (!opts.rfqt.takerAddress || opts.rfqt.takerAddress === constants.NULL_ADDRESS) {
+                throw new Error('RFQ-T requests must specify a taker address');
+            }
+            orderBatchPromises.push(
+                quoteRequestor
+                    .requestRfqtFirmQuotesAsync(
+                        makerAssetData,
+                        takerAssetData,
+                        assetFillAmount,
+                        marketOperation,
+                        undefined,
+                        opts.rfqt,
+                    )
+                    .then(firmQuotes => firmQuotes.map(quote => quote.signedOrder)),
+            );
         }
 
         const orderBatches: SignedOrder[][] = await Promise.all(orderBatchPromises);

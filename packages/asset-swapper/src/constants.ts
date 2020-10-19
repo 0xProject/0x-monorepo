@@ -122,3 +122,5 @@ export const constants = {
     DEFAULT_INFO_LOGGER,
     DEFAULT_WARNING_LOGGER,
 };
+
+export const ENABLE_PRICE_AWARE_RFQ: boolean = false;

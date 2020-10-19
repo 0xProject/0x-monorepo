@@ -4,6 +4,7 @@ import { RFQTIndicativeQuote } from '@0x/quote-server';
 import { SignedOrder } from '@0x/types';
 import { BigNumber, NULL_ADDRESS } from '@0x/utils';
 import * as _ from 'lodash';
+import { ENABLE_PRICE_AWARE_RFQ } from '../../constants';
 
 import { MarketOperation, Omit } from '../../types';
 import { QuoteRequestor } from '../quote_requestor';
@@ -216,6 +217,17 @@ export class MarketOperationUtils {
             ),
         );
 
+        const rfqtPromise = !ENABLE_PRICE_AWARE_RFQ && quoteSourceFilters.isAllowed(ERC20BridgeSource.Native)
+            ? getRfqtIndicativeQuotesAsync(
+                  nativeOrders[0].makerAssetData,
+                  nativeOrders[0].takerAssetData,
+                  MarketOperation.Sell,
+                  takerAmount,
+                  undefined,
+                  _opts,
+              )
+            : Promise.resolve([]);
+
         const offChainBalancerPromise = sampleBalancerOffChain
             ? this._sampler.getBalancerSellQuotesOffChainAsync(makerToken, takerToken, sampleAmounts)
             : Promise.resolve([]);
@@ -230,11 +242,13 @@ export class MarketOperationUtils {
 
         const [
             [tokenDecimals, orderFillableAmounts, ethToMakerAssetRate, ethToTakerAssetRate, dexQuotes, twoHopQuotes],
+            rfqtIndicativeQuotes,
             offChainBalancerQuotes,
             offChainCreamQuotes,
             offChainBancorQuotes,
         ] = await Promise.all([
             samplerPromise,
+            rfqtPromise,
             offChainBalancerPromise,
             offChainCreamPromise,
             offChainBancorPromise,
@@ -251,7 +265,7 @@ export class MarketOperationUtils {
             orderFillableAmounts,
             ethToOutputRate: ethToMakerAssetRate,
             ethToInputRate: ethToTakerAssetRate,
-            rfqtIndicativeQuotes: [],
+            rfqtIndicativeQuotes,
             twoHopQuotes,
             quoteSourceFilters,
             makerTokenDecimals: makerTokenDecimals.toNumber(),
@@ -350,7 +364,16 @@ export class MarketOperationUtils {
                 this._liquidityProviderRegistry,
             ),
         );
-
+        const rfqtPromise = !ENABLE_PRICE_AWARE_RFQ && quoteSourceFilters.isAllowed(ERC20BridgeSource.Native)
+            ? getRfqtIndicativeQuotesAsync(
+                  nativeOrders[0].makerAssetData,
+                  nativeOrders[0].takerAssetData,
+                  MarketOperation.Buy,
+                  makerAmount,
+                  undefined,
+                  _opts,
+              )
+            : Promise.resolve([]);
         const offChainBalancerPromise = sampleBalancerOffChain
             ? this._sampler.getBalancerBuyQuotesOffChainAsync(makerToken, takerToken, sampleAmounts)
             : Promise.resolve([]);
@@ -361,9 +384,10 @@ export class MarketOperationUtils {
 
         const [
             [tokenDecimals, orderFillableAmounts, ethToMakerAssetRate, ethToTakerAssetRate, dexQuotes, twoHopQuotes],
+            rfqtIndicativeQuotes,
             offChainBalancerQuotes,
             offChainCreamQuotes,
-        ] = await Promise.all([samplerPromise, offChainBalancerPromise, offChainCreamPromise]);
+        ] = await Promise.all([samplerPromise, rfqtPromise, offChainBalancerPromise, offChainCreamPromise]);
         // Attach the MultiBridge address to the sample fillData
         (dexQuotes.find(quotes => quotes[0] && quotes[0].source === ERC20BridgeSource.MultiBridge) || []).forEach(
             q => (q.fillData = { poolAddress: this._multiBridge }),
@@ -379,7 +403,7 @@ export class MarketOperationUtils {
             orderFillableAmounts,
             ethToOutputRate: ethToTakerAssetRate,
             ethToInputRate: ethToMakerAssetRate,
-            rfqtIndicativeQuotes: [],
+            rfqtIndicativeQuotes,
             twoHopQuotes,
             quoteSourceFilters,
             makerTokenDecimals: makerTokenDecimals.toNumber(),
@@ -651,7 +675,7 @@ export class MarketOperationUtils {
 
         // If RFQ liquidity is enabled, make a request to check RFQ liquidity
         const { rfqt } = _opts;
-        if (rfqt && rfqt.quoteRequestor && marketSideLiquidity.quoteSourceFilters.isAllowed(ERC20BridgeSource.Native)) {
+        if (ENABLE_PRICE_AWARE_RFQ && rfqt && rfqt.quoteRequestor && marketSideLiquidity.quoteSourceFilters.isAllowed(ERC20BridgeSource.Native)) {
             // Calculate a suggested price. For now, this is simply the overall price of the aggregation.
             let comparisonPrice: BigNumber | undefined;
             if (optimizerResult) {
