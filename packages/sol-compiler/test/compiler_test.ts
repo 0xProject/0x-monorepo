@@ -9,6 +9,7 @@ import { fsWrapper } from '../src/utils/fs_wrapper';
 
 import { exchange_binary } from './fixtures/exchange_bin';
 import { v6_contract_binary } from './fixtures/v6_contract_bin';
+import { v7_contract_binary } from './fixtures/v7_contract_bin';
 import { chaiSetup } from './util/chai_setup';
 import { constants } from './util/constants';
 
@@ -136,6 +137,29 @@ describe('#Compiler', function(): void {
             -METADATA_SIZE,
         );
         const expectedBinaryWithoutMetadata = hexUtils.slice(v6_contract_binary, 0, -METADATA_SIZE);
+        expect(actualBinaryWithoutMetadata).to.eq(expectedBinaryWithoutMetadata);
+    });
+    it('should compile a V0.7 contract', async () => {
+        compilerOpts.contracts = ['V7Contract'];
+
+        const artifactPath = `${artifactsDir}/V7Contract.json`;
+        if (fsWrapper.doesPathExistSync(artifactPath)) {
+            await fsWrapper.removeFileAsync(artifactPath);
+        }
+
+        await new Compiler(compilerOpts).compileAsync();
+
+        const opts = {
+            encoding: 'utf8',
+        };
+        const exchangeArtifactString = await fsWrapper.readFileAsync(artifactPath, opts);
+        const exchangeArtifact: ContractArtifact = JSON.parse(exchangeArtifactString);
+        const actualBinaryWithoutMetadata = hexUtils.slice(
+            exchangeArtifact.compilerOutput.evm.bytecode.object,
+            0,
+            -METADATA_SIZE,
+        );
+        const expectedBinaryWithoutMetadata = hexUtils.slice(v7_contract_binary, 0, -METADATA_SIZE);
         expect(actualBinaryWithoutMetadata).to.eq(expectedBinaryWithoutMetadata);
     });
 });

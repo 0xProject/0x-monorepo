@@ -172,7 +172,7 @@ export async function compileDockerAsync(
         'solc', '--standard-json',
     ];
     return new Promise<solc.StandardOutput>((accept, reject) => {
-        const p = spawn('docker', dockerArgs, { shell: true, stdio: ['pipe', 'inherit', 'inherit'] });
+        const p = spawn('docker', dockerArgs, { shell: true, stdio: ['pipe', 'pipe', 'inherit'] });
         p.stdin.write(standardInputStr);
         p.stdin.end();
         let fullOutput = '';
