@@ -233,12 +233,7 @@ export class MarketOperationUtils {
             offChainBalancerQuotes,
             offChainCreamQuotes,
             offChainBancorQuotes,
-        ] = await Promise.all([
-            samplerPromise,
-            offChainBalancerPromise,
-            offChainCreamPromise,
-            offChainBancorPromise,
-        ]);
+        ] = await Promise.all([samplerPromise, offChainBalancerPromise, offChainCreamPromise, offChainBancorPromise]);
 
         const [makerTokenDecimals, takerTokenDecimals] = tokenDecimals;
         return {
