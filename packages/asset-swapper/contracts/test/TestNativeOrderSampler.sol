@@ -15,7 +15,7 @@
   limitations under the License.
 
 */
-pragma solidity ^0.5.9;
+pragma solidity ^0.6;
 pragma experimental ABIEncoderV2;
 
 import "../src/NativeOrderSampler.sol";

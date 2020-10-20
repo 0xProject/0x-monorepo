@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.5.9;
+pragma solidity ^0.6;
 
 
 contract DeploymentConstants {
@@ -156,6 +156,7 @@ contract DeploymentConstants {
     /// @dev Overridable way to get the `KyberNetworkProxy` address.
     /// @return kyberAddress The `IKyberNetworkProxy` address.
     function _getKyberNetworkProxyAddress()
+        virtual
         internal
         view
         returns (address kyberAddress)
@@ -164,8 +165,9 @@ contract DeploymentConstants {
     }
 
     /// @dev Overridable way to get the `KyberHintHandler` address.
-    /// @return kyberAddress The `IKyberHintHandler` address.
+    /// @return hintHandlerAddress The `IKyberHintHandler` address.
     function _getKyberHintHandlerAddress()
+        virtual
         internal
         view
         returns (address hintHandlerAddress)
@@ -186,6 +188,7 @@ contract DeploymentConstants {
     /// @dev Overridable way to get the `UniswapExchangeFactory` address.
     /// @return uniswapAddress The `UniswapExchangeFactory` address.
     function _getUniswapExchangeFactoryAddress()
+        virtual
         internal
         view
         returns (address uniswapAddress)
@@ -196,6 +199,7 @@ contract DeploymentConstants {
     /// @dev Overridable way to get the `UniswapV2Router01` address.
     /// @return uniswapRouterAddress The `UniswapV2Router01` address.
     function _getUniswapV2Router01Address()
+        virtual
         internal
         view
         returns (address uniswapRouterAddress)
@@ -206,6 +210,7 @@ contract DeploymentConstants {
     /// @dev An overridable way to retrieve the Eth2Dai `MatchingMarket` contract.
     /// @return eth2daiAddress The Eth2Dai `MatchingMarket` contract.
     function _getEth2DaiAddress()
+        virtual
         internal
         view
         returns (address eth2daiAddress)
@@ -254,7 +259,7 @@ contract DeploymentConstants {
     }
 
     /// @dev Overridable way to get the DyDx contract.
-    /// @return exchange The DyDx exchange contract.
+    /// @return dydxAddress exchange The DyDx exchange contract.
     function _getDydxAddress()
         internal
         view
@@ -308,7 +313,7 @@ contract DeploymentConstants {
     function _getShellAddress()
         internal
         view
-        returns (address)
+        returns (address registry)
     {
         return SHELL_CONTRACT;
     }
@@ -318,7 +323,7 @@ contract DeploymentConstants {
     function _getDODORegistryAddress()
         internal
         view
-        returns (address)
+        returns (address registry)
     {
         return DODO_REGISTRY;
     }
@@ -328,7 +333,7 @@ contract DeploymentConstants {
     function _getDODOHelperAddress()
         internal
         view
-        returns (address)
+        returns (address registry)
     {
         return DODO_HELPER;
     }

@@ -1,4 +1,4 @@
-import { ContractFunctionObj } from '@0x/base-contract';
+import { ContractTxFunctionObj } from '@0x/base-contract';
 import { constants } from '@0x/contracts-test-utils';
 import { Order } from '@0x/types';
 import { BigNumber, hexUtils } from '@0x/utils';
@@ -82,7 +82,7 @@ export class MockSamplerContract extends ERC20BridgeSamplerContract {
         this._handlers = handlers;
     }
 
-    public batchCall(callDatas: string[]): ContractFunctionObj<string[]> {
+    public batchCall(callDatas: string[]): ContractTxFunctionObj<string[]> {
         return {
             ...super.batchCall(callDatas),
             callAsync: async (..._callArgs: any[]) => callDatas.map(callData => this._callEncodedFunction(callData)),
@@ -92,7 +92,7 @@ export class MockSamplerContract extends ERC20BridgeSamplerContract {
     public getOrderFillableMakerAssetAmounts(
         orders: Order[],
         signatures: string[],
-    ): ContractFunctionObj<GetOrderFillableAssetAmountResult> {
+    ): ContractTxFunctionObj<GetOrderFillableAssetAmountResult> {
         return this._wrapCall(
             super.getOrderFillableMakerAssetAmounts,
             this._handlers.getOrderFillableMakerAssetAmounts,
@@ -105,7 +105,7 @@ export class MockSamplerContract extends ERC20BridgeSamplerContract {
     public getOrderFillableTakerAssetAmounts(
         orders: Order[],
         signatures: string[],
-    ): ContractFunctionObj<GetOrderFillableAssetAmountResult> {
+    ): ContractTxFunctionObj<GetOrderFillableAssetAmountResult> {
         return this._wrapCall(
             super.getOrderFillableTakerAssetAmounts,
             this._handlers.getOrderFillableTakerAssetAmounts,
@@ -120,7 +120,7 @@ export class MockSamplerContract extends ERC20BridgeSamplerContract {
         takerToken: string,
         makerToken: string,
         takerAssetAmounts: BigNumber[],
-    ): ContractFunctionObj<[string, BigNumber[]]> {
+    ): ContractTxFunctionObj<[string, BigNumber[]]> {
         return this._wrapCall(
             super.sampleSellsFromKyberNetwork,
             this._handlers.sampleSellsFromKyberNetwork,
@@ -135,7 +135,7 @@ export class MockSamplerContract extends ERC20BridgeSamplerContract {
         takerToken: string,
         makerToken: string,
         takerAssetAmounts: BigNumber[],
-    ): ContractFunctionObj<BigNumber[]> {
+    ): ContractTxFunctionObj<BigNumber[]> {
         return this._wrapCall(
             super.sampleSellsFromEth2Dai,
             this._handlers.sampleSellsFromEth2Dai,
@@ -149,7 +149,7 @@ export class MockSamplerContract extends ERC20BridgeSamplerContract {
         takerToken: string,
         makerToken: string,
         takerAssetAmounts: BigNumber[],
-    ): ContractFunctionObj<BigNumber[]> {
+    ): ContractTxFunctionObj<BigNumber[]> {
         return this._wrapCall(
             super.sampleSellsFromUniswap,
             this._handlers.sampleSellsFromUniswap,
@@ -159,7 +159,10 @@ export class MockSamplerContract extends ERC20BridgeSamplerContract {
         );
     }
 
-    public sampleSellsFromUniswapV2(path: string[], takerAssetAmounts: BigNumber[]): ContractFunctionObj<BigNumber[]> {
+    public sampleSellsFromUniswapV2(
+        path: string[],
+        takerAssetAmounts: BigNumber[],
+    ): ContractTxFunctionObj<BigNumber[]> {
         return this._wrapCall(
             super.sampleSellsFromUniswapV2,
             this._handlers.sampleSellsFromUniswapV2,
@@ -173,7 +176,7 @@ export class MockSamplerContract extends ERC20BridgeSamplerContract {
         takerToken: string,
         makerToken: string,
         takerAssetAmounts: BigNumber[],
-    ): ContractFunctionObj<[BigNumber[], string]> {
+    ): ContractTxFunctionObj<[BigNumber[], string]> {
         return this._wrapCall(
             super.sampleSellsFromLiquidityProviderRegistry,
             this._handlers.sampleSellsFromLiquidityProviderRegistry,
@@ -190,7 +193,7 @@ export class MockSamplerContract extends ERC20BridgeSamplerContract {
         intermediateToken: string,
         makerToken: string,
         takerAssetAmounts: BigNumber[],
-    ): ContractFunctionObj<BigNumber[]> {
+    ): ContractTxFunctionObj<BigNumber[]> {
         return this._wrapCall(
             super.sampleSellsFromMultiBridge,
             this._handlers.sampleSellsFromMultiBridge,
@@ -206,7 +209,7 @@ export class MockSamplerContract extends ERC20BridgeSamplerContract {
         takerToken: string,
         makerToken: string,
         makerAssetAmounts: BigNumber[],
-    ): ContractFunctionObj<BigNumber[]> {
+    ): ContractTxFunctionObj<BigNumber[]> {
         return this._wrapCall(
             super.sampleBuysFromEth2Dai,
             this._handlers.sampleBuysFromEth2Dai,
@@ -220,7 +223,7 @@ export class MockSamplerContract extends ERC20BridgeSamplerContract {
         takerToken: string,
         makerToken: string,
         makerAssetAmounts: BigNumber[],
-    ): ContractFunctionObj<BigNumber[]> {
+    ): ContractTxFunctionObj<BigNumber[]> {
         return this._wrapCall(
             super.sampleBuysFromUniswap,
             this._handlers.sampleBuysFromUniswap,
@@ -230,7 +233,7 @@ export class MockSamplerContract extends ERC20BridgeSamplerContract {
         );
     }
 
-    public sampleBuysFromUniswapV2(path: string[], makerAssetAmounts: BigNumber[]): ContractFunctionObj<BigNumber[]> {
+    public sampleBuysFromUniswapV2(path: string[], makerAssetAmounts: BigNumber[]): ContractTxFunctionObj<BigNumber[]> {
         return this._wrapCall(
             super.sampleBuysFromUniswapV2,
             this._handlers.sampleBuysFromUniswapV2,
@@ -266,11 +269,11 @@ export class MockSamplerContract extends ERC20BridgeSamplerContract {
     }
 
     private _wrapCall<TArgs extends any[], TResult>(
-        superFn: (this: MockSamplerContract, ...args: TArgs) => ContractFunctionObj<TResult>,
+        superFn: (this: MockSamplerContract, ...args: TArgs) => ContractTxFunctionObj<TResult>,
         handler?: (this: MockSamplerContract, ...args: TArgs) => TResult,
         // tslint:disable-next-line: trailing-comma
         ...args: TArgs
-    ): ContractFunctionObj<TResult> {
+    ): ContractTxFunctionObj<TResult> {
         return {
             ...superFn.call(this, ...args),
             callAsync: async (..._callArgs: any[]): Promise<TResult> => {

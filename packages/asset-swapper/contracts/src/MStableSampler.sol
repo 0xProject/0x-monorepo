@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2019 ZeroEx Intl.
+  Copyright 2020 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,11 +16,10 @@
 
 */
 
-pragma solidity ^0.5.9;
+pragma solidity ^0.6;
 pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-utils/contracts/src/DeploymentConstants.sol";
-import "@0x/contracts-utils/contracts/src/LibBytes.sol";
+import "./DeploymentConstants.sol";
 import "./interfaces/IMStable.sol";
 import "./ApproximateBuys.sol";
 import "./SamplerUtils.sol";

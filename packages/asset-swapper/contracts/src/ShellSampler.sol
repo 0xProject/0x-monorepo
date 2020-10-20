@@ -16,10 +16,10 @@
 
 */
 
-pragma solidity ^0.5.9;
+pragma solidity ^0.6;
 pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-utils/contracts/src/DeploymentConstants.sol";
+import "./DeploymentConstants.sol";
 import "./interfaces/IShell.sol";
 
 contract ShellSampler is

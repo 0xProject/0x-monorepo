@@ -1,4 +1,4 @@
-pragma solidity ^0.5.9;
+pragma solidity ^0.6;
 pragma experimental ABIEncoderV2;
 
 
@@ -26,7 +26,7 @@ contract DummyLiquidityProviderRegistry
     /// @dev Returns the address of pool for a market given market (xAsset, yAsset), or reverts if pool does not exist.
     /// @param xToken First asset managed by pool.
     /// @param yToken Second asset managed by pool.
-    /// @return Address of pool.
+    /// @return poolAddress Address of pool.
     function getLiquidityProviderForMarket(
         address xToken,
         address yToken

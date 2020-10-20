@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.5.9;
+pragma solidity ^0.6;
 
 // Keepin everything together
 interface IKyberNetwork {

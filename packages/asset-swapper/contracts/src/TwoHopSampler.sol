@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2019 ZeroEx Intl.
+  Copyright 2020 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,14 +16,14 @@
 
 */
 
-pragma solidity ^0.5.9;
+pragma solidity ^0.6;
 pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-utils/contracts/src/LibBytes.sol";
+import "@0x/contracts-utils/contracts/src/v06/LibBytesV06.sol";
 
 
 contract TwoHopSampler {
-    using LibBytes for bytes;
+    using LibBytesV06 for bytes;
 
     struct HopInfo {
         uint256 sourceIndex;

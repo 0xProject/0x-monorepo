@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2019 ZeroEx Intl.
+  Copyright 2020 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
 
 */
 
-pragma solidity ^0.5.9;
+pragma solidity ^0.6;
 pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-erc20/contracts/src/LibERC20Token.sol";
+import "@0x/contracts-erc20/contracts/src/v06/LibERC20TokenV06.sol";
 
 
 contract SamplerUtils {
@@ -28,11 +28,12 @@ contract SamplerUtils {
     /// @param tokenAddress Address of the token.
     /// @return decimals The decimal places for the token.
     function _getTokenDecimals(address tokenAddress)
+        virtual
         internal
         view
         returns (uint8 decimals)
     {
-        return LibERC20Token.decimals(tokenAddress);
+        return LibERC20TokenV06.compatDecimals(IERC20TokenV06(tokenAddress));
     }
 
     function _toSingleValueArray(uint256 v)

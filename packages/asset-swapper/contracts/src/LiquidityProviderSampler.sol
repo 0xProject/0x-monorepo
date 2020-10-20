@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2019 ZeroEx Intl.
+  Copyright 2020 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
 
 */
 
-pragma solidity ^0.5.9;
+pragma solidity ^0.6;
 pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-utils/contracts/src/LibBytes.sol";
+import "@0x/contracts-utils/contracts/src/v06/LibBytesV06.sol";
 import "./interfaces/ILiquidityProvider.sol";
 import "./interfaces/ILiquidityProviderRegistry.sol";
 import "./ApproximateBuys.sol";
@@ -143,7 +143,7 @@ contract LiquidityProviderSampler is
         );
         (bool didSucceed, bytes memory returnData) = registryAddress.staticcall(callData);
         if (didSucceed && returnData.length == 32) {
-            return LibBytes.readAddress(returnData, 12);
+            return LibBytesV06.readAddress(returnData, 12);
         }
     }
 

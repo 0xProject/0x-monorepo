@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2019 ZeroEx Intl.
+  Copyright 2020 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
 
 */
 
-pragma solidity ^0.5.9;
+pragma solidity ^0.6;
 pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-utils/contracts/src/DeploymentConstants.sol";
+import "./DeploymentConstants.sol";
 import "./ApproximateBuys.sol";
 import "./SamplerUtils.sol";
 
@@ -50,6 +50,8 @@ contract DODOSampler is
     /// @param takerToken Address of the taker token (what to sell).
     /// @param makerToken Address of the maker token (what to buy).
     /// @param takerTokenAmounts Taker token sell amount for each sample.
+    /// @return sellBase whether the bridge needs to sell the base token
+    /// @return pool the DODO pool address
     /// @return makerTokenAmounts Maker amounts bought at each taker token
     ///         amount.
     function sampleSellsFromDODO(
@@ -104,6 +106,8 @@ contract DODOSampler is
     /// @param takerToken Address of the taker token (what to sell).
     /// @param makerToken Address of the maker token (what to buy).
     /// @param makerTokenAmounts Maker token sell amount for each sample.
+    /// @return sellBase whether the bridge needs to sell the base token
+    /// @return pool the DODO pool address
     /// @return takerTokenAmounts Taker amounts sold at each maker token
     ///         amount.
     function sampleBuysFromDODO(
