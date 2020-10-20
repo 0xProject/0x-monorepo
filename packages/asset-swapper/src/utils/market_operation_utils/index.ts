@@ -4,8 +4,8 @@ import { RFQTIndicativeQuote } from '@0x/quote-server';
 import { SignedOrder } from '@0x/types';
 import { BigNumber, NULL_ADDRESS } from '@0x/utils';
 import * as _ from 'lodash';
-import { IS_PRICE_AWARE_RFQ_ENABLED } from '../../constants';
 
+import { IS_PRICE_AWARE_RFQ_ENABLED } from '../../constants';
 import { MarketOperation, Omit } from '../../types';
 import { QuoteRequestor } from '../quote_requestor';
 
