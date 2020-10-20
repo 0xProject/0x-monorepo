@@ -1,3 +1,4 @@
+import { artifacts as erc20Artifacts, DummyERC20TokenContract } from '@0x/contracts-erc20';
 import {
     assertIntegerRoughlyEquals,
     blockchainTests,
@@ -129,6 +130,36 @@ blockchainTests.resets('NativeOrderSampler contract', env => {
             )
             .awaitTransactionSuccessAsync();
     }
+
+    describe('getTokenDecimals()', () => {
+        it('correctly returns the token balances', async () => {
+            const newMakerToken = await DummyERC20TokenContract.deployFrom0xArtifactAsync(
+                erc20Artifacts.DummyERC20Token,
+                env.provider,
+                env.txDefaults,
+                artifacts,
+                constants.DUMMY_TOKEN_NAME,
+                constants.DUMMY_TOKEN_SYMBOL,
+                new BigNumber(18),
+                constants.DUMMY_TOKEN_TOTAL_SUPPLY,
+            );
+            const newTakerToken = await DummyERC20TokenContract.deployFrom0xArtifactAsync(
+                erc20Artifacts.DummyERC20Token,
+                env.provider,
+                env.txDefaults,
+                artifacts,
+                constants.DUMMY_TOKEN_NAME,
+                constants.DUMMY_TOKEN_SYMBOL,
+                new BigNumber(6),
+                constants.DUMMY_TOKEN_TOTAL_SUPPLY,
+            );
+            const [makerDecimals, takerDecimals] = await testContract
+                .getTokenDecimals(newMakerToken.address, newTakerToken.address)
+                .callAsync();
+            expect(makerDecimals.toString()).to.eql('18');
+            expect(takerDecimals.toString()).to.eql('6');
+        });
+    });
 
     describe('getOrderFillableTakerAmount()', () => {
         it('returns the full amount for a fully funded order', async () => {

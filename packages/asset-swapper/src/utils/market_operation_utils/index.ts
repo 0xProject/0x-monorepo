@@ -1,15 +1,18 @@
 import { ContractAddresses } from '@0x/contract-addresses';
+import { Web3Wrapper } from '@0x/dev-utils';
 import { RFQTIndicativeQuote } from '@0x/quote-server';
 import { SignedOrder } from '@0x/types';
 import { BigNumber, NULL_ADDRESS } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { MarketOperation } from '../../types';
+import { IS_PRICE_AWARE_RFQ_ENABLED } from '../../constants';
+import { MarketOperation, Omit } from '../../types';
 import { QuoteRequestor } from '../quote_requestor';
 
 import { generateQuoteReport, QuoteReport } from './../quote_report_generator';
 import {
     BUY_SOURCE_FILTER,
+    COMPARISON_PRICE_DECIMALS,
     DEFAULT_GET_MARKET_ORDERS_OPTS,
     FEE_QUOTE_SOURCES,
     ONE_ETHER,
@@ -33,12 +36,12 @@ import {
     CollapsedFill,
     DexSample,
     ERC20BridgeSource,
-    ExchangeProxyOverhead,
-    FeeSchedule,
+    GenerateOptimizedOrdersOpts,
     GetMarketOrdersOpts,
     MarketSideLiquidity,
     OptimizedMarketOrder,
     OptimizerResult,
+    OptimizerResultWithReport,
     OrderDomain,
     TokenAdjacencyGraph,
 } from './types';
@@ -58,6 +61,7 @@ export async function getRfqtIndicativeQuotesAsync(
     takerAssetData: string,
     marketOperation: MarketOperation,
     assetFillAmount: BigNumber,
+    comparisonPrice: BigNumber | undefined,
     opts: Partial<GetMarketOrdersOpts>,
 ): Promise<RFQTIndicativeQuote[]> {
     if (opts.rfqt && opts.rfqt.isIndicative === true && opts.rfqt.quoteRequestor) {
@@ -66,6 +70,7 @@ export async function getRfqtIndicativeQuotesAsync(
             takerAssetData,
             assetFillAmount,
             marketOperation,
+            comparisonPrice,
             opts.rfqt,
         );
     } else {
@@ -168,6 +173,7 @@ export class MarketOperationUtils {
 
         // Call the sampler contract.
         const samplerPromise = this._sampler.executeAsync(
+            this._sampler.getTokenDecimals(makerToken, takerToken),
             // Get native order fillable amounts.
             this._sampler.getOrderFillableTakerAmounts(nativeOrders, this.contractAddresses.exchange),
             // Get ETH -> maker token price.
@@ -211,15 +217,17 @@ export class MarketOperationUtils {
             ),
         );
 
-        const rfqtPromise = quoteSourceFilters.isAllowed(ERC20BridgeSource.Native)
-            ? getRfqtIndicativeQuotesAsync(
-                  nativeOrders[0].makerAssetData,
-                  nativeOrders[0].takerAssetData,
-                  MarketOperation.Sell,
-                  takerAmount,
-                  _opts,
-              )
-            : Promise.resolve([]);
+        const rfqtPromise =
+            !IS_PRICE_AWARE_RFQ_ENABLED && quoteSourceFilters.isAllowed(ERC20BridgeSource.Native)
+                ? getRfqtIndicativeQuotesAsync(
+                      nativeOrders[0].makerAssetData,
+                      nativeOrders[0].takerAssetData,
+                      MarketOperation.Sell,
+                      takerAmount,
+                      undefined,
+                      _opts,
+                  )
+                : Promise.resolve([]);
 
         const offChainBalancerPromise = sampleBalancerOffChain
             ? this._sampler.getBalancerSellQuotesOffChainAsync(makerToken, takerToken, sampleAmounts)
@@ -234,7 +242,7 @@ export class MarketOperationUtils {
             : Promise.resolve([]);
 
         const [
-            [orderFillableAmounts, ethToMakerAssetRate, ethToTakerAssetRate, dexQuotes, twoHopQuotes],
+            [tokenDecimals, orderFillableAmounts, ethToMakerAssetRate, ethToTakerAssetRate, dexQuotes, twoHopQuotes],
             rfqtIndicativeQuotes,
             offChainBalancerQuotes,
             offChainCreamQuotes,
@@ -247,6 +255,7 @@ export class MarketOperationUtils {
             offChainBancorPromise,
         ]);
 
+        const [makerTokenDecimals, takerTokenDecimals] = tokenDecimals;
         return {
             side: MarketOperation.Sell,
             inputAmount: takerAmount,
@@ -259,6 +268,9 @@ export class MarketOperationUtils {
             ethToInputRate: ethToTakerAssetRate,
             rfqtIndicativeQuotes,
             twoHopQuotes,
+            quoteSourceFilters,
+            makerTokenDecimals: makerTokenDecimals.toNumber(),
+            takerTokenDecimals: takerTokenDecimals.toNumber(),
         };
     }
 
@@ -311,6 +323,7 @@ export class MarketOperationUtils {
 
         // Call the sampler contract.
         const samplerPromise = this._sampler.executeAsync(
+            this._sampler.getTokenDecimals(makerToken, takerToken),
             // Get native order fillable amounts.
             this._sampler.getOrderFillableMakerAmounts(nativeOrders, this.contractAddresses.exchange),
             // Get ETH -> makerToken token price.
@@ -352,17 +365,17 @@ export class MarketOperationUtils {
                 this._liquidityProviderRegistry,
             ),
         );
-
-        const rfqtPromise = quoteSourceFilters.isAllowed(ERC20BridgeSource.Native)
-            ? getRfqtIndicativeQuotesAsync(
-                  nativeOrders[0].makerAssetData,
-                  nativeOrders[0].takerAssetData,
-                  MarketOperation.Buy,
-                  makerAmount,
-                  _opts,
-              )
-            : Promise.resolve([]);
-
+        const rfqtPromise =
+            !IS_PRICE_AWARE_RFQ_ENABLED && quoteSourceFilters.isAllowed(ERC20BridgeSource.Native)
+                ? getRfqtIndicativeQuotesAsync(
+                      nativeOrders[0].makerAssetData,
+                      nativeOrders[0].takerAssetData,
+                      MarketOperation.Buy,
+                      makerAmount,
+                      undefined,
+                      _opts,
+                  )
+                : Promise.resolve([]);
         const offChainBalancerPromise = sampleBalancerOffChain
             ? this._sampler.getBalancerBuyQuotesOffChainAsync(makerToken, takerToken, sampleAmounts)
             : Promise.resolve([]);
@@ -372,7 +385,7 @@ export class MarketOperationUtils {
             : Promise.resolve([]);
 
         const [
-            [orderFillableAmounts, ethToMakerAssetRate, ethToTakerAssetRate, dexQuotes, twoHopQuotes],
+            [tokenDecimals, orderFillableAmounts, ethToMakerAssetRate, ethToTakerAssetRate, dexQuotes, twoHopQuotes],
             rfqtIndicativeQuotes,
             offChainBalancerQuotes,
             offChainCreamQuotes,
@@ -381,6 +394,7 @@ export class MarketOperationUtils {
         (dexQuotes.find(quotes => quotes[0] && quotes[0].source === ERC20BridgeSource.MultiBridge) || []).forEach(
             q => (q.fillData = { poolAddress: this._multiBridge }),
         );
+        const [makerTokenDecimals, takerTokenDecimals] = tokenDecimals;
         return {
             side: MarketOperation.Buy,
             inputAmount: makerAmount,
@@ -393,6 +407,9 @@ export class MarketOperationUtils {
             ethToInputRate: ethToMakerAssetRate,
             rfqtIndicativeQuotes,
             twoHopQuotes,
+            quoteSourceFilters,
+            makerTokenDecimals: makerTokenDecimals.toNumber(),
+            takerTokenDecimals: takerTokenDecimals.toNumber(),
         };
     }
 
@@ -408,29 +425,8 @@ export class MarketOperationUtils {
         nativeOrders: SignedOrder[],
         takerAmount: BigNumber,
         opts?: Partial<GetMarketOrdersOpts>,
-    ): Promise<OptimizerResult> {
-        const _opts = { ...DEFAULT_GET_MARKET_ORDERS_OPTS, ...opts };
-        const marketSideLiquidity = await this.getMarketSellLiquidityAsync(nativeOrders, takerAmount, _opts);
-        const optimizerResult = await this._generateOptimizedOrdersAsync(marketSideLiquidity, {
-            bridgeSlippage: _opts.bridgeSlippage,
-            maxFallbackSlippage: _opts.maxFallbackSlippage,
-            excludedSources: _opts.excludedSources,
-            feeSchedule: _opts.feeSchedule,
-            exchangeProxyOverhead: _opts.exchangeProxyOverhead,
-            allowFallback: _opts.allowFallback,
-        });
-
-        // Compute Quote Report and return the results.
-        let quoteReport: QuoteReport | undefined;
-        if (_opts.shouldGenerateQuoteReport) {
-            quoteReport = MarketOperationUtils._computeQuoteReport(
-                nativeOrders,
-                _opts.rfqt ? _opts.rfqt.quoteRequestor : undefined,
-                marketSideLiquidity,
-                optimizerResult,
-            );
-        }
-        return { ...optimizerResult, quoteReport };
+    ): Promise<OptimizerResultWithReport> {
+        return this._getMarketSideOrdersAsync(nativeOrders, takerAmount, MarketOperation.Sell, opts);
     }
 
     /**
@@ -445,27 +441,8 @@ export class MarketOperationUtils {
         nativeOrders: SignedOrder[],
         makerAmount: BigNumber,
         opts?: Partial<GetMarketOrdersOpts>,
-    ): Promise<OptimizerResult> {
-        const _opts = { ...DEFAULT_GET_MARKET_ORDERS_OPTS, ...opts };
-        const marketSideLiquidity = await this.getMarketBuyLiquidityAsync(nativeOrders, makerAmount, _opts);
-        const optimizerResult = await this._generateOptimizedOrdersAsync(marketSideLiquidity, {
-            bridgeSlippage: _opts.bridgeSlippage,
-            maxFallbackSlippage: _opts.maxFallbackSlippage,
-            excludedSources: _opts.excludedSources,
-            feeSchedule: _opts.feeSchedule,
-            exchangeProxyOverhead: _opts.exchangeProxyOverhead,
-            allowFallback: _opts.allowFallback,
-        });
-        let quoteReport: QuoteReport | undefined;
-        if (_opts.shouldGenerateQuoteReport) {
-            quoteReport = MarketOperationUtils._computeQuoteReport(
-                nativeOrders,
-                _opts.rfqt ? _opts.rfqt.quoteRequestor : undefined,
-                marketSideLiquidity,
-                optimizerResult,
-            );
-        }
-        return { ...optimizerResult, quoteReport };
+    ): Promise<OptimizerResultWithReport> {
+        return this._getMarketSideOrdersAsync(nativeOrders, makerAmount, MarketOperation.Buy, opts);
     }
 
     /**
@@ -548,6 +525,7 @@ export class MarketOperationUtils {
                             inputToken: makerToken,
                             outputToken: takerToken,
                             twoHopQuotes: [],
+                            quoteSourceFilters,
                         },
                         {
                             bridgeSlippage: _opts.bridgeSlippage,
@@ -567,18 +545,9 @@ export class MarketOperationUtils {
         );
     }
 
-    private async _generateOptimizedOrdersAsync(
-        marketSideLiquidity: MarketSideLiquidity,
-        opts: {
-            runLimit?: number;
-            bridgeSlippage?: number;
-            maxFallbackSlippage?: number;
-            excludedSources?: ERC20BridgeSource[];
-            feeSchedule?: FeeSchedule;
-            exchangeProxyOverhead?: ExchangeProxyOverhead;
-            allowFallback?: boolean;
-            shouldBatchBridgeOrders?: boolean;
-        },
+    public async _generateOptimizedOrdersAsync(
+        marketSideLiquidity: Omit<MarketSideLiquidity, 'makerTokenDecimals' | 'takerTokenDecimals'>,
+        opts: GenerateOptimizedOrdersOpts,
     ): Promise<OptimizerResult> {
         const {
             inputToken,
@@ -670,6 +639,151 @@ export class MarketOperationUtils {
             liquidityDelivered: collapsedPath.collapsedFills as CollapsedFill[],
             sourceFlags: collapsedPath.sourceFlags,
         };
+    }
+
+    private async _getMarketSideOrdersAsync(
+        nativeOrders: SignedOrder[],
+        amount: BigNumber,
+        side: MarketOperation,
+        opts?: Partial<GetMarketOrdersOpts>,
+    ): Promise<OptimizerResultWithReport> {
+        const _opts = { ...DEFAULT_GET_MARKET_ORDERS_OPTS, ...opts };
+        const optimizerOpts: GenerateOptimizedOrdersOpts = {
+            bridgeSlippage: _opts.bridgeSlippage,
+            maxFallbackSlippage: _opts.maxFallbackSlippage,
+            excludedSources: _opts.excludedSources,
+            feeSchedule: _opts.feeSchedule,
+            allowFallback: _opts.allowFallback,
+            exchangeProxyOverhead: _opts.exchangeProxyOverhead,
+        };
+
+        // Compute an optimized path for on-chain DEX and open-orderbook. This should not include RFQ liquidity.
+        const marketLiquidityFnAsync =
+            side === MarketOperation.Sell
+                ? this.getMarketSellLiquidityAsync.bind(this)
+                : this.getMarketBuyLiquidityAsync.bind(this);
+        const marketSideLiquidity = await marketLiquidityFnAsync(nativeOrders, amount, _opts);
+        let optimizerResult: OptimizerResult | undefined;
+        try {
+            optimizerResult = await this._generateOptimizedOrdersAsync(marketSideLiquidity, optimizerOpts);
+        } catch (e) {
+            // If no on-chain or off-chain Open Orderbook orders are present, a `NoOptimalPath` will be thrown.
+            // If this happens at this stage, there is still a chance that an RFQ order is fillable, therefore
+            // we catch the error and continue.
+            if (e.message !== AggregationError.NoOptimalPath) {
+                throw e;
+            }
+        }
+
+        // If RFQ liquidity is enabled, make a request to check RFQ liquidity
+        const { rfqt } = _opts;
+        if (
+            IS_PRICE_AWARE_RFQ_ENABLED &&
+            rfqt &&
+            rfqt.quoteRequestor &&
+            marketSideLiquidity.quoteSourceFilters.isAllowed(ERC20BridgeSource.Native)
+        ) {
+            // Calculate a suggested price. For now, this is simply the overall price of the aggregation.
+            let comparisonPrice: BigNumber | undefined;
+            if (optimizerResult) {
+                const totalMakerAmount = BigNumber.sum(
+                    ...optimizerResult.optimizedOrders.map(order => order.makerAssetAmount),
+                );
+                const totalTakerAmount = BigNumber.sum(
+                    ...optimizerResult.optimizedOrders.map(order => order.takerAssetAmount),
+                );
+                if (totalMakerAmount.gt(0)) {
+                    const totalMakerAmountUnitAmount = Web3Wrapper.toUnitAmount(
+                        totalMakerAmount,
+                        marketSideLiquidity.makerTokenDecimals,
+                    );
+                    const totalTakerAmountUnitAmount = Web3Wrapper.toUnitAmount(
+                        totalTakerAmount,
+                        marketSideLiquidity.takerTokenDecimals,
+                    );
+                    comparisonPrice = totalMakerAmountUnitAmount
+                        .div(totalTakerAmountUnitAmount)
+                        .decimalPlaces(COMPARISON_PRICE_DECIMALS);
+                }
+            }
+
+            // If we are making an indicative quote, make the RFQT request and then re-run the sampler if new orders come back.
+            if (rfqt.isIndicative) {
+                const indicativeQuotes = await getRfqtIndicativeQuotesAsync(
+                    nativeOrders[0].makerAssetData,
+                    nativeOrders[0].takerAssetData,
+                    side,
+                    amount,
+                    comparisonPrice,
+                    _opts,
+                );
+                // Re-run optimizer with the new indicative quote
+                if (indicativeQuotes.length > 0) {
+                    optimizerResult = await this._generateOptimizedOrdersAsync(
+                        {
+                            ...marketSideLiquidity,
+                            rfqtIndicativeQuotes: indicativeQuotes,
+                        },
+                        optimizerOpts,
+                    );
+                }
+            } else {
+                // A firm quote is being requested. Ensure that `intentOnFilling` is enabled.
+                if (rfqt.intentOnFilling) {
+                    // Extra validation happens when requesting a firm quote, such as ensuring that the takerAddress
+                    // is indeed valid.
+                    if (!rfqt.takerAddress || rfqt.takerAddress === NULL_ADDRESS) {
+                        throw new Error('RFQ-T requests must specify a taker address');
+                    }
+                    const firmQuotes = await rfqt.quoteRequestor.requestRfqtFirmQuotesAsync(
+                        nativeOrders[0].makerAssetData,
+                        nativeOrders[0].takerAssetData,
+                        amount,
+                        side,
+                        comparisonPrice,
+                        rfqt,
+                    );
+                    if (firmQuotes.length > 0) {
+                        // Re-run optimizer with the new firm quote. This is the second and last time
+                        // we run the optimized in a block of code. In this case, we don't catch a potential `NoOptimalPath` exception
+                        // and we let it bubble up if it happens.
+                        //
+                        // NOTE: as of now, we assume that RFQ orders are 100% fillable because these are trusted market makers, therefore
+                        // we do not perform an extra check to get fillable taker amounts.
+                        optimizerResult = await this._generateOptimizedOrdersAsync(
+                            {
+                                ...marketSideLiquidity,
+                                nativeOrders: marketSideLiquidity.nativeOrders.concat(
+                                    firmQuotes.map(quote => quote.signedOrder),
+                                ),
+                                orderFillableAmounts: marketSideLiquidity.orderFillableAmounts.concat(
+                                    firmQuotes.map(quote => quote.signedOrder.takerAssetAmount),
+                                ),
+                            },
+                            optimizerOpts,
+                        );
+                    }
+                }
+            }
+        }
+
+        // At this point we should have at least one valid optimizer result, therefore we manually raise
+        // `NoOptimalPath` if no optimizer result was ever set.
+        if (optimizerResult === undefined) {
+            throw new Error(AggregationError.NoOptimalPath);
+        }
+
+        // Compute Quote Report and return the results.
+        let quoteReport: QuoteReport | undefined;
+        if (_opts.shouldGenerateQuoteReport) {
+            quoteReport = MarketOperationUtils._computeQuoteReport(
+                nativeOrders,
+                _opts.rfqt ? _opts.rfqt.quoteRequestor : undefined,
+                marketSideLiquidity,
+                optimizerResult,
+            );
+        }
+        return { ...optimizerResult, quoteReport };
     }
 }
 

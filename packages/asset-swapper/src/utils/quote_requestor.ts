@@ -1,6 +1,6 @@
 import { schemas, SchemaValidator } from '@0x/json-schemas';
 import { assetDataUtils, orderCalculationUtils, SignedOrder } from '@0x/order-utils';
-import { RFQTFirmQuote, RFQTIndicativeQuote, TakerRequest } from '@0x/quote-server';
+import { RFQTFirmQuote, RFQTIndicativeQuote, TakerRequestQueryParams } from '@0x/quote-server';
 import { ERC20AssetData } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import Axios, { AxiosInstance } from 'axios';
@@ -42,29 +42,6 @@ function getTokenAddressOrThrow(assetData: string): string {
         return (decodedAssetData as ERC20AssetData).tokenAddress;
     }
     throw new Error(`Decoded asset data (${JSON.stringify(decodedAssetData)}) does not contain a token address`);
-}
-
-function inferQueryParams(
-    marketOperation: MarketOperation,
-    makerAssetData: string,
-    takerAssetData: string,
-    assetFillAmount: BigNumber,
-): Pick<TakerRequest, 'buyTokenAddress' | 'sellTokenAddress' | 'buyAmountBaseUnits' | 'sellAmountBaseUnits'> {
-    if (marketOperation === MarketOperation.Buy) {
-        return {
-            buyTokenAddress: getTokenAddressOrThrow(makerAssetData),
-            sellTokenAddress: getTokenAddressOrThrow(takerAssetData),
-            buyAmountBaseUnits: assetFillAmount,
-            sellAmountBaseUnits: undefined,
-        };
-    } else {
-        return {
-            buyTokenAddress: getTokenAddressOrThrow(makerAssetData),
-            sellTokenAddress: getTokenAddressOrThrow(takerAssetData),
-            sellAmountBaseUnits: assetFillAmount,
-            buyAmountBaseUnits: undefined,
-        };
-    }
 }
 
 function hasExpectedAssetData(
@@ -111,6 +88,54 @@ export class QuoteRequestor {
     private readonly _schemaValidator: SchemaValidator = new SchemaValidator();
     private readonly _orderSignatureToMakerUri: { [orderSignature: string]: string } = {};
 
+    public static makeQueryParameters(
+        takerAddress: string,
+        marketOperation: MarketOperation,
+        makerAssetData: string,
+        takerAssetData: string,
+        assetFillAmount: BigNumber,
+        comparisonPrice?: BigNumber,
+    ): TakerRequestQueryParams {
+        const buyTokenAddress = getTokenAddressOrThrow(makerAssetData);
+        const sellTokenAddress = getTokenAddressOrThrow(takerAssetData);
+        const { buyAmountBaseUnits, sellAmountBaseUnits } =
+            marketOperation === MarketOperation.Buy
+                ? {
+                      buyAmountBaseUnits: assetFillAmount,
+                      sellAmountBaseUnits: undefined,
+                  }
+                : {
+                      sellAmountBaseUnits: assetFillAmount,
+                      buyAmountBaseUnits: undefined,
+                  };
+
+        const requestParamsWithBigNumbers: Pick<
+            TakerRequestQueryParams,
+            'buyTokenAddress' | 'sellTokenAddress' | 'takerAddress' | 'comparisonPrice'
+        > = {
+            takerAddress,
+            comparisonPrice: comparisonPrice === undefined ? undefined : comparisonPrice.toString(),
+            buyTokenAddress,
+            sellTokenAddress,
+        };
+
+        // convert BigNumbers to strings
+        // so they are digestible by axios
+        if (sellAmountBaseUnits) {
+            return {
+                ...requestParamsWithBigNumbers,
+                sellAmountBaseUnits: sellAmountBaseUnits.toString(),
+            };
+        } else if (buyAmountBaseUnits) {
+            return {
+                ...requestParamsWithBigNumbers,
+                buyAmountBaseUnits: buyAmountBaseUnits.toString(),
+            };
+        } else {
+            throw new Error('Neither "buyAmountBaseUnits" or "sellAmountBaseUnits" were defined');
+        }
+    }
+
     constructor(
         private readonly _rfqtAssetOfferings: RfqtMakerAssetOfferings,
         private readonly _warningLogger: LogFunction = constants.DEFAULT_WARNING_LOGGER,
@@ -125,6 +150,7 @@ export class QuoteRequestor {
         takerAssetData: string,
         assetFillAmount: BigNumber,
         marketOperation: MarketOperation,
+        comparisonPrice: BigNumber | undefined,
         options: RfqtRequestOpts,
     ): Promise<RFQTFirmQuote[]> {
         const _opts: RfqtRequestOpts = { ...constants.DEFAULT_RFQT_REQUEST_OPTS, ...options };
@@ -143,6 +169,7 @@ export class QuoteRequestor {
             takerAssetData,
             assetFillAmount,
             marketOperation,
+            comparisonPrice,
             _opts,
             'firm',
         );
@@ -213,6 +240,7 @@ export class QuoteRequestor {
         takerAssetData: string,
         assetFillAmount: BigNumber,
         marketOperation: MarketOperation,
+        comparisonPrice: BigNumber | undefined,
         options: RfqtRequestOpts,
     ): Promise<RFQTIndicativeQuote[]> {
         const _opts: RfqtRequestOpts = { ...constants.DEFAULT_RFQT_REQUEST_OPTS, ...options };
@@ -231,6 +259,7 @@ export class QuoteRequestor {
             takerAssetData,
             assetFillAmount,
             marketOperation,
+            comparisonPrice,
             _opts,
             'indicative',
         );
@@ -331,25 +360,18 @@ export class QuoteRequestor {
         takerAssetData: string,
         assetFillAmount: BigNumber,
         marketOperation: MarketOperation,
+        comparisonPrice: BigNumber | undefined,
         options: RfqtRequestOpts,
         quoteType: 'firm' | 'indicative',
     ): Promise<Array<{ response: ResponseT; makerUri: string }>> {
-        const requestParamsWithBigNumbers = {
-            takerAddress: options.takerAddress,
-            ...inferQueryParams(marketOperation, makerAssetData, takerAssetData, assetFillAmount),
-        };
-
-        // convert BigNumbers to strings
-        // so they are digestible by axios
-        const requestParams = {
-            ...requestParamsWithBigNumbers,
-            sellAmountBaseUnits: requestParamsWithBigNumbers.sellAmountBaseUnits
-                ? requestParamsWithBigNumbers.sellAmountBaseUnits.toString()
-                : undefined,
-            buyAmountBaseUnits: requestParamsWithBigNumbers.buyAmountBaseUnits
-                ? requestParamsWithBigNumbers.buyAmountBaseUnits.toString()
-                : undefined,
-        };
+        const requestParams = QuoteRequestor.makeQueryParameters(
+            options.takerAddress,
+            marketOperation,
+            makerAssetData,
+            takerAssetData,
+            assetFillAmount,
+            comparisonPrice,
+        );
 
         const result: Array<{ response: ResponseT; makerUri: string }> = [];
         await Promise.all(

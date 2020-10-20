@@ -8,7 +8,7 @@ import { BlockParamLiteral, SupportedProvider, ZeroExProvider } from 'ethereum-t
 import * as _ from 'lodash';
 
 import { artifacts } from './artifacts';
-import { constants } from './constants';
+import { constants, IS_PRICE_AWARE_RFQ_ENABLED } from './constants';
 import {
     CalculateSwapQuoteOpts,
     LiquidityForTakerMakerAssetDataPair,
@@ -683,7 +683,21 @@ export class SwapQuoter {
             this.expiryBufferMs,
         );
 
+        // If an API key was provided, but the key is not whitelisted, raise a warning and disable RFQ
+        if (opts.rfqt && opts.rfqt.apiKey && !this._isApiKeyWhitelisted(opts.rfqt.apiKey)) {
+            if (rfqtOptions && rfqtOptions.warningLogger) {
+                rfqtOptions.warningLogger(
+                    {
+                        apiKey: opts.rfqt.apiKey,
+                    },
+                    'Attempt at using an RFQ API key that is not whitelisted. Disabling RFQ for the request lifetime.',
+                );
+            }
+            opts.rfqt = undefined;
+        }
+
         if (
+            !IS_PRICE_AWARE_RFQ_ENABLED && // Price-aware RFQ is disabled.
             opts.rfqt && // This is an RFQT-enabled API request
             opts.rfqt.intentOnFilling && // The requestor is asking for a firm quote
             opts.rfqt.apiKey &&
@@ -700,6 +714,7 @@ export class SwapQuoter {
                         takerAssetData,
                         assetFillAmount,
                         marketOperation,
+                        undefined,
                         opts.rfqt,
                     )
                     .then(firmQuotes => firmQuotes.map(quote => quote.signedOrder)),
@@ -707,9 +722,7 @@ export class SwapQuoter {
         }
 
         const orderBatches: SignedOrder[][] = await Promise.all(orderBatchPromises);
-
         const unsortedOrders: SignedOrder[] = orderBatches.reduce((_orders, batch) => _orders.concat(...batch), []);
-
         const orders = sortingUtils.sortOrders(unsortedOrders);
 
         // if no native orders, pass in a dummy order for the sampler to have required metadata for sampling

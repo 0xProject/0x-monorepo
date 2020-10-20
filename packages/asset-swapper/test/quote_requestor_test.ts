@@ -1,5 +1,6 @@
 import { tokenUtils } from '@0x/dev-utils';
 import { assetDataUtils } from '@0x/order-utils';
+import { TakerRequestQueryParams } from '@0x/quote-server';
 import { StatusCodes } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
@@ -35,11 +36,11 @@ describe('QuoteRequestor', async () => {
             // Set up RFQT responses
             // tslint:disable-next-line:array-type
             const mockedRequests: MockedRfqtFirmQuoteResponse[] = [];
-            const expectedParams = {
+            const expectedParams: TakerRequestQueryParams = {
                 sellTokenAddress: takerToken,
                 buyTokenAddress: makerToken,
                 sellAmountBaseUnits: '10000',
-                buyAmountBaseUnits: undefined,
+                comparisonPrice: undefined,
                 takerAddress,
             };
             // Successful response
@@ -174,6 +175,7 @@ describe('QuoteRequestor', async () => {
                         takerAssetData,
                         new BigNumber(10000),
                         MarketOperation.Sell,
+                        undefined,
                         {
                             apiKey,
                             takerAddress,
@@ -189,6 +191,17 @@ describe('QuoteRequestor', async () => {
         });
     });
     describe('requestRfqtIndicativeQuotesAsync for Indicative quotes', async () => {
+        it('should optionally accept a "comparisonPrice" parameter', async () => {
+            const response = QuoteRequestor.makeQueryParameters(
+                otherToken1,
+                MarketOperation.Sell,
+                makerAssetData,
+                takerAssetData,
+                new BigNumber(1000),
+                new BigNumber(300.2),
+            );
+            expect(response.comparisonPrice).to.eql('300.2');
+        });
         it('should return successful RFQT requests', async () => {
             const takerAddress = '0xd209925defc99488e3afff1174e48b4fa628302a';
             const apiKey = 'my-ko0l-api-key';
@@ -196,11 +209,11 @@ describe('QuoteRequestor', async () => {
             // Set up RFQT responses
             // tslint:disable-next-line:array-type
             const mockedRequests: MockedRfqtIndicativeQuoteResponse[] = [];
-            const expectedParams = {
+            const expectedParams: TakerRequestQueryParams = {
                 sellTokenAddress: takerToken,
                 buyTokenAddress: makerToken,
                 sellAmountBaseUnits: '10000',
-                buyAmountBaseUnits: undefined,
+                comparisonPrice: undefined,
                 takerAddress,
             };
             // Successful response
@@ -276,6 +289,7 @@ describe('QuoteRequestor', async () => {
                         takerAssetData,
                         new BigNumber(10000),
                         MarketOperation.Sell,
+                        undefined,
                         {
                             apiKey,
                             takerAddress,
@@ -294,11 +308,11 @@ describe('QuoteRequestor', async () => {
             // Set up RFQT responses
             // tslint:disable-next-line:array-type
             const mockedRequests: MockedRfqtIndicativeQuoteResponse[] = [];
-            const expectedParams = {
+            const expectedParams: TakerRequestQueryParams = {
                 sellTokenAddress: takerToken,
                 buyTokenAddress: makerToken,
                 buyAmountBaseUnits: '10000',
-                sellAmountBaseUnits: undefined,
+                comparisonPrice: undefined,
                 takerAddress,
             };
             // Successful response
@@ -326,6 +340,7 @@ describe('QuoteRequestor', async () => {
                         takerAssetData,
                         new BigNumber(10000),
                         MarketOperation.Buy,
+                        undefined,
                         {
                             apiKey,
                             takerAddress,

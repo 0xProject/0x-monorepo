@@ -1,4 +1,5 @@
 import { BlockParam, ContractAddresses, GethCallOverrides } from '@0x/contract-wrappers';
+import { TakerRequestQueryParams } from '@0x/quote-server';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
@@ -357,9 +358,7 @@ export enum OrderPrunerPermittedFeeTypes {
 export interface MockedRfqtFirmQuoteResponse {
     endpoint: string;
     requestApiKey: string;
-    requestParams: {
-        [key: string]: string | undefined;
-    };
+    requestParams: TakerRequestQueryParams;
     responseData: any;
     responseCode: number;
 }
@@ -370,9 +369,7 @@ export interface MockedRfqtFirmQuoteResponse {
 export interface MockedRfqtIndicativeQuoteResponse {
     endpoint: string;
     requestApiKey: string;
-    requestParams: {
-        [key: string]: string | undefined;
-    };
+    requestParams: TakerRequestQueryParams;
     responseData: any;
     responseCode: number;
 }
@@ -381,3 +378,5 @@ export interface SamplerOverrides {
     overrides: GethCallOverrides;
     block: BlockParam;
 }
+
+export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;

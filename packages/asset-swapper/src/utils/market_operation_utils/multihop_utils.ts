@@ -1,6 +1,8 @@
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
+import { Omit } from '../../types';
+
 import { ZERO_AMOUNT } from './constants';
 import { getTwoHopAdjustedRate } from './rate_utils';
 import {
@@ -41,7 +43,7 @@ export function getIntermediateTokens(
  * Returns the best two-hop quote and the fee-adjusted rate of that quote.
  */
 export function getBestTwoHopQuote(
-    marketSideLiquidity: MarketSideLiquidity,
+    marketSideLiquidity: Omit<MarketSideLiquidity, 'makerTokenDecimals' | 'takerTokenDecimals'>,
     feeSchedule?: FeeSchedule,
     exchangeProxyOverhead?: ExchangeProxyOverhead,
 ): { quote: DexSample<MultiHopFillData> | undefined; adjustedRate: BigNumber } {

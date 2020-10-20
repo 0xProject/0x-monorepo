@@ -6,6 +6,8 @@ import { RfqtRequestOpts, SignedOrderWithFillableAmounts } from '../../types';
 import { QuoteRequestor } from '../../utils/quote_requestor';
 import { QuoteReport } from '../quote_report_generator';
 
+import { SourceFilters } from './source_filters';
+
 /**
  * Order domain keys: chainId and exchange
  */
@@ -331,6 +333,9 @@ export interface OptimizerResult {
     optimizedOrders: OptimizedMarketOrder[];
     sourceFlags: number;
     liquidityDelivered: CollapsedFill[] | DexSample<MultiHopFillData>;
+}
+
+export interface OptimizerResultWithReport extends OptimizerResult {
     quoteReport?: QuoteReport;
 }
 
@@ -353,8 +358,22 @@ export interface MarketSideLiquidity {
     ethToInputRate: BigNumber;
     rfqtIndicativeQuotes: RFQTIndicativeQuote[];
     twoHopQuotes: Array<DexSample<MultiHopFillData>>;
+    quoteSourceFilters: SourceFilters;
+    makerTokenDecimals: number;
+    takerTokenDecimals: number;
 }
 
 export interface TokenAdjacencyGraph {
     [token: string]: string[];
+}
+
+export interface GenerateOptimizedOrdersOpts {
+    runLimit?: number;
+    bridgeSlippage?: number;
+    maxFallbackSlippage?: number;
+    excludedSources?: ERC20BridgeSource[];
+    feeSchedule?: FeeSchedule;
+    exchangeProxyOverhead?: ExchangeProxyOverhead;
+    allowFallback?: boolean;
+    shouldBatchBridgeOrders?: boolean;
 }
