@@ -53,23 +53,17 @@ contract MStableSampler is
         makerTokenAmounts = new uint256[](numSamples);
 
         for (uint256 i = 0; i < numSamples; i++) {
-            (bool didSucceed, bytes memory resultData) =
-                address(_getMUsdAddress()).staticcall.gas(DEFAULT_CALL_GAS)(
-                    abi.encodeWithSelector(
-                        IMStable(0).getSwapOutput.selector,
-                        takerToken,
-                        makerToken,
-                        takerTokenAmounts[i]
-                    ));
-            uint256 buyAmount = 0;
-            if (didSucceed) {
-                (, , buyAmount) = abi.decode(resultData, (bool, string, uint256));
-            }
-            // Exit early if the amount is too high for the source to serve
-            if (buyAmount == 0) {
+            try
+                IMStable(_getMUsdAddress()).getSwapOutput
+                    {gas: DEFAULT_CALL_GAS}
+                    (takerToken, makerToken, takerTokenAmounts[i])
+                returns (bool, string memory, uint256 amount)
+            {
+                makerTokenAmounts[i] = amount;
+            } catch (bytes memory) {
+                // Swallow failures, leaving all results as zero.
                 break;
             }
-            makerTokenAmounts[i] = buyAmount;
         }
     }
 
@@ -111,17 +105,15 @@ contract MStableSampler is
             abi.decode(takerTokenData, (address));
         (address makerToken) =
             abi.decode(makerTokenData, (address));
-        (bool success, bytes memory resultData) =
-            address(this).staticcall(abi.encodeWithSelector(
-                this.sampleSellsFromMStable.selector,
-                takerToken,
-                makerToken,
-                _toSingleValueArray(sellAmount)
-            ));
-        if (!success) {
+        try
+            this.sampleSellsFromMStable
+                (takerToken, makerToken, _toSingleValueArray(sellAmount))
+            returns (uint256[] memory amounts)
+        {
+            return amounts[0];
+        } catch (bytes memory) {
+            // Swallow failures, leaving all results as zero.
             return 0;
         }
-        // solhint-disable-next-line indent
-        return abi.decode(resultData, (uint256[]))[0];
     }
 }

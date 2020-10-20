@@ -48,23 +48,17 @@ contract ShellSampler is
         makerTokenAmounts = new uint256[](numSamples);
 
         for (uint256 i = 0; i < numSamples; i++) {
-            (bool didSucceed, bytes memory resultData) =
-                address(_getShellAddress()).staticcall.gas(DEFAULT_CALL_GAS)(
-                    abi.encodeWithSelector(
-                        IShell(0).viewOriginSwap.selector,
-                        takerToken,
-                        makerToken,
-                        takerTokenAmounts[i]
-                    ));
-            uint256 buyAmount = 0;
-            if (didSucceed) {
-                buyAmount = abi.decode(resultData, (uint256));
-            }
-            // Exit early if the amount is too high for the source to serve
-            if (buyAmount == 0) {
+            try
+                IShell(_getShellAddress()).viewOriginSwap
+                    {gas: DEFAULT_CALL_GAS}
+                    (takerToken, makerToken, takerTokenAmounts[i])
+                returns (uint256 amount)
+            {
+                makerTokenAmounts[i] = amount;
+            } catch (bytes memory) {
+                // Swallow failures, leaving all results as zero.
                 break;
             }
-            makerTokenAmounts[i] = buyAmount;
         }
     }
 
@@ -88,23 +82,17 @@ contract ShellSampler is
         takerTokenAmounts = new uint256[](numSamples);
 
         for (uint256 i = 0; i < numSamples; i++) {
-            (bool didSucceed, bytes memory resultData) =
-                address(_getShellAddress()).staticcall.gas(DEFAULT_CALL_GAS)(
-                    abi.encodeWithSelector(
-                        IShell(0).viewTargetSwap.selector,
-                        takerToken,
-                        makerToken,
-                        makerTokenAmounts[i]
-                    ));
-            uint256 sellAmount = 0;
-            if (didSucceed) {
-                sellAmount = abi.decode(resultData, (uint256));
-            }
-            // Exit early if the amount is too high for the source to serve
-            if (sellAmount == 0) {
+            try
+                IShell(_getShellAddress()).viewTargetSwap
+                    {gas: DEFAULT_CALL_GAS}
+                    (takerToken, makerToken, makerTokenAmounts[i])
+                returns (uint256 amount)
+            {
+                takerTokenAmounts[i] = amount;
+            } catch (bytes memory) {
+                // Swallow failures, leaving all results as zero.
                 break;
             }
-            takerTokenAmounts[i] = sellAmount;
         }
     }
 }

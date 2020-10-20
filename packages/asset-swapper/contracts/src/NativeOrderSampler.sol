@@ -142,21 +142,21 @@ contract NativeOrderSampler {
     {
         orderFillableTakerAssetAmounts = new uint256[](orders.length);
         for (uint256 i = 0; i != orders.length; i++) {
-            // solhint-disable indent
-            (bool didSucceed, bytes memory resultData) =
-                address(this)
-                    .staticcall
-                    .gas(DEFAULT_CALL_GAS)
-                    (abi.encodeWithSelector(
-                       this.getOrderFillableTakerAmount.selector,
+            try
+                this.getOrderFillableTakerAmount
+                    {gas: DEFAULT_CALL_GAS}
+                    (
                        orders[i],
                        orderSignatures[i],
                        exchange
-                    ));
-            // solhint-enable indent
-            orderFillableTakerAssetAmounts[i] = didSucceed
-                ? abi.decode(resultData, (uint256))
-                : 0;
+                    )
+                returns (uint256 amount)
+            {
+                orderFillableTakerAssetAmounts[i] = amount;
+            } catch (bytes memory) {
+                // Swallow failures, leaving all results as zero.
+                orderFillableTakerAssetAmounts[i] = 0;
+            }
         }
     }
 

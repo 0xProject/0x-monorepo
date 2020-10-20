@@ -81,7 +81,7 @@ contract MooniswapSampler is
     )
         public
         view
-        returns (uint256 makerTokenAmount)
+        returns (uint256)
     {
         // Find the pool for the pair.
         IMooniswap pool = IMooniswap(
@@ -89,7 +89,7 @@ contract MooniswapSampler is
         );
         // If there is no pool then return early
         if (address(pool) == address(0)) {
-            return makerTokenAmount;
+            return 0;
         }
         uint256 poolBalance = mooniswapTakerToken == address(0)
             ? address(pool).balance
@@ -97,18 +97,18 @@ contract MooniswapSampler is
         // If the pool balance is smaller than the sell amount
         // don't sample to avoid multiplication overflow in buys
         if (poolBalance < takerTokenAmount) {
-            return makerTokenAmount;
+            return 0;
         }
-        (bool didSucceed, bytes memory resultData) =
-            address(pool).staticcall.gas(MOONISWAP_CALL_GAS)(
-                abi.encodeWithSelector(
-                    pool.getReturn.selector,
-                    mooniswapTakerToken,
-                    mooniswapMakerToken,
-                    takerTokenAmount
-                ));
-        if (didSucceed) {
-            makerTokenAmount = abi.decode(resultData, (uint256));
+        try
+            pool.getReturn
+                {gas: MOONISWAP_CALL_GAS}
+                (mooniswapTakerToken, mooniswapMakerToken, takerTokenAmount)
+            returns (uint256 amount)
+        {
+            return amount;
+        } catch (bytes memory) {
+            // Swallow failures, leaving all results as zero.
+            return 0;
         }
     }
 

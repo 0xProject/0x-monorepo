@@ -66,23 +66,17 @@ contract LiquidityProviderSampler is
         }
 
         for (uint256 i = 0; i < numSamples; i++) {
-            (bool didSucceed, bytes memory resultData) =
-                providerAddress.staticcall.gas(DEFAULT_CALL_GAS)(
-                    abi.encodeWithSelector(
-                        ILiquidityProvider(0).getSellQuote.selector,
-                        takerToken,
-                        makerToken,
-                        takerTokenAmounts[i]
-                    ));
-            uint256 buyAmount = 0;
-            if (didSucceed) {
-                buyAmount = abi.decode(resultData, (uint256));
-            }
-            // Exit early if the amount is too high for the source to serve
-            if (buyAmount == 0) {
+            try
+                ILiquidityProvider(providerAddress).getSellQuote
+                    {gas: DEFAULT_CALL_GAS}
+                    (takerToken, makerToken, takerTokenAmounts[i])
+                returns (uint256 amount)
+            {
+                makerTokenAmounts[i] = amount;
+            } catch (bytes memory) {
+                // Swallow failures, leaving all results as zero.
                 break;
             }
-            makerTokenAmounts[i] = buyAmount;
         }
     }
 
@@ -136,14 +130,15 @@ contract LiquidityProviderSampler is
         if (registryAddress == address(0)) {
             return address(0);
         }
-        bytes memory callData = abi.encodeWithSelector(
-            ILiquidityProviderRegistry(0).getLiquidityProviderForMarket.selector,
-            takerToken,
-            makerToken
-        );
-        (bool didSucceed, bytes memory returnData) = registryAddress.staticcall(callData);
-        if (didSucceed && returnData.length == 32) {
-            return LibBytesV06.readAddress(returnData, 12);
+        try
+            ILiquidityProviderRegistry(registryAddress).getLiquidityProviderForMarket
+                (takerToken, makerToken)
+            returns (address provider)
+        {
+            return provider;
+        } catch (bytes memory) {
+            // Swallow failures, leaving all results as zero.
+            return address(0);
         }
     }
 
@@ -160,19 +155,16 @@ contract LiquidityProviderSampler is
             abi.decode(takerTokenData, (address, address));
         (address makerToken) =
             abi.decode(makerTokenData, (address));
-        (bool success, bytes memory resultData) =
-            address(this).staticcall(abi.encodeWithSelector(
-                this.sampleSellsFromLiquidityProviderRegistry.selector,
-                plpRegistryAddress,
-                takerToken,
-                makerToken,
-                _toSingleValueArray(sellAmount)
-            ));
-        if (!success) {
+        try
+            this.sampleSellsFromLiquidityProviderRegistry
+                {gas: DEFAULT_CALL_GAS}
+                (plpRegistryAddress, takerToken, makerToken, _toSingleValueArray(sellAmount))
+            returns (uint256[] memory amounts, address)
+        {
+            return amounts[0];
+        } catch (bytes memory) {
+            // Swallow failures, leaving all results as zero.
             return 0;
         }
-        // solhint-disable-next-line indent
-        (uint256[] memory amounts, ) = abi.decode(resultData, (uint256[], address));
-        return amounts[0];
     }
 }

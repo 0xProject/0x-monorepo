@@ -78,24 +78,24 @@ contract BalancerSampler {
             if (takerTokenAmounts[i] > _bmul(poolState.takerTokenBalance, MAX_IN_RATIO)) {
                 break;
             }
-            (bool didSucceed, bytes memory resultData) =
-                poolAddress.staticcall.gas(BALANCER_CALL_GAS)(
-                    abi.encodeWithSelector(
-                        pool.calcOutGivenIn.selector,
+            try
+                pool.calcOutGivenIn
+                    {gas: BALANCER_CALL_GAS}
+                    (
                         poolState.takerTokenBalance,
                         poolState.takerTokenWeight,
                         poolState.makerTokenBalance,
                         poolState.makerTokenWeight,
                         takerTokenAmounts[i],
                         poolState.swapFee
-                    ));
-            uint256 buyAmount = 0;
-            if (didSucceed) {
-                buyAmount = abi.decode(resultData, (uint256));
-            } else {
+                    )
+                returns (uint256 amount)
+            {
+                makerTokenAmounts[i] = amount;
+            } catch (bytes memory) {
+                // Swallow failures, leaving all results as zero.
                 break;
             }
-            makerTokenAmounts[i] = buyAmount;
         }
     }
 
@@ -136,24 +136,24 @@ contract BalancerSampler {
             if (makerTokenAmounts[i] > _bmul(poolState.makerTokenBalance, MAX_OUT_RATIO)) {
                 break;
             }
-            (bool didSucceed, bytes memory resultData) =
-                poolAddress.staticcall.gas(BALANCER_CALL_GAS)(
-                    abi.encodeWithSelector(
-                        pool.calcInGivenOut.selector,
+            try
+                pool.calcInGivenOut
+                    {gas: BALANCER_CALL_GAS}
+                    (
                         poolState.takerTokenBalance,
                         poolState.takerTokenWeight,
                         poolState.makerTokenBalance,
                         poolState.makerTokenWeight,
                         makerTokenAmounts[i],
                         poolState.swapFee
-                    ));
-            uint256 sellAmount = 0;
-            if (didSucceed) {
-                sellAmount = abi.decode(resultData, (uint256));
-            } else {
+                    )
+                returns (uint256 amount)
+            {
+                takerTokenAmounts[i] = amount;
+            } catch (bytes memory) {
+                // Swallow failures, leaving all results as zero.
                 break;
             }
-            takerTokenAmounts[i] = sellAmount;
         }
     }
 

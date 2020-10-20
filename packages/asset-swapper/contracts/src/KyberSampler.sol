@@ -109,52 +109,66 @@ contract KyberSampler is
         // All other reserves should be ignored with this hint
         bytes32[] memory selectedReserves = new bytes32[](1);
         selectedReserves[0] = reserveId;
+        uint256[] memory emptySplits = new uint256[](0);
 
-        bool didSucceed;
-        bytes memory resultData;
         if (takerToken == _getWethAddress()) {
             // ETH to Token
-            (didSucceed, resultData) =
-                address(kyberHint).staticcall.gas(KYBER_CALL_GAS)(
-                    abi.encodeWithSelector(
-                        IKyberHintHandler(0).buildEthToTokenHint.selector,
+            try
+                kyberHint.buildEthToTokenHint
+                    {gas: KYBER_CALL_GAS}
+                    (
                         makerToken,
                         IKyberHintHandler.TradeType.MaskIn,
                         selectedReserves,
-                        new uint256[](0)));
+                        emptySplits
+                    )
+                returns (bytes memory result)
+            {
+                return result;
+            } catch (bytes memory) {
+                // Swallow failures, leaving all results as zero.
+            }
         } else if (makerToken == _getWethAddress()) {
             // Token to ETH
-            (didSucceed, resultData) =
-                address(kyberHint).staticcall.gas(KYBER_CALL_GAS)(
-                    abi.encodeWithSelector(
-                        IKyberHintHandler(0).buildTokenToEthHint.selector,
+            try
+                kyberHint.buildTokenToEthHint
+                    {gas: KYBER_CALL_GAS}
+                    (
                         takerToken,
                         IKyberHintHandler.TradeType.MaskIn,
                         selectedReserves,
-                        new uint256[](0)));
+                        emptySplits
+                    )
+                returns (bytes memory result)
+            {
+                return result;
+            } catch (bytes memory) {
+                // Swallow failures, leaving all results as zero.
+            }
+
         } else {
             // Token to Token
             // We use the same reserve both ways
-            (didSucceed, resultData) =
-                address(kyberHint).staticcall.gas(KYBER_CALL_GAS)(
-                    abi.encodeWithSelector(
-                        IKyberHintHandler(0).buildTokenToTokenHint.selector,
+            try
+                kyberHint.buildTokenToTokenHint
+                    {gas: KYBER_CALL_GAS}
+                    (
                         takerToken,
                         IKyberHintHandler.TradeType.MaskIn,
                         selectedReserves,
-                        new uint256[](0),
+                        emptySplits,
                         makerToken,
                         IKyberHintHandler.TradeType.MaskIn,
                         selectedReserves,
-                        new uint256[](0)
+                        emptySplits
                     )
-            );
+                returns (bytes memory result)
+            {
+                return result;
+            } catch (bytes memory) {
+                // Swallow failures, leaving all results as zero.
+            }
         }
-        // If successful decode the hint
-        if (didSucceed) {
-            hint = abi.decode(resultData, (bytes));
-        }
-        return hint;
     }
 
     function _sampleSellForApproximateBuyFromKyber(
@@ -164,25 +178,22 @@ contract KyberSampler is
     )
         private
         view
-        returns (uint256 buyAmount)
+        returns (uint256)
     {
         (address makerToken, bytes memory hint) =
             abi.decode(makerTokenData, (address, bytes));
         (address takerToken, ) =
             abi.decode(takerTokenData, (address, bytes));
-        (bool success, bytes memory resultData) =
-            address(this).staticcall(abi.encodeWithSelector(
-                this.sampleSellFromKyberNetwork.selector,
-                hint,
-                takerToken,
-                makerToken,
-                sellAmount
-            ));
-        if (!success) {
+        try
+            this.sampleSellFromKyberNetwork
+                (hint, takerToken, makerToken, sellAmount)
+            returns (uint256 amount)
+        {
+            return amount;
+        } catch (bytes memory) {
+            // Swallow failures, leaving all results as zero.
             return 0;
         }
-        // solhint-disable-next-line indent
-        return abi.decode(resultData, (uint256));
     }
 
     function sampleSellFromKyberNetwork(
@@ -200,31 +211,30 @@ contract KyberSampler is
             return 0;
         }
 
-        (bool didSucceed, bytes memory resultData) =
-            _getKyberNetworkProxyAddress().staticcall.gas(KYBER_CALL_GAS)(
-                abi.encodeWithSelector(
-                    IKyberNetworkProxy(0).getExpectedRateAfterFee.selector,
+        try
+            IKyberNetworkProxy(_getKyberNetworkProxyAddress()).getExpectedRateAfterFee
+                {gas: KYBER_CALL_GAS}
+                (
                     takerToken == _getWethAddress() ? KYBER_ETH_ADDRESS : takerToken,
                     makerToken == _getWethAddress() ? KYBER_ETH_ADDRESS : makerToken,
                     takerTokenAmount,
                     0, // fee
                     hint
-                ));
-        uint256 rate = 0;
-        if (didSucceed) {
-            (rate) = abi.decode(resultData, (uint256));
-        } else {
+                )
+            returns (uint256 rate)
+        {
+            uint256 makerTokenDecimals = _getTokenDecimals(makerToken);
+            uint256 takerTokenDecimals = _getTokenDecimals(takerToken);
+            makerTokenAmount =
+                rate *
+                takerTokenAmount *
+                10 ** makerTokenDecimals /
+                10 ** takerTokenDecimals /
+                10 ** 18;
+            return makerTokenAmount;
+        } catch (bytes memory) {
+            // Swallow failures, leaving all results as zero.
             return 0;
         }
-
-        uint256 makerTokenDecimals = _getTokenDecimals(makerToken);
-        uint256 takerTokenDecimals = _getTokenDecimals(takerToken);
-        makerTokenAmount =
-            rate *
-            takerTokenAmount *
-            10 ** makerTokenDecimals /
-            10 ** takerTokenDecimals /
-            10 ** 18;
-        return makerTokenAmount;
     }
 }

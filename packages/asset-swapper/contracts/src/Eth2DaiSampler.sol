@@ -50,23 +50,17 @@ contract Eth2DaiSampler is
         uint256 numSamples = takerTokenAmounts.length;
         makerTokenAmounts = new uint256[](numSamples);
         for (uint256 i = 0; i < numSamples; i++) {
-            (bool didSucceed, bytes memory resultData) =
-                _getEth2DaiAddress().staticcall.gas(ETH2DAI_CALL_GAS)(
-                    abi.encodeWithSelector(
-                        IEth2Dai(0).getBuyAmount.selector,
-                        makerToken,
-                        takerToken,
-                        takerTokenAmounts[i]
-                    ));
-            uint256 buyAmount = 0;
-            if (didSucceed) {
-                buyAmount = abi.decode(resultData, (uint256));
-            }
-            // Exit early if the amount is too high for the source to serve
-            if (buyAmount == 0) {
+            try
+                IEth2Dai(_getEth2DaiAddress()).getBuyAmount
+                    {gas: ETH2DAI_CALL_GAS}
+                    (makerToken, takerToken, takerTokenAmounts[i])
+                returns (uint256 amount)
+            {
+                makerTokenAmounts[i] = amount;
+            } catch (bytes memory) {
+                // Swallow failures, leaving all results as zero.
                 break;
             }
-            makerTokenAmounts[i] = buyAmount;
         }
     }
 
@@ -89,23 +83,17 @@ contract Eth2DaiSampler is
         uint256 numSamples = makerTokenAmounts.length;
         takerTokenAmounts = new uint256[](numSamples);
         for (uint256 i = 0; i < numSamples; i++) {
-            (bool didSucceed, bytes memory resultData) =
-                _getEth2DaiAddress().staticcall.gas(ETH2DAI_CALL_GAS)(
-                    abi.encodeWithSelector(
-                        IEth2Dai(0).getPayAmount.selector,
-                        takerToken,
-                        makerToken,
-                        makerTokenAmounts[i]
-                    ));
-            uint256 sellAmount = 0;
-            if (didSucceed) {
-                sellAmount = abi.decode(resultData, (uint256));
-            }
-            // Exit early if the amount is too high for the source to serve
-            if (sellAmount == 0) {
+            try
+                IEth2Dai(_getEth2DaiAddress()).getPayAmount
+                    {gas: ETH2DAI_CALL_GAS}
+                    (takerToken, makerToken, makerTokenAmounts[i])
+                returns (uint256 amount)
+            {
+                takerTokenAmounts[i] = amount;
+            } catch (bytes memory) {
+                // Swallow failures, leaving all results as zero.
                 break;
             }
-            takerTokenAmounts[i] = sellAmount;
         }
     }
 }

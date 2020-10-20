@@ -171,32 +171,34 @@ contract DODOSampler is
             (address, address, address)
         );
 
-        bool didSucceed;
-        bytes memory resultData;
         // We will get called to sell both the taker token and also to sell the maker token
         if (takerToken == baseToken) {
             // If base token then use the original query on the pool
-            (didSucceed, resultData) =
-                pool.staticcall.gas(DODO_CALL_GAS)(
-                    abi.encodeWithSelector(
-                        IDODO(0).querySellBaseToken.selector,
-                        sellAmount
-                    ));
+            try
+                IDODO(pool).querySellBaseToken
+                    {gas: DODO_CALL_GAS}
+                    (sellAmount)
+                returns (uint256 amount)
+            {
+                return amount;
+            } catch (bytes memory) {
+                // Swallow failures, leaving all results as zero.
+                return 0;
+            }
         } else {
             // If quote token then use helper, this is less accurate
-            (didSucceed, resultData) =
-                _getDODOHelperAddress().staticcall.gas(DODO_CALL_GAS)(
-                    abi.encodeWithSelector(
-                        IDODOHelper(0).querySellQuoteToken.selector,
-                        pool,
-                        sellAmount
-                    ));
+            try
+                IDODOHelper(_getDODOHelperAddress()).querySellQuoteToken
+                    {gas: DODO_CALL_GAS}
+                    (pool, sellAmount)
+                returns (uint256 amount)
+            {
+                return amount;
+            } catch (bytes memory) {
+                // Swallow failures, leaving all results as zero.
+                return 0;
+            }
         }
-        if (!didSucceed) {
-            return 0;
-        }
-        // solhint-disable-next-line indent
-        return abi.decode(resultData, (uint256));
     }
 
 }
