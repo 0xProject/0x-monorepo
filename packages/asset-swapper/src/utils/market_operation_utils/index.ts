@@ -217,16 +217,17 @@ export class MarketOperationUtils {
             ),
         );
 
-        const rfqtPromise = !IS_PRICE_AWARE_RFQ_ENABLED && quoteSourceFilters.isAllowed(ERC20BridgeSource.Native)
-            ? getRfqtIndicativeQuotesAsync(
-                  nativeOrders[0].makerAssetData,
-                  nativeOrders[0].takerAssetData,
-                  MarketOperation.Sell,
-                  takerAmount,
-                  undefined,
-                  _opts,
-              )
-            : Promise.resolve([]);
+        const rfqtPromise =
+            !IS_PRICE_AWARE_RFQ_ENABLED && quoteSourceFilters.isAllowed(ERC20BridgeSource.Native)
+                ? getRfqtIndicativeQuotesAsync(
+                      nativeOrders[0].makerAssetData,
+                      nativeOrders[0].takerAssetData,
+                      MarketOperation.Sell,
+                      takerAmount,
+                      undefined,
+                      _opts,
+                  )
+                : Promise.resolve([]);
 
         const offChainBalancerPromise = sampleBalancerOffChain
             ? this._sampler.getBalancerSellQuotesOffChainAsync(makerToken, takerToken, sampleAmounts)
@@ -364,16 +365,17 @@ export class MarketOperationUtils {
                 this._liquidityProviderRegistry,
             ),
         );
-        const rfqtPromise = !IS_PRICE_AWARE_RFQ_ENABLED && quoteSourceFilters.isAllowed(ERC20BridgeSource.Native)
-            ? getRfqtIndicativeQuotesAsync(
-                  nativeOrders[0].makerAssetData,
-                  nativeOrders[0].takerAssetData,
-                  MarketOperation.Buy,
-                  makerAmount,
-                  undefined,
-                  _opts,
-              )
-            : Promise.resolve([]);
+        const rfqtPromise =
+            !IS_PRICE_AWARE_RFQ_ENABLED && quoteSourceFilters.isAllowed(ERC20BridgeSource.Native)
+                ? getRfqtIndicativeQuotesAsync(
+                      nativeOrders[0].makerAssetData,
+                      nativeOrders[0].takerAssetData,
+                      MarketOperation.Buy,
+                      makerAmount,
+                      undefined,
+                      _opts,
+                  )
+                : Promise.resolve([]);
         const offChainBalancerPromise = sampleBalancerOffChain
             ? this._sampler.getBalancerBuyQuotesOffChainAsync(makerToken, takerToken, sampleAmounts)
             : Promise.resolve([]);
@@ -675,7 +677,12 @@ export class MarketOperationUtils {
 
         // If RFQ liquidity is enabled, make a request to check RFQ liquidity
         const { rfqt } = _opts;
-        if (IS_PRICE_AWARE_RFQ_ENABLED && rfqt && rfqt.quoteRequestor && marketSideLiquidity.quoteSourceFilters.isAllowed(ERC20BridgeSource.Native)) {
+        if (
+            IS_PRICE_AWARE_RFQ_ENABLED &&
+            rfqt &&
+            rfqt.quoteRequestor &&
+            marketSideLiquidity.quoteSourceFilters.isAllowed(ERC20BridgeSource.Native)
+        ) {
             // Calculate a suggested price. For now, this is simply the overall price of the aggregation.
             let comparisonPrice: BigNumber | undefined;
             if (optimizerResult) {
