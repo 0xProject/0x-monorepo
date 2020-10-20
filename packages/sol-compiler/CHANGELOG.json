@@ -3,7 +3,7 @@
         "version": "4.2.0",
         "changes": [
             {
-                "note": "Add solidity 0.7.x suppoert",
+                "note": "Add solidity 0.7.x support",
                 "pr": 2710
             }
         ]
