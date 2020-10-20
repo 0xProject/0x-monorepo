@@ -98,14 +98,16 @@ export class QuoteRequestor {
     ): TakerRequestQueryParams {
         const buyTokenAddress = getTokenAddressOrThrow(makerAssetData);
         const sellTokenAddress = getTokenAddressOrThrow(takerAssetData);
-        const { buyAmountBaseUnits, sellAmountBaseUnits } = marketOperation === MarketOperation.Buy
-        ? {
-                buyAmountBaseUnits: assetFillAmount,
-                sellAmountBaseUnits: undefined,
-        } : {
-                sellAmountBaseUnits: assetFillAmount,
-                buyAmountBaseUnits: undefined,
-        };
+        const { buyAmountBaseUnits, sellAmountBaseUnits } =
+            marketOperation === MarketOperation.Buy
+                ? {
+                      buyAmountBaseUnits: assetFillAmount,
+                      sellAmountBaseUnits: undefined,
+                  }
+                : {
+                      sellAmountBaseUnits: assetFillAmount,
+                      buyAmountBaseUnits: undefined,
+                  };
 
         const requestParamsWithBigNumbers: Pick<
             TakerRequestQueryParams,
