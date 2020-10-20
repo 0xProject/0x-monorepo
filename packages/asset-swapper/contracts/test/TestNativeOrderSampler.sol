@@ -18,8 +18,6 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
-import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "../src/NativeOrderSampler.sol";
 
 
@@ -43,7 +41,7 @@ contract TestNativeOrderSamplerToken {
 contract TestNativeOrderSampler is
     NativeOrderSampler
 {
-    uint8 private constant MAX_ORDER_STATUS = uint8(LibOrder.OrderStatus.CANCELLED) + 1;
+    uint8 private constant MAX_ORDER_STATUS = uint8(IExchange.OrderStatus.CANCELLED) + 1;
     bytes32 private constant VALID_SIGNATURE_HASH = keccak256(hex"01");
 
     function createTokens(uint256 count)
@@ -78,17 +76,17 @@ contract TestNativeOrderSampler is
     }
 
     // IExchange.getOrderInfo()
-    function getOrderInfo(LibOrder.Order calldata order)
+    function getOrderInfo(IExchange.Order calldata order)
         external
         pure
-        returns (LibOrder.OrderInfo memory orderInfo)
+        returns (IExchange.OrderInfo memory orderInfo)
     {
         // The order salt determines everything.
         orderInfo.orderHash = keccak256(abi.encode(order.salt));
         if (uint8(order.salt) == 0xFF) {
-            orderInfo.orderStatus = LibOrder.OrderStatus.FULLY_FILLED;
+            orderInfo.orderStatus = IExchange.OrderStatus.FULLY_FILLED;
         } else {
-            orderInfo.orderStatus = LibOrder.OrderStatus.FILLABLE;
+            orderInfo.orderStatus = IExchange.OrderStatus.FILLABLE;
         }
         // The expiration time is the filled taker asset amount.
         orderInfo.orderTakerAssetFilledAmount = order.expirationTimeSeconds;

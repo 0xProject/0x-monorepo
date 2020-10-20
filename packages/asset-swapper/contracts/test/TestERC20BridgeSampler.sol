@@ -18,9 +18,6 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-asset-proxy/contracts/src/interfaces/IUniswapExchangeFactory.sol";
-import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
-import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "../src/ERC20BridgeSampler.sol";
 import "../src/interfaces/IEth2Dai.sol";
 import "../src/interfaces/IKyberNetwork.sol";
@@ -432,7 +429,7 @@ contract TestERC20BridgeSampler is
     TestERC20BridgeSamplerEth2Dai public eth2Dai;
     TestERC20BridgeSamplerKyberNetwork public kyber;
 
-    uint8 private constant MAX_ORDER_STATUS = uint8(LibOrder.OrderStatus.CANCELLED) + 1;
+    uint8 private constant MAX_ORDER_STATUS = uint8(IExchange.OrderStatus.CANCELLED) + 1;
 
     constructor() public ERC20BridgeSampler() {
         uniswap = new TestERC20BridgeSamplerUniswapExchangeFactory();
@@ -450,7 +447,7 @@ contract TestERC20BridgeSampler is
 
     // Overridden to return deterministic states.
     function getOrderFillableTakerAmount(
-        LibOrder.Order memory order,
+        IExchange.Order memory order,
         bytes memory,
         IExchange
     )

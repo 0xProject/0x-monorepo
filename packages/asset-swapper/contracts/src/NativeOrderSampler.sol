@@ -20,12 +20,100 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
-import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
-import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 
+
+interface IExchange {
+
+    /// @dev V3 Order structure.
+    struct Order {
+        // Address that created the order.
+        address makerAddress;
+        // Address that is allowed to fill the order.
+        // If set to 0, any address is allowed to fill the order.
+        address takerAddress;
+        // Address that will recieve fees when order is filled.
+        address feeRecipientAddress;
+        // Address that is allowed to call Exchange contract methods that affect this order.
+        // If set to 0, any address is allowed to call these methods.
+        address senderAddress;
+        // Amount of makerAsset being offered by maker. Must be greater than 0.
+        uint256 makerAssetAmount;
+        // Amount of takerAsset being bid on by maker. Must be greater than 0.
+        uint256 takerAssetAmount;
+        // Fee paid to feeRecipient by maker when order is filled.
+        uint256 makerFee;
+        // Fee paid to feeRecipient by taker when order is filled.
+        uint256 takerFee;
+        // Timestamp in seconds at which order expires.
+        uint256 expirationTimeSeconds;
+        // Arbitrary number to facilitate uniqueness of the order's hash.
+        uint256 salt;
+        // Encoded data that can be decoded by a specified proxy contract when transferring makerAsset.
+        // The leading bytes4 references the id of the asset proxy.
+        bytes makerAssetData;
+        // Encoded data that can be decoded by a specified proxy contract when transferring takerAsset.
+        // The leading bytes4 references the id of the asset proxy.
+        bytes takerAssetData;
+        // Encoded data that can be decoded by a specified proxy contract when transferring makerFeeAsset.
+        // The leading bytes4 references the id of the asset proxy.
+        bytes makerFeeAssetData;
+        // Encoded data that can be decoded by a specified proxy contract when transferring takerFeeAsset.
+        // The leading bytes4 references the id of the asset proxy.
+        bytes takerFeeAssetData;
+    }
+
+    // A valid order remains fillable until it is expired, fully filled, or cancelled.
+    // An order's status is unaffected by external factors, like account balances.
+    enum OrderStatus {
+        INVALID,                     // Default value
+        INVALID_MAKER_ASSET_AMOUNT,  // Order does not have a valid maker asset amount
+        INVALID_TAKER_ASSET_AMOUNT,  // Order does not have a valid taker asset amount
+        FILLABLE,                    // Order is fillable
+        EXPIRED,                     // Order has already expired
+        FULLY_FILLED,                // Order is fully filled
+        CANCELLED                    // Order has been cancelled
+    }
+
+    /// @dev Order information returned by `getOrderInfo()`.
+    struct OrderInfo {
+        OrderStatus orderStatus;                    // Status that describes order's validity and fillability.
+        bytes32 orderHash;                    // EIP712 typed data hash of the order (see LibOrder.getTypedDataHash).
+        uint256 orderTakerAssetFilledAmount;  // Amount of order that has already been filled.
+    }
+
+    /// @dev Gets information about an order: status, hash, and amount filled.
+    /// @param order Order to gather information on.
+    /// @return OrderInfo Information about the order and its state.
+    ///                   See LibOrder.OrderInfo for a complete description.
+    function getOrderInfo(IExchange.Order calldata order)
+        external
+        view
+        returns (IExchange.OrderInfo memory orderInfo);
+
+    /// @dev Verifies that a hash has been signed by the given signer.
+    /// @param hash Any 32-byte hash.
+    /// @param signature Proof that the hash has been signed by signer.
+    /// @return isValid `true` if the signature is valid for the given hash and signer.
+    function isValidHashSignature(
+        bytes32 hash,
+        address signerAddress,
+        bytes calldata signature
+    )
+        external
+        view
+        returns (bool isValid);
+
+    /// @dev Gets an asset proxy.
+    /// @param assetProxyId Id of the asset proxy.
+    /// @return The asset proxy registered to assetProxyId. Returns 0x0 if no proxy is registered.
+    function getAssetProxy(bytes4 assetProxyId)
+        external
+        view
+        returns (address);
+}
 
 contract NativeOrderSampler {
     using LibSafeMath for uint256;
@@ -45,7 +133,7 @@ contract NativeOrderSampler {
     /// @return orderFillableTakerAssetAmounts How much taker asset can be filled
     ///         by each order in `orders`.
     function getOrderFillableTakerAssetAmounts(
-        LibOrder.Order[] memory orders,
+        IExchange.Order[] memory orders,
         bytes[] memory orderSignatures,
         IExchange exchange
     )
@@ -81,7 +169,7 @@ contract NativeOrderSampler {
     /// @return orderFillableMakerAssetAmounts How much maker asset can be filled
     ///         by each order in `orders`.
     function getOrderFillableMakerAssetAmounts(
-        LibOrder.Order[] memory orders,
+        IExchange.Order[] memory orders,
         bytes[] memory orderSignatures,
         IExchange exchange
     )
@@ -110,7 +198,7 @@ contract NativeOrderSampler {
     /// @dev Get the fillable taker amount of an order, taking into account
     ///      order state, maker fees, and maker balances.
     function getOrderFillableTakerAmount(
-        LibOrder.Order memory order,
+        IExchange.Order memory order,
         bytes memory signature,
         IExchange exchange
     )
@@ -125,8 +213,8 @@ contract NativeOrderSampler {
             return 0;
         }
 
-        LibOrder.OrderInfo memory orderInfo = exchange.getOrderInfo(order);
-        if (orderInfo.orderStatus != LibOrder.OrderStatus.FILLABLE) {
+        IExchange.OrderInfo memory orderInfo = exchange.getOrderInfo(order);
+        if (orderInfo.orderStatus != IExchange.OrderStatus.FILLABLE) {
             return 0;
         }
         if (!exchange.isValidHashSignature(orderInfo.orderHash, order.makerAddress, signature)) {
