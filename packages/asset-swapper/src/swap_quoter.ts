@@ -8,7 +8,7 @@ import { BlockParamLiteral, SupportedProvider, ZeroExProvider } from 'ethereum-t
 import * as _ from 'lodash';
 
 import { artifacts } from './artifacts';
-import { constants, ENABLE_PRICE_AWARE_RFQ } from './constants';
+import { constants, IS_PRICE_AWARE_RFQ_ENABLED } from './constants';
 import {
     CalculateSwapQuoteOpts,
     LiquidityForTakerMakerAssetDataPair,
@@ -697,7 +697,7 @@ export class SwapQuoter {
         }
 
         if (
-            !ENABLE_PRICE_AWARE_RFQ && // Price-aware RFQ is disabled.
+            !IS_PRICE_AWARE_RFQ_ENABLED && // Price-aware RFQ is disabled.
             opts.rfqt && // This is an RFQT-enabled API request
             opts.rfqt.intentOnFilling && // The requestor is asking for a firm quote
             opts.rfqt.apiKey &&

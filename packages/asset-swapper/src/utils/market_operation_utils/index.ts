@@ -4,7 +4,7 @@ import { RFQTIndicativeQuote } from '@0x/quote-server';
 import { SignedOrder } from '@0x/types';
 import { BigNumber, NULL_ADDRESS } from '@0x/utils';
 import * as _ from 'lodash';
-import { ENABLE_PRICE_AWARE_RFQ } from '../../constants';
+import { IS_PRICE_AWARE_RFQ_ENABLED } from '../../constants';
 
 import { MarketOperation, Omit } from '../../types';
 import { QuoteRequestor } from '../quote_requestor';
@@ -217,7 +217,7 @@ export class MarketOperationUtils {
             ),
         );
 
-        const rfqtPromise = !ENABLE_PRICE_AWARE_RFQ && quoteSourceFilters.isAllowed(ERC20BridgeSource.Native)
+        const rfqtPromise = !IS_PRICE_AWARE_RFQ_ENABLED && quoteSourceFilters.isAllowed(ERC20BridgeSource.Native)
             ? getRfqtIndicativeQuotesAsync(
                   nativeOrders[0].makerAssetData,
                   nativeOrders[0].takerAssetData,
@@ -364,7 +364,7 @@ export class MarketOperationUtils {
                 this._liquidityProviderRegistry,
             ),
         );
-        const rfqtPromise = !ENABLE_PRICE_AWARE_RFQ && quoteSourceFilters.isAllowed(ERC20BridgeSource.Native)
+        const rfqtPromise = !IS_PRICE_AWARE_RFQ_ENABLED && quoteSourceFilters.isAllowed(ERC20BridgeSource.Native)
             ? getRfqtIndicativeQuotesAsync(
                   nativeOrders[0].makerAssetData,
                   nativeOrders[0].takerAssetData,
@@ -675,7 +675,7 @@ export class MarketOperationUtils {
 
         // If RFQ liquidity is enabled, make a request to check RFQ liquidity
         const { rfqt } = _opts;
-        if (ENABLE_PRICE_AWARE_RFQ && rfqt && rfqt.quoteRequestor && marketSideLiquidity.quoteSourceFilters.isAllowed(ERC20BridgeSource.Native)) {
+        if (IS_PRICE_AWARE_RFQ_ENABLED && rfqt && rfqt.quoteRequestor && marketSideLiquidity.quoteSourceFilters.isAllowed(ERC20BridgeSource.Native)) {
             // Calculate a suggested price. For now, this is simply the overall price of the aggregation.
             let comparisonPrice: BigNumber | undefined;
             if (optimizerResult) {
