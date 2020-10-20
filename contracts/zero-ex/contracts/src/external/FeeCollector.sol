@@ -21,13 +21,7 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-erc20/contracts/src/v06/IEtherTokenV06.sol";
 import "@0x/contracts-utils/contracts/src/v06/AuthorizableV06.sol";
-
-// TODO: We should be importing the real IStaking.sol instead, but it specifies
-// an incompatible compiler version.
-interface IStaking {
-    function joinStakingPoolAsMaker(bytes32) external;
-    function payProtocolFee(address, address, uint256) external payable;
-}
+import "../vendor/v3/IStaking.sol";
 
 /// @dev The collector contract for protocol fees
 contract FeeCollector is AuthorizableV06 {

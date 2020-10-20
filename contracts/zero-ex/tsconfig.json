@@ -53,6 +53,7 @@
         "test/generated-artifacts/IOwnableFeature.json",
         "test/generated-artifacts/ISignatureValidatorFeature.json",
         "test/generated-artifacts/ISimpleFunctionRegistryFeature.json",
+        "test/generated-artifacts/IStaking.json",
         "test/generated-artifacts/ITestSimpleFunctionRegistryFeature.json",
         "test/generated-artifacts/ITokenSpenderFeature.json",
         "test/generated-artifacts/ITransformERC20Feature.json",

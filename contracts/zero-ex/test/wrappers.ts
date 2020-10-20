@@ -29,6 +29,7 @@ export * from '../test/generated-wrappers/i_meta_transactions_feature';
 export * from '../test/generated-wrappers/i_ownable_feature';
 export * from '../test/generated-wrappers/i_signature_validator_feature';
 export * from '../test/generated-wrappers/i_simple_function_registry_feature';
+export * from '../test/generated-wrappers/i_staking';
 export * from '../test/generated-wrappers/i_test_simple_function_registry_feature';
 export * from '../test/generated-wrappers/i_token_spender_feature';
 export * from '../test/generated-wrappers/i_transform_erc20_feature';

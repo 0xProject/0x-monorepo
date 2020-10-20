@@ -32,6 +32,7 @@ import * as InitialMigration from '../test/generated-artifacts/InitialMigration.
 import * as IOwnableFeature from '../test/generated-artifacts/IOwnableFeature.json';
 import * as ISignatureValidatorFeature from '../test/generated-artifacts/ISignatureValidatorFeature.json';
 import * as ISimpleFunctionRegistryFeature from '../test/generated-artifacts/ISimpleFunctionRegistryFeature.json';
+import * as IStaking from '../test/generated-artifacts/IStaking.json';
 import * as ITestSimpleFunctionRegistryFeature from '../test/generated-artifacts/ITestSimpleFunctionRegistryFeature.json';
 import * as ITokenSpenderFeature from '../test/generated-artifacts/ITokenSpenderFeature.json';
 import * as ITransformERC20Feature from '../test/generated-artifacts/ITransformERC20Feature.json';
@@ -190,6 +191,7 @@ export const artifacts = {
     IERC20Bridge: IERC20Bridge as ContractArtifact,
     IExchange: IExchange as ContractArtifact,
     IGasToken: IGasToken as ContractArtifact,
+    IStaking: IStaking as ContractArtifact,
     ITestSimpleFunctionRegistryFeature: ITestSimpleFunctionRegistryFeature as ContractArtifact,
     TestBridge: TestBridge as ContractArtifact,
     TestCallTarget: TestCallTarget as ContractArtifact,
