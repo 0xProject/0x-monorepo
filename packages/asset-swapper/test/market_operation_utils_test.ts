@@ -17,6 +17,7 @@ import * as _ from 'lodash';
 import * as TypeMoq from 'typemoq';
 
 import { MarketOperation, QuoteRequestor, RfqtRequestOpts, SignedOrderWithFillableAmounts } from '../src';
+import { IS_PRICE_AWARE_RFQ_ENABLED } from '../src/constants';
 import { getRfqtIndicativeQuotesAsync, MarketOperationUtils } from '../src/utils/market_operation_utils/';
 import { BalancerPoolsCache } from '../src/utils/market_operation_utils/balancer_utils';
 import {
@@ -724,7 +725,7 @@ describe('MarketOperationUtils tests', () => {
                 }
             });
 
-            it('getMarketSellOrdersAsync() optimizer will be called once only if RFQ if not defined', async () => {
+            it('getMarketSellOrdersAsync() optimizer will be called once only if RFQ if not defined', IS_PRICE_AWARE_RFQ_ENABLED ? async () => {
                 const mockedMarketOpUtils = TypeMoq.Mock.ofType(
                     MarketOperationUtils,
                     TypeMoq.MockBehavior.Loose,
@@ -744,9 +745,9 @@ describe('MarketOperationUtils tests', () => {
                 const totalAssetAmount = ORDERS.map(o => o.takerAssetAmount).reduce((a, b) => a.plus(b));
                 await mockedMarketOpUtils.object.getMarketSellOrdersAsync(ORDERS, totalAssetAmount, DEFAULT_OPTS);
                 mockedMarketOpUtils.verifyAll();
-            });
+            } : undefined);
 
-            it('optimizer will send in a comparison price to RFQ providers', async () => {
+            it('optimizer will send in a comparison price to RFQ providers', IS_PRICE_AWARE_RFQ_ENABLED ? async () => {
                 // Set up mocked quote requestor, will return an order that is better
                 // than the best of the orders.
                 const mockedQuoteRequestor = TypeMoq.Mock.ofType(QuoteRequestor, TypeMoq.MockBehavior.Loose, false, {});
@@ -848,9 +849,9 @@ describe('MarketOperationUtils tests', () => {
                 expect(requestedComparisonPrice!.toString()).to.eql('320');
                 expect(result.optimizedOrders[0].makerAssetAmount.toString()).to.eql('321000000');
                 expect(result.optimizedOrders[0].takerAssetAmount.toString()).to.eql('1000000000000000000');
-            });
+            } : undefined);
 
-            it('getMarketSellOrdersAsync() will not rerun the optimizer if no orders are returned', async () => {
+            it('getMarketSellOrdersAsync() will not rerun the optimizer if no orders are returned', IS_PRICE_AWARE_RFQ_ENABLED ? async () => {
                 // Ensure that `_generateOptimizedOrdersAsync` is only called once
                 const mockedMarketOpUtils = TypeMoq.Mock.ofType(
                     MarketOperationUtils,
@@ -883,9 +884,9 @@ describe('MarketOperationUtils tests', () => {
                 });
                 mockedMarketOpUtils.verifyAll();
                 requestor.verifyAll();
-            });
+            } : undefined);
 
-            it('getMarketSellOrdersAsync() will rerun the optimizer if one or more indicative are returned', async () => {
+            it('getMarketSellOrdersAsync() will rerun the optimizer if one or more indicative are returned', IS_PRICE_AWARE_RFQ_ENABLED ? async () => {
                 const requestor = getMockedQuoteRequestor('indicative', [ORDERS[0], ORDERS[1]], TypeMoq.Times.once());
 
                 const numOrdersInCall: number[] = [];
@@ -939,9 +940,9 @@ describe('MarketOperationUtils tests', () => {
                 expect(numIndicativeQuotesInCall.length).to.eql(2);
                 expect(numIndicativeQuotesInCall[0]).to.eql(0);
                 expect(numIndicativeQuotesInCall[1]).to.eql(2);
-            });
+            } : undefined);
 
-            it('getMarketSellOrdersAsync() will rerun the optimizer if one or more RFQ orders are returned', async () => {
+            it('getMarketSellOrdersAsync() will rerun the optimizer if one or more RFQ orders are returned', IS_PRICE_AWARE_RFQ_ENABLED ? async () => {
                 const requestor = getMockedQuoteRequestor('firm', [ORDERS[0]], TypeMoq.Times.once());
 
                 // Ensure that `_generateOptimizedOrdersAsync` is only called once
@@ -990,9 +991,9 @@ describe('MarketOperationUtils tests', () => {
                 // The first call to optimizer was with an extra RFQ order.
                 expect(numOrdersInCall[0]).to.eql(2);
                 expect(numOrdersInCall[1]).to.eql(3);
-            });
+            } : undefined);
 
-            it('getMarketSellOrdersAsync() will not raise a NoOptimalPath error if no initial path was found during on-chain DEX optimization, but a path was found after RFQ optimization', async () => {
+            it('getMarketSellOrdersAsync() will not raise a NoOptimalPath error if no initial path was found during on-chain DEX optimization, but a path was found after RFQ optimization', IS_PRICE_AWARE_RFQ_ENABLED ? async () => {
                 let hasFirstOptimizationRun = false;
                 let hasSecondOptimizationRun = false;
                 const requestor = getMockedQuoteRequestor('firm', [ORDERS[0], ORDERS[1]], TypeMoq.Times.once());
@@ -1043,7 +1044,7 @@ describe('MarketOperationUtils tests', () => {
 
                 expect(hasFirstOptimizationRun).to.eql(true);
                 expect(hasSecondOptimizationRun).to.eql(true);
-            });
+            } : undefined);
 
             it('getMarketSellOrdersAsync() will raise a NoOptimalPath error if no path was found during on-chain DEX optimization and RFQ optimization', async () => {
                 const mockedMarketOpUtils = TypeMoq.Mock.ofType(
