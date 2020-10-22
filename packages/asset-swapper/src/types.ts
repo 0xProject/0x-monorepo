@@ -1,3 +1,4 @@
+import { ChainId } from '@0x/contract-addresses';
 import { BlockParam, ContractAddresses, GethCallOverrides } from '@0x/contract-wrappers';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -281,6 +282,8 @@ export interface SwapQuoterRfqtOpts {
     infoLogger?: LogFunction;
 }
 
+export type AssetSwapperContractAddresses = ContractAddresses & BridgeContractAddresses;
+
 /**
  * chainId: The ethereum chain id. Defaults to 1 (mainnet).
  * orderRefreshIntervalMs: The interval in ms that getBuyQuoteAsync should trigger an refresh of orders and order states. Defaults to 10000ms (10s).
@@ -289,11 +292,11 @@ export interface SwapQuoterRfqtOpts {
  * samplerGasLimit: The gas limit used when querying the sampler contract. Defaults to 36e6
  */
 export interface SwapQuoterOpts extends OrderPrunerOpts {
-    chainId: number;
+    chainId: ChainId;
     orderRefreshIntervalMs: number;
     expiryBufferMs: number;
     ethereumRpcUrl?: string;
-    contractAddresses?: ContractAddresses;
+    contractAddresses?: AssetSwapperContractAddresses;
     samplerGasLimit?: number;
     liquidityProviderRegistryAddress?: string;
     multiBridgeAddress?: string;
@@ -380,4 +383,24 @@ export interface MockedRfqtIndicativeQuoteResponse {
 export interface SamplerOverrides {
     overrides: GethCallOverrides;
     block: BlockParam;
+}
+
+/**
+ * The Contract addresses of the deployed Bridges
+ */
+export interface BridgeContractAddresses {
+    uniswapBridge: string;
+    uniswapV2Bridge: string;
+    eth2DaiBridge: string;
+    kyberBridge: string;
+    curveBridge: string;
+    multiBridge: string;
+    balancerBridge: string;
+    bancorBridge: string;
+    mStableBridge: string;
+    mooniswapBridge: string;
+    sushiswapBridge: string;
+    shellBridge: string;
+    dodoBridge: string;
+    creamBridge: string;
 }

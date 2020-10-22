@@ -1,10 +1,9 @@
-import { ContractAddresses } from '@0x/contract-addresses';
 import { assetDataUtils, ERC20AssetData, generatePseudoRandomSalt, orderCalculationUtils } from '@0x/order-utils';
 import { RFQTIndicativeQuote } from '@0x/quote-server';
 import { SignedOrder } from '@0x/types';
 import { AbiEncoder, BigNumber } from '@0x/utils';
 
-import { MarketOperation, SignedOrderWithFillableAmounts } from '../../types';
+import { AssetSwapperContractAddresses, MarketOperation, SignedOrderWithFillableAmounts } from '../../types';
 
 import {
     ERC20_PROXY_ID,
@@ -125,7 +124,7 @@ export interface CreateOrderFromPathOpts {
     inputToken: string;
     outputToken: string;
     orderDomain: OrderDomain;
-    contractAddresses: ContractAddresses;
+    contractAddresses: AssetSwapperContractAddresses;
     bridgeSlippage: number;
 }
 

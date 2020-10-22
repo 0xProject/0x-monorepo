@@ -1,10 +1,9 @@
-import { ContractAddresses } from '@0x/contract-addresses';
 import { RFQTIndicativeQuote } from '@0x/quote-server';
 import { SignedOrder } from '@0x/types';
 import { BigNumber, NULL_ADDRESS } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { MarketOperation } from '../../types';
+import { AssetSwapperContractAddresses, MarketOperation } from '../../types';
 import { QuoteRequestor } from '../quote_requestor';
 
 import { generateQuoteReport, QuoteReport } from './../quote_report_generator';
@@ -101,7 +100,7 @@ export class MarketOperationUtils {
 
     constructor(
         private readonly _sampler: DexOrderSampler,
-        private readonly contractAddresses: ContractAddresses,
+        private readonly contractAddresses: AssetSwapperContractAddresses,
         private readonly _orderDomain: OrderDomain,
         private readonly _liquidityProviderRegistry: string = NULL_ADDRESS,
         private readonly _tokenAdjacencyGraph: TokenAdjacencyGraph = {},

@@ -1,4 +1,4 @@
-import { ContractAddresses, getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
+import { getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
 import { DevUtilsContract } from '@0x/contract-wrappers';
 import { schemas } from '@0x/json-schemas';
 import { assetDataUtils, SignedOrder } from '@0x/order-utils';
@@ -8,8 +8,9 @@ import { BlockParamLiteral, SupportedProvider, ZeroExProvider } from 'ethereum-t
 import * as _ from 'lodash';
 
 import { artifacts } from './artifacts';
-import { constants } from './constants';
+import { BRIDGE_ADDRESSES_BY_CHAIN, constants } from './constants';
 import {
+    AssetSwapperContractAddresses,
     CalculateSwapQuoteOpts,
     LiquidityForTakerMakerAssetDataPair,
     MarketBuySwapQuote,
@@ -48,7 +49,7 @@ export class SwapQuoter {
     public readonly expiryBufferMs: number;
     public readonly chainId: number;
     public readonly permittedOrderFeeTypes: Set<OrderPrunerPermittedFeeTypes>;
-    private readonly _contractAddresses: ContractAddresses;
+    private readonly _contractAddresses: AssetSwapperContractAddresses;
     private readonly _protocolFeeUtils: ProtocolFeeUtils;
     private readonly _swapQuoteCalculator: SwapQuoteCalculator;
     private readonly _devUtilsContract: DevUtilsContract;
@@ -178,7 +179,10 @@ export class SwapQuoter {
         this.permittedOrderFeeTypes = permittedOrderFeeTypes;
 
         this._rfqtOptions = rfqt;
-        this._contractAddresses = options.contractAddresses || getContractAddressesForChainOrThrow(chainId);
+        this._contractAddresses = options.contractAddresses || {
+            ...getContractAddressesForChainOrThrow(chainId),
+            ...BRIDGE_ADDRESSES_BY_CHAIN[chainId],
+        };
         this._devUtilsContract = new DevUtilsContract(this._contractAddresses.devUtils, provider);
         this._protocolFeeUtils = ProtocolFeeUtils.getInstance(
             constants.PROTOCOL_FEE_UTILS_POLLING_INTERVAL_IN_MS,

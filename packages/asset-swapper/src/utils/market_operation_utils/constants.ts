@@ -1,3 +1,4 @@
+import { DEFAULT_GAS_SCHEDULE } from '@0x/asset-swapper/src/constants';
 import { BigNumber } from '@0x/utils';
 
 import { SourceFilters } from './source_filters';
@@ -63,8 +64,8 @@ export const DEFAULT_GET_MARKET_ORDERS_OPTS: GetMarketOrdersOpts = {
     maxFallbackSlippage: 0.05,
     numSamples: 13,
     sampleDistributionBase: 1.05,
-    feeSchedule: {},
-    gasSchedule: {},
+    feeSchedule: DEFAULT_GAS_SCHEDULE,
+    gasSchedule: DEFAULT_GAS_SCHEDULE,
     exchangeProxyOverhead: () => ZERO_AMOUNT,
     allowFallback: true,
     shouldGenerateQuoteReport: false,

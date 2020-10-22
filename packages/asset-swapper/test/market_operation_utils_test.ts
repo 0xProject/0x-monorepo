@@ -1,4 +1,4 @@
-import { getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
+import { ChainId, getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
 import {
     assertRoughlyEquals,
     constants,
@@ -16,6 +16,7 @@ import * as _ from 'lodash';
 import * as TypeMoq from 'typemoq';
 
 import { MarketOperation, QuoteRequestor, RfqtRequestOpts, SignedOrderWithFillableAmounts } from '../src';
+import { BRIDGE_ADDRESSES_BY_CHAIN } from '../src/constants';
 import { getRfqtIndicativeQuotesAsync, MarketOperationUtils } from '../src/utils/market_operation_utils/';
 import { BalancerPoolsCache } from '../src/utils/market_operation_utils/balancer_utils';
 import {
@@ -54,8 +55,12 @@ const SELL_SOURCES = SELL_SOURCE_FILTER.sources;
 
 // tslint:disable: custom-no-magic-numbers promise-function-async
 describe('MarketOperationUtils tests', () => {
-    const CHAIN_ID = 1;
-    const contractAddresses = { ...getContractAddressesForChainOrThrow(CHAIN_ID), multiBridge: NULL_ADDRESS };
+    const CHAIN_ID = ChainId.Mainnet;
+    const contractAddresses = {
+        ...getContractAddressesForChainOrThrow(CHAIN_ID),
+        multiBridge: NULL_ADDRESS,
+        ...BRIDGE_ADDRESSES_BY_CHAIN[CHAIN_ID],
+    };
 
     function createOrder(overrides?: Partial<SignedOrder>): SignedOrder {
         return {
