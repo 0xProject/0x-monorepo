@@ -102,7 +102,6 @@ export class LatticeSubprovider extends BaseWalletSubprovider {
 
     /**
      * Sign a typed data message from the account specified in the `address` param.
-     * NOTE: This method is not implemented on the Lattice in v1, but we plan to support it in future versions.
      * @param address Address from which to sign. Must be the address at `m/44'/60'/0'/0/0` of the current wallet.
      * @param typedData The data to be signed.
      * @return Signature hex string of form `0x{r}{s}{v}
