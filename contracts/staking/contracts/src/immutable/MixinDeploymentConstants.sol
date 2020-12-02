@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.5.9;
+pragma solidity ^0.5.16;
 
 import "@0x/contracts-erc20/contracts/src/interfaces/IEtherToken.sol";
 import "../interfaces/IZrxVault.sol";

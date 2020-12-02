@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.5.9;
+pragma solidity ^0.5.16;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/LibFractions.sol";

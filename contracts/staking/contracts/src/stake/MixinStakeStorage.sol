@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.5.9;
+pragma solidity ^0.5.16;
 
 import "../libs/LibSafeDowncast.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
