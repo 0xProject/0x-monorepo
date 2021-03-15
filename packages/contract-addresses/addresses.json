@@ -46,6 +46,7 @@
         "shellBridge": "0x21fb3862eed7911e0f8219a077247b849846728d",
         "dodoBridge": "0xe9da66965a9344aab2167e6813c03f043cc7a6ca",
         "creamBridge": "0xb9d4bf2c8dab828f4ffb656acdb6c2b497d44f25",
+        "plasmaswapBridge": "0x0000000000000000000000000000000000000000",
         "transformers": {
             "wethTransformer": "0x68c0bb685099dc7cb5c5ce2b26185945b357383e",
             "payTakerTransformer": "0x49b9df2c58491764cf40cb052dd4243df63622c7",
@@ -100,6 +101,7 @@
         "shellBridge": "0x0000000000000000000000000000000000000000",
         "dodoBridge": "0x0000000000000000000000000000000000000000",
         "creamBridge": "0x0000000000000000000000000000000000000000",
+        "plasmaswapBridge": "0x0000000000000000000000000000000000000000",
         "transformers": {
             "wethTransformer": "0x8d822fe2b42f60531203e288f5f357fa79474437",
             "payTakerTransformer": "0x150652244723102faeaefa4c79597d097ffa26c6",
@@ -154,6 +156,7 @@
         "shellBridge": "0x0000000000000000000000000000000000000000",
         "dodoBridge": "0x0000000000000000000000000000000000000000",
         "creamBridge": "0x0000000000000000000000000000000000000000",
+        "plasmaswapBridge": "0x0000000000000000000000000000000000000000",
         "transformers": {
             "wethTransformer": "0x8d822fe2b42f60531203e288f5f357fa79474437",
             "payTakerTransformer": "0x150652244723102faeaefa4c79597d097ffa26c6",
@@ -208,6 +211,7 @@
         "shellBridge": "0x0000000000000000000000000000000000000000",
         "dodoBridge": "0x0000000000000000000000000000000000000000",
         "creamBridge": "0x0000000000000000000000000000000000000000",
+        "plasmaswapBridge": "0x0000000000000000000000000000000000000000",
         "transformers": {
             "wethTransformer": "0x9ce35b5ee9e710535e3988e3f8731d9ca9dba17d",
             "payTakerTransformer": "0x5a53e7b02a83aa9f60ccf4e424f0442c255bc977",
@@ -262,6 +266,7 @@
         "shellBridge": "0x0000000000000000000000000000000000000000",
         "dodoBridge": "0x0000000000000000000000000000000000000000",
         "creamBridge": "0x0000000000000000000000000000000000000000",
+        "plasmaswapBridge": "0x0000000000000000000000000000000000000000",
         "transformers": {
             "wethTransformer": "0xc6b0d3c45a6b5092808196cb00df5c357d55e1d5",
             "payTakerTransformer": "0x7209185959d7227fb77274e1e88151d7c4c368d3",

@@ -34,6 +34,7 @@ import {
     NativeCollapsedFill,
     OptimizedMarketOrder,
     OrderDomain,
+    PlasmaSwapFillData,
     SnowSwapFillData,
     SushiSwapFillData,
     SwerveFillData,
@@ -203,6 +204,8 @@ function getBridgeAddressFromFill(fill: CollapsedFill, opts: CreateOrderFromPath
             return opts.contractAddresses.shellBridge;
         case ERC20BridgeSource.Dodo:
             return opts.contractAddresses.dodoBridge;
+        case ERC20BridgeSource.PlasmaSwap:
+            return opts.contractAddresses.plasmaswapBridge;
         default:
             break;
     }
@@ -332,6 +335,14 @@ export function createBridgeOrder(
                 createDODOBridgeData(takerToken, dodoFillData.poolAddress, dodoFillData.isSellBase),
             );
             break;
+        case ERC20BridgeSource.PlasmaSwap:
+            const plasmaSwapFillData = (fill as CollapsedFill<PlasmaSwapFillData>).fillData!; // tslint:disable-line:no-non-null-assertion
+            makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
+                makerToken,
+                bridgeAddress,
+                createPlasmaSwapBridgeData(plasmaSwapFillData.tokenAddressPath, plasmaSwapFillData.router),
+            );
+            break;
         default:
             makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
                 makerToken,
@@ -434,6 +445,11 @@ function createUniswapV2BridgeData(tokenAddressPath: string[]): string {
 }
 
 function createSushiSwapBridgeData(tokenAddressPath: string[], router: string): string {
+    const encoder = AbiEncoder.create('(address[],address)');
+    return encoder.encode([tokenAddressPath, router]);
+}
+
+function createPlasmaSwapBridgeData(tokenAddressPath: string[], router: string): string {
     const encoder = AbiEncoder.create('(address[],address)');
     return encoder.encode([tokenAddressPath, router]);
 }

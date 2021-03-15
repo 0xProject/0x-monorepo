@@ -167,7 +167,8 @@
                 "pr": 2732
             },
             {
-                "note": "TODO: Add support plasmaswap"
+                "note": "Added `PlasmaSwap`",
+                "pr": 2749
             }
         ]
     },

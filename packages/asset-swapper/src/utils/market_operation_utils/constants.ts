@@ -27,6 +27,7 @@ export const SELL_SOURCE_FILTER = new SourceFilters([
     ERC20BridgeSource.MultiHop,
     ERC20BridgeSource.Dodo,
     ERC20BridgeSource.Cream,
+    ERC20BridgeSource.PlasmaSwap,
 ]);
 
 /**
@@ -51,6 +52,7 @@ export const BUY_SOURCE_FILTER = new SourceFilters(
         ERC20BridgeSource.MultiHop,
         ERC20BridgeSource.Dodo,
         ERC20BridgeSource.Cream,
+        ERC20BridgeSource.PlasmaSwap,
     ],
     [ERC20BridgeSource.MultiBridge],
 );
@@ -270,6 +272,8 @@ export const MAINNET_KYBER_TOKEN_RESERVE_IDS: { [token: string]: string } = {
 };
 
 export const MAINNET_SUSHI_SWAP_ROUTER = '0xd9e1cE17f2641f24aE83637ab66a2cca9C378B9F';
+
+export const MAINNET_PLASMA_SWAP_ROUTER = '0x0000000000000000000000000000000000000000';
 
 export const ERC20_PROXY_ID = '0xf47261b0';
 export const WALLET_SIGNATURE = '0x04';

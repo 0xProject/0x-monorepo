@@ -8,6 +8,7 @@ import { ERC20BridgeSamplerContract } from '../../wrappers';
 import { BalancerPoolsCache, computeBalancerBuyQuote, computeBalancerSellQuote } from './balancer_utils';
 import { BancorService } from './bancor_service';
 import { MAINNET_SUSHI_SWAP_ROUTER, MAX_UINT256, NULL_BYTES, ZERO_AMOUNT } from './constants';
+import { MAINNET_PLASMA_SWAP_ROUTER, MAX_UINT256, NULL_BYTES, ZERO_AMOUNT } from './constants';
 import { CreamPoolsCache } from './cream_utils';
 import { getCurveInfosForPair, getSnowSwapInfosForPair, getSwerveInfosForPair } from './curve_utils';
 import { getKyberReserveIdsForPair } from './kyber_utils';
@@ -30,6 +31,7 @@ import {
     MooniswapFillData,
     MultiBridgeFillData,
     MultiHopFillData,
+    PlasmaSwapFillData,
     SnowSwapFillData,
     SnowSwapInfo,
     SourceQuoteOperation,
@@ -907,6 +909,32 @@ export class SamplerOperations {
         });
     }
 
+    public getPlasmaSwapSellQuotes(
+        tokenAddressPath: string[],
+        takerFillAmounts: BigNumber[],
+    ): SourceQuoteOperation<PlasmaSwapFillData> {
+        return new SamplerContractOperation({
+            source: ERC20BridgeSource.PlasmaSwap,
+            fillData: { tokenAddressPath, router: MAINNET_PLASMA_SWAP_ROUTER },
+            contract: this._samplerContract,
+            function: this._samplerContract.sampleSellsFromPlasmaSwap,
+            params: [MAINNET_PLASMA_SWAP_ROUTER, tokenAddressPath, takerFillAmounts],
+        });
+    }
+
+    public getPlasmaSwapBuyQuotes(
+        tokenAddressPath: string[],
+        makerFillAmounts: BigNumber[],
+    ): SourceQuoteOperation<PlasmaSwapFillData> {
+        return new SamplerContractOperation({
+            source: ERC20BridgeSource.PlasmaSwap,
+            fillData: { tokenAddressPath, router: MAINNET_PLASMA_SWAP_ROUTER },
+            contract: this._samplerContract,
+            function: this._samplerContract.sampleBuysFromPlasmaSwap,
+            params: [MAINNET_PLASMA_SWAP_ROUTER, tokenAddressPath, makerFillAmounts],
+        });
+    }
+
     public getMedianSellRate(
         sources: ERC20BridgeSource[],
         makerToken: string,
@@ -1175,6 +1203,17 @@ export class SamplerOperations {
                             return this.getShellSellQuotes(makerToken, takerToken, takerFillAmounts);
                         case ERC20BridgeSource.Dodo:
                             return this.getDODOSellQuotes(makerToken, takerToken, takerFillAmounts);
+                        case ERC20BridgeSource.PlasmaSwap:
+                            const plasmaOps = [this.getPlasmaSwapSellQuotes([takerToken, makerToken], takerFillAmounts)];
+                            if (takerToken !== wethAddress && makerToken !== wethAddress) {
+                                plasmaOps.push(
+                                    this.getPlasmaSwapSellQuotes(
+                                        [takerToken, wethAddress, makerToken],
+                                        takerFillAmounts,
+                                    ),
+                                );
+                            }
+                            return plasmaOps;
                         default:
                             throw new Error(`Unsupported sell sample source: ${source}`);
                     }
@@ -1293,6 +1332,14 @@ export class SamplerOperations {
                             return this.getShellBuyQuotes(makerToken, takerToken, makerFillAmounts);
                         case ERC20BridgeSource.Dodo:
                             return this.getDODOBuyQuotes(makerToken, takerToken, makerFillAmounts);
+                        case ERC20BridgeSource.PlasmaSwap:
+                            const plasmaOps = [this.getPlasmaSwapBuyQuotes([takerToken, makerToken], makerFillAmounts)];
+                            if (takerToken !== wethAddress && makerToken !== wethAddress) {
+                                plasmaOps.push(
+                                    this.getPlasmaSwapBuyQuotes([takerToken, wethAddress, makerToken], makerFillAmounts),
+                                );
+                            }
+                            return plasmaOps;
                         default:
                             throw new Error(`Unsupported buy sample source: ${source}`);
                     }
