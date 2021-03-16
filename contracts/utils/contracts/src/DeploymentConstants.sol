@@ -34,6 +34,8 @@ contract DeploymentConstants {
     address constant private UNISWAP_EXCHANGE_FACTORY_ADDRESS = 0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95;
     /// @dev Mainnet address of the `UniswapV2Router01` contract.
     address constant private UNISWAP_V2_ROUTER_01_ADDRESS = 0xf164fC0Ec4E93095b804a4795bBe1e041497b92a;
+    /// @dev Mainnet address of the `PlasmaswapRouter` contract.
+    address constant private PLASMASWAP_ROUTER_ADDRESS = 0x5ec243F1F7ECFC137e98365C30c9A28691d86132;
     /// @dev Mainnet address of the Eth2Dai `MatchingMarket` contract.
     address constant private ETH2DAI_ADDRESS = 0x794e6e91555438aFc3ccF1c5076A74F42133d08D;
     /// @dev Mainnet address of the `ERC20BridgeProxy` contract
@@ -132,6 +134,8 @@ contract DeploymentConstants {
     // address constant private UNISWAP_EXCHANGE_FACTORY_ADDRESS = 0xD3E51Ef092B2845f10401a0159B2B96e8B6c3D30;
     // /// @dev Kovan address of the `UniswapV2Router01` contract.
     // address constant private UNISWAP_V2_ROUTER_01_ADDRESS = 0xf164fC0Ec4E93095b804a4795bBe1e041497b92a;
+    // /// @dev Kovan address of the `PlasmaswapRouter` contract.
+    // address constant private PLASMASWAP_ROUTER_ADDRESS = 0x905df0e2cd022bc1a67bf15df485b18ea631d304;
     // /// @dev Kovan address of the Eth2Dai `MatchingMarket` contract.
     // address constant private ETH2DAI_ADDRESS = 0xe325acB9765b02b8b418199bf9650972299235F4;
     // /// @dev Kovan address of the `ERC20BridgeProxy` contract
@@ -201,6 +205,16 @@ contract DeploymentConstants {
         returns (address uniswapRouterAddress)
     {
         return UNISWAP_V2_ROUTER_01_ADDRESS;
+    }
+
+    /// @dev Overridable way to get the `PlasmaswapRouter` address.
+    /// @return plasmaswapRouterAddress The `PlasmaswapRouter` address.
+    function _getPlasmaswapRouterAddress()
+        internal
+        view
+        returns (address plasmaswapRouterAddress)
+    {
+        return PLASMASWAP_ROUTER_ADDRESS;
     }
 
     /// @dev An overridable way to retrieve the Eth2Dai `MatchingMarket` contract.
