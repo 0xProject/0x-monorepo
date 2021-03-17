@@ -1207,10 +1207,7 @@ export class SamplerOperations {
                             const plasmaOps = [this.getPlasmaswapSellQuotes([takerToken, makerToken], takerFillAmounts)];
                             if (takerToken !== wethAddress && makerToken !== wethAddress) {
                                 plasmaOps.push(
-                                    this.getPlasmaswapSellQuotes(
-                                        [takerToken, wethAddress, makerToken],
-                                        takerFillAmounts,
-                                    ),
+                                    this.getPlasmaswapSellQuotes([takerToken, wethAddress, makerToken], takerFillAmounts),
                                 );
                             }
                             return plasmaOps;
