@@ -34,6 +34,7 @@ import * as IGasToken from '../generated-artifacts/IGasToken.json';
 import * as IKyberNetworkProxy from '../generated-artifacts/IKyberNetworkProxy.json';
 import * as IMooniswap from '../generated-artifacts/IMooniswap.json';
 import * as IMStable from '../generated-artifacts/IMStable.json';
+import * as IPlasmaswapRouter from '../generated-artifacts/IPlasmaswapRouter.json';
 import * as IShell from '../generated-artifacts/IShell.json';
 import * as IUniswapExchange from '../generated-artifacts/IUniswapExchange.json';
 import * as IUniswapExchangeFactory from '../generated-artifacts/IUniswapExchangeFactory.json';
@@ -106,6 +107,7 @@ export const artifacts = {
     IKyberNetworkProxy: IKyberNetworkProxy as ContractArtifact,
     IMStable: IMStable as ContractArtifact,
     IMooniswap: IMooniswap as ContractArtifact,
+    IPlasmaswapRouter: IPlasmaswapRouter as ContractArtifact,
     IShell: IShell as ContractArtifact,
     IUniswapExchange: IUniswapExchange as ContractArtifact,
     IUniswapExchangeFactory: IUniswapExchangeFactory as ContractArtifact,

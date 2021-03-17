@@ -7,8 +7,7 @@ import { ERC20BridgeSamplerContract } from '../../wrappers';
 
 import { BalancerPoolsCache, computeBalancerBuyQuote, computeBalancerSellQuote } from './balancer_utils';
 import { BancorService } from './bancor_service';
-import { MAINNET_SUSHI_SWAP_ROUTER, MAX_UINT256, NULL_BYTES, ZERO_AMOUNT } from './constants';
-import { MAINNET_PLASMA_SWAP_ROUTER, MAX_UINT256, NULL_BYTES, ZERO_AMOUNT } from './constants';
+import { MAINNET_PLASMA_SWAP_ROUTER, MAINNET_SUSHI_SWAP_ROUTER, MAX_UINT256, NULL_BYTES, ZERO_AMOUNT } from './constants';
 import { CreamPoolsCache } from './cream_utils';
 import { getCurveInfosForPair, getSnowSwapInfosForPair, getSwerveInfosForPair } from './curve_utils';
 import { getKyberReserveIdsForPair } from './kyber_utils';
@@ -918,7 +917,7 @@ export class SamplerOperations {
             fillData: { tokenAddressPath, router: MAINNET_PLASMA_SWAP_ROUTER },
             contract: this._samplerContract,
             function: this._samplerContract.sampleSellsFromPlasmaswap,
-            params: [MAINNET_PLASMA_SWAP_ROUTER, tokenAddressPath, takerFillAmounts],
+            params: [tokenAddressPath, takerFillAmounts],
         });
     }
 
@@ -931,7 +930,7 @@ export class SamplerOperations {
             fillData: { tokenAddressPath, router: MAINNET_PLASMA_SWAP_ROUTER },
             contract: this._samplerContract,
             function: this._samplerContract.sampleBuysFromPlasmaswap,
-            params: [MAINNET_PLASMA_SWAP_ROUTER, tokenAddressPath, makerFillAmounts],
+            params: [tokenAddressPath, makerFillAmounts],
         });
     }
 
