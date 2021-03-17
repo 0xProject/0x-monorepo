@@ -34,7 +34,7 @@
         "test/generated-artifacts/MooniswapSampler.json",
         "test/generated-artifacts/MultiBridgeSampler.json",
         "test/generated-artifacts/NativeOrderSampler.json",
-        "test/generated-artifacts/PlasmaSwapSampler.json",
+        "test/generated-artifacts/PlasmaswapSampler.json",
         "test/generated-artifacts/SamplerUtils.json",
         "test/generated-artifacts/ShellSampler.json",
         "test/generated-artifacts/SushiSwapSampler.json",

@@ -49,7 +49,7 @@ export enum ERC20BridgeSource {
     SnowSwap = 'SnowSwap',
     SushiSwap = 'SushiSwap',
     Dodo = 'DODO',
-    PlasmaSwap = 'PlasmaSwap',
+    Plasmaswap = 'Plasmaswap',
 }
 
 // tslint:disable: enum-naming
@@ -151,7 +151,7 @@ export interface DODOFillData extends FillData {
     isSellBase: boolean;
 }
 
-export interface PlasmaSwapFillData extends UniswapV2FillData {
+export interface PlasmaswapFillData extends UniswapV2FillData {
     router: string;
 }
 

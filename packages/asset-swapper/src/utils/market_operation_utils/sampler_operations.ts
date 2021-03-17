@@ -31,7 +31,7 @@ import {
     MooniswapFillData,
     MultiBridgeFillData,
     MultiHopFillData,
-    PlasmaSwapFillData,
+    PlasmaswapFillData,
     SnowSwapFillData,
     SnowSwapInfo,
     SourceQuoteOperation,
@@ -909,28 +909,28 @@ export class SamplerOperations {
         });
     }
 
-    public getPlasmaSwapSellQuotes(
+    public getPlasmaswapSellQuotes(
         tokenAddressPath: string[],
         takerFillAmounts: BigNumber[],
-    ): SourceQuoteOperation<PlasmaSwapFillData> {
+    ): SourceQuoteOperation<PlasmaswapFillData> {
         return new SamplerContractOperation({
-            source: ERC20BridgeSource.PlasmaSwap,
+            source: ERC20BridgeSource.Plasmaswap,
             fillData: { tokenAddressPath, router: MAINNET_PLASMA_SWAP_ROUTER },
             contract: this._samplerContract,
-            function: this._samplerContract.sampleSellsFromPlasmaSwap,
+            function: this._samplerContract.sampleSellsFromPlasmaswap,
             params: [MAINNET_PLASMA_SWAP_ROUTER, tokenAddressPath, takerFillAmounts],
         });
     }
 
-    public getPlasmaSwapBuyQuotes(
+    public getPlasmaswapBuyQuotes(
         tokenAddressPath: string[],
         makerFillAmounts: BigNumber[],
-    ): SourceQuoteOperation<PlasmaSwapFillData> {
+    ): SourceQuoteOperation<PlasmaswapFillData> {
         return new SamplerContractOperation({
-            source: ERC20BridgeSource.PlasmaSwap,
+            source: ERC20BridgeSource.Plasmaswap,
             fillData: { tokenAddressPath, router: MAINNET_PLASMA_SWAP_ROUTER },
             contract: this._samplerContract,
-            function: this._samplerContract.sampleBuysFromPlasmaSwap,
+            function: this._samplerContract.sampleBuysFromPlasmaswap,
             params: [MAINNET_PLASMA_SWAP_ROUTER, tokenAddressPath, makerFillAmounts],
         });
     }
@@ -1203,11 +1203,11 @@ export class SamplerOperations {
                             return this.getShellSellQuotes(makerToken, takerToken, takerFillAmounts);
                         case ERC20BridgeSource.Dodo:
                             return this.getDODOSellQuotes(makerToken, takerToken, takerFillAmounts);
-                        case ERC20BridgeSource.PlasmaSwap:
-                            const plasmaOps = [this.getPlasmaSwapSellQuotes([takerToken, makerToken], takerFillAmounts)];
+                        case ERC20BridgeSource.Plasmaswap:
+                            const plasmaOps = [this.getPlasmaswapSellQuotes([takerToken, makerToken], takerFillAmounts)];
                             if (takerToken !== wethAddress && makerToken !== wethAddress) {
                                 plasmaOps.push(
-                                    this.getPlasmaSwapSellQuotes(
+                                    this.getPlasmaswapSellQuotes(
                                         [takerToken, wethAddress, makerToken],
                                         takerFillAmounts,
                                     ),
@@ -1332,11 +1332,11 @@ export class SamplerOperations {
                             return this.getShellBuyQuotes(makerToken, takerToken, makerFillAmounts);
                         case ERC20BridgeSource.Dodo:
                             return this.getDODOBuyQuotes(makerToken, takerToken, makerFillAmounts);
-                        case ERC20BridgeSource.PlasmaSwap:
-                            const plasmaOps = [this.getPlasmaSwapBuyQuotes([takerToken, makerToken], makerFillAmounts)];
+                        case ERC20BridgeSource.Plasmaswap:
+                            const plasmaOps = [this.getPlasmaswapBuyQuotes([takerToken, makerToken], makerFillAmounts)];
                             if (takerToken !== wethAddress && makerToken !== wethAddress) {
                                 plasmaOps.push(
-                                    this.getPlasmaSwapBuyQuotes([takerToken, wethAddress, makerToken], makerFillAmounts),
+                                    this.getPlasmaswapBuyQuotes([takerToken, wethAddress, makerToken], makerFillAmounts),
                                 );
                             }
                             return plasmaOps;

@@ -150,7 +150,7 @@ export {
     NativeCollapsedFill,
     NativeFillData,
     OptimizedMarketOrder,
-    PlasmaSwapFillData,
+    PlasmaswapFillData,
     SourceInfo,
     SourceQuoteOperation,
     SushiSwapFillData,

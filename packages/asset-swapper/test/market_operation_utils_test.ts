@@ -60,7 +60,7 @@ const DEFAULT_EXCLUDED = [
     ERC20BridgeSource.Shell,
     ERC20BridgeSource.Cream,
     ERC20BridgeSource.Dodo,
-    ERC20BridgeSource.PlasmaSwap,
+    ERC20BridgeSource.Plasmaswap,
 ];
 const BUY_SOURCES = BUY_SOURCE_FILTER.sources;
 const SELL_SOURCES = SELL_SOURCE_FILTER.sources;
@@ -152,7 +152,7 @@ describe('MarketOperationUtils tests', () => {
             case contractAddresses.dodoBridge.toLowerCase():
                 return ERC20BridgeSource.Dodo;
             case contractAddresses.plasmaswapBridge.toLowerCase():
-                return ERC20BridgeSource.PlasmaSwap;
+                return ERC20BridgeSource.Plasmaswap;
             default:
                 break;
         }
@@ -333,7 +333,7 @@ describe('MarketOperationUtils tests', () => {
         [ERC20BridgeSource.Shell]: _.times(NUM_SAMPLES, () => 0),
         [ERC20BridgeSource.Cream]: _.times(NUM_SAMPLES, () => 0),
         [ERC20BridgeSource.Dodo]: _.times(NUM_SAMPLES, () => 0),
-        [ERC20BridgeSource.PlasmaSwap]: _.times(NUM_SAMPLES, () => 0),
+        [ERC20BridgeSource.Plasmaswap]: _.times(NUM_SAMPLES, () => 0),
     };
 
     const DEFAULT_RATES: RatesBySource = {
@@ -393,7 +393,7 @@ describe('MarketOperationUtils tests', () => {
         [ERC20BridgeSource.Shell]: {},
         [ERC20BridgeSource.Cream]: { poolAddress: randomAddress() },
         [ERC20BridgeSource.Dodo]: {},
-        [ERC20BridgeSource.PlasmaSwap]: { tokenAddressPath: [] },
+        [ERC20BridgeSource.Plasmaswap]: { tokenAddressPath: [] },
     };
 
     const DEFAULT_OPS = {

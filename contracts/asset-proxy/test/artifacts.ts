@@ -46,7 +46,7 @@ import * as MooniswapBridge from '../test/generated-artifacts/MooniswapBridge.js
 import * as MStableBridge from '../test/generated-artifacts/MStableBridge.json';
 import * as MultiAssetProxy from '../test/generated-artifacts/MultiAssetProxy.json';
 import * as Ownable from '../test/generated-artifacts/Ownable.json';
-import * as PlasmaSwapBridge from '../test/generated-artifacts/PlasmaSwapBridge.json';
+import * as PlasmaswapBridge from '../test/generated-artifacts/PlasmaswapBridge.json';
 import * as ShellBridge from '../test/generated-artifacts/ShellBridge.json';
 import * as StaticCallProxy from '../test/generated-artifacts/StaticCallProxy.json';
 import * as SushiSwapBridge from '../test/generated-artifacts/SushiSwapBridge.json';
@@ -85,7 +85,7 @@ export const artifacts = {
     MStableBridge: MStableBridge as ContractArtifact,
     MixinGasToken: MixinGasToken as ContractArtifact,
     MooniswapBridge: MooniswapBridge as ContractArtifact,
-    PlasmaSwapBridge: PlasmaSwapBridge as ContractArtifact,
+    PlasmaswapBridge: PlasmaswapBridge as ContractArtifact,
     ShellBridge: ShellBridge as ContractArtifact,
     SushiSwapBridge: SushiSwapBridge as ContractArtifact,
     UniswapBridge: UniswapBridge as ContractArtifact,
