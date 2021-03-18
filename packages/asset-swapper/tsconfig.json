@@ -25,6 +25,7 @@
         "test/generated-artifacts/IMStable.json",
         "test/generated-artifacts/IMooniswap.json",
         "test/generated-artifacts/IMultiBridge.json",
+        "test/generated-artifacts/IPlasmaswapRouter.json",
         "test/generated-artifacts/IShell.json",
         "test/generated-artifacts/IUniswapExchangeQuotes.json",
         "test/generated-artifacts/IUniswapV2Router01.json",
