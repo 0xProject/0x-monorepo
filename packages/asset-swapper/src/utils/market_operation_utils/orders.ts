@@ -340,7 +340,7 @@ export function createBridgeOrder(
             makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
                 makerToken,
                 bridgeAddress,
-                createPlasmaswapBridgeData(plasmaSwapFillData.tokenAddressPath, plasmaSwapFillData.router),
+                createPlasmaswapBridgeData(plasmaSwapFillData.tokenAddressPath),
             );
             break;
         default:
@@ -449,9 +449,9 @@ function createSushiSwapBridgeData(tokenAddressPath: string[], router: string): 
     return encoder.encode([tokenAddressPath, router]);
 }
 
-function createPlasmaswapBridgeData(tokenAddressPath: string[], router: string): string {
-    const encoder = AbiEncoder.create('(address[],address)');
-    return encoder.encode([tokenAddressPath, router]);
+function createPlasmaswapBridgeData(tokenAddressPath: string[]): string {
+    const encoder = AbiEncoder.create('(address[])');
+    return encoder.encode([tokenAddressPath]);
 }
 
 function getSlippedBridgeAssetAmounts(fill: CollapsedFill, opts: CreateOrderFromPathOpts): [BigNumber, BigNumber] {

@@ -319,6 +319,7 @@ export async function runMigrationsAsync(
             oasisBridge: NULL_ADDRESS,
             uniswapBridge: NULL_ADDRESS,
             uniswapV2Bridge: NULL_ADDRESS,
+            plasmaswapBridge: NULL_ADDRESS,
             kyberNetworkProxy: NULL_ADDRESS,
             oasis: NULL_ADDRESS,
             uniswapV2Router: NULL_ADDRESS,

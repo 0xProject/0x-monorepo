@@ -95,6 +95,7 @@ contract BridgeAdapter is
         UNISWAP_BRIDGE_ADDRESS = addresses.uniswapBridge;
         UNISWAP_V2_BRIDGE_ADDRESS = addresses.uniswapV2Bridge;
         CREAM_BRIDGE_ADDRESS = addresses.creamBridge;
+        PLASMASWAP_BRIDGE_ADDRESS = addresses.plasmaswapBridge;
     }
 
     function trade(

@@ -46,6 +46,7 @@ import * as MooniswapBridge from '../test/generated-artifacts/MooniswapBridge.js
 import * as MStableBridge from '../test/generated-artifacts/MStableBridge.json';
 import * as MultiAssetProxy from '../test/generated-artifacts/MultiAssetProxy.json';
 import * as Ownable from '../test/generated-artifacts/Ownable.json';
+import * as TestPlasmaswapBridge from '../test/generated-artifacts/TestPlasmaswapBridge.json';
 import * as PlasmaswapBridge from '../test/generated-artifacts/PlasmaswapBridge.json';
 import * as ShellBridge from '../test/generated-artifacts/ShellBridge.json';
 import * as StaticCallProxy from '../test/generated-artifacts/StaticCallProxy.json';
@@ -120,4 +121,5 @@ export const artifacts = {
     TestStaticCallTarget: TestStaticCallTarget as ContractArtifact,
     TestUniswapBridge: TestUniswapBridge as ContractArtifact,
     TestUniswapV2Bridge: TestUniswapV2Bridge as ContractArtifact,
+    TestPlasmaswapBridge: TestPlasmaswapBridge as ContractArtifact,
 };

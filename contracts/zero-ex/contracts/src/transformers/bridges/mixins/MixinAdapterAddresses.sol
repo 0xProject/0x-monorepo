@@ -33,6 +33,7 @@ contract MixinAdapterAddresses
         address shellBridge;
         address uniswapBridge;
         address uniswapV2Bridge;
+        address plasmaswapBridge;
         // Exchanges
         address kyberNetworkProxy;
         address oasis;
