@@ -914,7 +914,7 @@ export class SamplerOperations {
     ): SourceQuoteOperation<PlasmaswapFillData> {
         return new SamplerContractOperation({
             source: ERC20BridgeSource.Plasmaswap,
-            fillData: { tokenAddressPath, router: MAINNET_PLASMA_SWAP_ROUTER },
+            fillData: { tokenAddressPath },
             contract: this._samplerContract,
             function: this._samplerContract.sampleSellsFromPlasmaswap,
             params: [tokenAddressPath, takerFillAmounts],
@@ -927,7 +927,7 @@ export class SamplerOperations {
     ): SourceQuoteOperation<PlasmaswapFillData> {
         return new SamplerContractOperation({
             source: ERC20BridgeSource.Plasmaswap,
-            fillData: { tokenAddressPath, router: MAINNET_PLASMA_SWAP_ROUTER },
+            fillData: { tokenAddressPath },
             contract: this._samplerContract,
             function: this._samplerContract.sampleBuysFromPlasmaswap,
             params: [tokenAddressPath, makerFillAmounts],
