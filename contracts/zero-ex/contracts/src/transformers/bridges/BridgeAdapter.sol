@@ -29,6 +29,7 @@ import "./mixins/MixinOasis.sol";
 import "./mixins/MixinShell.sol";
 import "./mixins/MixinUniswap.sol";
 import "./mixins/MixinUniswapV2.sol";
+import "./mixins/MixinPlasmaswap.sol";
 import "./mixins/MixinZeroExBridge.sol";
 
 contract BridgeAdapter is
