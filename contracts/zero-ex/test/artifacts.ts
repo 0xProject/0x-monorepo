@@ -71,6 +71,7 @@ import * as MixinOasis from '../test/generated-artifacts/MixinOasis.json';
 import * as MixinShell from '../test/generated-artifacts/MixinShell.json';
 import * as MixinUniswap from '../test/generated-artifacts/MixinUniswap.json';
 import * as MixinUniswapV2 from '../test/generated-artifacts/MixinUniswapV2.json';
+import * as MixinPlasmaswap from '../test/generated-artifacts/MixinPlasmaswap.json';
 import * as MixinZeroExBridge from '../test/generated-artifacts/MixinZeroExBridge.json';
 import * as OwnableFeature from '../test/generated-artifacts/OwnableFeature.json';
 import * as PayTakerTransformer from '../test/generated-artifacts/PayTakerTransformer.json';
@@ -180,6 +181,7 @@ export const artifacts = {
     MixinShell: MixinShell as ContractArtifact,
     MixinUniswap: MixinUniswap as ContractArtifact,
     MixinUniswapV2: MixinUniswapV2 as ContractArtifact,
+    MixinPlasmaswap: MixinPlasmaswap as ContractArtifact,
     MixinZeroExBridge: MixinZeroExBridge as ContractArtifact,
     IERC20Bridge: IERC20Bridge as ContractArtifact,
     IExchange: IExchange as ContractArtifact,

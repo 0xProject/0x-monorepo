@@ -43,6 +43,7 @@ contract BridgeAdapter is
     MixinShell,
     MixinUniswap,
     MixinUniswapV2,
+    MixinPlasmaswap,
     MixinZeroExBridge
 {
 
@@ -85,6 +86,7 @@ contract BridgeAdapter is
         MixinShell(addresses)
         MixinUniswap(addresses)
         MixinUniswapV2(addresses)
+        MixinPlasmaswap(addresses)
         MixinZeroExBridge()
     {
         BALANCER_BRIDGE_ADDRESS = addresses.balancerBridge;
