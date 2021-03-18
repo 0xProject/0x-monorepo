@@ -151,8 +151,8 @@ export interface DODOFillData extends FillData {
     isSellBase: boolean;
 }
 
-export interface PlasmaswapFillData extends UniswapV2FillData {
-    router: string;
+export interface PlasmaswapFillData extends FillData {
+    tokenAddressPath: string[];
 }
 
 export interface Quote<TFillData = FillData> {
