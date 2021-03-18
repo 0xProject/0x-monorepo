@@ -38,6 +38,7 @@ contract MixinAdapterAddresses
         address kyberNetworkProxy;
         address oasis;
         address uniswapV2Router;
+        address plasmaswapRouter;
         address uniswapExchangeFactory;
         address mStable;
         address shell;
