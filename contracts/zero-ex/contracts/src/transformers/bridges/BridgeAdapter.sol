@@ -55,6 +55,7 @@ contract BridgeAdapter is
     address private immutable SHELL_BRIDGE_ADDRESS;
     address private immutable UNISWAP_BRIDGE_ADDRESS;
     address private immutable UNISWAP_V2_BRIDGE_ADDRESS;
+    address private immutable PLASMASWAP_BRIDGE_ADDRESS;
 
     /// @dev Emitted when a trade occurs.
     /// @param inputToken The token the bridge is converting from.
@@ -127,6 +128,12 @@ contract BridgeAdapter is
             );
         } else if (bridgeAddress == UNISWAP_V2_BRIDGE_ADDRESS) {
             boughtAmount = _tradeUniswapV2(
+                buyToken,
+                sellAmount,
+                bridgeData
+            );
+        } else if (bridgeAddress == PLASMASWAP_BRIDGE_ADDRESS) {
+            boughtAmount = _tradePlasmaswap(
                 buyToken,
                 sellAmount,
                 bridgeData
