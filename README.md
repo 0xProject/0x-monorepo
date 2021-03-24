@@ -2,6 +2,12 @@
 
 ---
 
+## ⚠️ Deprecation Warning ️️⚠️
+
+This project is **deprecated** and no longer maintained, refer to [0xProject/protocol](https://github.com/0xProject/protocol) and [0xProject/tools](https://github.com/0xProject/tools) instead.
+
+---
+
 [0x][website-url] is an open protocol that facilitates trustless, low friction exchange of Ethereum-based assets. For more information on how it works, check out the [0x protocol specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
 
 This repository is a monorepo including the 0x protocol smart contracts and numerous developer tools. Each public sub-package is independently published to NPM.
