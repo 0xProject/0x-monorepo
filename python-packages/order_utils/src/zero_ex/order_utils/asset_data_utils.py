@@ -37,7 +37,7 @@ class ERC721AssetData(NamedTuple):
     """Token identifier."""
 
 
-@deprecated(reason='use `"0x"+encode_erc20().hex()` instead')
+@deprecated(reason='use `"0x"+encode_erc20().hex()` instead', version="4.0.0")
 def encode_erc20_asset_data(token_address: str) -> str:
     """Encode an ERC20 token address into an asset data string.
 
@@ -107,7 +107,7 @@ def decode_erc20_asset_data(asset_data: str) -> ERC20AssetData:
     )
 
 
-@deprecated(reason='use `"0x"+encode_erc721().hex()` instead')
+@deprecated(reason='use `"0x"+encode_erc721().hex()` instead', version="4.0.0")
 def encode_erc721_asset_data(token_address: str, token_id: int) -> str:
     """Encode an ERC721 asset data hex string.
 
