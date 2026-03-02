@@ -407,6 +407,7 @@ blockchainTests('Deployment and Configuration End to End Tests', env => {
             await transferOwnershipAndAssertSuccessAsync(erc1155Proxy);
             await transferOwnershipAndAssertSuccessAsync(multiAssetProxy);
         });
+
     });
 });
 // tslint:enable:no-unnecessary-type-assertion

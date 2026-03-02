@@ -25,6 +25,9 @@ export let providerConfigs: Web3Config = {
         '0x55dc8f21d20d4c6ed3c82916a438a413ca68e335',
         '0x8ed95d1746bf1e4dab58d8ed4724f1ef95b20db0', // ERC20BridgeProxy
         '0xf977814e90da44bfa03b6295a0616a897441acec', // Binance: USDC, TUSD
+        '0x257619b7155d247e43c8b6d90c8c17278ae481f0', // 0x MultiSig Owner #1
+        '0x5ee2a00f8f01d099451844af7f894f26a57fcbf2', // 0x MultiSig Owner #2
+        '0x894d623e0e0e8ed12c4a73dada999e275684a37d', // 0x MultiSign Owner #3
     ],
 };
 

@@ -144,7 +144,13 @@ export class ForkedBlockchainTestsEnvironmentSingleton extends BlockchainTestsEn
 
     protected static _createWeb3Provider(forkHost: string): Web3ProviderEngine {
         const forkConfig = TEST_ENV_CONFIG.fork || {};
-        const unlockedAccounts = forkConfig.unlockedAccounts;
+        // Tried to add these to web3_wrapper.ts but it didn't work ¯\_(ツ)_/¯
+        const multisigAccounts = [
+            '0x257619b7155d247e43c8b6d90c8c17278ae481f0', // 0x MultiSig Owner #1
+            '0x5ee2a00f8f01d099451844af7f894f26a57fcbf2', // 0x MultiSig Owner #2
+            '0x894d623e0e0e8ed12c4a73dada999e275684a37d', // 0x MultiSign Owner #3
+        ];
+        const unlockedAccounts = [...forkConfig.unlockedAccounts, ...multisigAccounts];
         return web3Factory.getRpcProvider({
             ...providerConfigs,
             fork: forkHost,

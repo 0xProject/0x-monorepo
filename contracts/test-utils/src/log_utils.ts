@@ -40,6 +40,14 @@ export function verifyEventsFromLogs<TEventArgs>(
     const _logs = filterLogsToArguments<TEventArgs>(logs, eventName);
     expect(_logs.length, `Number of ${eventName} events emitted`).to.eq(expectedEvents.length);
     _logs.forEach((log, index) => {
-        expect(log, `${eventName} event ${index}`).to.deep.equal(expectedEvents[index]);
+
+        console.log(log);
+        console.log(expectedEvents[index]);
+        if (typeof log === 'boolean') {
+            console.log('checking bool');
+            expect(log, `${eventName} event ${index}`).to.equal(expectedEvents[index]);
+       } else {
+            expect(log, `${eventName} event ${index}`).to.deep.equal(expectedEvents[index]);
+       }
     });
 }
