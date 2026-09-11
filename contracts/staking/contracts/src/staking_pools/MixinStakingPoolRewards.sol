@@ -211,6 +211,11 @@ contract MixinStakingPoolRewards is
     }
 
     /// @dev Computes the reward balance in ETH of a specific member of a pool.
+    ///      The pool operator is never paid as a member: their own delegated
+    ///      stake is excluded from `membersStake` when rewards are split (see
+    ///      `MixinExchangeFees._computeMembersAndWeightedStake`), so it must
+    ///      also be excluded here or the operator would be paid from the
+    ///      members' pot on stake that never contributed to its denominator.
     /// @param poolId Unique id of pool.
     /// @param member of the pool.
     /// @param unfinalizedMembersReward Unfinalized total members reward (if any).
@@ -226,6 +231,12 @@ contract MixinStakingPoolRewards is
         view
         returns (uint256 reward)
     {
+        // The operator only earns `operatorShare`, never member rewards on
+        // their own delegated stake.
+        if (member == _poolById[poolId].operator) {
+            return 0;
+        }
+
         uint256 currentEpoch_ = currentEpoch;
         IStructs.StoredBalance memory delegatedStake = _delegatedStakeToPoolByOwner[member][poolId];
 
